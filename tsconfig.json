@@ -23,9 +23,9 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "src",
-    "electron",
-    "server/src"
+    "apps/bookwise/src",
+    "apps/bookwise/electron",
+    "apps/server/src"
   ],
   "references": [
     {
