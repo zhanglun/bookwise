@@ -3,10 +3,11 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build && electron-builder",
-    "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "dev:bookwise": "pnpm -F bookwise dev",
+    "build:bookwise": "pnpm -F bookwise build",
+    "dev:server": "pnpm -F server start:dev",
+    "debug:server": "pnpm -F server start:debug",
+    "build:server": "pnpm -F server build"
   },
   "dependencies": {
     "@nestjs/websockets": "^10.1.0",
