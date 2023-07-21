@@ -1,5 +1,11 @@
 {
   "name": "bookwise",
+  "description": "book wise, read wise",
+  "author": {
+    "email": "zhanglun1410@gmail.com",
+    "name": "zhanglun",
+    "url": "zhanglun.github.io"
+  },
   "private": true,
   "version": "0.0.0",
   "scripts": {
@@ -9,6 +15,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/config": "^3.0.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/platform-express": "^9.0.0",
+    "js-yaml": "^4.1.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

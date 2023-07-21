@@ -1,4 +1,6 @@
-function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
+import { contextBridge, ipcRenderer } from 'electron';
+
+function domReady(condition: DocumentReadyState[] = [ 'complete', 'interactive' ]) {
   return new Promise(resolve => {
     if (condition.includes(document.readyState)) {
       resolve(true)
@@ -40,7 +42,7 @@ function useLoading() {
   75% { transform: perspective(100px) rotateX(0) rotateY(180deg); }
   100% { transform: perspective(100px) rotateX(0) rotateY(0); }
 }
-.${className} > div {
+.${ className } > div {
   animation-fill-mode: both;
   width: 50px;
   height: 50px;
@@ -66,7 +68,7 @@ function useLoading() {
   oStyle.id = 'app-loading-style'
   oStyle.innerHTML = styleContent
   oDiv.className = 'app-loading-wrap'
-  oDiv.innerHTML = `<div class="${className}"><div></div></div>`
+  oDiv.innerHTML = `<div class="${ className }"><div></div></div>`
 
   return {
     appendLoading() {
@@ -90,3 +92,7 @@ window.onmessage = ev => {
 }
 
 setTimeout(removeLoading, 4999)
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  onUpdateCounter: (callback) => ipcRenderer.on('update-counter', callback)
+})

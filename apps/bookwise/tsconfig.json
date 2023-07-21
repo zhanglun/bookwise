@@ -23,10 +23,13 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": [
-    "apps/bookwise/src",
+    "src",
     "apps/bookwise/electron",
-    "apps/server/src"
+    "apps/server/src",
+    "typing.d.ts"
   ],
+  "exclude": [
+    "../../node_modules", "**/test", "**/dist", "**/*spec.ts"],
   "references": [
     {
       "path": "./tsconfig.node.json"

@@ -10,7 +10,11 @@
   },
   "files": [
     "dist-electron",
-    "dist"
+    "dist",
+    {
+      "from": "../server/dist",
+      "to": "dist-server/dist"
+    }
   ],
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
@@ -34,5 +38,6 @@
     "perMachine": false,
     "allowToChangeInstallationDirectory": true,
     "deleteAppDataOnUninstall": false
-  }
+  },
+  "beforePack": './before-pack.js'
 }

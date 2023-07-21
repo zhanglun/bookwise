@@ -7,12 +7,20 @@ import './App.css'
 function App() {
   const [ count, setCount ] = useState(0)
   const [ res, setRes ] = useState("testing");
+  const [ message, setMessage ] = useState<string[]>(["waiting"]);
 
   useEffect(() => {
     request.get('/').then((res) => {
       setRes(res.data)
     })
-  })
+  }, [])
+
+  useEffect(() => {
+    window.electronAPI.onUpdateCounter((_event: any, value: any) => {
+      console.log('=======> update counter', value)
+      setMessage((msg) => [...msg, value]);
+    })
+  }, [])
 
   return (
     <>
@@ -23,6 +31,10 @@ function App() {
         <a href="https://react.dev" target="_blank">
           <img src={ reactLogo } className="logo react" alt="React logo"/>
         </a>
+        <h3>node server test:</h3>
+        <div>{message.map((msg) => <p>{msg}</p>)}</div>
+        <br/>
+        <hr/>
         <p>node server test: { res }</p>
       </div>
       <h1>Vite + React</h1>

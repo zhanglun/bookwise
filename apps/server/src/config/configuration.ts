@@ -3,6 +3,7 @@ import * as yaml from 'js-yaml';
 import { join } from 'path';
 
 const env = process.env.NODE_ENV || 'prod';
+console.log(env)
 const YAML_CONFIG_FILENAME = `config.${env}.yaml`;
 
 export default () => {
