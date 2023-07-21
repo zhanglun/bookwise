@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/electron-vite.animate.svg'
+import { request } from './helpers/request';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [ count, setCount ] = useState(0)
+  const [ res, setRes ] = useState("testing");
 
   useEffect(() => {
-    fetch('http://localhost:9999/books').then((res) => {
-      console.log(res.json());
+    request.get('/').then((res) => {
+      setRes(res.data)
     })
   })
 
@@ -16,16 +18,17 @@ function App() {
     <>
       <div>
         <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+          <img src={ viteLogo } className="logo" alt="Vite logo"/>
         </a>
         <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          <img src={ reactLogo } className="logo react" alt="React logo"/>
         </a>
+        <p>node server test: { res }</p>
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={ () => setCount((count) => count + 1) }>
+          count is { count }
         </button>
         <p>
           Edit <code>src/App.tsx</code> and save to test HMR

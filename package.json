@@ -13,10 +13,11 @@
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0",
+    "axios": "^1.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.37",
