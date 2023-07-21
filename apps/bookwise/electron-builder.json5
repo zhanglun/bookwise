@@ -11,11 +11,9 @@
   "files": [
     "dist-electron",
     "dist",
-    {
-      "from": "../server/dist",
-      "to": "dist-server/dist"
-    }
+    "dist-server"
   ],
+  "includeSubNodeModules": true,
   "mac": {
     "artifactName": "${productName}_${version}.${ext}",
     "target": [
