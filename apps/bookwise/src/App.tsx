@@ -7,7 +7,7 @@ import './App.css'
 function App() {
   const [ count, setCount ] = useState(0)
   const [ res, setRes ] = useState("testing");
-  const [ message, setMessage ] = useState<string[]>(["waiting"]);
+  const [ server, setServer ] = useState<any>({});
 
   useEffect(() => {
     request.get('/').then((res) => {
@@ -16,9 +16,8 @@ function App() {
   }, [])
 
   useEffect(() => {
-    window.electronAPI.onUpdateCounter((_event: any, value: any) => {
-      console.log('=======> update counter', value)
-      setMessage((msg) => [...msg, value]);
+    window.electronAPI.onUpdateServerStatus((_event: any, value: any) => {
+      setServer(JSON.parse(value));
     })
   }, [])
 
@@ -31,8 +30,8 @@ function App() {
         <a href="https://react.dev" target="_blank">
           <img src={ reactLogo } className="logo react" alt="React logo"/>
         </a>
-        <h3>node server test:</h3>
-        <div>{message.map((msg) => <p>{msg}</p>)}</div>
+        <h3>node server status: </h3>
+        <div>pid: {server.pid} connected: {server.connected} signCode: {server.signalCode}</div>
         <br/>
         <hr/>
         <p>node server test: { res }</p>

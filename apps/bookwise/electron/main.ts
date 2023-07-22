@@ -47,28 +47,20 @@ function createWindow() {
 
     if (app.isPackaged) {
       ps = fork(`${ process.env.DIST_SERVER }/dist/main.js`, [], {
-        // cwd: `${ process.env.DIST_SERVER }/`,
       });
     } else {
-      // ps = fork(`${ __dirname }/../../server/dist/main.js`, [], {
-      //   cwd: `${ __dirname }/../../`,
-      // });
       ps = fork(`${ path.join(__dirname, '/../../server/dist/main.js') }`, {
-        // cwd: `${ __dirname }/../../`,
       })
     }
 
-    console.log(ps);
-    //
     setTimeout(() => {
-      console.log('sending!+_+++++---->==');
-      win.webContents.send('update-counter', `app.isPackaged: ${ app.isPackaged }, ${JSON.stringify(ps)}`);
-    }, 4000)
+      win.webContents.send('update-server-status', `${JSON.stringify(ps)}`);
+    }, 2000)
   } catch (err) {
     console.error(err);
     setTimeout(() => {
-      win.webContents.send('update-counter', JSON.stringify(err));
-    }, 6000);
+      win.webContents.send('update-server-status', JSON.stringify(err));
+    }, 3000);
   }
 }
 
