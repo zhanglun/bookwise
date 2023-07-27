@@ -7,21 +7,27 @@ importers:
       '@nestjs/common': ^9.0.0
       '@nestjs/core': ^9.0.0
       '@nestjs/platform-express': ^9.0.0
+      '@types/multer': ^1.4.7
       '@types/react': ^18.0.37
       '@types/react-dom': ^18.0.11
       '@typescript-eslint/eslint-plugin': ^5.59.0
       '@typescript-eslint/parser': ^5.59.0
       '@vitejs/plugin-react': ^4.0.0
       axios: ^1.4.0
+      class-variance-authority: ^0.7.0
+      clsx: ^2.0.0
       electron: ^24.4.0
       electron-builder: ^23.6.0
       eslint: ^8.38.0
       eslint-plugin-react-hooks: ^4.6.0
       eslint-plugin-react-refresh: ^0.3.4
+      lucide-react: ^0.263.1
       react: ^18.2.0
       react-dom: ^18.2.0
       reflect-metadata: ^0.1.13
       rxjs: ^7.2.0
+      tailwind-merge: ^1.14.0
+      tailwindcss-animate: ^1.0.6
       typescript: ^5.0.2
       vite: ^4.3.2
       vite-plugin-electron: ^0.11.2
@@ -31,11 +37,17 @@ importers:
       '@nestjs/core': 9.4.3_c4fgdp752ib7dsgrlnt7fswfce
       '@nestjs/platform-express': 9.4.3_vw2vky2jc6gkm6gj7lzrgmojyi
       axios: 1.4.0
+      class-variance-authority: 0.7.0
+      clsx: 2.0.0
+      lucide-react: 0.263.1_react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       reflect-metadata: 0.1.13
       rxjs: 7.8.1
+      tailwind-merge: 1.14.0
+      tailwindcss-animate: 1.0.6
     devDependencies:
+      '@types/multer': 1.4.7
       '@types/react': 18.2.15
       '@types/react-dom': 18.2.7
       '@typescript-eslint/eslint-plugin': 5.62.0_tbbci4he2x65aggpp4j2oxxdvm
@@ -53,10 +65,6 @@ importers:
 
   apps/bookwise:
     specifiers:
-      '@nestjs/common': ^9.0.0
-      '@nestjs/config': ^3.0.0
-      '@nestjs/core': ^9.0.0
-      '@nestjs/platform-express': ^9.0.0
       '@types/react': ^18.0.37
       '@types/react-dom': ^18.0.11
       '@typescript-eslint/eslint-plugin': ^5.59.0
@@ -67,25 +75,15 @@ importers:
       eslint: ^8.38.0
       eslint-plugin-react-hooks: ^4.6.0
       eslint-plugin-react-refresh: ^0.3.4
-      js-yaml: ^4.1.0
       react: ^18.2.0
       react-dom: ^18.2.0
-      reflect-metadata: ^0.1.13
-      rxjs: ^7.2.0
       typescript: ^5.0.2
       vite: ^4.3.2
       vite-plugin-electron: ^0.11.2
       vite-plugin-electron-renderer: ^0.14.5
     dependencies:
-      '@nestjs/common': 9.4.3_atc7tu2sld2m3nk4hmwkqn6qde
-      '@nestjs/config': 3.0.0_dk4u2lifzsfgc7wmi6hz7mkv5a
-      '@nestjs/core': 9.4.3_c4fgdp752ib7dsgrlnt7fswfce
-      '@nestjs/platform-express': 9.4.3_vw2vky2jc6gkm6gj7lzrgmojyi
-      js-yaml: 4.1.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
-      reflect-metadata: 0.1.13
-      rxjs: 7.8.1
     devDependencies:
       '@types/react': 18.2.15
       '@types/react-dom': 18.2.7
@@ -1501,7 +1499,7 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 18.11.18
+      '@types/node': 20.4.2
     dev: true
 
   /@types/cacheable-request/6.0.3:
@@ -1509,14 +1507,14 @@ packages:
     dependencies:
       '@types/http-cache-semantics': 4.0.1
       '@types/keyv': 3.1.4
-      '@types/node': 18.16.19
+      '@types/node': 20.4.2
       '@types/responselike': 1.0.0
     dev: true
 
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 18.11.18
+      '@types/node': 20.4.2
     dev: true
 
   /@types/cookiejar/2.1.2:
@@ -1550,7 +1548,7 @@ packages:
   /@types/express-serve-static-core/4.17.35:
     resolution: {integrity: sha512-wALWQwrgiB2AWTT91CB62b6Yt0sNHpznUXeZEcnPU3DRdlDIz74x8Qg1UUYKSVFi+va5vKOLYRBI1bRKiLLKIg==}
     dependencies:
-      '@types/node': 18.11.18
+      '@types/node': 20.4.2
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
       '@types/send': 0.17.1
@@ -1628,7 +1626,7 @@ packages:
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 18.16.19
+      '@types/node': 20.4.2
     dev: true
 
   /@types/mime/1.3.2:
@@ -1646,6 +1644,12 @@ packages:
 
   /@types/ms/0.7.31:
     resolution: {integrity: sha512-iiUgKzV9AuaEkZqkOLDIvlQiL6ltuZd9tGcW3gwpnX8JbuiuhFlEGmmFXEXkN50Cvq7Os88IY2v0dkDqXYWVgA==}
+    dev: true
+
+  /@types/multer/1.4.7:
+    resolution: {integrity: sha512-/SNsDidUFCvqqcWDwxv2feww/yqhNeTRL5CVoL3jU4Goc4kKEL10T7Eye65ZqPNi4HRx8sAEX59pV1aEH7drNA==}
+    dependencies:
+      '@types/express': 4.17.17
     dev: true
 
   /@types/node/18.11.18:
@@ -1705,7 +1709,7 @@ packages:
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 18.16.19
+      '@types/node': 20.4.2
     dev: true
 
   /@types/scheduler/0.16.3:
@@ -1720,7 +1724,7 @@ packages:
     resolution: {integrity: sha512-Cwo8LE/0rnvX7kIIa3QHCkcuF21c05Ayb0ZfxPiv0W8VRiZiNW/WuRupHKpqqGVGf7SUA44QSOUKaEd9lIrd/Q==}
     dependencies:
       '@types/mime': 1.3.2
-      '@types/node': 18.11.18
+      '@types/node': 20.4.2
     dev: true
 
   /@types/serve-static/1.15.2:
@@ -1728,7 +1732,7 @@ packages:
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
-      '@types/node': 18.11.18
+      '@types/node': 20.4.2
     dev: true
 
   /@types/stack-utils/2.0.1:
@@ -2760,6 +2764,12 @@ packages:
     resolution: {integrity: sha512-0TNiGstbQmCFwt4akjjBg5pLRTSyj/PkWQ1ZoO2zntmg9yLqSRxwEa4iCfQLGjqhiqBfOJa7W/E8wfGrTDmlZQ==}
     dev: true
 
+  /class-variance-authority/0.7.0:
+    resolution: {integrity: sha512-jFI8IQw4hczaL4ALINxqLEXQbWcNjoSkloa4IaufXCJr6QawJyw7tuRysRsrE8w2p/4gGaxKIt/hX3qz/IbD1A==}
+    dependencies:
+      clsx: 2.0.0
+    dev: false
+
   /cli-cursor/3.1.0:
     resolution: {integrity: sha512-I/zHAwsKf9FqGoXM4WWRACob9+SNukZTd94DWF57E4toouRulbCxcUh6RKUEOQlYTHJnzkPMySvPNaaSLNfLZw==}
     engines: {node: '>=8'}
@@ -2814,6 +2824,11 @@ packages:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
     dev: true
+
+  /clsx/2.0.0:
+    resolution: {integrity: sha512-rQ1+kcj+ttHG0MKVGBUXwayCCF1oh39BF5COIpRzuCEv8Mwjv0XucrI2ExNTOn9IlLifGClWQcU9BrZORvtw6Q==}
+    engines: {node: '>=6'}
+    dev: false
 
   /co/4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
@@ -4944,6 +4959,14 @@ packages:
       yallist: 4.0.0
     dev: true
 
+  /lucide-react/0.263.1_react@18.2.0:
+    resolution: {integrity: sha512-keqxAx97PlaEN89PXZ6ki1N8nRjGWtDa4021GFYLNj0RgruM5odbpl8GHTExj0hhPq3sF6Up0gnxt6TSHu+ovw==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
   /macos-release/2.5.1:
     resolution: {integrity: sha512-DXqXhEM7gW59OjZO8NIjBCz9AQ1BEMrfiOAl4AYByHCtVHRF4KoGNO8mqQeM8lRCtQe/UnJ4imO/d2HdkKsd+A==}
     engines: {node: '>=6'}
@@ -6098,6 +6121,16 @@ packages:
     resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
     engines: {node: '>=0.10'}
     dev: true
+
+  /tailwind-merge/1.14.0:
+    resolution: {integrity: sha512-3mFKyCo/MBcgyOTlrY8T7odzZFx+w+qKSMAmdFzRvqBfLlSigU6TZnlFHK0lkMwj9Bj8OYU+9yW9lmGuS0QEnQ==}
+    dev: false
+
+  /tailwindcss-animate/1.0.6:
+    resolution: {integrity: sha512-4WigSGMvbl3gCCact62ZvOngA+PRqhAn7si3TQ3/ZuPuQZcIEtVap+ENSXbzWhpojKB8CpvnIsrwBu8/RnHtuw==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dev: false
 
   /tapable/2.2.1:
     resolution: {integrity: sha512-GNzQvQTOIP6RyTfE2Qxb8ZVlNmw0n88vp1szwWRimP02mnTsx3Wtn5qRdqY9w2XduFNUgvOwhNnQsjwCp+kqaQ==}
