@@ -1,5 +1,8 @@
-import { Controller, Get, Post, UseInterceptors, UploadedFile } from '@nestjs/common';
-import { FileInterceptor } from "@nestjs/platform-express";
+import { Controller, Get, Post, Body, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { unzip } from "node:zlib";
+import * as AdmZip from 'adm-zip';
+console.log("%c Line:5 🥤 AdmZip", "color:#f5ce50", AdmZip);
 
 @Controller('books')
 export class BooksController {
@@ -15,13 +18,22 @@ export class BooksController {
 
   @Post('upload')
   @UseInterceptors(FilesInterceptor('files'))
-  uploadFile(
-    @Body() body: any,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
+  uploadFile(@Body() body: any, @UploadedFiles() files: Array<Express.Multer.File>) {
+    console.log(files);
+    const { originalname, mimetype, buffer, size } = files[0];
+    const zip = new AdmZip(buffer);
+    const zipEntries = zip.getEntries();
+    console.log(zipEntries.length)
+
+    zipEntries.forEach((z) => {
+      console.log(z.toString())
+    })
     return {
       body,
-      file: file.buffer.toString(),
-    };
+      file: {
+        originalname, mimetype, size,
+      }
+    }
   }
 }
+

@@ -6,10 +6,13 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 
 @Module({
-  imports: [ConfigModule.forRoot({
-    isGlobal: true,
-    load: [configuration],
-  }), BooksModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+    }),
+    BooksModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
