@@ -26,7 +26,7 @@ interface EpubMetadata {
   language: string;
 }
 
-interface Epub {
+export interface Epub {
   metadata: EpubMetadata;
   manifest: EpubManifest;
 }

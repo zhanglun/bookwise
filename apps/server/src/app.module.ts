@@ -3,6 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
 import { ConfigModule } from '@nestjs/config';
+import { SettingsModule } from './settings/settings.module';
 import configuration from './config/configuration';
 
 @Module({
@@ -12,6 +13,7 @@ import configuration from './config/configuration';
       load: [configuration],
     }),
     BooksModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
