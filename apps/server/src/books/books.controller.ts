@@ -31,7 +31,9 @@ export class BooksController {
   ) {
     const { originalname, mimetype, buffer, size } = files[0];
 
-    this.booksService.parseBook(buffer);
+    const epubbook = this.booksService.parseBook(buffer);
+
+    console.log("🚀 ~ file: books.controller.ts:35 ~ BooksController ~ epubbook:", epubbook)
 
     return {
       body,
@@ -40,6 +42,7 @@ export class BooksController {
         mimetype,
         size,
       },
+      res: epubbook,
     };
   }
 }
