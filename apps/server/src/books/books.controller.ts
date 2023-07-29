@@ -7,7 +7,6 @@ import {
   UploadedFiles,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { Express } from 'express';
 import { BooksService } from './books.service';
 
 @Controller('books')
