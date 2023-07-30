@@ -25,4 +25,15 @@ export class SettingsService {
 
     return path.join(homedir, '.config', 'bookwise');
   }
+
+  public getLibraryPath() {
+    const homedir = os.homedir();
+    const dest = path.join(homedir, 'Documents', 'BookWise');
+
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest);
+    }
+
+    return dest;
+  }
 }

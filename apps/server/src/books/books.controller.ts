@@ -29,20 +29,6 @@ export class BooksController {
     @Body() body: any,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    const { originalname, mimetype, buffer, size } = files[0];
-
-    const book = this.booksService.parseBook(buffer);
-
-    console.log("🚀 ~ file: books.controller.ts:35 ~ BooksController ~ epubbook:", book)
-
-    return {
-      body,
-      file: {
-        originalname,
-        mimetype,
-        size,
-      },
-      res: book,
-    };
+    return this.booksService.saveBookToLibrary(files);
   }
 }

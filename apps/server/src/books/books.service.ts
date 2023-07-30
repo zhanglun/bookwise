@@ -1,6 +1,9 @@
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { Injectable } from '@nestjs/common';
 import * as AdmZip from 'adm-zip';
 import { XMLParser } from 'fast-xml-parser';
+import { SettingsService } from '../settings/settings.service';
 
 interface EpubIdentifier {
   scheme: string;
@@ -33,6 +36,9 @@ export interface Epub {
 
 @Injectable()
 export class BooksService {
+  constructor(private settingsService: SettingsService) {}
+  public getBookType(bookname: string) {}
+
   public parseBook(content: Buffer): Epub {
     const zip = new AdmZip(content);
     const zipEntries = zip.getEntries();
@@ -42,7 +48,8 @@ export class BooksService {
       console.log(z.entryName);
 
       const entryData = z.getData();
-      switch (z.entryName) {
+
+      switch (z.entryName.split(path.sep).pop()) {
         case 'mimetype':
           this.parseMimetype(entryData);
           break;
@@ -85,5 +92,30 @@ export class BooksService {
     const info = parser.parse(data);
 
     return { ...info.package };
+  }
+
+  public saveBookToLibrary(files: Array<Express.Multer.File>) {
+    const libPath = this.settingsService.getLibraryPath();
+
+    console.log(libPath)
+
+    const infos = [];
+    files.forEach((file) => {
+      const { originalname, mimetype, buffer, size } = files[0];
+
+      infos.push({
+        originalname,
+        mimetype,
+        size,
+      });
+
+      const book = this.parseBook(buffer);
+
+      fs.writeFileSync(path.join(libPath, originalname), file.buffer);
+    });
+
+    return {
+      infos,
+    };
   }
 }
