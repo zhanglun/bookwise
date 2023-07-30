@@ -28,7 +28,7 @@ export class SettingsService {
 
   public getLibraryPath() {
     const homedir = os.homedir();
-    const dest = path.join(homedir, 'Documents', 'BookWise');
+    const dest = path.join(homedir, 'Documents', 'BookWise Library');
 
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest);

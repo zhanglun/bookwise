@@ -37,7 +37,12 @@ export interface Epub {
 @Injectable()
 export class BooksService {
   constructor(private settingsService: SettingsService) {}
+
   public getBookType(bookname: string) {}
+
+  public getBookCover(bf: Buffer) {
+    console.log(bf);
+  }
 
   public parseBook(content: Buffer): Epub {
     const zip = new AdmZip(content);
@@ -64,6 +69,7 @@ export class BooksService {
             '🚀 ~ file: books.service.ts:22 ~ BooksService ~ zipEntries.forEach ~ cover.jpg:',
             z.name,
           );
+          this.getBookCover(entryData);
           break;
         default:
           break;
@@ -89,19 +95,20 @@ export class BooksService {
       ignoreAttributes: false,
       // transformTagName: (tagName) => tagName.replace(/dc:/gi, ''),
     });
+
     const info = parser.parse(data);
+    
+    console.log("🚀 ~ file: books.service.ts:100 ~ BooksService ~ parseOPF ~ info:", info)
 
     return { ...info.package };
   }
 
   public saveBookToLibrary(files: Array<Express.Multer.File>) {
     const libPath = this.settingsService.getLibraryPath();
-
-    console.log(libPath)
-
     const infos = [];
+
     files.forEach((file) => {
-      const { originalname, mimetype, buffer, size } = files[0];
+      const { originalname, mimetype, buffer, size } = file;
 
       infos.push({
         originalname,
@@ -110,6 +117,11 @@ export class BooksService {
       });
 
       const book = this.parseBook(buffer);
+
+      // console.log(
+      //   '🚀 ~ file: books.service.ts:111 ~ BooksService ~ files.forEach ~ book:',
+      //   book,
+      // );
 
       fs.writeFileSync(path.join(libPath, originalname), file.buffer);
     });
