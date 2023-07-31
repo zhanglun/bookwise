@@ -166,6 +166,8 @@ export class BooksService {
         file.buffer,
       );
       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
+
+      // TODO: save to database
     });
 
     return {
