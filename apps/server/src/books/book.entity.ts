@@ -1,35 +1,63 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
-export class Book {
-  @PrimaryGeneratedColumn()
+export class Books {
+  @PrimaryGeneratedColumn('uuid')
   id: number;
-  @Column()
-  uuid: string;
-  @Column()
-  name: string;
-  @Column()
+  @Column({
+    default: '',
+  })
+  title: string;
+  @Column({
+    default: '',
+  })
   author: string;
   @Column()
   author_id: number;
   @Column()
   publisher_id: number;
-  @Column()
+  @Column({
+    default: '',
+  })
   subject: string;
-  @Column()
+  @Column({
+    default: '',
+  })
   description: string;
-  @Column()
+  @Column({
+    default: '',
+  })
   contrributor: string;
-  @Column()
+  @Column({
+    default: '',
+  })
   source: string;
-  @Column()
+  @Column({
+    default: '',
+  })
   rights: string;
-  @Column()
+  @Column({
+    default: '',
+  })
   path: string;
-  @Column()
+  @Column({
+    type: 'date',
+  })
   publish_at: string;
-  @Column()
+  @CreateDateColumn()
+  @Column({
+    type: 'date',
+  })
   created_at: string;
-  @Column()
+  @UpdateDateColumn()
+  @Column({
+    type: 'date',
+  })
   updated_at: string;
 }

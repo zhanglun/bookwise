@@ -1,11 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
-import { ConfigModule } from '@nestjs/config';
 import { SettingsModule } from './settings/settings.module';
 import configuration from './config/configuration';
-import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { Books } from './books/book.entity';
+import { AuthorsModule } from './authors/authors.module';
+import { Authors } from './authors/entities/author.entity';
 
 @Module({
   imports: [
@@ -14,6 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       database: 'bookwise.db',
       autoLoadEntities: true,
       synchronize: true,
+      entities: [Books, Authors],
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -21,8 +27,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     BooksModule,
     SettingsModule,
+    AuthorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule {
+  constructor(private dataSource: DataSource) {}
+}

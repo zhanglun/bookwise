@@ -1,5 +1,5 @@
-import {Controller, Get, Post} from '@nestjs/common';
-import {SettingsService} from "./settings.service";
+import { Controller, Get, Post } from '@nestjs/common';
+import { SettingsService } from './settings.service';
 
 export interface UserSettings {
   configDest: string;

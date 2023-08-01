@@ -29,6 +29,10 @@ export class BooksController {
     @Body() body: any,
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
-    return this.booksService.saveBookToLibrary(files);
+    try {
+      return this.booksService.saveBookToLibrary(files);
+    } catch (err) {
+      return err;
+    }
   }
 }

@@ -1,10 +1,15 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import * as AdmZip from 'adm-zip';
 import { XMLParser } from 'fast-xml-parser';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
+import { Books } from './book.entity';
+import { AuthorsService } from 'src/authors/authors.service';
+import { Authors } from 'src/authors/entities/author.entity';
 
 interface EpubIdentifier {
   scheme: string;
@@ -24,6 +29,7 @@ interface EpubManifest {
 interface EpubMetadata {
   title: string;
   creator: string;
+  publisher: string;
   contributor: string;
   identifier: EpubIdentifier[];
   date: string;
@@ -39,7 +45,12 @@ export interface Epub {
 
 @Injectable()
 export class BooksService {
-  constructor(private settingsService: SettingsService) {}
+  constructor(
+    @InjectRepository(Books)
+    private bookRepository: Repository<Books>,
+    private settingsService: SettingsService,
+    private authorsService: AuthorsService,
+  ) {}
 
   public parseCover(book: Epub, bf: Buffer) {
     let coverHref = '';
@@ -125,11 +136,72 @@ export class BooksService {
     return { ...info.package };
   }
 
-  public saveBookToLibrary(files: Array<Express.Multer.File>) {
+  public parseBookDate(book: Epub) {
+    const { date } = book.metadata;
+
+    if (!date) {
+      return null;
+    }
+
+    return [].concat(date).reduce((acu, item) => {
+      if (typeof item === 'object') {
+        if (item['@_opf:event'] === 'publication') {
+          acu.publish_at = item['#text'];
+        }
+      }
+
+      return acu;
+    }, {});
+  }
+
+  public parseBookPublisher(book: Epub) {
+    const { metadata } = book;
+
+    if (!metadata.publisher) {
+      return null;
+    }
+
+    return metadata.publisher['#text']
+      ? metadata.publisher['#text']
+      : metadata.publisher;
+  }
+
+  public createBookModel(book: Epub) {
+    const { metadata } = book;
+    const title = metadata.title['#text']
+      ? metadata.title['#text']
+      : metadata.title;
+
+    const publisher = this.parseBookPublisher(book);
+
+    const author = metadata.creator['#text']
+      ? metadata.creator['#text']
+      : metadata.creator;
+
+    const date = this.parseBookDate(book);
+
+    const result = {
+      title,
+      publisher,
+      author,
+      ...date,
+    };
+
+    console.log(
+      '🚀 ~ file: books.service.ts:177 ~ BooksService ~ createBookModel ~ result:',
+      result,
+    );
+
+    return result;
+  }
+
+  public async saveBookToLibrary(
+    files: Array<Express.Multer.File>,
+  ): Promise<any> {
     const libPath = this.settingsService.getLibraryPath();
     const infos = [];
 
-    files.forEach((file) => {
+    files.forEach(async (file) => {
       const { originalname, mimetype, buffer, size } = file;
       console.log(
         '🚀 ~ file: books.service.ts:133 ~ BooksService ~ files.forEach ~ mimetype:',
@@ -148,26 +220,45 @@ export class BooksService {
         book,
       );
       const cover = this.parseCover(book, buffer);
-      const name = book.metadata.title['#text']
+      const title = book.metadata.title['#text']
         ? book.metadata.title['#text']
         : book.metadata.title;
       console.log(
         '🚀 ~ file: books.service.ts:152 ~ BooksService ~ files.forEach ~ book.metadata.title:',
         book.metadata.title,
       );
-      const inventoryPath = path.join(libPath, name);
+      const inventoryPath = path.join(libPath, title);
 
       if (!fs.existsSync(inventoryPath)) {
         fs.mkdirSync(inventoryPath);
       }
 
       fs.writeFileSync(
-        path.join(inventoryPath, `${name}.${MimeType.extension(mimetype)}`),
+        path.join(inventoryPath, `${title}.${MimeType.extension(mimetype)}`),
         file.buffer,
       );
       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
 
       // TODO: save to database
+
+      // const bookModel = {
+      //   name,
+      //   author
+      // }
+
+      const bookModel = this.createBookModel(book);
+
+      console.log(
+        '🚀 ~ file: books.service.ts:246 ~ BooksService ~ files.forEach ~ bookModel:',
+        bookModel,
+      );
+
+      const { id: author_id } = await this.authorsService.create({ name: bookModel.author });
+
+      await this.bookRepository.save({
+        ...bookModel,
+        author_id,
+      });
     });
 
     return {
