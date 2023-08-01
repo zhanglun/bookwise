@@ -8,14 +8,15 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
+import { Books } from './book.entity';
 
 @Controller('books')
 export class BooksController {
   constructor(private booksService: BooksService) {}
 
   @Get()
-  findAll(): [] {
-    return [];
+  findAll(): Promise<Books[]> {
+    return this.booksService.findAll();
   }
 
   @Post()

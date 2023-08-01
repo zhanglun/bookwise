@@ -280,4 +280,8 @@ export class BooksService {
       infos,
     };
   }
+
+  public async findAll() {
+    return this.bookRepository.find();
+  }
 }
