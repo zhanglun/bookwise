@@ -253,7 +253,9 @@ export class BooksService {
         bookModel,
       );
 
-      const { id: author_id } = await this.authorsService.create({ name: bookModel.author });
+      const { id: author_id } = await this.authorsService.findOneOrCreate({
+        name: bookModel.author,
+      });
 
       await this.bookRepository.save({
         ...bookModel,

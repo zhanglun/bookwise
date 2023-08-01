@@ -1,1 +1,3 @@
-export class CreateAuthorDto {}
+export class CreateAuthorDto {
+  name: string;
+}

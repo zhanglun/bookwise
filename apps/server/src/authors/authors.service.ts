@@ -22,6 +22,18 @@ export class AuthorsService {
     return record;
   }
 
+  async findOneOrCreate(createAuthorDto: CreateAuthorDto) {
+    const author = await this.authorsRepository.findOne({
+      where: { name: createAuthorDto.name },
+    });
+
+    if (author) {
+      return author;
+    } else {
+      return await this.authorsRepository.save(createAuthorDto);
+    }
+  }
+
   findAll() {
     return `This action returns all authors`;
   }
