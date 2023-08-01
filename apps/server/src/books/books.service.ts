@@ -9,7 +9,7 @@ import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
 import { Books } from './book.entity';
 import { AuthorsService } from 'src/authors/authors.service';
-import { Authors } from 'src/authors/entities/author.entity';
+import { PublishersService } from 'src/publishers/publishers.service';
 
 interface EpubIdentifier {
   scheme: string;
@@ -50,6 +50,7 @@ export class BooksService {
     private bookRepository: Repository<Books>,
     private settingsService: SettingsService,
     private authorsService: AuthorsService,
+    private publishersService: PublishersService,
   ) {}
 
   public parseCover(book: Epub, bf: Buffer) {
@@ -143,15 +144,18 @@ export class BooksService {
       return null;
     }
 
-    return [].concat(date).reduce((acu, item) => {
-      if (typeof item === 'object') {
-        if (item['@_opf:event'] === 'publication') {
-          acu.publish_at = item['#text'];
+    return [].concat(date).reduce(
+      (acu, item) => {
+        if (typeof item === 'object') {
+          if (item['@_opf:event'] === 'publication') {
+            acu.publish_at = item['#text'];
+          }
         }
-      }
 
-      return acu;
-    }, {});
+        return acu;
+      },
+      { publish_at: '' },
+    );
   }
 
   public parseBookPublisher(book: Epub) {
@@ -228,15 +232,16 @@ export class BooksService {
         book.metadata.title,
       );
       const inventoryPath = path.join(libPath, title);
+      const bookPath = path.join(
+        inventoryPath,
+        `${title}.${MimeType.extension(mimetype)}`,
+      );
 
       if (!fs.existsSync(inventoryPath)) {
         fs.mkdirSync(inventoryPath);
       }
 
-      fs.writeFileSync(
-        path.join(inventoryPath, `${title}.${MimeType.extension(mimetype)}`),
-        file.buffer,
-      );
+      fs.writeFileSync(bookPath, file.buffer);
       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
 
       // TODO: save to database
@@ -257,9 +262,17 @@ export class BooksService {
         name: bookModel.author,
       });
 
+      const { id: publisher_id } = await this.publishersService.findOneOrCreate(
+        {
+          name: bookModel.publisher,
+        },
+      );
+
       await this.bookRepository.save({
         ...bookModel,
         author_id,
+        publisher_id,
+        path: bookPath,
       });
     });
 

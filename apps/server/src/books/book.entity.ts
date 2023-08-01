@@ -53,11 +53,13 @@ export class Books {
   @CreateDateColumn()
   @Column({
     type: 'date',
+    default: new Date().getTime(),
   })
   created_at: string;
   @UpdateDateColumn()
   @Column({
     type: 'date',
+    default: new Date().getTime(),
   })
   updated_at: string;
 }
