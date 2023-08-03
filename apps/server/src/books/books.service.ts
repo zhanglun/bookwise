@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as AdmZip from 'adm-zip';
@@ -283,5 +283,16 @@ export class BooksService {
 
   public async findAll() {
     return this.bookRepository.find();
+  }
+
+  public getCoverFigure(dir: string) {
+    const name = dir.split(path.sep);
+    name.pop();
+    name.push('cover.jpg');
+    
+    const coverPath = name.join(path.sep).trim();
+    const file = fs.createReadStream(coverPath);
+
+    return new StreamableFile(file);
   }
 }

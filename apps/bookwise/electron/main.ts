@@ -1,7 +1,6 @@
 import { app, BrowserWindow } from 'electron'
 import path from 'node:path'
-
-import { fork, spawn } from "child_process";
+import { fork } from "child_process";
 
 // The built directory structure
 //
@@ -26,7 +25,7 @@ const VITE_DEV_SERVER_URL = process.env['VITE_DEV_SERVER_URL']
 
 function createWindow() {
   win = new BrowserWindow({
-    icon: path.join(process.env.PUBLIC, 'electron-vite.svg'),
+    icon: path.join(process.env.PUBLIC as string, 'electron-vite.svg'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
@@ -42,7 +41,7 @@ function createWindow() {
       win.loadURL(VITE_DEV_SERVER_URL)
     } else {
       // win.loadFile('dist/index.html')
-      win.loadFile(path.join(process.env.DIST, 'index.html'))
+      win.loadFile(path.join(process.env.DIST as string, 'index.html'))
     }
 
     if (app.isPackaged) {
@@ -54,12 +53,12 @@ function createWindow() {
     }
 
     setTimeout(() => {
-      win.webContents.send('update-server-status', `${JSON.stringify(ps)}`);
+     win && win.webContents.send('update-server-status', `${JSON.stringify(ps)}`);
     }, 2000)
   } catch (err) {
     console.error(err);
     setTimeout(() => {
-      win.webContents.send('update-server-status', JSON.stringify(err));
+      win && win.webContents.send('update-server-status', JSON.stringify(err));
     }, 3000);
   }
 }

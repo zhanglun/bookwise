@@ -5,6 +5,9 @@ import {
   Body,
   UseInterceptors,
   UploadedFiles,
+  Query,
+  StreamableFile,
+  Header,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
@@ -35,5 +38,11 @@ export class BooksController {
     } catch (err) {
       return err;
     }
+  }
+
+  @Get('cover')
+  @Header('Content-Type', 'image/jpg')
+  getBookCover(@Query() query: { path: string }): StreamableFile {
+    return this.booksService.getCoverFigure(query.path);
   }
 }
