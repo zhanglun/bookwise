@@ -26,3 +26,4 @@ release
 *.sln
 *.sw?
 .vs
+*.db
