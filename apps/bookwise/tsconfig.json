@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": [
-      "ES2020",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
     /* Bundler mode */
@@ -20,7 +16,11 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": [
     "src",
@@ -28,8 +28,7 @@
     "apps/server/src",
     "typing.d.ts"
   ],
-  "exclude": [
-    "../../node_modules", "**/test", "**/dist", "**/*spec.ts"],
+  "exclude": ["../../node_modules", "**/test", "**/dist", "**/*spec.ts", "tailwind.config.js"],
   "references": [
     {
       "path": "./tsconfig.node.json"
