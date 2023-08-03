@@ -8,6 +8,7 @@ import {
   Query,
   StreamableFile,
   Header,
+  Param,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
@@ -20,6 +21,11 @@ export class BooksController {
   @Get()
   findAll(): Promise<Books[]> {
     return this.booksService.findAll();
+  }
+
+  @Get('/:id')
+  findBookDetailWithId(@Param() param: { id: string }): Promise<Books> {
+    return this.booksService.findOneWithId(param.id);
   }
 
   @Post()

@@ -244,24 +244,10 @@ export class BooksService {
       fs.writeFileSync(bookPath, file.buffer);
       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
 
-      // TODO: save to database
-
-      // const bookModel = {
-      //   name,
-      //   author
-      // }
-
       const bookModel = this.createBookModel(book);
-
-      console.log(
-        '🚀 ~ file: books.service.ts:246 ~ BooksService ~ files.forEach ~ bookModel:',
-        bookModel,
-      );
-
       const { id: author_id } = await this.authorsService.findOneOrCreate({
         name: bookModel.author,
       });
-
       const { id: publisher_id } = await this.publishersService.findOneOrCreate(
         {
           name: bookModel.publisher,
@@ -285,11 +271,21 @@ export class BooksService {
     return this.bookRepository.find();
   }
 
-  public getCoverFigure(dir: string) {
+  public async findOneWithId(id: string) {
+    return this.bookRepository.findOneBy({ id });
+  }
+
+  /**
+   * get cover.jpg
+   * @param dir book dir
+   * @returns StreamableFile
+   */
+  public getCoverFigure(dir: string): StreamableFile {
     const name = dir.split(path.sep);
+
     name.pop();
     name.push('cover.jpg');
-    
+
     const coverPath = name.join(path.sep).trim();
     const file = fs.createReadStream(coverPath);
 
