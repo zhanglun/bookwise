@@ -27,6 +27,8 @@ body {
   margin: 0;
   width: 100vw;
   height: 100vh;
+  /* background: #f4f0ee; */
+  background: #f8f8f8;
 }
 
 h1 {
