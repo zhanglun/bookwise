@@ -15,13 +15,14 @@ function App() {
   }, []);
 
   return (
-    <div id="app" className="w-full h-full grid grid-rows-[30px_1fr] gap-3">
+    <div
+      id="app"
+      className="w-full h-full grid grid-rows-[30px_1fr] gap-3 backdrop-blur-xl"
+    >
       <TabBar />
       <div className="grid gap-4 grid-cols-[260px_1fr]">
         <Sidebar />
-        <div className="bg-white rounded-lg">
-
-        </div>
+        <div className="bg-white rounded-lg border border-slate-100 test"></div>
       </div>
       <p className="hidden">
         node server status: pid: {server.pid} connected: {server.connected}{" "}

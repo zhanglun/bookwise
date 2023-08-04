@@ -28,7 +28,14 @@ body {
   width: 100vw;
   height: 100vh;
   /* background: #f4f0ee; */
-  background: #f8f8f8;
+  background-color: #f8f8f8;
+  background-image: url("../public/bg.jpg");
+  background-position: center;
+}
+
+.test {
+  background-image: url("../public/bg.jpg");
+  background-position: center;
 }
 
 h1 {

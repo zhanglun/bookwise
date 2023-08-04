@@ -1,5 +1,6 @@
-#root {
+#app {
   padding: 10px;
+  background: hsl(0deg 0% 99.61% / 83.92%);
 }
 
 #root, #app {
