@@ -17,7 +17,7 @@ function App() {
   return (
     <div
       id="app"
-      className="w-full h-full grid grid-rows-[30px_1fr] gap-3 backdrop-blur-xl"
+      className="w-full h-full grid grid-rows-[30px_1fr] gap-2 backdrop-blur-xl"
     >
       <TabBar />
       <div className="grid gap-4 grid-cols-[260px_1fr]">

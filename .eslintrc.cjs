@@ -8,7 +8,7 @@ module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   plugins: ['react-refresh'],
-  ignorePatterns: ['**/*.spec.ts', '.eslintrc.cjs', './apps/bookwise/tailwindcss.config.js'],
+  ignorePatterns: ['**/*.spec.ts', '.eslintrc.cjs', './apps/bookwise/tailwind.config.js'],
   rules: {
     'react-refresh/only-export-components': 'warn',
   },

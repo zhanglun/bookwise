@@ -28,7 +28,7 @@
     "apps/server/src",
     "typing.d.ts"
   ],
-  "exclude": ["../../node_modules", "**/test", "**/dist", "**/*spec.ts", "tailwind.config.js"],
+  "exclude": ["../../node_modules", "**/test", "**/dist", "**/*spec.ts", "./tailwind.config.js"],
   "references": [
     {
       "path": "./tsconfig.node.json"
