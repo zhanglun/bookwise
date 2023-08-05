@@ -9,7 +9,8 @@ export const TabBarItem = (props: TabBarItemProps) => {
   const { title, active } = props;
 
   return <div className={clsx("relative flex flex-1 justify-center items-center rounded-lg h-full bg-gray-300/50", {
-    'bg-gray-50/90': active,
+    'bg-white/90': active,
+    'border border-stone-100': active,
   })}>
     <X size={14} className="absolute left-3"/>
     <span className="text-xs">

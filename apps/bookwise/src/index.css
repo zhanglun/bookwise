@@ -22,9 +22,9 @@ body {
   margin: 0;
   width: 100vw;
   height: 100vh;
-  background: #f4f0ee;
-  /* background-color: #f8f8f8; */
-  background-image: url("../public/bg-2.jpg");
+  /*background: #f4f0ee;*/
+   background-color: #faf8f4;
+  /* background-image: url("../public/bg-2.jpg"); */
   background-position: center;
   background-size: cover;
 }

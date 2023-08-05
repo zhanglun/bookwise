@@ -4,7 +4,7 @@ import "./index.css";
 
 export const Sidebar = () => {
   return (
-    <div className="w-full h-full bg-white/50 shadow-sm rounded-md">
+    <div className="w-full h-full bg-white/50 shadow-sm rounded-md border border-[#efefef] border-opacity-60">
       <div className="p-3 flex flex-row space-x-3">
         <Button
           variant={"secondary"}
@@ -19,16 +19,16 @@ export const Sidebar = () => {
         </Button>
       </div>
       <ul className="px-3 pt-6">
-        <li className="side-menu-item">
-          <Home size={16} className="text-stone-600"/>
+        <li className="side-menu-item active">
+          <Home size={14} className="text-stone-600"/>
           <span>Home</span>
         </li>
         <li className="side-menu-item">
-          <Library size={16} className="text-stone-600"/>
+          <Library size={14} className="text-stone-600"/>
           <span>Library</span>
         </li>
         <li className="side-menu-item">
-          <Star size={16} className="text-stone-600"/>
+          <Star size={14} className="text-stone-600"/>
           <span>Starred</span>
         </li>
       </ul>
