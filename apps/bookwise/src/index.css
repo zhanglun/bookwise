@@ -22,13 +22,38 @@ body {
   margin: 0;
   width: 100vw;
   height: 100vh;
-  /* background: #f4f0ee; */
-  background-color: #f8f8f8;
+  background: #f4f0ee;
+  /* background-color: #f8f8f8; */
   background-image: url("../public/bg-2.jpg");
   background-position: center;
+  background-size: cover;
 }
 
 .test {
   background-image: url("../public/bg-2.jpg");
   background-position: center;
+  background-size: cover;
+  border: none;
+}
+
+
+body.bg3, .bg3 .test {
+  background-image: url("../public/bg-3.jpg");
+}
+
+.bg4, .bg4 .test {
+  background-image: url("../public/bg-4.jpg");
+}
+
+.bg5, .bg5 .test {
+  background-image: url("../public/bg-5.jpg");
+}
+
+#app {
+  padding: 8px;
+  background: hsl(0deg 0% 99.61% / 65%);
+}
+
+#root, #app {
+  height: 100%;
 }

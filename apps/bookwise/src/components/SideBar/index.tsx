@@ -1,11 +1,16 @@
 import { Button } from "../ui/button";
-import { Plus, Search } from "lucide-react";
+import { Home, Library, Plus, Search, Star } from "lucide-react";
+import "./index.css";
 
 export const Sidebar = () => {
   return (
-    <div className="w-full h-full bg-white/40 shadow-sm rounded-md">
-      <div className="p-2 flex flex-row space-x-2">
-        <Button variant={"secondary"} size="sm" className="space-x-2 flex-1 bg-white/90 hover:bg-white/70">
+    <div className="w-full h-full bg-white/50 shadow-sm rounded-md">
+      <div className="p-3 flex flex-row space-x-3">
+        <Button
+          variant={"secondary"}
+          size="sm"
+          className="space-x-2 flex-1 bg-white/90 hover:bg-white/70"
+        >
           <Plus size={16} />
           <span>New Content</span>
         </Button>
@@ -13,6 +18,20 @@ export const Sidebar = () => {
           <Search size={16} />
         </Button>
       </div>
+      <ul className="px-3 pt-6">
+        <li className="side-menu-item">
+          <Home size={16} className="text-stone-600"/>
+          <span>Home</span>
+        </li>
+        <li className="side-menu-item">
+          <Library size={16} className="text-stone-600"/>
+          <span>Library</span>
+        </li>
+        <li className="side-menu-item">
+          <Star size={16} className="text-stone-600"/>
+          <span>Starred</span>
+        </li>
+      </ul>
     </div>
   );
 };
