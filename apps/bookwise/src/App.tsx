@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { request } from "./helpers/request";
-import { createCoverLink } from "./helpers/utils";
 import { TabBar } from "./components/TabBar";
 import { Sidebar } from "./components/SideBar";
-import { Home } from "./pages/Home";
+import { Outlet } from "react-router-dom";
 
 function App() {
   const [server, setServer] = useState<any>({});
@@ -22,8 +20,9 @@ function App() {
       <TabBar />
       <div className="grid gap-4 grid-cols-[260px_1fr]">
         <Sidebar />
-        <div className="rounded-lg overflow-y-scroll">
-          <Home />
+        <div className="rounded-lg overflow-y-scroll">\
+          <Outlet />
+          {/* <Home /> */}
         </div>
       </div>
       <p className="hidden">

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Home, Library, Plus, Search, Star } from "lucide-react";
 import "./index.css";
@@ -18,20 +19,20 @@ export const Sidebar = () => {
           <Search size={16} />
         </Button>
       </div>
-      <ul className="px-3 pt-6">
-        <li className="side-menu-item active">
-          <Home size={14} className="text-stone-600"/>
+      <div className="px-3 pt-6">
+        <Link className="side-menu-item active" to={"/"}>
+          <Home size={14} className="text-stone-600" />
           <span>Home</span>
-        </li>
-        <li className="side-menu-item">
-          <Library size={14} className="text-stone-600"/>
+        </Link>
+        <Link className="side-menu-item" to={"/library"}>
+          <Library size={14} className="text-stone-600" />
           <span>Library</span>
-        </li>
-        <li className="side-menu-item">
-          <Star size={14} className="text-stone-600"/>
+        </Link>
+        <Link className="side-menu-item" to={"/starred"}>
+          <Star size={14} className="text-stone-600" />
           <span>Starred</span>
-        </li>
-      </ul>
+        </Link>
+      </div>
     </div>
   );
 };
