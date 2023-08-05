@@ -123,6 +123,9 @@ importers:
       clsx:
         specifier: ^2.0.0
         version: 2.0.0
+      electron-tabs:
+        specifier: ^1.0.1
+        version: 1.0.1
       lucide-react:
         specifier: ^0.263.1
         version: 0.263.1(react@18.2.0)
@@ -3662,6 +3665,10 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /electron-tabs@1.0.1:
+    resolution: {integrity: sha512-BwSDK0beANmcfedFB/FBZfTewLPniJKiWdK+5Eh0kqTLda2dqKNEoCqVvRqjJ81rHjhUKZANSY29ypMseCp+sA==}
+    dev: false
 
   /electron-to-chromium@1.4.467:
     resolution: {integrity: sha512-2qI70O+rR4poYeF2grcuS/bCps5KJh6y1jtZMDDEteyKJQrzLOEhFyXCLcHW6DTBjKjWkk26JhWoAi+Ux9A0fg==}
