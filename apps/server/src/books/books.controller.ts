@@ -9,6 +9,8 @@ import {
   StreamableFile,
   Header,
   Param,
+  HttpStatus,
+  HttpCode,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
@@ -34,13 +36,16 @@ export class BooksController {
   }
 
   @Post('upload')
+  @HttpCode(200)
   @UseInterceptors(FilesInterceptor('files'))
-  uploadFile(
-    @Body() body: any,
-    @UploadedFiles() files: Array<Express.Multer.File>,
-  ) {
+  async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
+    console.log(
+      '🚀 ~ file: books.controller.ts:42 ~ BooksController ~ files:',
+      files,
+    );
     try {
-      return this.booksService.saveBookToLibrary(files);
+      const res = await this.booksService.saveBookToLibrary(files);
+      return res;
     } catch (err) {
       return err;
     }

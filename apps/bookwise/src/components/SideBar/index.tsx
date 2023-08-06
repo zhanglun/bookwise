@@ -1,7 +1,7 @@
-import { Link } from "react-router-dom";
 import { Button } from "../ui/button";
 import { Home, Library, Plus, Search, Star } from "lucide-react";
 import "./index.css";
+import { NavItem } from "./NavItem";
 
 export const Sidebar = () => {
   return (
@@ -20,18 +20,9 @@ export const Sidebar = () => {
         </Button>
       </div>
       <div className="px-3 pt-6">
-        <Link className="side-menu-item active" to={"/"}>
-          <Home size={14} className="text-stone-600" />
-          <span>Home</span>
-        </Link>
-        <Link className="side-menu-item" to={"/library"}>
-          <Library size={14} className="text-stone-600" />
-          <span>Library</span>
-        </Link>
-        <Link className="side-menu-item" to={"/starred"}>
-          <Star size={14} className="text-stone-600" />
-          <span>Starred</span>
-        </Link>
+        <NavItem to="/" title="Home" icon={<Home size={14} />} />
+        <NavItem to="/library" title="Library" icon={<Library size={14} />} />
+        <NavItem to="/starred" title="Starred" icon={<Star size={14} />} />
       </div>
     </div>
   );

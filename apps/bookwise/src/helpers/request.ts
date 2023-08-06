@@ -20,6 +20,15 @@ export const get = (url: string, config?: AxiosRequestConfig) => {
   });
 }
 
+export const post = (url: string, data: any, config?: AxiosRequestConfig) => {
+  const _instance = createInstance(config || {});
+
+  return _instance.post(url, data, config).then((res: AxiosResponse) => {
+    return res;
+  });
+}
+
 export const request = {
-  get
+  get,
+  post,
 }

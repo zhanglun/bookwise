@@ -262,6 +262,8 @@ export class BooksService {
       });
     });
 
+    console.log('infos', infos);
+
     return {
       infos,
     };
