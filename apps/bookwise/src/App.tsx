@@ -20,7 +20,7 @@ function App() {
       <TabBar />
       <div className="grid gap-4 grid-cols-[260px_1fr]">
         <Sidebar />
-        <div className="rounded-lg overflow-y-scroll">\
+        <div className="rounded-lg overflow-y-scroll">
           <Outlet />
           {/* <Home /> */}
         </div>

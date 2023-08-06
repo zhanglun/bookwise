@@ -2,18 +2,19 @@ import { BookPlus } from "lucide-react";
 import { Book } from "@/components/Book";
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSelectFromDisk } from "@/hooks/useBook";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 
 export const Library = () => {
-  const [files, openFileDialog, uploadFiles] = useSelectFromDisk();
+  const [files, openFileDialog] = useSelectFromDisk();
+  const [bookList, setBookList] = useState<any>([]);
 
   useEffect(() => {
     if (files.length) {
       const formData = new FormData();
 
       for (const file of files) {
-        formData.append('files', file);
+        formData.append("files", file);
         console.log("🚀 ~ file: index.tsx:16 ~ useEffect ~ file:", file);
       }
 
@@ -29,8 +30,15 @@ export const Library = () => {
     }
   }, [files]);
 
+  useEffect(() => {
+    request.get("/books").then((res) => {
+      console.log("🚀 ~ file: index.tsx:34 ~ request.get ~ res:", res);
+      setBookList(res.data)
+    });
+  }, []);
+
   return (
-    <div className="max-w-5xl m-auto  grid grid-flow-row gap-3">
+    <div className="max-w-4xl m-auto  grid grid-flow-row gap-3">
       <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
         Library
       </div>
@@ -49,13 +57,10 @@ export const Library = () => {
         </div>
       </div>
       <div className="px-3 py-2"></div>
-      <div className="px-3 py-2 grid grid-flow-col grid-cols-5 gap-5">
-        <Book data={{}} />
-        <Book data={{}} />
-        <Book data={{}} />
-        <Book data={{}} />
-        <Book data={{}} />
-        <Book data={{}} />
+      <div className="px-3 py-2 grid grid-cols-5 gap-x-9 gap-y-14">
+        {bookList.map((book: any) => {
+          return <Book key={book.id} data={book} />;
+        })}
       </div>
     </div>
   );

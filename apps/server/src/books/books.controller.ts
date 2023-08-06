@@ -20,6 +20,13 @@ import { Books } from './book.entity';
 export class BooksController {
   constructor(private booksService: BooksService) {}
 
+  @Get('cover')
+  @Header('Content-Type', 'image/jpg')
+  getBookCover(@Query() query: { path: string }): StreamableFile {
+    console.log("🚀 ~ file: books.controller.ts:27 ~ BooksController ~ getBookCover ~ query.path:", query.path)
+    return this.booksService.getCoverFigure(query.path);
+  }
+
   @Get()
   findAll(): Promise<Books[]> {
     return this.booksService.findAll();
@@ -49,11 +56,5 @@ export class BooksController {
     } catch (err) {
       return err;
     }
-  }
-
-  @Get('cover')
-  @Header('Content-Type', 'image/jpg')
-  getBookCover(@Query() query: { path: string }): StreamableFile {
-    return this.booksService.getCoverFigure(query.path);
   }
 }

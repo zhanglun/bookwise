@@ -14,5 +14,5 @@ export const createCoverLink = (path: string): string => {
   } else {
     base =  'http://localhost:9988';
   }
-  return `${base}/books/cover?path=${path}`;
+  return `${base}/books/cover?path=${encodeURIComponent(path)}`;
 }

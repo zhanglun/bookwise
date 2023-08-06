@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export const useSelectFromDisk = (): [File[], () => void, () => void] => {
+export const useSelectFromDisk = (): [File[], () => void] => {
   const [files, setFiles] = useState<File[]>([]);
 
   const openFileDialog = (): void => {
@@ -27,7 +27,5 @@ export const useSelectFromDisk = (): [File[], () => void, () => void] => {
     input.click();
   };
 
-  const uploadFiles = () => {};
-
-  return [files, openFileDialog, uploadFiles];
+  return [files, openFileDialog];
 };

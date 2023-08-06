@@ -207,10 +207,6 @@ export class BooksService {
 
     files.forEach(async (file) => {
       const { originalname, mimetype, buffer, size } = file;
-      console.log(
-        '🚀 ~ file: books.service.ts:133 ~ BooksService ~ files.forEach ~ mimetype:',
-        mimetype,
-      );
 
       infos.push({
         originalname,
@@ -218,6 +214,9 @@ export class BooksService {
         size,
       });
 
+      if (mimetype !== 'epub') {
+        return;
+      }
       const book = this.parseBook(buffer);
       console.log(
         '🚀 ~ file: books.service.ts:141 ~ BooksService ~ files.forEach ~ book:',
