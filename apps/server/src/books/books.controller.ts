@@ -9,7 +9,6 @@ import {
   StreamableFile,
   Header,
   Param,
-  HttpStatus,
   HttpCode,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
