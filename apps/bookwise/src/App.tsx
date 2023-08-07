@@ -7,7 +7,7 @@ function App() {
   const [server, setServer] = useState<any>({});
 
   useEffect(() => {
-    window.electronAPI.onUpdateServerStatus((_event: any, value: any) => {
+    window.electronAPI?.onUpdateServerStatus((_event: any, value: any) => {
       setServer(JSON.parse(value));
     });
   }, []);

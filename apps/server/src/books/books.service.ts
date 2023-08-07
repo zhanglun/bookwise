@@ -2,12 +2,12 @@ import * as path from 'node:path';
 import * as fs from 'node:fs';
 import { Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import * as AdmZip from 'adm-zip';
 import { XMLParser } from 'fast-xml-parser';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
-import { Books } from './book.entity';
+import { Book } from './book.entity';
 import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
 
@@ -46,11 +46,12 @@ export interface Epub {
 @Injectable()
 export class BooksService {
   constructor(
-    @InjectRepository(Books)
-    private bookRepository: Repository<Books>,
+    @InjectRepository(Book)
+    private bookRepository: Repository<Book>,
     private settingsService: SettingsService,
     private authorsService: AuthorsService,
     private publishersService: PublishersService,
+    private dataSource: DataSource,
   ) {}
 
   public parseCover(book: Epub, bf: Buffer) {
@@ -205,18 +206,13 @@ export class BooksService {
     const libPath = this.settingsService.getLibraryPath();
     const infos = [];
 
-    files.forEach(async (file) => {
-      const { originalname, mimetype, buffer, size } = file;
+    for (const file of files) {
+      const { mimetype, buffer } = file;
 
-      infos.push({
-        originalname,
-        mimetype,
-        size,
-      });
-
-      if (mimetype !== 'epub') {
+      if (mimetype !== 'application/epub+zip') {
         return;
       }
+
       const book = this.parseBook(buffer);
       console.log(
         '🚀 ~ file: books.service.ts:141 ~ BooksService ~ files.forEach ~ book:',
@@ -243,25 +239,27 @@ export class BooksService {
       fs.writeFileSync(bookPath, file.buffer);
       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
 
+      this.dataSource;
+
       const bookModel = this.createBookModel(book);
-      const { id: author_id } = await this.authorsService.findOneOrCreate({
+      const author = await this.authorsService.findOneOrCreate({
         name: bookModel.author,
       });
-      const { id: publisher_id } = await this.publishersService.findOneOrCreate(
-        {
-          name: bookModel.publisher,
-        },
-      );
+      const publisher = await this.publishersService.findOneOrCreate({
+        name: bookModel.publisher,
+      });
 
-      await this.bookRepository.save({
+      const bookEntity = this.bookRepository.create({
         ...bookModel,
-        author_id,
-        publisher_id,
+        author,
+        publisher,
         path: bookPath,
       });
-    });
 
-    console.log('infos', infos);
+      const bookPO = await this.dataSource.manager.save(bookEntity);
+
+      infos.push(bookPO);
+    }
 
     return {
       infos,
@@ -269,7 +267,12 @@ export class BooksService {
   }
 
   public async findAll() {
-    return this.bookRepository.find();
+    return this.bookRepository.find({
+      relations: {
+        author: true,
+        publisher: true,
+      },
+    });
   }
 
   public async findOneWithId(id: string) {

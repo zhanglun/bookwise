@@ -1,16 +1,32 @@
 export interface BookResItem {
   id: string;
   title: string;
-  author: string;
-  author_id: string;
-  publisher_id: string;
   subject: string;
   description: string;
-  contrributor: string;
+  contributor: string;
   source: string;
   rights: string;
+  language_id: string;
+  format: Format;
+  page_size: number;
+  isbn: string;
   path: string;
   publish_at: string;
-  created_at: Date;
-  updated_at: Date;
+  created_at: number;
+  updated_at: number;
+  author: Author;
+  publisher: Publisher;
+}
+
+export interface Author {
+  id: string;
+  name: string;
+}
+export interface Publisher {
+  id: string;
+  name: string;
+}
+
+export enum Format {
+  Epub = "epub",
 }

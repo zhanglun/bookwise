@@ -1,11 +1,22 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Book } from 'src/books/book.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-@Entity()
-export class Publishers {
+@Entity('publishers')
+export class Publisher {
   @PrimaryGeneratedColumn('uuid')
   id: string;
   @Column({
     unique: true,
   })
   name: string;
+
+  @ManyToOne(() => Book, (book) => book.publisher)
+  @JoinColumn({ name: 'book_id' })
+  books: Book[];
 }

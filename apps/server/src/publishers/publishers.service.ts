@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
 import { UpdatePublisherDto } from './dto/update-publisher.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Publishers } from './entities/publisher.entity';
+import { Publisher } from './entities/publisher.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class PublishersService {
   constructor(
-    @InjectRepository(Publishers)
-    private publishersRepository: Repository<Publishers>,
+    @InjectRepository(Publisher)
+    private publishersRepository: Repository<Publisher>,
   ) {}
   create(createPublisherDto: CreatePublisherDto) {
     return 'This action adds a new publisher';

@@ -73,7 +73,7 @@ export const Library = () => {
             </div>
           </div>
           <div className="px-3 py-2"></div>
-          <div className={clsx("sm:grid-cols-3 sm:gap-x-5 sm:gap-y-7", "px-3 py-2 grid lg:grid-cols-5 lg:gap-x-9 lg:gap-y-14")}>
+          <div className={clsx("sm:grid-cols-2 sm:gap-x-5 sm:gap-y-7", "px-3 py-2 grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-8", 'xl:grid-cols-5 xl:gap-x-9 xl:gap-y-14')}>
             {bookList.map((book: any) => {
               return (
                 <Book
@@ -86,7 +86,7 @@ export const Library = () => {
           </div>
         </div>
       </div>
-      <div className="px-4 pt-20 sm:w-[280px]">
+      <div className="px-4 pt-20 sm:w-[220px] lg:w-[260px] xl:w-[300px]">
         <BookSideDetail data={currentBook} />
       </div>
     </div>

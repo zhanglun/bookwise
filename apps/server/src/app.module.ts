@@ -8,9 +8,9 @@ import { BooksModule } from './books/books.module';
 import { SettingsModule } from './settings/settings.module';
 import configuration from './config/configuration';
 
-import { Books } from './books/book.entity';
+import { Book } from './books/book.entity';
 import { AuthorsModule } from './authors/authors.module';
-import { Authors } from './authors/entities/author.entity';
+import { Author } from './authors/entities/author.entity';
 import { PublishersModule } from './publishers/publishers.module';
 
 @Module({
@@ -20,7 +20,7 @@ import { PublishersModule } from './publishers/publishers.module';
       database: 'bookwise.db',
       autoLoadEntities: true,
       synchronize: true,
-      entities: [Books, Authors],
+      entities: [Book, Author],
     }),
     ConfigModule.forRoot({
       isGlobal: true,

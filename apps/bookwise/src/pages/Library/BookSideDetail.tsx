@@ -13,17 +13,17 @@ export const BookSideDetail = (props: BookSideDetailProps) => {
         <span>书名：</span>
         <span>{data.title}</span>
         <span>作者：</span>
-        <span>{data.author}</span>
+        <span>{data.author?.name}</span>
         <span>出版商：</span>
-        <span>{data.publisher}</span>
+        <span>{data.publisher?.name}</span>
         <span>出版日期：</span>
         <span>{data.publish_at}</span>
-        <span>语言：</span>
-        <span>{data.language}</span>
+        {/* <span>语言：</span>
+        <span>{data.language}</span> */}
         <span>格式：</span>
         <span>{data.format}</span>
         <span>页数：</span>
-        <span>{data.pagesize}</span>
+        <span>{data.page_size}</span>
         <span>ISBN：</span>
         <span>{data.isbn}</span>
       </div>

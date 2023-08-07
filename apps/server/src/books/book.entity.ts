@@ -4,24 +4,30 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
-@Entity()
-export class Books {
+import { Author } from '../authors/entities/author.entity';
+import { Publisher } from '../publishers/entities/publisher.entity';
+@Entity('books')
+export class Book {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   @Column({
     default: '',
   })
   title: string;
-  @Column({
-    default: '',
-  })
-  author: string;
-  @Column()
-  author_id: number;
-  @Column()
-  publisher_id: number;
+
+  @ManyToOne(() => Author, (author) => author.books)
+  @JoinColumn({ name: 'author_id' })
+  author: Author;
+
+  @ManyToOne(() => Publisher, (publisher) => publisher.books)
+  @JoinColumn({ name: 'publisher_id' })
+  publisher: Publisher;
+
   @Column({
     default: '',
   })
@@ -33,7 +39,7 @@ export class Books {
   @Column({
     default: '',
   })
-  contrributor: string;
+  contributor: string;
   @Column({
     default: '',
   })
@@ -42,6 +48,25 @@ export class Books {
     default: '',
   })
   rights: string;
+  @Column({
+    default: '',
+  })
+  language_id: string;
+
+  @Column({
+    default: 'epub',
+  })
+  format: string;
+
+  @Column({
+    default: 0,
+  })
+  page_size: number;
+
+  @Column({
+    default: '',
+  })
+  isbn: string;
   @Column({
     default: '',
   })
