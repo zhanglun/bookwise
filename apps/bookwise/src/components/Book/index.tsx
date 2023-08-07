@@ -1,6 +1,7 @@
 import { BookResItem } from "@/interface/book";
 import { MoreVertical } from "lucide-react";
 import { Cover } from "./Cover";
+import { PresetActions } from "./PresetAction";
 
 export interface BookProps {
   data: any;
@@ -24,7 +25,7 @@ export const Book = (props: BookProps) => {
           {data.title}
         </span>
         <span>
-          <MoreVertical size={14} />
+          <PresetActions />
         </span>
       </div>
     </div>
