@@ -1,11 +1,9 @@
 import { BookPlus } from "lucide-react";
 import { Book } from "@/components/Book";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSelectFromDisk } from "@/hooks/useBook";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { BookResItem } from "@/interface/book";
-import { Cover } from "@/components/Book/Cover";
 import clsx from "clsx";
 import { BookSideDetail } from "./BookSideDetail";
 
@@ -73,7 +71,7 @@ export const Library = () => {
             </div>
           </div>
           <div className="px-3 py-2"></div>
-          <div className={clsx("sm:grid-cols-2 sm:gap-x-5 sm:gap-y-7", "px-3 py-2 grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-8", 'xl:grid-cols-5 xl:gap-x-9 xl:gap-y-14')}>
+          <div className={clsx("sm:grid-cols-2 sm:gap-x-5 sm:gap-y-7", "px-3 py-2 grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-8", 'xl:grid-cols-5 xl:gap-x-9 xl:gap-y-9')}>
             {bookList.map((book: any) => {
               return (
                 <Book

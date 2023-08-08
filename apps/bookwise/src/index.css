@@ -1,3 +1,5 @@
+@tailwind components;
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -14,8 +16,16 @@
   -webkit-text-size-adjust: 100%;
 }
 
-.should-blur {
-  background-color: rgba(255, 255, 255, 0.3);
+@layer components {
+  .should-blur {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .dropdown-blur {
+    backdrop-filter: blur(12px) saturate(190%) contrast(50%) brightness(130%);
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 0.5px solid rgb(223, 225, 228);
+  }
 }
 
 body {
@@ -23,7 +33,7 @@ body {
   width: 100vw;
   height: 100vh;
   /*background: #f4f0ee;*/
-   background-color: #faf8f4;
+  background-color: #faf8f4;
   /* background-image: url("../public/bg-2.jpg"); */
   background-position: center;
   background-size: cover;
@@ -36,16 +46,18 @@ body {
   border: none;
 }
 
-
-body.bg3, .bg3 .test {
+body.bg3,
+.bg3 .test {
   background-image: url("../public/bg-3.jpg");
 }
 
-.bg4, .bg4 .test {
+.bg4,
+.bg4 .test {
   background-image: url("../public/bg-4.jpg");
 }
 
-.bg5, .bg5 .test {
+.bg5,
+.bg5 .test {
   background-image: url("../public/bg-5.jpg");
 }
 
@@ -54,6 +66,7 @@ body.bg3, .bg3 .test {
   background: hsl(0deg 0% 99.61% / 65%);
 }
 
-#root, #app {
+#root,
+#app {
   height: 100%;
 }

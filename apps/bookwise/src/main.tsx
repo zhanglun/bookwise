@@ -16,28 +16,25 @@ import { Starred } from "./pages/Starred";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <App></App>
-    ),
+    element: <App></App>,
     children: [
       {
-        path: '/',
-        element: <Home />
+        path: "/",
+        element: <Home />,
       },
       {
-        path: '/library',
-        element: <Library />
+        path: "/library",
+        element: <Library />,
       },
       {
-        path: '/starred',
-        element: <Starred />
+        path: "/starred",
+        element: <Starred />,
       },
-    ]
+    ],
   },
 ]);
 
-
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <RouterProvider router={router} />
 );
 
