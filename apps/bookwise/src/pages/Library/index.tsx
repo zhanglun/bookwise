@@ -51,14 +51,14 @@ export const Library = () => {
 
   return (
     <div className="flex justify-center h-full">
-      <div className="h-full grid grid-flow-row gap-3 overflow-y-scroll max-w-5xl px-4 flex-1 sm:px-4">
+      <div className="h-full grid grid-flow-row gap-3 overflow-y-scroll max-w-4xl px-4 flex-1 sm:px-4">
         <div>
           <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
             Library
           </div>
           <div className="px-3 py-3 space-x-3">
             <div
-              className="border border-stone-200 rounded-lg pl-6 py-3 w-[340px] flex items-center space-x-3 hover:bg-stone-100"
+              className="border border-stone-200 rounded-lg pl-6 py-3 w-[340px] flex items-center space-x-3 hover:bg-stone-100 cursor-pointer"
               onClick={() => openFileDialog()}
             >
               <BookPlus size={20} className="text-indigo-500" />

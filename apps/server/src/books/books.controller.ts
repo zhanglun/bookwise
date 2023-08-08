@@ -10,10 +10,12 @@ import {
   Header,
   Param,
   HttpCode,
+  Delete,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
 import { Book } from './book.entity';
+import { DeleteResult } from 'typeorm';
 
 @Controller('books')
 export class BooksController {
@@ -34,6 +36,15 @@ export class BooksController {
   @Get('/:id')
   findBookDetailWithId(@Param() param: { id: string }): Promise<Book> {
     return this.booksService.findOneWithId(param.id);
+  }
+
+  @Delete()
+  deleteBookWithId(@Query() query: { id: string }): Promise<{
+    removeExist: boolean;
+    removedDir: string;
+    removedRow: number;
+  }> {
+    return this.booksService.deleteBook(query.id);
   }
 
   @Post()

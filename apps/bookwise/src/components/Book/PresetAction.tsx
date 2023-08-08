@@ -6,11 +6,48 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "../ui/dropdown-menu";
+import {
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogContent,
+  DialogFooter,
+} from "../ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+} from "../ui/alert-dialog";
+import { Button } from "../ui/button";
+import { toast } from "../ui/use-toast";
 import { MoreVertical } from "lucide-react";
+import { BookResItem } from "@/interface/book";
+import { request } from "@/helpers/request";
 
-export function PresetActions() {
+
+export interface PresetActionProps {
+  data: BookResItem;
+}
+
+export function PresetActions(props: PresetActionProps) {
+  const { data } = props;
   const [open, setIsOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const confirmDelete = () => {
+    request.delete('/books', {
+      params: {
+        id: data.id
+      }
+    }).then((res) => {
+      console.log("🚀 ~ file: PresetAction.tsx:48 ~ confirmDelete ~ res:", res)
+    })
+  }
 
   return (
     <>
@@ -34,7 +71,7 @@ export function PresetActions() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      {/* <Dialog open={open} onOpenChange={setIsOpen}>
+      <Dialog open={open} onOpenChange={setIsOpen}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Content filter preferences</DialogTitle>
@@ -49,7 +86,7 @@ export function PresetActions() {
               Playground Warnings
             </h4>
             <div className="flex items-start justify-between space-x-4 pt-3">
-              <Switch name="show" id="show" defaultChecked={true} />
+              {/* <Switch name="show" id="show" defaultChecked={true} />
               <Label className="grid gap-1 font-normal" htmlFor="show">
                 <span className="font-semibold">
                   Show a warning when content is flagged
@@ -58,7 +95,7 @@ export function PresetActions() {
                   A warning will be shown when sexual, hateful, violent or
                   self-harm content is detected.
                 </span>
-              </Label>
+              </Label> */}
             </div>
           </div>
           <DialogFooter>
@@ -83,6 +120,7 @@ export function PresetActions() {
               variant="destructive"
               onClick={() => {
                 setShowDeleteDialog(false);
+                confirmDelete();
                 toast({
                   description: "This preset has been deleted.",
                 });
@@ -92,7 +130,7 @@ export function PresetActions() {
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
-      </AlertDialog> */}
+      </AlertDialog>
     </>
   );
 }

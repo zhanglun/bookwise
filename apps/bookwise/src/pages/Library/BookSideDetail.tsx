@@ -1,5 +1,6 @@
 import { Cover } from "@/components/Book/Cover";
 import { BookResItem } from "@/interface/book";
+import { format } from "date-fns";
 
 export interface BookSideDetailProps {
   data: BookResItem;
@@ -17,7 +18,9 @@ export const BookSideDetail = (props: BookSideDetailProps) => {
         <span>出版商：</span>
         <span>{data.publisher?.name}</span>
         <span>出版日期：</span>
-        <span>{data.publish_at}</span>
+        <span>
+          {data.publish_at && format(new Date(data.publish_at), "yyyy-MM-dd")}
+        </span>
         {/* <span>语言：</span>
         <span>{data.language}</span> */}
         <span>格式：</span>

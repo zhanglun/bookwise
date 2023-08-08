@@ -10,9 +10,9 @@ export const createCoverLink = (path: string): string => {
   let base = '';
 
   if (env.DEV) {
-    base = 'http://localhost:9999';
+    base = 'http://localhost:9999/api';
   } else {
-    base =  'http://localhost:9988';
+    base =  'http://localhost:9988/api';
   }
   return `${base}/books/cover?path=${encodeURIComponent(path)}`;
 }

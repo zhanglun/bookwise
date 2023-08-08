@@ -17,7 +17,8 @@ function App() {
       id="app"
       className="w-full h-full grid grid-rows-[30px_minmax(0,1fr)] gap-2 backdrop-blur-[40px]"
     >
-      <TabBar />
+      <div></div>
+      {/* <TabBar /> */}
       <div className="grid gap-4 grid-cols-[260px_1fr]">
         <Sidebar />
         <div className="rounded-lg overflow-hidden">

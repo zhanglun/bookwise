@@ -279,6 +279,46 @@ export class BooksService {
     return this.bookRepository.findOneBy({ id });
   }
 
+  public async deleteBook(id: string) {
+    const bookEntity = await this.bookRepository.findOneBy({ id: id });
+    const result: {
+      removeExist: boolean;
+      removedDir: string;
+      removedRow: number;
+    } = {
+      removeExist: false,
+      removedDir: '',
+      removedRow: 0,
+    };
+
+    if (bookEntity) {
+      const deleteResult = await this.bookRepository.delete({ id });
+
+      result.removedRow = deleteResult.affected;
+
+      if (deleteResult.affected === 1 && fs.existsSync(bookEntity.path)) {
+        let folderDir: string | string[] = bookEntity.path.split(path.sep);
+
+        folderDir.pop();
+
+        console.log(
+          '🚀 ~ file: books.service.ts:288 ~ BooksService ~ deleteBook ~ folderDir:',
+          folderDir,
+        );
+
+        folderDir = folderDir.join(path.sep);
+
+        if (fs.existsSync(folderDir)) {
+          fs.rmSync(folderDir, { recursive: true, force: true });
+          result.removeExist = true;
+          result.removedDir = folderDir;
+        }
+      }
+    }
+
+    return result;
+  }
+
   /**
    * get cover.jpg
    * @param dir book dir
