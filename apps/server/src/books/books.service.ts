@@ -84,7 +84,7 @@ export class BooksService {
     return a;
   }
 
-  public parseBook(content: Buffer): Epub {
+  public parseEpubBook(content: Buffer): Epub {
     const zip = new AdmZip(content);
     const zipEntries = zip.getEntries();
     let res = {} as Epub;
@@ -176,26 +176,17 @@ export class BooksService {
     const title = metadata.title['#text']
       ? metadata.title['#text']
       : metadata.title;
-
     const publisher = this.parseBookPublisher(book);
-
     const author = metadata.creator['#text']
       ? metadata.creator['#text']
       : metadata.creator;
-
     const date = this.parseBookDate(book);
-
     const result = {
       title,
       publisher,
       author,
       ...date,
     };
-
-    console.log(
-      '🚀 ~ file: books.service.ts:177 ~ BooksService ~ createBookModel ~ result:',
-      result,
-    );
 
     return result;
   }
@@ -213,7 +204,7 @@ export class BooksService {
         return;
       }
 
-      const book = this.parseBook(buffer);
+      const book = this.parseEpubBook(buffer);
       console.log(
         '🚀 ~ file: books.service.ts:141 ~ BooksService ~ files.forEach ~ book:',
         book,
