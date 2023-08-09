@@ -130,13 +130,13 @@ const parseMetadata = (node: Element) => {
 export const parsePackage = async (
   data: JSZip.JSZipObject | null
 ): Promise<{
-  // manifest: any;
-  // navPath: string;
-  // ncxPath: string;
-  // coverPath: string;
+  manifest: any;
+  navPath: string;
+  ncxPath: string;
+  coverPath: string;
   // spineNodeIndex: number;
-  // spine: any[];
-  // metadata: any;
+  spine: any[];
+  metadata: any;
 }> => {
   if (!data) {
     console.error("No content.opf");
@@ -146,7 +146,7 @@ export const parsePackage = async (
       navPath: "",
       ncxPath: "",
       coverPath: "",
-      spineNodeIndex: 0,
+      // spineNodeIndex: 0,
       spine: [],
       metadata: {},
     };
@@ -156,8 +156,8 @@ export const parsePackage = async (
   const t = await new Blob([res], { type: "opf" }).text();
   const parser = new DOMParser();
   const packageDocument = parser.parseFromString(t, "application/xml");
-
-  // var metadataNode, manifestNode, spineNode;
+  
+  console.log("🚀 ~ file: parseEpub.ts:159 ~ packageDocument:", packageDocument)
 
   if (!packageDocument) {
     throw new Error("Package File Not Found");
@@ -179,14 +179,14 @@ export const parsePackage = async (
   }
 
   const manifest = parseManifest(manifestNode);
-  // const navPath = findNavPath(manifestNode);
+  const navPath = findNavPath(manifestNode);
   const ncxPath = findNcxPath(manifestNode, spineNode);
   console.log("%c Line:184 🥐 ncxPath", "color:#33a5ff", ncxPath);
-  // const coverPath = findCoverPath(packageDocument);
+  const coverPath = findCoverPath(packageDocument);
 
   // this.spineNodeIndex = indexOfElementNode(spineNode);
 
-  // this.spine = this.parseSpine(spineNode, this.manifest);
+  const spine = parseSpine(spineNode);
 
   // this.uniqueIdentifier = this.findUniqueIdentifier(packageDocument);
   const metadata = parseMetadata(metadataNode);
@@ -197,11 +197,11 @@ export const parsePackage = async (
 
   return {
     metadata: metadata,
-    // spine: this.spine,
+    spine: spine,
     manifest: manifest,
-    // navPath: this.navPath,
+    navPath: navPath,
     ncxPath: ncxPath,
-    // coverPath: this.coverPath,
+    coverPath: coverPath,
     // spineNodeIndex: this.spineNodeIndex,
   };
 };
@@ -228,6 +228,84 @@ export const findNcxPath = (manifestNode: Element, spineNode: Element) => {
   return node ? node.getAttribute("href") : false;
 };
 
+export const findNavPath = (manifestNode: Element) => {
+  const node = qsp(manifestNode, "item", { properties: "nav" });
+
+  return node ? node.getAttribute("href") : false;
+};
+
+export const parseSpine = (spineNode: Element) => {
+  const spine: {
+    id: string,
+    idref: string,
+    linear: string,
+    properties: string[],
+    index: number
+  }[] = [];
+
+  const selected = spineNode.querySelectorAll("itemref");
+  // const items = Array.prototype.slice.call(selected);
+
+  // var epubcfi = new EpubCFI();
+
+  //-- Add to array to maintain ordering and cross reference with manifest
+  selected.forEach(function(item: Element, index: number){
+    const idref = item.getAttribute("idref");
+    // var cfiBase = epubcfi.generateChapterComponent(spineNodeIndex, index, Id);
+    const props = item.getAttribute("properties") || "";
+    const propArray = props.length ? props.split(" ") : [];
+    // var manifestProps = manifest[Id].properties;
+    // var manifestPropArray = manifestProps.length ? manifestProps.split(" ") : [];
+
+    const itemref = {
+      "id" : item.getAttribute("id") || '',
+      "idref" : idref || '',
+      "linear" : item.getAttribute("linear") || "yes",
+      "properties" : propArray || [],
+      // "href" : manifest[Id].href,
+      // "url" :  manifest[Id].url,
+      "index" : index
+      // "cfiBase" : cfiBase
+    };
+    
+    spine.push(itemref);
+  });
+
+  return spine;
+}
+
+export const parseNcx = () => {
+
+}
+
+/**
+ * Find the Cover Path
+ * <item properties="cover-image" id="ci" href="cover.svg" media-type="image/svg+xml" />
+ * Fallback for Epub 2.0
+ */
+export const findCoverPath = (packageDocument: HTMLElement | Document) => {
+  const pkg = packageDocument.querySelector("package");
+  const epubVersion = pkg?.getAttribute("version");
+
+  // Try parsing cover with epub 3.
+  // var node = packageXml.querySelector("item[properties='cover-image']");
+  const node = qsp(packageDocument, "item", { properties: "cover-image" });
+
+  if (node) return node.getAttribute("href");
+
+  // Fallback to epub 2.
+  const metaCover = qsp(packageDocument, "meta", { name: "cover" });
+
+  if (metaCover) {
+    const coverId = metaCover.getAttribute("content");
+    const cover = (packageDocument as Document).getElementById(coverId);
+
+    return cover ? cover.getAttribute("href") : "";
+  } else {
+    return false;
+  }
+};
+
 export const parseEpub = (data: Blob) => {
   // unzip
   const zip = new JSZip();
@@ -250,6 +328,14 @@ export const parseEpub = (data: Blob) => {
       const opf = zip.file(packagePath);
 
       return parsePackage(opf);
+    })
+    .then((packaging) => {
+      console.log("🚀 ~ file: parseEpub.ts:292 ~ .then ~ package:", packaging);
+      const { ncxPath } = packaging;
+      const ncx = zip.file(ncxPath);
+      
+      console.log("🚀 ~ file: parseEpub.ts:336 ~ .then ~ ncx:", ncx)
+      
     });
 
   // extract cover

@@ -1,10 +1,7 @@
 import { request } from "@/helpers/request";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import JSZip from 'jszip';
 import { parseEpub } from "@/helpers/parseEpub";
-
-console.log("%c Line:5 🍑 JSZip", "color:#b03734", JSZip);
 
 export const Reader = () => {
   const location = useLocation();

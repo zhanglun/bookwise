@@ -6,7 +6,7 @@
 * @returns {element[]} elements
 * @memberof Core
 */
-export function qsp(el: Element, sel: string, props: {[key: string]: string}) {
+export function qsp(el: Element | Document, sel: string, props: {[key: string]: string}) {
  let q, filtered;
 
  if (typeof el.querySelector != "undefined") {
