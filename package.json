@@ -20,6 +20,7 @@
     "clsx": "^2.0.0",
     "cross-env": "^7.0.3",
     "date-fns": "^2.30.0",
+    "jszip": "^3.10.1",
     "lucide-react": "^0.263.1",
     "mime-types": "^2.1.35",
     "react": "^18.2.0",

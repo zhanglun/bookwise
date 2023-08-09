@@ -28,16 +28,24 @@ import { toast } from "../ui/use-toast";
 import { MoreVertical } from "lucide-react";
 import { BookResItem } from "@/interface/book";
 import { request } from "@/helpers/request";
-
+import { useNavigate } from 'react-router-dom';
 
 export interface PresetActionProps {
   data: BookResItem;
 }
 
 export function PresetActions(props: PresetActionProps) {
+  const navigate = useNavigate();
   const { data } = props;
   const [open, setIsOpen] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
+  const startRead = () => {
+    // TODO: go to read page
+    navigate('/reader', {
+      state: { book_id: data.id }
+    })
+  }
 
   const confirmDelete = () => {
     request.delete('/books', {
@@ -56,7 +64,7 @@ export function PresetActions(props: PresetActionProps) {
           <MoreVertical size={14} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onSelect={() => setIsOpen(true)}>
+          <DropdownMenuItem onSelect={() => startRead()}>
             Read it
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsOpen(true)}>

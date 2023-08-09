@@ -2,7 +2,6 @@ import {
   Controller,
   Get,
   Post,
-  Body,
   UseInterceptors,
   UploadedFiles,
   Query,
@@ -11,11 +10,11 @@ import {
   Param,
   HttpCode,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
 import { Book } from './book.entity';
-import { DeleteResult } from 'typeorm';
 
 @Controller('books')
 export class BooksController {
@@ -36,6 +35,15 @@ export class BooksController {
   @Get('/:id')
   findBookDetailWithId(@Param() param: { id: string }): Promise<Book> {
     return this.booksService.findOneWithId(param.id);
+  }
+
+  @Get('/:id/blobs')
+  async getBookFileBlobsWithId(
+    @Param() param: { id: string },
+  ): Promise<StreamableFile> {
+    const file = await this.booksService.getBookFileBlobs(param.id);
+
+    return new StreamableFile(file);
   }
 
   @Delete()

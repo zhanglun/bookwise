@@ -6,12 +6,11 @@ import "./index.css";
 import {
   createBrowserRouter,
   RouterProvider,
-  Route,
-  Link,
 } from "react-router-dom";
 import { Library } from "./pages/Library";
 import { Home } from "./pages/Home";
 import { Starred } from "./pages/Starred";
+import { Reader } from "./pages/Reader";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: "/starred",
         element: <Starred />,
+      },
+      {
+        path: "/reader",
+        element: <Reader />,
       },
     ],
   },

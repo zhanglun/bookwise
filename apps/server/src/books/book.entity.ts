@@ -61,7 +61,7 @@ export class Book {
   @Column({
     default: 0,
   })
-  page_size: number;
+  page_count: number;
 
   @Column({
     default: '',

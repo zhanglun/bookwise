@@ -10,6 +10,7 @@ import { SettingsService } from '../settings/settings.service';
 import { Book } from './book.entity';
 import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
+import { Stream } from 'node:stream';
 
 interface EpubIdentifier {
   scheme: string;
@@ -268,6 +269,20 @@ export class BooksService {
 
   public async findOneWithId(id: string) {
     return this.bookRepository.findOneBy({ id });
+  }
+
+  public async getBookFileBlobs(id: string): Promise<fs.ReadStream> {
+    const bookEntity = await this.bookRepository.findOneBy({ id });
+
+    console.log('%c Line:276 🍆 bookEntity', 'color:#f5ce50', bookEntity);
+
+    if (bookEntity) {
+      const { path } = bookEntity;
+
+      if (fs.existsSync(path)) {
+        return fs.createReadStream(path);
+      }
+    }
   }
 
   public async deleteBook(id: string) {
