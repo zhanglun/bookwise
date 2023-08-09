@@ -2,6 +2,7 @@ import { request } from "@/helpers/request";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import JSZip from 'jszip';
+import { parseEpub } from "@/helpers/parseEpub";
 
 console.log("%c Line:5 🍑 JSZip", "color:#b03734", JSZip);
 
@@ -13,12 +14,7 @@ export const Reader = () => {
     request.get(`books/${state.book_id}/blobs`, {
       responseType: 'blob'
     }).then((res) => {
-      const zip = new JSZip();
-      const { data } = res;
-      
-      zip.loadAsync(data).then((result) => {
-        console.log("%c Line:17 🍊 result", "color:#93c0a4", result);
-      })
+      parseEpub(res.data);
     });
   };
 

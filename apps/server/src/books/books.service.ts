@@ -10,7 +10,6 @@ import { SettingsService } from '../settings/settings.service';
 import { Book } from './book.entity';
 import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
-import { Stream } from 'node:stream';
 
 interface EpubIdentifier {
   scheme: string;
