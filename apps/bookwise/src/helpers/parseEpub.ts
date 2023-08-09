@@ -156,8 +156,11 @@ export const parsePackage = async (
   const t = await new Blob([res], { type: "opf" }).text();
   const parser = new DOMParser();
   const packageDocument = parser.parseFromString(t, "application/xml");
-  
-  console.log("🚀 ~ file: parseEpub.ts:159 ~ packageDocument:", packageDocument)
+
+  console.log(
+    "🚀 ~ file: parseEpub.ts:159 ~ packageDocument:",
+    packageDocument
+  );
 
   if (!packageDocument) {
     throw new Error("Package File Not Found");
@@ -236,11 +239,11 @@ export const findNavPath = (manifestNode: Element) => {
 
 export const parseSpine = (spineNode: Element) => {
   const spine: {
-    id: string,
-    idref: string,
-    linear: string,
-    properties: string[],
-    index: number
+    id: string;
+    idref: string;
+    linear: string;
+    properties: string[];
+    index: number;
   }[] = [];
 
   const selected = spineNode.querySelectorAll("itemref");
@@ -249,7 +252,7 @@ export const parseSpine = (spineNode: Element) => {
   // var epubcfi = new EpubCFI();
 
   //-- Add to array to maintain ordering and cross reference with manifest
-  selected.forEach(function(item: Element, index: number){
+  selected.forEach(function (item: Element, index: number) {
     const idref = item.getAttribute("idref");
     // var cfiBase = epubcfi.generateChapterComponent(spineNodeIndex, index, Id);
     const props = item.getAttribute("properties") || "";
@@ -258,25 +261,85 @@ export const parseSpine = (spineNode: Element) => {
     // var manifestPropArray = manifestProps.length ? manifestProps.split(" ") : [];
 
     const itemref = {
-      "id" : item.getAttribute("id") || '',
-      "idref" : idref || '',
-      "linear" : item.getAttribute("linear") || "yes",
-      "properties" : propArray || [],
+      id: item.getAttribute("id") || "",
+      idref: idref || "",
+      linear: item.getAttribute("linear") || "yes",
+      properties: propArray || [],
       // "href" : manifest[Id].href,
       // "url" :  manifest[Id].url,
-      "index" : index
+      index: index,
       // "cfiBase" : cfiBase
     };
-    
+
     spine.push(itemref);
   });
 
   return spine;
-}
+};
 
-export const parseNcx = () => {
+export const parseNcx = async (data: JSZip.JSZipObject | null) => {
+  if (!data) {
+    console.error("No toc.ncx");
+  }
 
-}
+  const res = await data?.async("uint8array");
+  const t = await new Blob([res], { type: "xml" }).text();
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(t, "application/xml");
+
+  console.log("🚀 ~ file: parseEpub.ts:289 ~ parseNcx ~ doc:", doc);
+
+  if (!doc) {
+    throw new Error("to.ncx Not Found");
+  }
+
+  const navPoints = doc.querySelectorAll("navPoint");
+  const length = navPoints.length;
+  const toc = {};
+  const list = [];
+  let item, parent;
+
+  // if(!navPoints || length === 0) return list;
+
+  for (let i = 0; i < length; ++i) {
+    const current = navPoints[i];
+    const id = current.getAttribute("id") || false;
+    const content = current.querySelector("content");
+    const src = content?.getAttribute("src");
+    const navLabel = current.querySelector("navLabel");
+    const text = navLabel?.textContent ? navLabel.textContent : "";
+    const subitems = [];
+    const parentNode = current.parentNode;
+    let parent;
+
+    if (
+      parentNode &&
+      (parentNode.nodeName === "navPoint" ||
+        parentNode.nodeName.split(":").slice(-1)[0] === "navPoint")
+    ) {
+      parent = parentNode?.getAttribute("id");
+    }
+
+    item = {
+      id: id,
+      href: src,
+      label: text.trim(),
+      subitems: subitems,
+      parent: parent,
+    };
+    
+    toc[item.id] = item;
+
+    if (!item.parent) {
+      list.push(item);
+    } else {
+      parent = toc[item.parent];
+      parent.subitems.push(item);
+    }
+  }
+
+  return list;
+};
 
 /**
  * Find the Cover Path
@@ -332,10 +395,12 @@ export const parseEpub = (data: Blob) => {
     .then((packaging) => {
       console.log("🚀 ~ file: parseEpub.ts:292 ~ .then ~ package:", packaging);
       const { ncxPath } = packaging;
-      const ncx = zip.file(ncxPath);
-      
-      console.log("🚀 ~ file: parseEpub.ts:336 ~ .then ~ ncx:", ncx)
-      
+      const data = zip.file(ncxPath);
+
+      return parseNcx(data);
+    }).then(list => {
+      console.log("🚀 ~ file: parseEpub.ts:402 ~ .then ~ list:", list)
+
     });
 
   // extract cover
