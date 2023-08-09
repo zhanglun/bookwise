@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { qsp } from "./queryElement";
 
 export const parseContainerXML = async (
   data: JSZip.JSZipObject | null
@@ -178,9 +179,9 @@ export const parsePackage = async (
   }
 
   const manifest = parseManifest(manifestNode);
-  console.log("%c Line:126 🍷 manifest", "color:#3f7cff", manifest);
   // const navPath = findNavPath(manifestNode);
-  // const ncxPath = findNcxPath(manifestNode, spineNode);
+  const ncxPath = findNcxPath(manifestNode, spineNode);
+  console.log("%c Line:184 🥐 ncxPath", "color:#33a5ff", ncxPath);
   // const coverPath = findCoverPath(packageDocument);
 
   // this.spineNodeIndex = indexOfElementNode(spineNode);
@@ -189,21 +190,42 @@ export const parsePackage = async (
 
   // this.uniqueIdentifier = this.findUniqueIdentifier(packageDocument);
   const metadata = parseMetadata(metadataNode);
-  console.log("%c Line:137 🍢 metadata", "color:#ffdd4d", metadata);
 
   // this.metadata.direction = spineNode.getAttribute(
   //   "page-progression-direction"
   // );
 
   return {
-    // metadata: metadata,
+    metadata: metadata,
     // spine: this.spine,
-    // manifest: this.manifest,
+    manifest: manifest,
     // navPath: this.navPath,
-    // ncxPath: this.ncxPath,
+    ncxPath: ncxPath,
     // coverPath: this.coverPath,
     // spineNodeIndex: this.spineNodeIndex,
   };
+};
+
+export const findNcxPath = (manifestNode: Element, spineNode: Element) => {
+  // var node = manifestNode.querySelector("item[media-type='application/x-dtbncx+xml']");
+  let node = qsp(manifestNode, "item", {
+    "media-type": "application/x-dtbncx+xml",
+  });
+  let tocId;
+
+  // If we can't find the toc by media-type then try to look for id of the item in the spine attributes as
+  // according to http://www.idpf.org/epub/20/spec/OPF_2.0.1_draft.htm#Section2.4.1.2,
+  // "The item that describes the NCX must be referenced by the spine toc attribute."
+  if (!node) {
+    tocId = spineNode.getAttribute("toc");
+
+    if (tocId) {
+      // node = manifestNode.querySelector("item[id='" + tocId + "']");
+      node = manifestNode.querySelector(`#${tocId}`);
+    }
+  }
+
+  return node ? node.getAttribute("href") : false;
 };
 
 export const parseEpub = (data: Blob) => {
