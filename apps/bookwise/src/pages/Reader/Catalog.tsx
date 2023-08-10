@@ -1,4 +1,5 @@
 import { BookCatalog } from "@/helpers/parseEpub";
+import clsx from "clsx";
 
 export interface CatalogProps {
   data: BookCatalog[];
@@ -8,15 +9,20 @@ export const Catalog = (props: CatalogProps) => {
   const { data } = props;
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
+    const styles = [
+      'font-semibold mx-5',
+      'font-normal mx-5',
+    ];
+
     return list.map((item) => {
       const { id, label, subitems } = item;
       const Item = (
-        <div data-idx={idx}>
+        <div data-idx={idx} className={clsx("text-sm mx-5", styles[idx])}>
           <div>
             {idx} -- {label}
           </div>
           {subitems.length > 0 && (
-            <div className="bg-slate-500">{renderItems(subitems, idx + 1)}</div>
+            <div className="">{renderItems(subitems, idx + 1)}</div>
           )}
         </div>
       );
@@ -25,8 +31,8 @@ export const Catalog = (props: CatalogProps) => {
   };
 
   return (
-    <div className="bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-4 left-6 bottom-4 h-screen">
-      <div className="px-4 py-3">
+    <div className="bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-[46px] left-0 bottom-2">
+      <div className="px-4 py-3 h-full overflow-y-scroll">
         {renderItems(data)}
       </div>
     </div>
