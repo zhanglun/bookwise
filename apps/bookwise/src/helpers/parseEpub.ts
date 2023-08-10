@@ -5,7 +5,7 @@ export interface BookCatalog {
   href: string;
   id: string;
   label: string;
-  parent: string;
+  parent: string | undefined;
   subitems: BookCatalog[];
 }
 
@@ -315,19 +315,20 @@ export const parseNcx = async (
     const current = navPoints[i];
     const id = current.getAttribute("id") || "";
     const content = current.querySelector("content");
-    const src = content?.getAttribute("src");
+    const src = content?.getAttribute("src") || '';
     const navLabel = current.querySelector("navLabel");
     const text = navLabel?.textContent ? navLabel.textContent : "";
     const subitems: BookCatalog[] = [];
     const parentNode = current.parentNode;
-    let parent;
+    let parent: BookCatalog;
+    let parentId = '';
 
     if (
       parentNode &&
       (parentNode.nodeName === "navPoint" ||
         parentNode.nodeName.split(":").slice(-1)[0] === "navPoint")
     ) {
-      parent = parentNode?.getAttribute("id");
+      parentId = (parentNode as Element)?.getAttribute("id") || '';
     }
 
     item = {
@@ -335,7 +336,7 @@ export const parseNcx = async (
       href: src,
       label: text.trim(),
       subitems: subitems,
-      parent: parent,
+      parent: parentId,
     };
 
     toc[item.id] = item;
@@ -402,3 +403,10 @@ export const parseEpub = async (bookBlob: Blob) => {
 
   return { files, container, packaging, catalog };
 };
+
+export const accessFileContent = async (file: JSZip.JSZipObject) => {
+  const blob = await file.async("uint8array");
+  const content = await new Blob([blob], { type: "opf" }).text();
+
+  return content;
+}
