@@ -1,6 +1,14 @@
 import JSZip from "jszip";
 import { qsp } from "./queryElement";
 
+export interface BookCatalog {
+  href: string;
+  id: string;
+  label: string;
+  parent: string;
+  subitems: BookCatalog[];
+}
+
 export const parseContainerXML = async (
   data: JSZip.JSZipObject | null
 ): Promise<{
@@ -277,7 +285,9 @@ export const parseSpine = (spineNode: Element) => {
   return spine;
 };
 
-export const parseNcx = async (data: JSZip.JSZipObject | null) => {
+export const parseNcx = async (
+  data: JSZip.JSZipObject | null
+): Promise<BookCatalog[]> => {
   if (!data) {
     console.error("No toc.ncx");
   }
@@ -295,20 +305,20 @@ export const parseNcx = async (data: JSZip.JSZipObject | null) => {
 
   const navPoints = doc.querySelectorAll("navPoint");
   const length = navPoints.length;
-  const toc = {};
+  const toc: { [key: string]: BookCatalog } = {};
   const list = [];
-  let item, parent;
+  let item;
 
   // if(!navPoints || length === 0) return list;
 
   for (let i = 0; i < length; ++i) {
     const current = navPoints[i];
-    const id = current.getAttribute("id") || false;
+    const id = current.getAttribute("id") || "";
     const content = current.querySelector("content");
     const src = content?.getAttribute("src");
     const navLabel = current.querySelector("navLabel");
     const text = navLabel?.textContent ? navLabel.textContent : "";
-    const subitems = [];
+    const subitems: BookCatalog[] = [];
     const parentNode = current.parentNode;
     let parent;
 
@@ -327,7 +337,7 @@ export const parseNcx = async (data: JSZip.JSZipObject | null) => {
       subitems: subitems,
       parent: parent,
     };
-    
+
     toc[item.id] = item;
 
     if (!item.parent) {
@@ -369,41 +379,26 @@ export const findCoverPath = (packageDocument: HTMLElement | Document) => {
   }
 };
 
-export const parseEpub = (data: Blob) => {
+export const parseEpub = async (bookBlob: Blob) => {
   // unzip
   const zip = new JSZip();
-  zip
-    .loadAsync(data)
-    .then((result) => {
-      const { files } = result;
-      const containerXML = zip.file("META-INF/container.xml");
-      console.log("%c Line:8 🍓 files", "color:#6ec1c2", files);
+  const result = await zip.loadAsync(bookBlob);
+  const { files } = result;
+  // console.log("%c Line:8 🍓 files", "color:#6ec1c2", files);
 
-      return parseContainerXML(containerXML);
+  const containerXML = zip.file("META-INF/container.xml");
+  const container = await parseContainerXML(containerXML);
 
-      // for (const [name, entry] of Object.entries(files)) {
-      //   console.log(name, entry.dir);
+  const opf = await zip.file(container.packagePath);
+  const packaging = await parsePackage(opf);
 
-      // if ()
-      // }
-    })
-    .then(({ packagePath }) => {
-      const opf = zip.file(packagePath);
+  console.log("🚀 ~ file: parseEpub.ts:292 ~ .then ~ package:", packaging);
 
-      return parsePackage(opf);
-    })
-    .then((packaging) => {
-      console.log("🚀 ~ file: parseEpub.ts:292 ~ .then ~ package:", packaging);
-      const { ncxPath } = packaging;
-      const data = zip.file(ncxPath);
-
-      return parseNcx(data);
-    }).then(list => {
-      console.log("🚀 ~ file: parseEpub.ts:402 ~ .then ~ list:", list)
-
-    });
+  const { ncxPath } = packaging;
+  const ncx = await zip.file(ncxPath);
+  const catalog = await parseNcx(ncx);
 
   // extract cover
-  // extract catalog
-  // extract
+
+  return { files, container, packaging, catalog };
 };
