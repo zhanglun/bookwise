@@ -290,6 +290,8 @@ export const parseNcx = async (
 ): Promise<BookCatalog[]> => {
   if (!data) {
     console.error("No toc.ncx");
+    
+    return [];
   }
 
   const res = await data?.async("uint8array");
