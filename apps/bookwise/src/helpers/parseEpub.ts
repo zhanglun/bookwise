@@ -421,8 +421,17 @@ export const accessFileContent = async (
   file: JSZip.JSZipObject,
   type?: string
 ) => {
-  const blob = await file.async("uint8array");
-  const content = await new Blob([blob], { type: type || "text" }).text();
+  const unit8 = await file.async("uint8array");
+  const blob = await new Blob([unit8], { type: type || "text" }).text();
 
-  return content;
+  return blob;
+};
+
+export const accessImage = async (
+  file: JSZip.JSZipObject
+): Promise<Blob> => {
+  const unit8 = await file.async("uint8array");
+  const imageBlob = await new Blob([unit8]);
+  
+  return imageBlob;
 };

@@ -1,7 +1,12 @@
 import { request } from "@/helpers/request";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { BookCatalog, accessFileContent, parseEpub } from "@/helpers/parseEpub";
+import {
+  BookCatalog,
+  accessFileContent,
+  accessImage,
+  parseEpub,
+} from "@/helpers/parseEpub";
 import { Catalog } from "./Catalog";
 
 export const Reader = () => {
@@ -56,7 +61,27 @@ export const Reader = () => {
     loadCSS();
   }, [bookInfo]);
 
-  console.log("%c Line:4 🍭 location", "color:#b03734", location);
+  const convertImages = async (
+    files: any,
+    images: NodeListOf<HTMLImageElement>
+  ) => {
+    for (const image of images) {
+      const name = new URL(image.src).pathname.slice(1);
+      const imageBlob = await accessImage(files[name]);
+
+      // 创建 FileReader 对象读取 Blob 数据
+      const reader = new FileReader();
+      reader.onload = (function (img) {
+        return function (event) {
+          const dataURL = event?.target?.result;
+
+          img.src = dataURL || "";
+        };
+      })(image);
+
+      reader.readAsDataURL(imageBlob);
+    }
+  };
 
   const goToPage = useCallback(
     async (id: string, href: string) => {
@@ -68,38 +93,20 @@ export const Reader = () => {
         const xml = await accessFileContent(files[href], "text/html");
         const parser = new DOMParser();
         const content = parser.parseFromString(xml, "application/xhtml+xml");
-        console.log("%c Line:44 🍏 content", "color:#4fff4B", content);
         const box = document.createElement("div");
-        const styles = content.querySelectorAll('link[type="text/css"]');
-        console.log("%c Line:48 🥛 styles", "color:#465975", styles);
         const body = content.querySelector("body");
 
-        if (styles) {
-          [].map.call(styles, async (style: HTMLLinkElement) => {
-            const href = style.href;
-
-            if (href) {
-              console.log("%c Line:57 🍐 href", "color:#33a5ff", href);
-              const cssFileContent = await accessFileContent(files[href]);
-              console.log(
-                "%c Line:58 🍯 cssFileContent",
-                "color:#ffdd4d",
-                cssFileContent
-              );
-            }
-          });
-          // box.innerHTML += [].reduce.call(styles, (acu, cur: Element) => {
-          //   acu += cur.innerHTML;
-
-          //   return acu;
-          // }, '');
-        }
-
+        // parse Images
         if (body) {
-          box.innerHTML += body.innerHTML;
+          const images = body?.querySelectorAll("img");
+          await convertImages(files, images);
+          
+          setTimeout(() => {
+            box.innerHTML += body.innerHTML;
+            setContent(box.innerHTML || "");
+          }, 10)
         }
 
-        setContent(box.innerHTML || "");
       }
     },
     [bookInfo]
@@ -109,7 +116,7 @@ export const Reader = () => {
     <div className="h-full">
       <Catalog data={catalog} onGoToPage={goToPage} />
       <div className="h-full overflow-y-scroll px-4 rounded-lg bg-white/50 shadow-sm border border-[#efefef] border-opacity-60">
-        <div className="max-w-4xl px-4 flex-1 sm:px-4">
+        <div className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto">
           <style type="text/css" ref={styleRef} />
           <div dangerouslySetInnerHTML={{ __html: content }}></div>
         </div>
