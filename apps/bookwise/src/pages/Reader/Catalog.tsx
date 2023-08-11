@@ -1,5 +1,6 @@
-import { BookCatalog } from "@/helpers/parseEpub";
 import clsx from "clsx";
+import { BookCatalog } from "@/helpers/parseEpub";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface CatalogProps {
   data: BookCatalog[];
@@ -11,19 +12,16 @@ export const Catalog = (props: CatalogProps) => {
 
   const goToPage = (id: string, href: string) => {
     onGoToPage(id, href);
-  }
+  };
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
-    const styles = [
-      'font-semibold py-1',
-      'font-normal mx-2 py-1',
-    ];
+    const styles = ["font-semibold py-1", "font-normal mx-2 py-1"];
 
     return list.map((item) => {
       const { id, label, href, subitems } = item;
       const Item = (
         <div data-idx={idx} className={clsx("text-sm mx-3 cursor-default")}>
-          <div className={styles[idx]} onClick={() => goToPage(id, href)}>
+          <div className={clsx("hover:underline", styles[idx])} onClick={() => goToPage(id, href)}>
             {label}
           </div>
           {subitems.length > 0 && (
@@ -37,9 +35,7 @@ export const Catalog = (props: CatalogProps) => {
 
   return (
     <div className="w-[260px] bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-[46px] left-0 bottom-2">
-      <div className="px-2 py-2 h-full overflow-y-scroll">
-        {renderItems(data)}
-      </div>
+      <ScrollArea className="px-2 py-2 h-full">{renderItems(data)}</ScrollArea>
     </div>
   );
 };

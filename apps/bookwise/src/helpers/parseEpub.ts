@@ -9,12 +9,14 @@ export interface BookCatalog {
   subitems: BookCatalog[];
 }
 
-export const parseContainerXML = async (
-  data: JSZip.JSZipObject | null
-): Promise<{
+export interface BookContainer {
   packagePath: string;
   encoding: string;
-}> => {
+}
+
+export const parseContainerXML = async (
+  data: JSZip.JSZipObject | null
+): Promise<BookContainer> => {
   if (!data) {
     console.error("No container.xml");
 
@@ -49,16 +51,18 @@ export const parseContainerXML = async (
   };
 };
 
-const parseManifest = (node: Element) => {
+export interface BookManifest {
+  [id: string]: {
+    href: string;
+    type: string;
+    overlay: string;
+    properties: string[];
+  };
+}
+
+const parseManifest = (node: Element): BookManifest => {
   const items = node.querySelectorAll("item");
-  const manifest: {
-    [id: string]: {
-      href: string;
-      type: string;
-      overlay: string;
-      properties: string[];
-    };
-  } = {};
+  const manifest: BookManifest = {};
 
   items.forEach(function (item) {
     const id = item.getAttribute("id");
@@ -80,7 +84,7 @@ const parseManifest = (node: Element) => {
   return manifest;
 };
 
-const getElementText = (node: Element, tag: string) => {
+const getElementText = (node: Element, tag: string): string => {
   const found = node.getElementsByTagNameNS(
     "http://purl.org/dc/elements/1.1/",
     tag
@@ -91,7 +95,7 @@ const getElementText = (node: Element, tag: string) => {
   const el = found[0];
 
   if (el.childNodes.length) {
-    return el.childNodes[0].nodeValue;
+    return el.childNodes[0].nodeValue || "";
   }
 
   return "";
@@ -138,7 +142,7 @@ const parseMetadata = (node: Element) => {
 export const parsePackage = async (
   data: JSZip.JSZipObject | null
 ): Promise<{
-  manifest: any;
+  manifest: BookManifest;
   navPath: string;
   ncxPath: string;
   coverPath: string;
@@ -290,7 +294,7 @@ export const parseNcx = async (
 ): Promise<BookCatalog[]> => {
   if (!data) {
     console.error("No toc.ncx");
-    
+
     return [];
   }
 
@@ -317,20 +321,20 @@ export const parseNcx = async (
     const current = navPoints[i];
     const id = current.getAttribute("id") || "";
     const content = current.querySelector("content");
-    const src = content?.getAttribute("src") || '';
+    const src = content?.getAttribute("src") || "";
     const navLabel = current.querySelector("navLabel");
     const text = navLabel?.textContent ? navLabel.textContent : "";
     const subitems: BookCatalog[] = [];
     const parentNode = current.parentNode;
     let parent: BookCatalog;
-    let parentId = '';
+    let parentId = "";
 
     if (
       parentNode &&
       (parentNode.nodeName === "navPoint" ||
         parentNode.nodeName.split(":").slice(-1)[0] === "navPoint")
     ) {
-      parentId = (parentNode as Element)?.getAttribute("id") || '';
+      parentId = (parentNode as Element)?.getAttribute("id") || "";
     }
 
     item = {
@@ -382,11 +386,18 @@ export const findCoverPath = (packageDocument: HTMLElement | Document) => {
   }
 };
 
-export const parseEpub = async (bookBlob: Blob) => {
+export const parseEpub = async (
+  bookBlob: Blob
+): Promise<{
+  files: { [key: string]: JSZip.JSZipObject };
+  container: BookContainer;
+  packaging: any;
+  catalog: BookCatalog[];
+}> => {
   // unzip
   const zip = new JSZip();
   const result = await zip.loadAsync(bookBlob);
-  const { files } = result;
+  const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
   // console.log("%c Line:8 🍓 files", "color:#6ec1c2", files);
 
   const containerXML = zip.file("META-INF/container.xml");
@@ -406,9 +417,12 @@ export const parseEpub = async (bookBlob: Blob) => {
   return { files, container, packaging, catalog };
 };
 
-export const accessFileContent = async (file: JSZip.JSZipObject) => {
+export const accessFileContent = async (
+  file: JSZip.JSZipObject,
+  type?: string
+) => {
   const blob = await file.async("uint8array");
-  const content = await new Blob([blob], { type: "opf" }).text();
+  const content = await new Blob([blob], { type: type || "text" }).text();
 
   return content;
-}
+};
