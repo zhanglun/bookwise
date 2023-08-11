@@ -18,10 +18,12 @@ export const Catalog = (props: CatalogProps) => {
     const styles = ["font-semibold py-1", "font-normal mx-2 py-1"];
 
     return list.map((item) => {
+      console.log("🚀 ~ file: Catalog.tsx:21 ~ returnlist.map ~ item:", item)
       const { id, label, href, subitems } = item;
       const Item = (
         <div
           data-idx={label}
+          data-href={href}
           className={clsx("text-sm mx-3 cursor-default")}
           key={label}
         >

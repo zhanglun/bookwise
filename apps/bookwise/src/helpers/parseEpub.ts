@@ -140,6 +140,7 @@ const parseMetadata = (node: Element) => {
 };
 
 export const parsePackage = async (
+  basePath: string,
   data: JSZip.JSZipObject | null
 ): Promise<{
   manifest: BookManifest;
@@ -194,10 +195,10 @@ export const parsePackage = async (
   }
 
   const manifest = parseManifest(manifestNode);
-  const navPath = findNavPath(manifestNode);
-  const ncxPath = findNcxPath(manifestNode, spineNode);
+  const navPath = basePath + findNavPath(manifestNode);
+  const ncxPath = basePath + findNcxPath(manifestNode, spineNode);
   console.log("%c Line:184 🥐 ncxPath", "color:#33a5ff", ncxPath);
-  const coverPath = findCoverPath(packageDocument);
+  const coverPath = basePath + findCoverPath(packageDocument);
 
   // this.spineNodeIndex = indexOfElementNode(spineNode);
 
@@ -290,6 +291,7 @@ export const parseSpine = (spineNode: Element) => {
 };
 
 export const parseNcx = async (
+  basePath: string,
   data: JSZip.JSZipObject | null
 ): Promise<BookCatalog[]> => {
   if (!data) {
@@ -321,7 +323,7 @@ export const parseNcx = async (
     const current = navPoints[i];
     const id = current.getAttribute("id") || "";
     const content = current.querySelector("content");
-    const src = content?.getAttribute("src") || "";
+    const src = basePath + (content?.getAttribute("src") || "");
     const navLabel = current.querySelector("navLabel");
     const text = navLabel?.textContent ? navLabel.textContent : "";
     const subitems: BookCatalog[] = [];
@@ -339,7 +341,7 @@ export const parseNcx = async (
 
     item = {
       id: id,
-      href: src,
+      href: src.trim().replace(/(\.[x]html)(.*)/ig, '$1'),
       label: text.trim(),
       subitems: subitems,
       parent: parentId,
@@ -398,19 +400,19 @@ export const parseEpub = async (
   const zip = new JSZip();
   const result = await zip.loadAsync(bookBlob);
   const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
-  // console.log("%c Line:8 🍓 files", "color:#6ec1c2", files);
-
   const containerXML = zip.file("META-INF/container.xml");
   const container = await parseContainerXML(containerXML);
+  console.log("🚀 ~ file: parseEpub.ts:405 ~ container:", container)
 
   const opf = await zip.file(container.packagePath);
-  const packaging = await parsePackage(opf);
+  const basePath = container.packagePath.substring(0, container.packagePath.lastIndexOf('/') + 1);
+  const packaging = await parsePackage(basePath, opf);
 
   console.log("🚀 ~ file: parseEpub.ts:292 ~ .then ~ package:", packaging);
 
   const { ncxPath } = packaging;
   const ncx = await zip.file(ncxPath);
-  const catalog = await parseNcx(ncx);
+  const catalog = await parseNcx(basePath, ncx);
 
   // extract cover
 

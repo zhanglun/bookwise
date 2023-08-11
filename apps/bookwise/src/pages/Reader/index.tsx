@@ -75,7 +75,7 @@ export const Reader = () => {
         return function (event) {
           const dataURL = event?.target?.result;
 
-          img.src = dataURL || "";
+          img.src = (dataURL || "") as string;
         };
       })(image);
 
