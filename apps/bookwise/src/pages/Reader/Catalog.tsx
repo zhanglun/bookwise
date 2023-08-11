@@ -15,15 +15,15 @@ export const Catalog = (props: CatalogProps) => {
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
     const styles = [
-      'font-semibold mx-2',
-      'font-normal mx-2',
+      'font-semibold py-1',
+      'font-normal mx-2 py-1',
     ];
 
     return list.map((item) => {
       const { id, label, href, subitems } = item;
       const Item = (
-        <div data-idx={idx} className={clsx("text-sm mx-5", styles[idx])}>
-          <div onClick={() => goToPage(id, href)}>
+        <div data-idx={idx} className={clsx("text-sm mx-3 cursor-default")}>
+          <div className={styles[idx]} onClick={() => goToPage(id, href)}>
             {label}
           </div>
           {subitems.length > 0 && (
@@ -37,7 +37,7 @@ export const Catalog = (props: CatalogProps) => {
 
   return (
     <div className="w-[260px] bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-[46px] left-0 bottom-2">
-      <div className="px-4 py-3 h-full overflow-y-scroll">
+      <div className="px-2 py-2 h-full overflow-y-scroll">
         {renderItems(data)}
       </div>
     </div>
