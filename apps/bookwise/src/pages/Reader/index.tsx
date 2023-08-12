@@ -21,7 +21,9 @@ import { getAbsoluteUrl } from "@/helpers/utils";
 export const Reader = () => {
   const location = useLocation();
   const { state } = location;
-  const [bookInfo, setBookInfo] = useState<any>({});
+  const [bookInfo, setBookInfo] = useState<any>({
+    packaging: { metadata: {}},
+  });
   const [catalog, setCatalog] = useState<BookCatalog[]>([]);
   const [content, setContent] = useState<string>("");
   const [currentHref, setCurrentHref] = useState<string>("");
@@ -206,6 +208,7 @@ export const Reader = () => {
     <div className="h-full">
       <Catalog
         data={catalog}
+        packaging={bookInfo.packaging}
         onGoToPage={async (href: string, id: string) => {
           setCurrentHref(href);
           setCurrentId(id);

@@ -341,7 +341,7 @@ export const parseNcx = async (
 
     item = {
       id: id,
-      href: src.trim().replace(/(\.[x]html)(.*)/gi, "$1"),
+      href: src.trim(),
       label: text.trim(),
       subitems: subitems,
       parent: parentId,
