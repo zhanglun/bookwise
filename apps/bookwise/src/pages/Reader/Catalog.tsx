@@ -4,21 +4,20 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export interface CatalogProps {
   data: BookCatalog[];
-  onGoToPage: (id: string, href: string) => void;
+  onGoToPage: (href: string, id: string) => void;
 }
 
 export const Catalog = (props: CatalogProps) => {
   const { data, onGoToPage } = props;
 
-  const goToPage = (id: string, href: string) => {
-    onGoToPage(id, href);
+  const goToPage = (href: string, id: string) => {
+    onGoToPage(href, id);
   };
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
     const styles = ["font-semibold py-1", "font-normal mx-2 py-1"];
 
     return list.map((item) => {
-      console.log("🚀 ~ file: Catalog.tsx:21 ~ returnlist.map ~ item:", item)
       const { id, label, href, subitems } = item;
       const Item = (
         <div
@@ -29,7 +28,7 @@ export const Catalog = (props: CatalogProps) => {
         >
           <div
             className={clsx("hover:underline", styles[idx])}
-            onClick={() => goToPage(id, href)}
+            onClick={() => goToPage(href, id)}
           >
             {label}
           </div>

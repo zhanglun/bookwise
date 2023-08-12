@@ -1,5 +1,5 @@
 import JSZip from "jszip";
-import { qsp } from "./queryElement";
+import {qsp} from "./queryElement";
 
 export interface BookCatalog {
   href: string;
@@ -341,7 +341,7 @@ export const parseNcx = async (
 
     item = {
       id: id,
-      href: src.trim().replace(/(\.[x]html)(.*)/ig, '$1'),
+      href: src.trim().replace(/(\.[x]html)(.*)/gi, "$1"),
       label: text.trim(),
       subitems: subitems,
       parent: parentId,
@@ -393,6 +393,7 @@ export const parseEpub = async (
 ): Promise<{
   files: { [key: string]: JSZip.JSZipObject };
   container: BookContainer;
+  basePath: string;
   packaging: any;
   catalog: BookCatalog[];
 }> => {
@@ -402,10 +403,13 @@ export const parseEpub = async (
   const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
   const containerXML = zip.file("META-INF/container.xml");
   const container = await parseContainerXML(containerXML);
-  console.log("🚀 ~ file: parseEpub.ts:405 ~ container:", container)
+  console.log("🚀 ~ file: parseEpub.ts:405 ~ container:", container);
 
   const opf = await zip.file(container.packagePath);
-  const basePath = container.packagePath.substring(0, container.packagePath.lastIndexOf('/') + 1);
+  const basePath = container.packagePath.substring(
+    0,
+    container.packagePath.lastIndexOf("/") + 1
+  );
   const packaging = await parsePackage(basePath, opf);
 
   console.log("🚀 ~ file: parseEpub.ts:292 ~ .then ~ package:", packaging);
@@ -414,9 +418,7 @@ export const parseEpub = async (
   const ncx = await zip.file(ncxPath);
   const catalog = await parseNcx(basePath, ncx);
 
-  // extract cover
-
-  return { files, container, packaging, catalog };
+  return { files, container, basePath, packaging, catalog };
 };
 
 export const accessFileContent = async (
@@ -429,11 +431,16 @@ export const accessFileContent = async (
   return blob;
 };
 
-export const accessImage = async (
-  file: JSZip.JSZipObject
-): Promise<Blob> => {
+export const accessImage = async (file: JSZip.JSZipObject): Promise<Blob> => {
   const unit8 = await file.async("uint8array");
-  const imageBlob = await new Blob([unit8]);
-  
-  return imageBlob;
+  return new Blob([unit8]);
 };
+
+export const accessPageContent = async (file: JSZip.JSZipObject) => {
+  const xml = await accessFileContent(file, "text/html");
+  const parser = new DOMParser();
+  const content = parser.parseFromString(xml, "application/xhtml+xml");
+  const body = content.querySelector("body");
+
+  return Promise.resolve(body);
+}
