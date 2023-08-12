@@ -1,14 +1,22 @@
 import { request } from "@/helpers/request";
-import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  MouseEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation } from "react-router-dom";
 import {
   BookCatalog,
   accessFileContent,
   accessImage,
-  parseEpub, accessPageContent,
+  parseEpub,
+  accessPageContent,
 } from "@/helpers/parseEpub";
 import { Catalog } from "./Catalog";
-import { getRelativePath } from "@/helpers/utils";
+import { getAbsoluteUrl } from "@/helpers/utils";
 
 export const Reader = () => {
   const location = useLocation();
@@ -18,7 +26,7 @@ export const Reader = () => {
   const [content, setContent] = useState<string>("");
   const [currentHref, setCurrentHref] = useState<string>("");
   const [currentId, setCurrentId] = useState<string>("");
-  const styleRef = useRef<HTMLStyleElement>();
+  const styleRef = useRef<HTMLStyleElement>(null);
 
   const getBookDetail = () => {
     request
@@ -65,25 +73,28 @@ export const Reader = () => {
   }, [bookInfo]);
 
   const convertImages = async (
-      files: any,
-      basePath: string,
-      currentHref: stirng,
-      images: NodeListOf<Element>
+    files: any,
+    currentHref: string,
+    images: NodeListOf<Element>
   ) => {
     for (const image of images) {
-      let href = image.getAttribute('src');
+      let attr = "src";
+      let href: string = image.getAttribute("src") || "";
 
       if (!href) {
-        href = image.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+        href =
+          image.getAttributeNS("http://www.w3.org/1999/xlink", "href") || "";
+        attr = "href";
       }
 
       if (!href) {
-        href = image.getAttribute('xlink:href');
+        href = image.getAttribute("xlink:href") || "";
+        attr = "xlink:href";
       }
 
-      const a = getRelativePath(currentHref, href);
-      const name = basePath + new URL(href).pathname.slice(1);
-      console.log("🚀 ~ file: index.tsx:74 ~ Reader ~ name:", name)
+      href = getAbsoluteUrl(currentHref, href);
+      const name = href;
+      console.log("🚀 ~ file: index.tsx:74 ~ Reader ~ name:", name);
       const imageBlob = await accessImage(files[name]);
 
       // 创建 FileReader 对象读取 Blob 数据
@@ -92,7 +103,7 @@ export const Reader = () => {
         return function (event) {
           const dataURL = event?.target?.result;
 
-          img.src = (dataURL || "") as string;
+          img.setAttribute(attr, (dataURL || "") as string);
         };
       })(image);
 
@@ -116,16 +127,16 @@ export const Reader = () => {
 
         if (body) {
           const images = body?.querySelectorAll("img, image");
-          // await convertImages(files, bookInfo.basePath, currentHref, images);
-        }
+          await convertImages(files, href, images);
 
-        setTimeout(() => {
-          box.innerHTML += body.innerHTML;
-          setContent(box.innerHTML || "");
-        }, 10);
+          setTimeout(() => {
+            box.innerHTML += body.innerHTML;
+            setContent(box.innerHTML || "");
+          }, 10);
+        }
       }
     },
-    [bookInfo, currentHref]
+    [bookInfo]
   );
 
   const handleUserClickEvent = (e: MouseEvent<HTMLElement>) => {
@@ -144,16 +155,17 @@ export const Reader = () => {
     if (elem && elem.getAttribute("href")) {
       e.preventDefault();
       e.stopPropagation();
-      const href = elem.getAttribute("href");
+      const href = elem.getAttribute("href") || '';
 
-      if (href && (
-        href.indexOf("http://") >= 0 ||
-        href.indexOf("https://") >= 0 ||
-        href.indexOf("www.") >= 0)
+      if (
+        href &&
+        (href.indexOf("http://") >= 0 ||
+          href.indexOf("https://") >= 0 ||
+          href.indexOf("www.") >= 0)
       ) {
         // TODO: open in browser
       } else {
-        const realHref = getRelativePath(currentHref, href);
+        const realHref = getAbsoluteUrl(currentHref, href);
         console.log(realHref);
 
         goToPage(realHref).then();
