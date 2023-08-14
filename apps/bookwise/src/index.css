@@ -70,3 +70,25 @@ body.bg3,
 #app {
   height: 100%;
 }
+
+* {
+  --sb-track-color: #ffffff;
+  --sb-thumb-color: #59555c9c;
+  --sb-size: 8px;
+
+  scrollbar-color: var(--sb-thumb-color) var(--sb-track-color);
+}
+
+*::-webkit-scrollbar {
+  width: var(--sb-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 8px;
+}

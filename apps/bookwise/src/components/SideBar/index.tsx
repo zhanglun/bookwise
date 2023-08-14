@@ -5,7 +5,7 @@ import { NavItem } from "./NavItem";
 
 export const Sidebar = () => {
   return (
-    <div className="w-full h-full bg-white/50 shadow-sm rounded-md border border-[#efefef] border-opacity-60">
+    <div id="sidebar" className="w-full h-full bg-white/50 shadow-sm rounded-md border border-[#efefef] border-opacity-60">
       <div className="p-3 flex flex-row space-x-3">
         <Button
           variant={"secondary"}

@@ -43,7 +43,7 @@ export const Catalog = (props: CatalogProps) => {
   };
 
   return (
-    <div className="w-[250px] bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-[46px] left-[20px] bottom-2">
+    <div id="catalog" className="grid grid-flow-row w-[250px] bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-[46px] left-[20px] bottom-2">
       <div className="grid grid-flow-col grid-cols-[24px_1fr] gap-1 items-center px-4 py-2 mt-3">
           <span className="w-6 h-6 rounded-lg hover:bg-accent flex items-center justify-center">
             <ChevronsLeft size={18} />
