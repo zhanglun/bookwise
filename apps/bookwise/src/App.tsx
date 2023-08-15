@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { animate } from "framer-motion";
+import { useAnimate, motion } from "framer-motion";
 import { TabBar } from "./components/TabBar";
 import { Sidebar } from "./components/SideBar";
 import { Outlet, useMatch } from "react-router-dom";
@@ -12,12 +12,14 @@ import {
 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { useBearStore } from "./store";
+import clsx from "clsx";
 
 function App() {
   const store = useBearStore((state) => ({
     sidebarCollapse: state.sidebarCollapse,
     updateSidebarCollapse: state.updateSidebarCollapse,
   }));
+  const [scope, animate] = useAnimate();
   const [server, setServer] = useState<any>({});
   const [isReading, setIsReading] = useState(false);
   const match = useMatch("/reader");
@@ -34,6 +36,23 @@ function App() {
   useEffect(() => {
     console.log("=====>");
     setIsReading(!!match);
+    if (store.sidebarCollapse) {
+      // animate(
+      //   scope.current,
+      //   {
+      //     gridTemplateColumns: "0 1fr",
+      //   },
+      //   { duration: 0.3 }
+      // );
+    } else {
+      // animate(
+      //   scope.current,
+      //   {
+      //     gridTemplateColumns: "minmax(0, max-content) 1fr",
+      //   },
+      //   { duration: 0.3 }
+      // );
+    }
   }, [store.sidebarCollapse]);
 
   return (
@@ -45,17 +64,26 @@ function App() {
       >
         <div className="grid grid-flow-col grid-cols-[auto_1fr_auto] items-center">
           <div className="grid grid-flow-col gap-[2px]">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="w-8 h-8"
-              onClick={toggleSidebar}
-            >
-              <PanelLeftClose size={18} />
-            </Button>
-            <Button size="icon" variant="ghost" className="w-8 h-8">
-              <PanelLeftOpen size={18} />
-            </Button>
+            {!store.sidebarCollapse && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="w-8 h-8"
+                onClick={toggleSidebar}
+              >
+                <PanelLeftClose size={18} />
+              </Button>
+            )}
+            {store.sidebarCollapse && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="w-8 h-8"
+                onClick={toggleSidebar}
+              >
+                <PanelLeftOpen size={18} />
+              </Button>
+            )}
             <Button size="icon" variant="ghost" className="w-8 h-8">
               <ChevronLeft size={18} />
             </Button>
@@ -65,14 +93,22 @@ function App() {
           </div>
         </div>
         {/* <TabBar /> */}
-        <div className="grid gap-4 grid-cols-[minmax(0,max-content)_1fr]">
+        <motion.div
+          layout
+          ref={scope}
+          className={clsx("grid grid-cols-[minmax(0,max-content)_1fr]", {
+            // "gap-4 grid-cols-[minmax(0,max-content)_1fr]":
+            //   !store.sidebarCollapse,
+            // "gap-0 grid-cols-[0px_1fr]": store.sidebarCollapse,
+          })}
+        >
           {isReading}
           <Sidebar />
           <div className="rounded-lg overflow-hidden">
             <Outlet />
             {/* <Home /> */}
           </div>
-        </div>
+        </motion.div>
         <p className="hidden">
           node server status: pid: {server.pid} connected: {server.connected}{" "}
           signCode: {server.signalCode}
