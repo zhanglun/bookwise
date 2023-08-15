@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { animate } from "framer-motion";
 import { TabBar } from "./components/TabBar";
 import { Sidebar } from "./components/SideBar";
@@ -11,14 +11,19 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import { Button } from "./components/ui/button";
+import { useBearStore } from "./store";
 
 function App() {
+  const store = useBearStore((state) => ({
+    sidebarCollapse: state.sidebarCollapse,
+    updateSidebarCollapse: state.updateSidebarCollapse,
+  }));
   const [server, setServer] = useState<any>({});
   const [isReading, setIsReading] = useState(false);
-  const [expanded, setExpanded] = useState(false);
   const match = useMatch("/reader");
-
-  console.log("%c Line:10 🥤 match", "color:#4fff4B", match);
+  const toggleSidebar = () => {
+    store.updateSidebarCollapse();
+  };
 
   useEffect(() => {
     window.electronAPI?.onUpdateServerStatus((_event: any, value: any) => {
@@ -28,31 +33,8 @@ function App() {
 
   useEffect(() => {
     console.log("=====>");
-
     setIsReading(!!match);
-
-    if (match) {
-      const $sidebar = document.querySelector("#sidebar");
-      const $catalog = document.querySelector("#catalog");
-
-      const animateSidebarIn = () => {
-        if ($catalog && !expanded) {
-          animate($catalog, { x: [0, 100] }, { type: "spring" });
-          setExpanded(true);
-        }
-      };
-
-      const animateSidebarOut = () => {
-        if ($catalog) {
-          animate($catalog, { x: [100, 0] }, { type: "spring" });
-          setExpanded(false);
-        }
-      };
-
-      // $sidebar?.addEventListener("click", animateSidebarIn, true);
-      // $sidebar?.addEventListener("mouseout", animateSidebarOut, true);
-    }
-  }, [match]);
+  }, [store.sidebarCollapse]);
 
   return (
     <>
@@ -63,7 +45,12 @@ function App() {
       >
         <div className="grid grid-flow-col grid-cols-[auto_1fr_auto] items-center">
           <div className="grid grid-flow-col gap-[2px]">
-            <Button size="icon" variant="ghost" className="w-8 h-8">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="w-8 h-8"
+              onClick={toggleSidebar}
+            >
               <PanelLeftClose size={18} />
             </Button>
             <Button size="icon" variant="ghost" className="w-8 h-8">
@@ -78,7 +65,7 @@ function App() {
           </div>
         </div>
         {/* <TabBar /> */}
-        <div className="grid gap-4 grid-cols-[260px_1fr]">
+        <div className="grid gap-4 grid-cols-[minmax(0,max-content)_1fr]">
           {isReading}
           <Sidebar />
           <div className="rounded-lg overflow-hidden">

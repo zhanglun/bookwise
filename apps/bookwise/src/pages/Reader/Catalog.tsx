@@ -30,7 +30,7 @@ export const Catalog = (props: CatalogProps) => {
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
     const styles = [
-      "font-semibold mx-2 my-2 py-1",
+      "font-semibold mx-2 py-2",
       "font-normal ml-6 mr-3 py-1",
     ];
 

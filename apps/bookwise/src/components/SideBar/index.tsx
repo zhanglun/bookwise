@@ -1,11 +1,28 @@
-import { Button } from "../ui/button";
+import { useEffect } from "react";
 import { Home, Library, Plus, Search, Star } from "lucide-react";
-import "./index.css";
+import { useAnimate, motion } from 'framer-motion';
+import { useBearStore } from "@/store";
+import { Button } from "../ui/button";
 import { NavItem } from "./NavItem";
+import "./index.css";
 
 export const Sidebar = () => {
+  const [scope, animate] = useAnimate();
+  const store = useBearStore((state) => ({
+    sidebarCollapse: state.sidebarCollapse,
+  }));
+  
+  useEffect(() => {
+    console.log("%c Line:18 🥔 store.sidebarCollapse", "color:#33a5ff", store.sidebarCollapse);
+    if (store.sidebarCollapse) {
+      animate(scope.current, { x: "-100%" }, { duration: 1 })
+    } else {
+      animate(scope.current, { x: "0", width: 260 }, { duration: 1 })
+    }
+  }, [store.sidebarCollapse]);
+
   return (
-    <div id="sidebar" className="w-full h-full bg-white/50 shadow-sm rounded-md border border-[#efefef] border-opacity-60">
+    <motion.div id="sidebar" ref={scope} className="w-[260px] h-full overflow-hidden bg-white/50 shadow-sm rounded-md border border-[#efefef] border-opacity-60">
       <div className="p-3 flex flex-row space-x-3">
         <Button
           variant={"secondary"}
@@ -24,6 +41,6 @@ export const Sidebar = () => {
         <NavItem to="/library" title="Library" icon={<Library size={14} />} />
         <NavItem to="/starred" title="Starred" icon={<Star size={14} />} />
       </div>
-    </div>
+    </motion.div>
   );
 };
