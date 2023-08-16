@@ -52,8 +52,10 @@ module.exports = {
         },
       },
       boxShadow: {
-        book: "rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px",
+        cover: "rgba(50, 50, 105, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.05) 0px 1px 1px 0px",
+        "hover-book": "0px 0px 0px 1px rgba(60, 64, 67, 0.00), 0px 1.5px 4px rgba(60, 64, 67, 0.03), 0px 3px 10px rgba(60, 64, 67, 0.1)",
       },
+
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",

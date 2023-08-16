@@ -10,21 +10,21 @@ export interface CoverProps {
 
 export const Cover = (props: CoverProps) => {
   const { onClick, book } = props;
-  const [path, setPath] = useState("");
+  const [ path, setPath ] = useState("");
 
   useEffect(() => {
     setPath(createCoverLink(book.path) || "");
-  }, [book]);
+  }, [ book ]);
 
-  return path ? (
-    <AspectRatio
-      ratio={7 / 10}
-      className="bg-muted overflow-hidden shadow-book"
-      onClick={() => onClick && onClick(book)}
-    >
-      <img src={path} alt={book.title} className="w-full h-full object-fill" />
-    </AspectRatio>
-  ) : (
-    <div>s</div>
-  );
+  return <div className="w-[116px]">
+    { path ? (<AspectRatio
+        ratio={ 7 / 10 }
+        className="bg-muted overflow-hidden shadow-cover"
+        onClick={ () => onClick && onClick(book) }
+      >
+        <img src={ path } alt={ book.title } className="object-cover"/>
+      </AspectRatio>
+    ) : (
+      <div>s</div>) }
+  </div>
 };

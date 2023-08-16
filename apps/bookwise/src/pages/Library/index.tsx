@@ -48,8 +48,8 @@ export const Library = () => {
   }, []);
 
   return (
-    <div className="flex justify-center h-full">
-      <div className="h-full grid grid-flow-row gap-3 overflow-y-scroll max-w-4xl px-4 flex-1 sm:px-4">
+    <div className="flex h-full">
+      <div className="flex-1 h-full grid grid-flow-row gap-3 overflow-y-scroll px-4 flex-1 sm:px-4">
         <div>
           <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
             Library
@@ -71,7 +71,14 @@ export const Library = () => {
             </div>
           </div>
           <div className="px-3 py-2"></div>
-          <div className={clsx("sm:grid-cols-2 sm:gap-x-5 sm:gap-y-7", "px-3 py-2 grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-8", 'xl:grid-cols-5 xl:gap-x-9 xl:gap-y-9')}>
+          <div
+            className={clsx(
+              "sm:grid-cols-2 sm:gap-x-5 sm:gap-y-7",
+              "px-3 py-2 grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-8",
+              "grid xl:grid-cols-6 xl:gap-x-9 xl:gap-y-9"
+              // "grid grid-cols-4 gap-6"
+            )}
+          >
             {bookList.map((book: any) => {
               return (
                 <Book
@@ -84,7 +91,7 @@ export const Library = () => {
           </div>
         </div>
       </div>
-      <div className="px-4 pt-20 sm:w-[220px] lg:w-[260px] xl:w-[300px]">
+      <div className="px-4 pt-20 w-[260px]">
         <BookSideDetail data={currentBook} />
       </div>
     </div>

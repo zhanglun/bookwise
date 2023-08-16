@@ -32,6 +32,7 @@ export const Catalog = (props: CatalogProps) => {
     const styles = [
       "font-semibold mx-2 py-2",
       "font-normal ml-6 mr-3 py-1",
+      "font-normal ml-10 mr-3 py-1",
     ];
 
     return list.map((item) => {

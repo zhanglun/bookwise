@@ -46,6 +46,7 @@ export const Reader = () => {
   };
 
   useEffect(() => {
+    console.log("%c Line:51 🍊 getBookDetail();", "color:#465975",);
     getBookDetail();
   }, []);
 

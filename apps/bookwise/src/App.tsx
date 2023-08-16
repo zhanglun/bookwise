@@ -36,23 +36,6 @@ function App() {
   useEffect(() => {
     console.log("=====>");
     setIsReading(!!match);
-    if (store.sidebarCollapse) {
-      // animate(
-      //   scope.current,
-      //   {
-      //     gridTemplateColumns: "0 1fr",
-      //   },
-      //   { duration: 0.3 }
-      // );
-    } else {
-      // animate(
-      //   scope.current,
-      //   {
-      //     gridTemplateColumns: "minmax(0, max-content) 1fr",
-      //   },
-      //   { duration: 0.3 }
-      // );
-    }
   }, [store.sidebarCollapse]);
 
   return (
@@ -91,16 +74,18 @@ function App() {
               <ChevronRight size={18} />
             </Button>
           </div>
+          <div className="text-center">
+asdf
+          </div>
+          <div>
+            asdf
+          </div>
         </div>
         {/* <TabBar /> */}
         <motion.div
           layout
           ref={scope}
-          className={clsx("grid grid-cols-[minmax(0,max-content)_1fr]", {
-            // "gap-4 grid-cols-[minmax(0,max-content)_1fr]":
-            //   !store.sidebarCollapse,
-            // "gap-0 grid-cols-[0px_1fr]": store.sidebarCollapse,
-          })}
+          className={clsx("grid grid-cols-[minmax(0,max-content)_1fr]")}
         >
           {isReading}
           <Sidebar />
