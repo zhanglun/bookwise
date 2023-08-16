@@ -84,7 +84,7 @@ export const Library = () => {
                 <Book
                   key={book.id}
                   data={book}
-                  onCoverClick={handleBookClick}
+                  onClick={handleBookClick}
                 />
               );
             })}

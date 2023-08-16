@@ -18,6 +18,7 @@ function App() {
   const store = useBearStore((state) => ({
     sidebarCollapse: state.sidebarCollapse,
     updateSidebarCollapse: state.updateSidebarCollapse,
+    bookStack: state.bookStack,
   }));
   const [scope, animate] = useAnimate();
   const [server, setServer] = useState<any>({});
@@ -74,9 +75,9 @@ function App() {
               <ChevronRight size={18} />
             </Button>
           </div>
-          <div className="text-center">
+          <div className="text-center font-bold text-xm">
               {match && (<div>
-                  asdfsdf
+                {store.bookStack[0]?.title}
               </div>)}
           </div>
           <div>

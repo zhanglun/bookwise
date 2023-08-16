@@ -4,15 +4,17 @@ import { PresetActions } from "./PresetAction";
 
 export interface BookProps {
   data: any;
-  onCoverClick: (book: BookResItem) => void;
+  onCoverClick?: (book: BookResItem) => void;
+  onClick?: (book: BookResItem) => void;
 }
 
 export const Book = (props: BookProps) => {
-  const { data, onCoverClick } = props;
+  const { data, onCoverClick, onClick } = props;
 
   return (
     <div
       className="border border-border rounded-lg isolation bg-white w-[208px] transition-transform hover:scale-[1.02] hover:shadow-hover-book"
+      onClick={() => onClick && onClick(data) }
     >
       <div className="h-[308px] flex flex-col">
         <div className="w-full h-[202px] flex items-center justify-center relative opacity-90">

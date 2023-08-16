@@ -71,7 +71,7 @@ export const Catalog = (props: CatalogProps) => {
           <ChevronsLeft size={18} />
         </span>
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-          {metadata.title}
+          {/*{metadata.title}*/}
         </span>
       </div>
       <div className="px-2 py-2 h-full overflow-y-scroll">

@@ -38,7 +38,7 @@ export interface PresetActionProps {
 export function PresetActions(props: PresetActionProps) {
   const store = useBearStore((state) => ({
     bookStack: state.bookStack,
-    pushBook
+    addBookToStack: state.addBookToStack,
   }))
   const navigate = useNavigate();
   const { data } = props;
@@ -51,7 +51,7 @@ export function PresetActions(props: PresetActionProps) {
       state: { book_id: data.id }
     })
 
-    useBearStore
+    store.addBookToStack(data)
   }
 
   const confirmDelete = () => {
