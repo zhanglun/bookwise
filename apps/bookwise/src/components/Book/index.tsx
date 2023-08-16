@@ -24,7 +24,7 @@ export const Book = (props: BookProps) => {
           >{ data.title }</h1>
           <div className="leading-5 flex flex-row items-center text-xs leading text-muted-foreground">
            <span className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
-             { data.author.name }
+             { data.author?.name }
            </span>
             <span>
               <PresetActions data={ data }/>

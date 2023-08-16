@@ -29,12 +29,17 @@ import { MoreVertical } from "lucide-react";
 import { BookResItem } from "@/interface/book";
 import { request } from "@/helpers/request";
 import { useNavigate } from 'react-router-dom';
+import {useBearStore} from "@/store";
 
 export interface PresetActionProps {
   data: BookResItem;
 }
 
 export function PresetActions(props: PresetActionProps) {
+  const store = useBearStore((state) => ({
+    bookStack: state.bookStack,
+    pushBook
+  }))
   const navigate = useNavigate();
   const { data } = props;
   const [open, setIsOpen] = useState(false);
@@ -45,6 +50,8 @@ export function PresetActions(props: PresetActionProps) {
     navigate('/reader', {
       state: { book_id: data.id }
     })
+
+    useBearStore
   }
 
   const confirmDelete = () => {

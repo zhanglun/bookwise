@@ -73,10 +73,10 @@ export const Library = () => {
           <div className="px-3 py-2"></div>
           <div
             className={clsx(
-              "sm:grid-cols-2 sm:gap-x-5 sm:gap-y-7",
-              "px-3 py-2 grid lg:grid-cols-3 lg:gap-x-8 lg:gap-y-8",
-              "grid xl:grid-cols-6 xl:gap-x-9 xl:gap-y-9"
-              // "grid grid-cols-4 gap-6"
+              // "px-3 py-2 grid lg:grid-cols-4 lg:gap-x-8 lg:gap-y-8",
+              "grid grid-cols-[repeat(auto-fill,minmax(208px,1fr))]",
+                "sm:gap-x-1 sm:gap-y-7",
+              "xl:gap-x-3 xl:gap-y-9",
             )}
           >
             {bookList.map((book: any) => {

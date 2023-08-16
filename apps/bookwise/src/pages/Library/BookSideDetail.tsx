@@ -1,6 +1,6 @@
-import { Cover } from "@/components/Book/Cover";
 import { BookResItem } from "@/interface/book";
 import { format } from "date-fns";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export interface BookSideDetailProps {
   data: BookResItem;
@@ -9,7 +9,15 @@ export const BookSideDetail = (props: BookSideDetailProps) => {
   const { data } = props;
   return (
     <div>
-      <Cover book={data} />
+      <Tabs defaultValue="account" className="w-[400px]">
+        <TabsList>
+          <TabsTrigger value="account">Account</TabsTrigger>
+          <TabsTrigger value="password">Password</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account">Make changes to your account here.</TabsContent>
+        <TabsContent value="password">Change your password here.</TabsContent>
+      </Tabs>
+
       <div className="grid grid-cols-[minmax(max-content,auto)_minmax(0,1fr)] gap-1 pt-4 text-sm">
         <span>书名：</span>
         <span>{data.title}</span>
