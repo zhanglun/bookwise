@@ -12,6 +12,7 @@ import { Book } from './books/book.entity';
 import { AuthorsModule } from './authors/authors.module';
 import { Author } from './authors/entities/author.entity';
 import { PublishersModule } from './publishers/publishers.module';
+import { AnnotationsModule } from './annotations/annotations.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { PublishersModule } from './publishers/publishers.module';
     SettingsModule,
     AuthorsModule,
     PublishersModule,
+    AnnotationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
