@@ -22,13 +22,15 @@ export const Reader = () => {
   const location = useLocation();
   const { state } = location;
   const [bookInfo, setBookInfo] = useState<any>({
-    packaging: { metadata: {}},
+    packaging: { metadata: {} },
+    catalog: [],
   });
   const [catalog, setCatalog] = useState<BookCatalog[]>([]);
   const [content, setContent] = useState<string>("");
   const [currentHref, setCurrentHref] = useState<string>("");
   const [currentId, setCurrentId] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
+  const [fullContent, setFullContent] = useState("");
 
   const getBookDetail = () => {
     request
@@ -46,7 +48,7 @@ export const Reader = () => {
   };
 
   useEffect(() => {
-    console.log("%c Line:51 🍊 getBookDetail();", "color:#465975",);
+    console.log("%c Line:51 🍊 getBookDetail();", "color:#465975");
     getBookDetail();
   }, []);
 
@@ -114,33 +116,39 @@ export const Reader = () => {
     }
   };
 
-  const goToPage = useCallback(
-    async (href: string, id?: string) => {
-      const { files } = bookInfo;
-      let archorId: string;
+  // const goToPage = useCallback(
+  //   async (href: string, id?: string) => {
+  //     const { files } = bookInfo;
+  //     let anchorId: string;
 
-      if (href.indexOf("#") >= 0) {
-        href = href.split("#")[0];
-        archorId = href.split("#")[0];
-      }
+  //     if (href.indexOf("#") >= 0) {
+  //       href = href.split("#")[0];
+  //       anchorId = href.split("#")[0];
+  //     }
 
-      if (files[href]) {
-        const box = document.createElement("div");
-        const body = await accessPageContent(files[href]);
+  //     if (files[href]) {
+  //       const box = document.createElement("div");
+  //       const body = await accessPageContent(files[href]);
 
-        if (body) {
-          const images = body?.querySelectorAll("img, image");
-          await convertImages(files, href, images);
+  //       if (body) {
+  //         const images = body?.querySelectorAll("img, image");
+  //         await convertImages(files, href, images);
 
-          setTimeout(() => {
-            box.innerHTML += body.innerHTML;
-            setContent(box.innerHTML || "");
-          }, 10);
-        }
-      }
-    },
-    [bookInfo]
-  );
+  //         setTimeout(() => {
+  //           box.innerHTML += body.innerHTML;
+  //           setContent(box.innerHTML || "");
+  //         }, 10);
+  //       }
+  //     }
+  //   },
+  //   [bookInfo]
+  // );
+
+  const goToPage = (href: string, id: string) => {
+    const target = document.getElementById(id);
+    console.log("%c Line:149 🥔 target", "color:#33a5ff", target);
+    target?.scrollIntoView({ behavior: "smooth" });
+  };
 
   const handleUserClickEvent = (e: MouseEvent<HTMLElement>) => {
     let elem = null;
@@ -158,7 +166,7 @@ export const Reader = () => {
     if (elem && elem.getAttribute("href")) {
       e.preventDefault();
       e.stopPropagation();
-      const href = elem.getAttribute("href") || '';
+      const href = elem.getAttribute("href") || "";
 
       if (
         href &&
@@ -205,6 +213,50 @@ export const Reader = () => {
     // }
   };
 
+  useEffect(() => {
+    const generateFullContent = async () => {
+      const { files, catalog } = bookInfo;
+      console.log("%c Line:212 🥟 catalog", "color:#4fff4B", catalog);
+      const box = document.createElement("div");
+
+      const loopCatalog = async (list: BookCatalog[]) => {
+        for (const item of list) {
+          let { href } = item;
+          let anchorId: string;
+
+          if (href.indexOf("#") >= 0) {
+            href = href.split("#")[0];
+            anchorId = href.split("#")[0];
+          }
+
+          if (files[href]) {
+            const part = document.createElement("div");
+            const body = await accessPageContent(files[href]);
+
+            part.id = item.id;
+
+            if (body) {
+              const images = body?.querySelectorAll("img, image");
+              await convertImages(files, href, images);
+
+              part.innerHTML += body.innerHTML;
+              box.appendChild(part);
+            }
+
+            if (item.subitems) {
+              await loopCatalog(item.subitems);
+            }
+          }
+        }
+      };
+
+      await loopCatalog(catalog);
+
+      setFullContent(box.innerHTML);
+    };
+
+    bookInfo && generateFullContent();
+  }, [bookInfo]);
   return (
     <div className="h-full">
       <Catalog
@@ -222,7 +274,7 @@ export const Reader = () => {
           onClick={handleUserClickEvent}
         >
           <style type="text/css" ref={styleRef} />
-          <div dangerouslySetInnerHTML={{ __html: content }}></div>
+          <div dangerouslySetInnerHTML={{ __html: fullContent }}></div>
         </div>
       </div>
     </div>

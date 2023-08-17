@@ -42,6 +42,7 @@ export const Catalog = (props: CatalogProps) => {
           <div
             data-idx={idx}
             data-href={href}
+            data-anchor-id={id}
             className={clsx(
               "hover:underline overflow-hidden text-ellipsis whitespace-nowrap",
               styles[idx]
