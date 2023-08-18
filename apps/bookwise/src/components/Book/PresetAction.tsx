@@ -50,8 +50,6 @@ export function PresetActions(props: PresetActionProps) {
     navigate('/reader', {
       state: { book_id: data.id }
     })
-
-    store.addBookToStack(data)
   }
 
   const confirmDelete = () => {
@@ -88,14 +86,6 @@ export function PresetActions(props: PresetActionProps) {
       </DropdownMenu>
       <Dialog open={open} onOpenChange={setIsOpen}>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Content filter preferences</DialogTitle>
-            <DialogDescription>
-              The content filter flags text that may violate our content policy.
-              It&apos;s powered by our moderation endpoint which is free to use
-              to moderate your OpenAI API traffic. Learn more.
-            </DialogDescription>
-          </DialogHeader>
           <div className="py-6">
             <h4 className="text-sm text-muted-foreground">
               Playground Warnings

@@ -17,10 +17,14 @@ import {
 } from "@/helpers/parseEpub";
 import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
+import { useBearStore } from "@/store";
 
 export const Reader = () => {
   const location = useLocation();
   const { state } = location;
+  const store = useBearStore((state) => ({
+    addBookToStack: state.addBookToStack,
+  }))
   const [bookInfo, setBookInfo] = useState<any>({
     packaging: { metadata: {} },
     catalog: [],
@@ -32,7 +36,7 @@ export const Reader = () => {
   const styleRef = useRef<HTMLStyleElement>(null);
   const [fullContent, setFullContent] = useState("");
 
-  const getBookDetail = () => {
+  const getBookBlobs = () => {
     request
       .get(`books/${state.book_id}/blobs`, {
         responseType: "blob",
@@ -47,10 +51,17 @@ export const Reader = () => {
       });
   };
 
+  const getBookDetail = () => {
+    request.get(`books/${state.book_id}`)
+      .then((res) => {
+        store.addBookToStack(res.data)
+      })
+  }
+
   useEffect(() => {
-    console.log("%c Line:51 🍊 getBookDetail();", "color:#465975");
+    getBookBlobs();
     getBookDetail();
-  }, []);
+  }, [state]);
 
   useEffect(() => {
     const loadCSS = async () => {
@@ -278,7 +289,7 @@ export const Reader = () => {
           await goToPage(href, id);
         }}
       />
-      <div className="h-full overflow-y-scroll px-4 rounded-lg bg-white/50 shadow-sm border border-[#efefef] border-opacity-60">
+      <div className="h-full overflow-y-scroll px-4 rounded-lg bg-white/100 shadow-sm border border-[#efefef] border-opacity-60">
         <div
           className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto"
           onClick={handleUserClickEvent}

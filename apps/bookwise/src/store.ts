@@ -15,6 +15,8 @@ export const useBearStore = create<BearStore>()(
     return {
       bookStack: [],
       addBookToStack: (book: BookResItem) => {
+        console.log('addBookToStack ===>')
+
         const books = get().bookStack;
 
         if (books.some((b) => b.id === book.id)) {

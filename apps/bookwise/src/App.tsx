@@ -2,13 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useAnimate, motion } from "framer-motion";
 import { TabBar } from "./components/TabBar";
 import { Sidebar } from "./components/SideBar";
-import { Outlet, useMatch } from "react-router-dom";
+import { Outlet, useMatch, useNavigate } from "react-router-dom";
 import { Toaster } from "./components/ui/toaster";
 import {
   ChevronLeft,
   ChevronRight,
   PanelLeftClose,
-  PanelLeftOpen,
+  PanelLeftOpen, PanelRight,
 } from "lucide-react";
 import { Button } from "./components/ui/button";
 import { useBearStore } from "./store";
@@ -20,6 +20,7 @@ function App() {
     updateSidebarCollapse: state.updateSidebarCollapse,
     bookStack: state.bookStack,
   }));
+  const navigate = useNavigate();
   const [scope, animate] = useAnimate();
   const [server, setServer] = useState<any>({});
   const [isReading, setIsReading] = useState(false);
@@ -35,9 +36,13 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log("=====>");
     setIsReading(!!match);
-  }, [store.sidebarCollapse]);
+  }, [store.sidebarCollapse, match]);
+
+  useEffect(() => {
+    console.log('====>');
+    console.log(store.bookStack);
+  }, [store.bookStack])
 
   return (
     <>
@@ -68,10 +73,10 @@ function App() {
                 <PanelLeftOpen size={18} />
               </Button>
             )}
-            <Button size="icon" variant="ghost" className="w-8 h-8">
+            <Button size="icon" variant="ghost" className="w-8 h-8" onClick={() => navigate(-1) }>
               <ChevronLeft size={18} />
             </Button>
-            <Button size="icon" variant="ghost" className="w-8 h-8">
+            <Button size="icon" variant="ghost" className="w-8 h-8" onClick={() => navigate(1) }>
               <ChevronRight size={18} />
             </Button>
           </div>
@@ -80,8 +85,16 @@ function App() {
                 {store.bookStack[0]?.title}
               </div>)}
           </div>
-          <div>
-            asdf
+          <div className="grid grid-flow-col gap-[2px]">
+            {match && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="w-8 h-8"
+              >
+                <PanelRight size={18} onClick={() => {}} />
+              </Button>
+            )}
           </div>
         </div>
         {/* <TabBar /> */}
