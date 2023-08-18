@@ -8,7 +8,7 @@ import { BooksModule } from './books/books.module';
 import { SettingsModule } from './settings/settings.module';
 import configuration from './config/configuration';
 
-import { Book } from './books/book.entity';
+import { Book } from './books/entities/book.entity';
 import { AuthorsModule } from './authors/authors.module';
 import { Author } from './authors/entities/author.entity';
 import { PublishersModule } from './publishers/publishers.module';

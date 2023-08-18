@@ -7,9 +7,11 @@ import * as AdmZip from 'adm-zip';
 import { XMLParser } from 'fast-xml-parser';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
-import { Book } from './book.entity';
+import { Book } from './entities/book.entity';
 import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
+import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
+import { AdditionalInfoEntity } from './entities/additional-info.entity';
 
 interface EpubIdentifier {
   scheme: string;
@@ -48,6 +50,8 @@ export class BooksService {
   constructor(
     @InjectRepository(Book)
     private bookRepository: Repository<Book>,
+    @InjectRepository(AdditionalInfoEntity)
+    private additionalInfoRepository: Repository<AdditionalInfoEntity>,
     private settingsService: SettingsService,
     private authorsService: AuthorsService,
     private publishersService: PublishersService,
@@ -339,5 +343,52 @@ export class BooksService {
     const file = fs.createReadStream(coverPath);
 
     return new StreamableFile(file);
+  }
+
+  public async getAdditionalInfo(book_id: string) {
+    const record = await this.additionalInfoRepository
+      .createQueryBuilder('additional_infos')
+      .leftJoinAndSelect('additional_infos.book', 'book')
+      .where('book.id = :book_id', { book_id })
+      .execute();
+    return record;
+
+    // if (record) {
+    //   return
+    // }
+  }
+
+  public async updateAdditionalInfo(
+    book_id: string,
+    updateAdditionalInfoDto: UpdateAdditionalInfoDto,
+  ) {
+    const book = await this.bookRepository.findOneBy({ id: book_id });
+
+    if (!book) {
+      return;
+    }
+
+    const record = await this.additionalInfoRepository
+      .createQueryBuilder('additional_infos')
+      .leftJoinAndSelect('additional_infos.book', 'book')
+      .where('book.id = :book_id', { book_id })
+      .execute();
+
+    if (record.length === 0) {
+      const infoEntity = this.additionalInfoRepository.create({
+        ...updateAdditionalInfoDto,
+        book,
+      });
+      await this.additionalInfoRepository.save(infoEntity);
+    } else {
+      // await this.additionalInfoRepository.update({
+      //   book_id,
+      // }, updateAdditionalInfoDto);
+    }
+    return record;
+
+    // if (record) {
+    //   return
+    // }
   }
 }

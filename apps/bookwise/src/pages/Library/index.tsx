@@ -1,4 +1,4 @@
-import { BookPlus } from "lucide-react";
+import { BookPlus, Plus } from "lucide-react";
 import { Book } from "@/components/Book";
 import { useSelectFromDisk } from "@/hooks/useBook";
 import { useEffect, useState } from "react";
@@ -6,6 +6,7 @@ import { request } from "@/helpers/request";
 import { BookResItem } from "@/interface/book";
 import clsx from "clsx";
 import { BookSideDetail } from "./BookSideDetail";
+import { Button } from "@/components/ui/button";
 
 export const Library = () => {
   const [files, openFileDialog] = useSelectFromDisk();
@@ -71,9 +72,14 @@ export const Library = () => {
             </div>
           </div>
           <div className="px-3 py-2"></div>
+          <div className="px-3 py-2">
+            <Button variant="outline" size="sm" className="h-8 border-dashed">
+              <Plus size={16} />Filter
+            </Button>
+          </div>
           <div
             className={clsx(
-              "grid grid-cols-[repeat(auto-fill,minmax(208px,1fr))]",
+              "px-3 py-2 grid grid-cols-[repeat(auto-fill,minmax(208px,1fr))]",
               "sm:gap-x-1 sm:gap-y-7",
               "xl:gap-x-3 xl:gap-y-9"
             )}

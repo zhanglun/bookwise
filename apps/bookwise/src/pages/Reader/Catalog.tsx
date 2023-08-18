@@ -37,6 +37,7 @@ export const Catalog = (props: CatalogProps) => {
 
     return list.map((item) => {
       const { id, label, href, subitems } = item;
+      console.log("%c Line:40 🍡 item", "color:#4fff4B", item);
       return (
         <div className={clsx("text-sm cursor-default")} key={id}>
           <div

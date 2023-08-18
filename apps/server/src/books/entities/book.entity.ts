@@ -4,12 +4,15 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   CreateDateColumn,
+  OneToOne,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
 
-import { Author } from '../authors/entities/author.entity';
-import { Publisher } from '../publishers/entities/publisher.entity';
+import { Author } from '../../authors/entities/author.entity';
+import { Publisher } from '../../publishers/entities/publisher.entity';
+import { AdditionalInfoEntity } from './additional-info.entity';
+
 @Entity('books')
 export class Book {
   @PrimaryGeneratedColumn('uuid')

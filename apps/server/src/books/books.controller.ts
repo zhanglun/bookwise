@@ -5,6 +5,7 @@ import {
   UseInterceptors,
   UploadedFiles,
   Query,
+  Body,
   StreamableFile,
   Header,
   Param,
@@ -14,7 +15,8 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
-import { Book } from './book.entity';
+import { Book } from './entities/book.entity';
+import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 
 @Controller('books')
 export class BooksController {
@@ -28,7 +30,6 @@ export class BooksController {
 
   @Get()
   findAll(): Promise<Book[]> {
-    console.log('findall');
     return this.booksService.findAll();
   }
 
@@ -44,6 +45,22 @@ export class BooksController {
     const file = await this.booksService.getBookFileBlobs(param.id);
 
     return new StreamableFile(file);
+  }
+
+  @Get('/:id/additional_infos')
+  async getBookAdditionalInfo(@Param() param: { id: string }) {
+    return this.booksService.getAdditionalInfo(param.id);
+  }
+
+  @Post('/:id/additional_infos')
+  async updateBookAdditionalInfo(
+    @Param() param: { id: string },
+    @Body() updateAdditionalInfoDto: UpdateAdditionalInfoDto,
+  ) {
+    return this.booksService.updateAdditionalInfo(
+      param.id,
+      updateAdditionalInfoDto,
+    );
   }
 
   @Delete()
