@@ -82,6 +82,9 @@ export const Reader = () => {
     currentHref: string,
     images: NodeListOf<Element>
   ) => {
+    console.log("%c Line:82 🍫 files", "color:#33a5ff", files);
+    console.log("%c Line:86 🥑 images", "color:#42b983", images);
+
     for (const image of images) {
       let attr = "src";
       let href: string = image.getAttribute("src") || "";
@@ -99,20 +102,23 @@ export const Reader = () => {
 
       href = getAbsoluteUrl(currentHref, href);
       const name = href;
-      console.log("🚀 ~ file: index.tsx:74 ~ Reader ~ name:", name);
-      const imageBlob = await accessImage(files[name]);
 
-      // 创建 FileReader 对象读取 Blob 数据
-      const reader = new FileReader();
-      reader.onload = (function (img) {
-        return function (event) {
-          const dataURL = event?.target?.result;
+      if (files[name]) {
+        console.log("🚀 ~ file: index.tsx:74 ~ Reader ~ name:", name);
+        const imageBlob = await accessImage(files[name]);
 
-          img.setAttribute(attr, (dataURL || "") as string);
-        };
-      })(image);
+        // 创建 FileReader 对象读取 Blob 数据
+        const reader = new FileReader();
+        reader.onload = (function (img) {
+          return function (event) {
+            const dataURL = event?.target?.result;
 
-      reader.readAsDataURL(imageBlob);
+            img.setAttribute(attr, (dataURL || "") as string);
+          };
+        })(image);
+
+        reader.readAsDataURL(imageBlob);
+      }
     }
   };
 
@@ -166,7 +172,9 @@ export const Reader = () => {
     if (elem && elem.getAttribute("href")) {
       e.preventDefault();
       e.stopPropagation();
+
       const href = elem.getAttribute("href") || "";
+      const id = elem.dataset.anchorId || "";
 
       if (
         href &&
@@ -179,7 +187,7 @@ export const Reader = () => {
         const realHref = getAbsoluteUrl(currentHref, href);
         console.log(realHref);
 
-        goToPage(realHref).then();
+        goToPage(realHref, id);
       }
     }
     // if (elem && (e.preventDefault(),
@@ -252,7 +260,9 @@ export const Reader = () => {
 
       await loopCatalog(catalog);
 
-      setFullContent(box.innerHTML);
+      setTimeout(() => {
+        setFullContent(box.innerHTML);
+      }, 10);
     };
 
     bookInfo && generateFullContent();
