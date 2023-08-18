@@ -346,16 +346,16 @@ export class BooksService {
   }
 
   public async getAdditionalInfo(book_id: string) {
-    const record = await this.additionalInfoRepository
-      .createQueryBuilder('additional_infos')
-      .leftJoinAndSelect('additional_infos.book', 'book')
-      .where('book.id = :book_id', { book_id })
-      .execute();
-    return record;
+    const record = await this.additionalInfoRepository.findOne({
+      relations: ['book'],
+      where: {
+        book: {
+          id: book_id,
+        },
+      },
+    });
 
-    // if (record) {
-    //   return
-    // }
+    return record;
   }
 
   public async updateAdditionalInfo(
@@ -368,27 +368,31 @@ export class BooksService {
       return;
     }
 
-    const record = await this.additionalInfoRepository
-      .createQueryBuilder('additional_infos')
-      .leftJoinAndSelect('additional_infos.book', 'book')
-      .where('book.id = :book_id', { book_id })
-      .execute();
+    const record = await this.additionalInfoRepository.findOne({
+      relations: ['book'],
+      where: {
+        book: {
+          id: book_id,
+        },
+      },
+    });
 
-    if (record.length === 0) {
+    if (!record) {
       const infoEntity = this.additionalInfoRepository.create({
         ...updateAdditionalInfoDto,
         book,
       });
+
       await this.additionalInfoRepository.save(infoEntity);
     } else {
-      // await this.additionalInfoRepository.update({
-      //   book_id,
-      // }, updateAdditionalInfoDto);
+      const res = await this.additionalInfoRepository.update(
+        { id: record.id },
+        {
+          ...updateAdditionalInfoDto,
+        },
+      );
     }
-    return record;
 
-    // if (record) {
-    //   return
-    // }
+    return record;
   }
 }

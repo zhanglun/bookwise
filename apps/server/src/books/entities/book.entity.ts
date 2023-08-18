@@ -31,6 +31,10 @@ export class Book {
   @JoinColumn({ name: 'publisher_id' })
   publisher: Publisher;
 
+  @OneToOne(() => AdditionalInfoEntity)
+  @JoinColumn({ name: 'additional_info_id' })
+  addition_info: AdditionalInfoEntity;
+
   @Column({
     default: '',
   })

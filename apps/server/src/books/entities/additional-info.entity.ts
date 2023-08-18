@@ -13,7 +13,9 @@ export class AdditionalInfoEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToOne(() => Book)
+  @OneToOne(() => Book, {
+    cascade: true,
+  })
   @JoinColumn({ name: 'book_id' })
   book: Book;
 
