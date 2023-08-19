@@ -115,7 +115,6 @@ export const Reader = () => {
       const name = href;
 
       if (files[name]) {
-        console.log("🚀 ~ file: index.tsx:74 ~ Reader ~ name:", name);
         const imageBlob = await accessImage(files[name]);
 
         // 创建 FileReader 对象读取 Blob 数据
@@ -258,7 +257,7 @@ export const Reader = () => {
               const images = body?.querySelectorAll("img, image");
               await convertImages(files, href, images);
 
-              part.innerHTML += body.innerHTML;
+              part.appendChild(body);
               box.appendChild(part);
             }
 
@@ -271,9 +270,7 @@ export const Reader = () => {
 
       await loopCatalog(catalog);
 
-      setTimeout(() => {
-        setFullContent(box.innerHTML);
-      }, 10);
+      setFullContent(box.innerHTML);
     };
 
     bookInfo && generateFullContent();

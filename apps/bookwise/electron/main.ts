@@ -23,7 +23,7 @@ let ps: any;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
-// console.log('process.env', process.env);
+console.log('process.env', process.env);
 
 function createWindow() {
   win = new BrowserWindow({
