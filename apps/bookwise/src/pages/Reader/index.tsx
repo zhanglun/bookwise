@@ -18,11 +18,13 @@ import {
 import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { useBearStore } from "@/store";
+import { BookSideDetail } from "../Library/BookSideDetail";
 
 export const Reader = () => {
   const location = useLocation();
   const { state } = location;
   const store = useBearStore((state) => ({
+    bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
   }))
   const [bookInfo, setBookInfo] = useState<any>({

@@ -73,7 +73,7 @@ export function PresetActions(props: PresetActionProps) {
             Read it
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setIsOpen(true)}>
-            Update metadata
+            Edit metadata
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem

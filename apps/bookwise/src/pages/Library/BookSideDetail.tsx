@@ -8,7 +8,7 @@ export interface BookSideDetailProps {
 export const BookSideDetail = (props: BookSideDetailProps) => {
   const { data } = props;
   return (
-    <div>
+    <div id="book-addition-side">
       <Tabs defaultValue="info" className="w-full">
         <TabsList>
           <TabsTrigger value="info">Info</TabsTrigger>

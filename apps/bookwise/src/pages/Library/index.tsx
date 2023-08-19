@@ -74,7 +74,8 @@ export const Library = () => {
           <div className="px-3 py-2"></div>
           <div className="px-3 py-2">
             <Button variant="outline" size="sm" className="h-8 border-dashed">
-              <Plus size={16} />Filter
+              <Plus size={16} />
+              Filter
             </Button>
           </div>
           <div
@@ -86,7 +87,12 @@ export const Library = () => {
           >
             {bookList.map((book: any) => {
               return (
-                <Book key={book.id} data={book} onClick={handleBookClick} />
+                <Book
+                  key={book.id}
+                  data={book}
+                  onClick={handleBookClick}
+                  onHover={handleBookClick}
+                />
               );
             })}
           </div>

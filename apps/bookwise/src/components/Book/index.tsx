@@ -6,19 +6,21 @@ export interface BookProps {
   data: any;
   onCoverClick?: (book: BookResItem) => void;
   onClick?: (book: BookResItem) => void;
+  onHover?: (book: BookResItem) => void;
 }
 
 export const Book = (props: BookProps) => {
-  const { data, onCoverClick, onClick } = props;
+  const { data, onClick, onHover } = props;
 
   return (
     <div
       className="border border-border rounded-lg isolation bg-white w-[208px] transition-transform hover:scale-[1.02] hover:shadow-hover-book"
       onClick={() => onClick && onClick(data) }
+      onMouseEnter={() => onHover && onHover(data) }
     >
       <div className="h-[308px] flex flex-col">
         <div className="w-full h-[202px] flex items-center justify-center relative opacity-90">
-          <Cover onClick={ () => onCoverClick(data) } book={ data }/>
+          <Cover book={ data }/>
         </div>
         <div className="flex-1 p-3 flex flex-col border-t border-border">
           <h1
