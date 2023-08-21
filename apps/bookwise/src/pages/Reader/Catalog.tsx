@@ -8,10 +8,11 @@ export interface CatalogProps {
   data: BookCatalog[];
   packaging: any;
   onGoToPage: (href: string, id: string) => void;
+  className?: string;
 }
 
 export const Catalog = (props: CatalogProps) => {
-  const { data, packaging, onGoToPage } = props;
+  const { data, packaging, onGoToPage, className } = props;
   const { metadata } = packaging;
   const [expanded, setExpanded] = useState(false);
 
@@ -63,7 +64,7 @@ export const Catalog = (props: CatalogProps) => {
   return (
     <div
       id="catalog"
-      className="grid grid-flow-row w-[250px] bg-white shadow-sm rounded-md border border-[#efefef] border-opacity-60 absolute top-[46px] left-[20px] bottom-2"
+      className={clsx("grid grid-flow-row w-[250px]", className)}
     >
       <div className="grid grid-flow-col grid-cols-[24px_1fr] gap-1 items-center px-4 py-2 mt-3">
         <span

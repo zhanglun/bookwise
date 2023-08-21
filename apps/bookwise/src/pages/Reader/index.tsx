@@ -278,8 +278,9 @@ export const Reader = () => {
     bookInfo && generateFullContent();
   }, [bookInfo]);
   return (
-    <div className="h-full">
+    <div className="h-full grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
       <Catalog
+        className="h-full overflow-y-scroll"
         data={catalog}
         packaging={bookInfo.packaging}
         onGoToPage={async (href: string, id: string) => {
