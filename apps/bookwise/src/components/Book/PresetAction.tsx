@@ -28,8 +28,9 @@ import { toast } from "../ui/use-toast";
 import { MoreVertical } from "lucide-react";
 import { BookResItem } from "@/interface/book";
 import { request } from "@/helpers/request";
-import { useNavigate } from 'react-router-dom';
-import {useBearStore} from "@/store";
+import { useNavigate } from "react-router-dom";
+import { useBearStore } from "@/store";
+import { MetaForm } from "../MetaForm";
 
 export interface PresetActionProps {
   data: BookResItem;
@@ -39,7 +40,7 @@ export function PresetActions(props: PresetActionProps) {
   const store = useBearStore((state) => ({
     bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
-  }))
+  }));
   const navigate = useNavigate();
   const { data } = props;
   const [open, setIsOpen] = useState(false);
@@ -47,20 +48,25 @@ export function PresetActions(props: PresetActionProps) {
 
   const startRead = () => {
     // TODO: go to read page
-    navigate('/reader', {
-      state: { book_id: data.id }
-    })
-  }
+    navigate("/reader", {
+      state: { book_id: data.id },
+    });
+  };
 
   const confirmDelete = () => {
-    request.delete('/books', {
-      params: {
-        id: data.id
-      }
-    }).then((res) => {
-      console.log("🚀 ~ file: PresetAction.tsx:48 ~ confirmDelete ~ res:", res)
-    })
-  }
+    request
+      .delete("/books", {
+        params: {
+          id: data.id,
+        },
+      })
+      .then((res) => {
+        console.log(
+          "🚀 ~ file: PresetAction.tsx:48 ~ confirmDelete ~ res:",
+          res
+        );
+      });
+  };
 
   return (
     <>
@@ -85,12 +91,15 @@ export function PresetActions(props: PresetActionProps) {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={open} onOpenChange={setIsOpen}>
-        <DialogContent>
+        <DialogContent className="max-h-[90%] overflow-y-auto">
           <div className="py-6">
             <h4 className="text-sm text-muted-foreground">
               Playground Warnings
             </h4>
             <div className="flex items-start justify-between space-x-4 pt-3">
+              <div>
+                <MetaForm />
+              </div>
               {/* <Switch name="show" id="show" defaultChecked={true} />
               <Label className="grid gap-1 font-normal" htmlFor="show">
                 <span className="font-semibold">

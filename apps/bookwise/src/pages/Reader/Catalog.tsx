@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ChevronsLeft } from "lucide-react";
 import clsx from "clsx";
-import { animate } from "framer-motion";
+import { animate, motion } from "framer-motion";
 import { BookCatalog } from "@/helpers/parseEpub";
 
 export interface CatalogProps {
@@ -24,7 +24,7 @@ export const Catalog = (props: CatalogProps) => {
     const $catalog = document.querySelector("#catalog");
 
     if ($catalog && !expanded) {
-      animate($catalog, { x: [0, 240] });
+      animate($catalog, { x: [0, -240], width: 0 });
       setExpanded(true);
     }
   };
@@ -62,7 +62,8 @@ export const Catalog = (props: CatalogProps) => {
   };
 
   return (
-    <div
+    <motion.div
+      layout
       id="catalog"
       className={clsx("grid grid-flow-row w-[250px]", className)}
     >
@@ -80,6 +81,6 @@ export const Catalog = (props: CatalogProps) => {
       <div className="px-2 py-2 h-full overflow-y-scroll">
         {renderItems(data)}
       </div>
-    </div>
+    </motion.div>
   );
 };
