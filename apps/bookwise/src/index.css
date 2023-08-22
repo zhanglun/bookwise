@@ -62,12 +62,10 @@ body.bg3,
 }
 
 #app {
-  padding: 8px;
   background: hsl(0deg 0% 99.61% / 65%);
 }
 
-#root,
-#app {
+#root {
   height: 100%;
 }
 
