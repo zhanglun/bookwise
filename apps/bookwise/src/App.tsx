@@ -58,7 +58,7 @@ function App() {
       <Toaster/>
       <div
         id="app"
-        className="w-full h-full backdrop-blur-[40px] grid grid-rows-[auto_1fr_0px] gap-2"
+        className="w-full h-full backdrop-blur-[40px] grid grid-rows-[auto_1fr] gap-2"
       >
         <div className="bg-white/0 px-2 pt-2">
           <div className="flex gap-1">
@@ -102,7 +102,7 @@ function App() {
         </div>
         <motion.div
           layout
-          className=" grid grid-cols-[minmax(0,max-content)_1fr] grid-auto-rows">
+          className="overflow-hidden grid grid-cols-[minmax(0,max-content)_1fr] grid-auto-rows">
           <div ref={ scope }>
             <Sidebar/>
           </div>
