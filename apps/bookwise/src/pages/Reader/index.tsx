@@ -19,6 +19,8 @@ import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { useBearStore } from "@/store";
 import { BookSideDetail } from "../Library/BookSideDetail";
+import { Button } from "@/components/ui/button";
+import { Info, InfoIcon, Palette } from "lucide-react";
 
 export const Reader = () => {
   const location = useLocation();
@@ -278,24 +280,38 @@ export const Reader = () => {
     bookInfo && generateFullContent();
   }, [bookInfo]);
   return (
-    <div className="h-full grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
-      <Catalog
-        className="h-full overflow-y-scroll"
-        data={catalog}
-        packaging={bookInfo.packaging}
-        onGoToPage={async (href: string, id: string) => {
-          setCurrentHref(href);
-          setCurrentId(id);
-          await goToPage(href, id);
-        }}
-      />
-      <div className="h-full overflow-y-scroll px-4 rounded-lg bg-white/100 shadow-sm border border-[#efefef] border-opacity-60">
-        <div
-          className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto"
-          onClick={handleUserClickEvent}
-        >
-          <style type="text/css" ref={styleRef} />
-          <div dangerouslySetInnerHTML={{ __html: fullContent }}></div>
+    <div className="h-full relative pr-[60px]">
+      <div className="h-full bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
+        <Catalog
+          className="h-full bg-white/50"
+          data={catalog}
+          packaging={bookInfo.packaging}
+          onGoToPage={async (href: string, id: string) => {
+            setCurrentHref(href);
+            setCurrentId(id);
+            await goToPage(href, id);
+          }}
+        />
+        <div className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm">
+          <div className="px-4 h-full overflow-y-scroll">
+            <div
+              className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto"
+              onClick={handleUserClickEvent}
+            >
+              <style type="text/css" ref={styleRef} />
+              <div dangerouslySetInnerHTML={{ __html: fullContent }}></div>
+            </div>
+          </div>
+        </div>
+        <div className="absolute top-0 right-0 bg-white rounded-lg">
+          <div className="p-1 flex flex-wrap flex-col">
+            <Button size="icon" variant="ghost" >
+              <Palette size={16} />
+            </Button>
+            <Button size="icon" variant="ghost" >
+              <InfoIcon size={16}/>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

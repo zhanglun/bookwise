@@ -70,7 +70,7 @@ body.bg3,
 }
 
 * {
-  --sb-track-color: #ffffff;
+  --sb-track-color: transparent;
   --sb-thumb-color: #59555c9c;
   --sb-size: 8px;
 

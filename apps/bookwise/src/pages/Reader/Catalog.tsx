@@ -31,7 +31,7 @@ export const Catalog = (props: CatalogProps) => {
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
     const styles = [
-      "font-semibold mx-2 py-2",
+      "font-normal mx-3 py-1",
       "font-normal ml-6 mr-3 py-1",
       "font-normal ml-10 mr-3 py-1",
     ];
@@ -40,7 +40,7 @@ export const Catalog = (props: CatalogProps) => {
       const { id, label, href, subitems } = item;
 
       return (
-        <div className={clsx("text-sm cursor-default")} key={id}>
+        <div className={clsx("text-sm text-stone-800 cursor-default")} key={id}>
           <div
             data-idx={idx}
             data-href={href}
@@ -65,17 +65,17 @@ export const Catalog = (props: CatalogProps) => {
     <motion.div
       layout
       id="catalog"
-      className={clsx("grid grid-flow-row w-[250px]", className)}
+      className={clsx("grid grid-flow-row w-[296px] overflow-hidden", className)}
     >
-      <div className="grid grid-flow-col grid-cols-[24px_1fr] gap-1 items-center px-4 py-2 mt-3">
-        <span
-          className="w-6 h-6 rounded-lg hover:bg-accent flex items-center justify-center"
-          onClick={showSidebar}
-        >
-          <ChevronsLeft size={18} />
-        </span>
+      <div className="grid grid-flow-col grid-cols-[1fr] gap-1 items-center px-5 py-2 mt-3">
+        {/*<span*/}
+        {/*  className="w-6 h-6 rounded-lg hover:bg-accent flex items-center justify-center"*/}
+        {/*  onClick={showSidebar}*/}
+        {/*>*/}
+        {/*  <ChevronsLeft size={18} />*/}
+        {/*</span>*/}
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-          {/*{metadata.title}*/}
+          {metadata.title}
         </span>
       </div>
       <div className="px-2 py-2 h-full overflow-y-scroll">
