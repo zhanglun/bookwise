@@ -47,9 +47,9 @@ function App() {
       store.sidebarCollapse
     );
     if (store.sidebarCollapse) {
-      animate([ [ scope.current, { x: "-100%", width: 0, paddingRight: 0 }, { duration: 0.3 } ] ]);
+      animate([ [ scope.current, { x: "-100%", width: 0 }, { duration: 0.3 } ] ]);
     } else {
-      animate(scope.current, { x: "0", width: 200, paddingRight: '0.5rem' }, { duration: 0.3 });
+      animate(scope.current, { x: "0", width: 200}, { duration: 0.3 });
     }
   }, [ store.sidebarCollapse ]);
 
@@ -102,11 +102,11 @@ function App() {
         </div>
         <motion.div
           layout
-          className="overflow-hidden grid grid-cols-[minmax(0,max-content)_1fr] grid-auto-rows">
+          className="overflow-hidden grid gap-3 grid-cols-[minmax(0,max-content)_1fr] grid-auto-rows">
           <div ref={ scope }>
             <Sidebar/>
           </div>
-          <div className="rounded-lg overflow-hidden shadow-lg mr-3">
+          <div className="rounded-lg overflow-hidden shadow-lg mr-3 bg-white">
             <Outlet/>
           </div>
         </motion.div>

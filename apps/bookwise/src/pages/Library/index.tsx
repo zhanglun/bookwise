@@ -1,4 +1,4 @@
-import { BookPlus, Plus } from "lucide-react";
+import { ArrowDownWideNarrow, ArrowUpWideNarrow, BookPlus, ChevronDown, Plus } from "lucide-react";
 import { Book } from "@/components/Book";
 import { useSelectFromDisk } from "@/hooks/useBook";
 import { useEffect, useState } from "react";
@@ -72,11 +72,23 @@ export const Library = () => {
             </div>
           </div>
           <div className="px-3 py-2"></div>
-          <div className="px-3 py-2">
+          <div className="px-3 py-2 flex justify-between">
             <Button variant="outline" size="sm" className="h-8 border-dashed">
               <Plus size={16} />
               Filter
             </Button>
+            <div>
+              <Button variant="ghost" size="sm">
+                <span className="flex items-center gap-1 mr-1">
+                  {/* desc */}
+                  <ArrowDownWideNarrow size="16"/>
+                  {/* asc */}
+                  <ArrowUpWideNarrow size={16} />
+                  Author
+                </span>
+                <ChevronDown size="16"/>
+              </Button>
+            </div>
           </div>
           <div
             className={clsx(

@@ -20,20 +20,12 @@ export const Catalog = (props: CatalogProps) => {
     onGoToPage(href, id);
   };
 
-  const showSidebar = () => {
-    const $catalog = document.querySelector("#catalog");
-
-    if ($catalog && !expanded) {
-      animate($catalog, { x: [0, -240], width: 0 });
-      setExpanded(true);
-    }
-  };
-
   const renderItems = (list: BookCatalog[], idx = 0) => {
     const styles = [
       "font-normal mx-3 py-1",
       "font-normal ml-6 mr-3 py-1",
       "font-normal ml-10 mr-3 py-1",
+      "font-normal ml-14 mr-3 py-1",
     ];
 
     return list.map((item) => {
@@ -46,15 +38,15 @@ export const Catalog = (props: CatalogProps) => {
             data-href={href}
             data-anchor-id={id}
             className={clsx(
-              "hover:underline overflow-hidden text-ellipsis whitespace-nowrap",
-              styles[idx]
+              "hover:underline hover:text-accent-foreground overflow-hidden text-ellipsis whitespace-nowrap",
+              "py-2 px-3"
             )}
             onClick={() => goToPage(href, id)}
           >
             {label}
           </div>
           {subitems.length > 0 && (
-            <div className="">{renderItems(subitems, idx + 1)}</div>
+            <div className="pl-4">{renderItems(subitems, idx + 1)}</div>
           )}
         </div>
       );
@@ -74,7 +66,7 @@ export const Catalog = (props: CatalogProps) => {
         {/*>*/}
         {/*  <ChevronsLeft size={18} />*/}
         {/*</span>*/}
-        <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
+        <span className="text-md font-bold overflow-hidden whitespace-nowrap text-ellipsis">
           {metadata.title}
         </span>
       </div>

@@ -1,9 +1,7 @@
 import { request } from "@/helpers/request";
 import {
   MouseEvent,
-  useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -18,9 +16,8 @@ import {
 import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { useBearStore } from "@/store";
-import { BookSideDetail } from "../Library/BookSideDetail";
 import { Button } from "@/components/ui/button";
-import { Info, InfoIcon, Palette } from "lucide-react";
+import { InfoIcon, Palette, ScrollText } from "lucide-react";
 
 export const Reader = () => {
   const location = useLocation();
@@ -280,8 +277,8 @@ export const Reader = () => {
     bookInfo && generateFullContent();
   }, [bookInfo]);
   return (
-    <div className="h-full relative pr-[60px]">
-      <div className="h-full bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
+    <div className="h-full relative pr-14">
+      <div className="h-full rounded-lg bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
         <Catalog
           className="h-full bg-white/50"
           data={catalog}
@@ -307,6 +304,9 @@ export const Reader = () => {
           <div className="p-1 flex flex-wrap flex-col">
             <Button size="icon" variant="ghost" >
               <Palette size={16} />
+            </Button>
+            <Button size="icon" variant="ghost" >
+              <ScrollText size={16} />
             </Button>
             <Button size="icon" variant="ghost" >
               <InfoIcon size={16}/>
