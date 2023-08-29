@@ -7,6 +7,7 @@ import { BookResItem } from "@/interface/book";
 import clsx from "clsx";
 import { BookSideDetail } from "./BookSideDetail";
 import { Button } from "@/components/ui/button";
+import { BookFilter } from "@/pages/Library/BookFilter";
 
 export const Library = () => {
   const [files, openFileDialog] = useSelectFromDisk();
@@ -16,7 +17,6 @@ export const Library = () => {
   );
 
   const handleBookClick = (book: BookResItem) => {
-    console.log(book);
     setCurrentBook(book);
   };
 
@@ -75,10 +75,7 @@ export const Library = () => {
           </div>
           <div className="px-3 py-2"></div>
           <div className="px-3 py-2 flex justify-between">
-            <Button variant="outline" size="sm" className="h-8 border-dashed">
-              <Plus size={16} />
-              Filter
-            </Button>
+            <BookFilter />
             <div>
               <Button variant="ghost" size="sm">
                 <span className="flex items-center gap-1 mr-1">

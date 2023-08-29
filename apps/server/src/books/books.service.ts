@@ -268,7 +268,6 @@ export class BooksService {
     filter?: Filtering,
   ): Promise<PaginatedResource<Partial<Book>>> {
     const where = getWhere(filter);
-    console.log('whjere', where)
     const order = getOrder(sort);
     const [books, total] = await this.bookRepository.findAndCount({
       where,
@@ -287,6 +286,21 @@ export class BooksService {
 
   public async findOneWithId(id: string) {
     return this.bookRepository.findOneBy({ id });
+  }
+
+  public async queryRecentlyReading() {
+    return this.bookRepository.find({
+      order: {
+        addition_info: {
+          read_progress_updated_at: 'desc',
+        },
+      },
+      relations: {
+        author: true,
+        publisher: true,
+        addition_info: true,
+      },
+    });
   }
 
   public async getBookFileBlobs(id: string): Promise<fs.ReadStream> {

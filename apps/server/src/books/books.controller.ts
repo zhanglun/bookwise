@@ -37,6 +37,11 @@ export class BooksController {
     return this.booksService.getCoverFigure(query.path);
   }
 
+  @Get('/recently-reading')
+  queryRecentlyReading(): Promise<Book[]> {
+    return this.booksService.queryRecentlyReading();
+  }
+
   @Get()
   findAll(
     @SortingParams(['title', 'author', 'publisher']) sort?: Sorting,
@@ -44,7 +49,9 @@ export class BooksController {
     filter?: Filtering,
   ): Promise<PaginatedResource<Partial<Book>>> {
     this.logger.log(
-      `REST request to get books:, ${JSON.stringify(sort)}, ${JSON.stringify(filter)}`,
+      `REST request to get books:, ${JSON.stringify(sort)}, ${JSON.stringify(
+        filter,
+      )}`,
     );
     return this.booksService.findAll(sort, filter);
   }
