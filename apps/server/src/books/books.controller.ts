@@ -12,14 +12,23 @@ import {
   HttpCode,
   Delete,
   Res,
+  Logger,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
 import { Book } from './entities/book.entity';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
+import { PaginatedResource } from './dto/find-book.dto';
+import {
+  Filtering,
+  FilteringParams,
+  Sorting,
+  SortingParams,
+} from './books.decorator';
 
 @Controller('books')
 export class BooksController {
+  private readonly logger = new Logger(BooksController.name);
   constructor(private booksService: BooksService) {}
 
   @Get('cover')
@@ -29,8 +38,15 @@ export class BooksController {
   }
 
   @Get()
-  findAll(): Promise<Book[]> {
-    return this.booksService.findAll();
+  findAll(
+    @SortingParams(['title', 'author', 'publisher']) sort?: Sorting,
+    @FilteringParams(['author.name', 'publisher', 'format', 'language_id'])
+    filter?: Filtering,
+  ): Promise<PaginatedResource<Partial<Book>>> {
+    this.logger.log(
+      `REST request to get books:, ${JSON.stringify(sort)}, ${JSON.stringify(filter)}`,
+    );
+    return this.booksService.findAll(sort, filter);
   }
 
   @Get('/:id')

@@ -12,6 +12,8 @@ import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 import { AdditionalInfoEntity } from './entities/additional-info.entity';
+import { PaginatedResource } from './dto/find-book.dto';
+import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 
 interface EpubIdentifier {
   scheme: string;
@@ -261,13 +263,26 @@ export class BooksService {
     };
   }
 
-  public async findAll() {
-    return this.bookRepository.find({
+  public async findAll(
+    sort?: Sorting,
+    filter?: Filtering,
+  ): Promise<PaginatedResource<Partial<Book>>> {
+    const where = getWhere(filter);
+    console.log('whjere', where)
+    const order = getOrder(sort);
+    const [books, total] = await this.bookRepository.findAndCount({
+      where,
+      order,
       relations: {
         author: true,
         publisher: true,
       },
     });
+
+    return {
+      items: books,
+      total: total,
+    };
   }
 
   public async findOneWithId(id: string) {

@@ -2,7 +2,7 @@ import { BookPlus } from "lucide-react"
 import {Book} from "@/components/Book";
 
 export const Home = () => {
-  return <div className="max-w-5xl m-auto  grid grid-flow-row gap-3">
+  return <div className="h-full grid grid-flow-row gap-3 overflow-y-scroll px-4 sm:px-4">
     <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
       Home
     </div>

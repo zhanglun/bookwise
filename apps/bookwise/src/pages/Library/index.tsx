@@ -44,7 +44,9 @@ export const Library = () => {
   useEffect(() => {
     request.get("/books").then((res) => {
       console.log("🚀 ~ file: index.tsx:34 ~ request.get ~ res:", res);
-      setBookList(res.data);
+      const { items, total } = res.data;
+
+      setBookList(items);
     });
   }, []);
 
