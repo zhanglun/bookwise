@@ -1,10 +1,5 @@
 import { request } from "@/helpers/request";
-import {
-  MouseEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { MouseEvent, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import {
   BookCatalog,
@@ -18,6 +13,7 @@ import { getAbsoluteUrl } from "@/helpers/utils";
 import { useBearStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { InfoIcon, Palette, ScrollText } from "lucide-react";
+import getXPath from "@/helpers/getXPath";
 
 export const Reader = () => {
   const location = useLocation();
@@ -26,7 +22,7 @@ export const Reader = () => {
   const store = useBearStore((state) => ({
     bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
-  }))
+  }));
   const [bookInfo, setBookInfo] = useState<any>({
     packaging: { metadata: {} },
     catalog: [],
@@ -53,18 +49,16 @@ export const Reader = () => {
   };
 
   const getBookDetail = () => {
-    request.get(`books/${id}`)
-      .then((res) => {
-        store.addBookToStack(res.data)
-      })
-  }
+    request.get(`books/${id}`).then((res) => {
+      store.addBookToStack(res.data);
+    });
+  };
 
   const getBookAdditionalInfo = () => {
-    request.get(`books/${id}/addition-infos`)
-      .then((res) => {
-        console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
-      })
-  }
+    request.get(`books/${id}/addition-infos`).then((res) => {
+      console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
+    });
+  };
 
   useEffect(() => {
     getBookBlobs();
@@ -257,6 +251,32 @@ export const Reader = () => {
 
     bookInfo && generateFullContent();
   }, [bookInfo]);
+
+  const handleUserMouseUpEvent = () => {
+    const selection = window.getSelection();
+
+    if (!selection || selection?.isCollapsed) {
+      return;
+    }
+
+    console.log("%c Line:263 🍐 selection", "color:#2eafb0", selection);
+
+    const selectContent = selection.toString();
+    console.log("%c Line:264 🍋 selectContent", "color:#b03734", selectContent);
+
+    const range = selection.getRangeAt(0);
+    console.log("%c Line:265 🍋 range", "color:#42b983", range);
+    const { startOffset, endOffset } = range;
+    console.log("%c Line:266 🥑 startOffset", "color:#e41a6a", startOffset);
+    console.log("%c Line:266 🍢 endOffset", "color:#42b983", endOffset);
+    const startContainerXPath = getXPath(range.startContainer);
+    console.log("%c Line:269 🍣 startContainerXPath", "color:#fca650", startContainerXPath);
+    const endContainerXPath = getXPath(range.endContainer);
+    console.log("%c Line:270 🍭 endContainerXPath", "color:#ed9ec7", endContainerXPath);
+
+
+  };
+
   return (
     <div className="h-full relative pr-14">
       <div className="h-full rounded-lg bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
@@ -275,22 +295,26 @@ export const Reader = () => {
             <div
               className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
               onClick={handleUserClickEvent}
+              onMouseUp={handleUserMouseUpEvent}
             >
               <style type="text/css" ref={styleRef} />
-              <section className="book-section" dangerouslySetInnerHTML={{ __html: fullContent }}></section>
+              <section
+                className="book-section"
+                dangerouslySetInnerHTML={{ __html: fullContent }}
+              ></section>
             </div>
           </div>
         </div>
         <div className="absolute top-0 right-0 bg-white rounded-lg">
           <div className="p-1 flex flex-wrap flex-col">
-            <Button size="icon" variant="ghost" >
+            <Button size="icon" variant="ghost">
               <Palette size={16} />
             </Button>
-            <Button size="icon" variant="ghost" >
+            <Button size="icon" variant="ghost">
               <ScrollText size={16} />
             </Button>
-            <Button size="icon" variant="ghost" >
-              <InfoIcon size={16}/>
+            <Button size="icon" variant="ghost">
+              <InfoIcon size={16} />
             </Button>
           </div>
         </div>
