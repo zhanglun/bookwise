@@ -30,7 +30,7 @@ const router = createBrowserRouter([
         element: <Starred />,
       },
       {
-        path: "/reader",
+        path: "/reader/:id",
         element: <Reader />,
       },
     ],

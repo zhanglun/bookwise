@@ -2,10 +2,12 @@ import { BookPlus } from "lucide-react";
 import { Book } from "@/components/Book";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
+import { useNavigate } from "react-router-dom";
 
 export const Home = () => {
   const [recentlyAdd, setRecentlyAdd] = useState([]);
   const [recentlyReading, setRecentlyReading] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     request
@@ -53,7 +55,13 @@ export const Home = () => {
       </div>
       <div className="px-3 py-2 grid grid-cols-[repeat(auto-fill,minmax(208px,1fr))] sm:gap-x-1 sm:gap-y-7 xl:gap-x-3 xl:gap-y-9">
         {recentlyAdd.map((book: any) => {
-          return <Book key={book.id} data={book} />;
+          return (
+            <Book
+              key={book.id}
+              data={book}
+              onClick={() => navigate(`/reader/${book.id}`)}
+            />
+          );
         })}
       </div>
       <div className="px-3 pt-5 pb-2 text-xl font-bold text-stone-900">
@@ -61,7 +69,13 @@ export const Home = () => {
       </div>
       <div className="px-3 py-2 grid grid-cols-[repeat(auto-fill,minmax(208px,1fr))] sm:gap-x-1 sm:gap-y-7 xl:gap-x-3 xl:gap-y-9">
         {recentlyReading.map((book: any) => {
-          return <Book key={book.id} data={book} />;
+          return (
+            <Book
+              key={book.id}
+              data={book}
+              onClick={() => navigate(`/reader/${book.id}`)}
+            />
+          );
         })}
       </div>
     </div>

@@ -47,10 +47,7 @@ export function PresetActions(props: PresetActionProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const startRead = () => {
-    // TODO: go to read page
-    navigate("/reader", {
-      state: { book_id: data.id },
-    });
+    navigate(`/reader/${data.id}`);
   };
 
   const confirmDelete = () => {

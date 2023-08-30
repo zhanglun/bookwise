@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import {
   BookCatalog,
   accessFileContent,
@@ -22,6 +22,8 @@ import { InfoIcon, Palette, ScrollText } from "lucide-react";
 export const Reader = () => {
   const location = useLocation();
   const { state } = location;
+  const { id } = useParams();
+  console.log("%c Line:26 🥚 id", "color:#3f7cff", id);
   const store = useBearStore((state) => ({
     bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
@@ -39,7 +41,7 @@ export const Reader = () => {
 
   const getBookBlobs = () => {
     request
-      .get(`books/${state.book_id}/blobs`, {
+      .get(`books/${id}/blobs`, {
         responseType: "blob",
       })
       .then((res) => {
@@ -53,7 +55,7 @@ export const Reader = () => {
   };
 
   const getBookDetail = () => {
-    request.get(`books/${state.book_id}`)
+    request.get(`books/${id}`)
       .then((res) => {
         store.addBookToStack(res.data)
       })
