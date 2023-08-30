@@ -106,7 +106,7 @@ function App() {
           <div ref={ scope }>
             <Sidebar/>
           </div>
-          <div className="rounded-lg overflow-hidden shadow-lg mr-3 bg-white">
+          <div className="rounded-lg overflow-hidden mr-3">
             <Outlet/>
           </div>
         </motion.div>

@@ -8,8 +8,10 @@ import clsx from "clsx";
 import { BookSideDetail } from "./BookSideDetail";
 import { Button } from "@/components/ui/button";
 import { BookFilter } from "@/pages/Library/BookFilter";
+import { useNavigate } from "react-router-dom";
 
 export const Library = () => {
+  const navigate = useNavigate();
   const [files, openFileDialog] = useSelectFromDisk();
   const [bookList, setBookList] = useState<any>([]);
   const [currentBook, setCurrentBook] = useState<BookResItem>(
@@ -51,7 +53,7 @@ export const Library = () => {
   }, []);
 
   return (
-    <div className="flex h-full">
+    <div className="bg-white flex h-full">
       <div className="flex-1 h-full grid grid-flow-row gap-3 overflow-y-scroll px-4 sm:px-4">
         <div>
           <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
@@ -101,7 +103,7 @@ export const Library = () => {
                 <Book
                   key={book.id}
                   data={book}
-                  onClick={handleBookClick}
+                  onClick={() => navigate(`/reader/${book.id}`)}
                   onHover={handleBookClick}
                 />
               );

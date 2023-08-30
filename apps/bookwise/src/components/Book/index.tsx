@@ -14,24 +14,23 @@ export const Book = (props: BookProps) => {
 
   return (
     <div
-      className="border border-border rounded-lg isolation bg-white w-[208px] transition-transform hover:scale-[1.02] hover:shadow-hover-book"
-      onClick={() => onClick && onClick(data) }
-      onMouseEnter={() => onHover && onHover(data) }
+      className="border border-border rounded-lg isolation bg-white w-[208px] transition-all hover:scale-[1.02] hover:shadow-hover-book group duration-[0.5s]"
+      onMouseEnter={() => onHover && onHover(data)}
     >
       <div className="h-[308px] flex flex-col">
         <div className="w-full h-[202px] flex items-center justify-center relative opacity-90">
-          <Cover book={ data }/>
+          <Cover book={data} onClick={() => onClick && onClick(data)} />
         </div>
         <div className="flex-1 p-3 flex flex-col border-t border-border">
-          <h1
-            className="text-sm font-bold line-clamp-2 leading-5 mb-1 flex-1 balance"
-          >{ data.title }</h1>
+          <h1 className="text-sm font-bold line-clamp-2 leading-5 mb-1 flex-1 balance">
+            {data.title}
+          </h1>
           <div className="leading-5 flex flex-row items-center text-xs leading text-muted-foreground">
-           <span className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
-             { data.author?.name }
-           </span>
+            <span className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
+              {data.author?.name}
+            </span>
             <span>
-              <PresetActions data={ data }/>
+              <PresetActions data={data}></PresetActions>
             </span>
           </div>
         </div>

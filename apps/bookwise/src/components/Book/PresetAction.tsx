@@ -34,6 +34,7 @@ import { MetaForm } from "../MetaForm";
 
 export interface PresetActionProps {
   data: BookResItem;
+  children?: React.ReactNode;
 }
 
 export function PresetActions(props: PresetActionProps) {
@@ -68,8 +69,8 @@ export function PresetActions(props: PresetActionProps) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <MoreVertical size={14} />
+        <DropdownMenuTrigger asChild className="cursor-pointer">
+          <MoreVertical size={16} className="hover:text-stone-900 transition-all" />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => startRead()}>
