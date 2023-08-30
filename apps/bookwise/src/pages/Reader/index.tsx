@@ -23,7 +23,6 @@ export const Reader = () => {
   const location = useLocation();
   const { state } = location;
   const { id } = useParams();
-  console.log("%c Line:26 🥚 id", "color:#3f7cff", id);
   const store = useBearStore((state) => ({
     bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
@@ -33,7 +32,6 @@ export const Reader = () => {
     catalog: [],
   });
   const [catalog, setCatalog] = useState<BookCatalog[]>([]);
-  const [content, setContent] = useState<string>("");
   const [currentHref, setCurrentHref] = useState<string>("");
   const [currentId, setCurrentId] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
@@ -61,9 +59,17 @@ export const Reader = () => {
       })
   }
 
+  const getBookAdditionalInfo = () => {
+    request.get(`books/${id}/addition-infos`)
+      .then((res) => {
+        console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
+      })
+  }
+
   useEffect(() => {
     getBookBlobs();
     getBookDetail();
+    getBookAdditionalInfo();
   }, [state]);
 
   useEffect(() => {
@@ -135,34 +141,6 @@ export const Reader = () => {
     }
   };
 
-  // const goToPage = useCallback(
-  //   async (href: string, id?: string) => {
-  //     const { files } = bookInfo;
-  //     let anchorId: string;
-
-  //     if (href.indexOf("#") >= 0) {
-  //       href = href.split("#")[0];
-  //       anchorId = href.split("#")[0];
-  //     }
-
-  //     if (files[href]) {
-  //       const box = document.createElement("div");
-  //       const body = await accessPageContent(files[href]);
-
-  //       if (body) {
-  //         const images = body?.querySelectorAll("img, image");
-  //         await convertImages(files, href, images);
-
-  //         setTimeout(() => {
-  //           box.innerHTML += body.innerHTML;
-  //           setContent(box.innerHTML || "");
-  //         }, 10);
-  //       }
-  //     }
-  //   },
-  //   [bookInfo]
-  // );
-
   const goToPage = (href: string, id: string) => {
     const target = document.getElementById(id);
     console.log("%c Line:149 🥔 target", "color:#33a5ff", target);
@@ -196,6 +174,7 @@ export const Reader = () => {
           href.indexOf("www.") >= 0)
       ) {
         // TODO: open in browser
+        window.open(href);
       } else {
         const realHref = getAbsoluteUrl(currentHref, href);
         console.log(realHref);
@@ -294,11 +273,11 @@ export const Reader = () => {
         <div className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm">
           <div className="px-4 h-full overflow-y-scroll">
             <div
-              className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto"
+              className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
               onClick={handleUserClickEvent}
             >
               <style type="text/css" ref={styleRef} />
-              <div dangerouslySetInnerHTML={{ __html: fullContent }}></div>
+              <section className="book-section" dangerouslySetInnerHTML={{ __html: fullContent }}></section>
             </div>
           </div>
         </div>
