@@ -110,6 +110,12 @@ importers:
 
   apps/bookwise:
     dependencies:
+      '@floating-ui/dom':
+        specifier: ^1.5.1
+        version: 1.5.1
+      '@floating-ui/react-dom':
+        specifier: ^2.0.2
+        version: 2.0.2(react-dom@18.2.0)(react@18.2.0)
       '@hookform/resolvers':
         specifier: ^3.2.0
         version: 3.2.0(react-hook-form@7.45.4)
@@ -119,13 +125,25 @@ importers:
       '@radix-ui/react-alert-dialog':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-arrow':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-aspect-ratio':
         specifier: ^1.0.3
         version: 1.0.3(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-compose-refs':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react@18.2.15)(react@18.2.0)
+      '@radix-ui/react-context':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react@18.2.15)(react@18.2.0)
       '@radix-ui/react-context-menu':
         specifier: ^2.1.4
         version: 2.1.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dialog':
+        specifier: ^1.0.4
+        version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-dismissable-layer':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-dropdown-menu':
@@ -140,6 +158,15 @@ importers:
       '@radix-ui/react-popover':
         specifier: ^1.0.6
         version: 1.0.6(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-portal':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-presence':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-primitive':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-scroll-area':
         specifier: ^1.0.4
         version: 1.0.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
@@ -152,6 +179,15 @@ importers:
       '@radix-ui/react-toast':
         specifier: ^1.1.4
         version: 1.1.4(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-use-controllable-state':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react@18.2.15)(react@18.2.0)
+      '@radix-ui/react-use-layout-effect':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react@18.2.15)(react@18.2.0)
+      '@radix-ui/react-use-size':
+        specifier: ^1.0.1
+        version: 1.0.1(@types/react@18.2.15)(react@18.2.0)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -1099,8 +1135,8 @@ packages:
       '@floating-ui/utils': 0.1.1
     dev: false
 
-  /@floating-ui/react-dom@2.0.1(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-rZtAmSht4Lry6gdhAJDrCp/6rKN7++JnL1/Anbr/DdeyYXQPxvg/ivrbYvJulbRf4vL8b212suwMM2lxbv+RQA==}
+  /@floating-ui/react-dom@2.0.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-5qhlDvjaLmAst/rKb3VdlCinwTF4EYMiVxuuc/HVUjs46W0zgtbMmAZ1UTsDrRTxRmUEzl92mOtWbeeXL26lSQ==}
     peerDependencies:
       react: '>=16.8.0'
       react-dom: '>=16.8.0'
@@ -2279,7 +2315,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.22.6
-      '@floating-ui/react-dom': 2.0.1(react-dom@18.2.0)(react@18.2.0)
+      '@floating-ui/react-dom': 2.0.2(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-arrow': 1.0.3(@types/react-dom@18.2.7)(@types/react@18.2.15)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-compose-refs': 1.0.1(@types/react@18.2.15)(react@18.2.0)
       '@radix-ui/react-context': 1.0.1(@types/react@18.2.15)(react@18.2.0)

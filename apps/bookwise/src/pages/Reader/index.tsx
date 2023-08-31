@@ -14,6 +14,19 @@ import { useBearStore } from "@/store";
 import { Button } from "@/components/ui/button";
 import { InfoIcon, Palette, ScrollText } from "lucide-react";
 import getXPath from "@/helpers/getXPath";
+import * as Selection from "@/components/SelectionPopover";
+import "@/components/SelectionPopover/index.css";
+import {
+  Command,
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  CommandShortcut,
+} from "@/components/ui/command";
 
 export const Reader = () => {
   const location = useLocation();
@@ -32,6 +45,7 @@ export const Reader = () => {
   const [currentId, setCurrentId] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
   const [fullContent, setFullContent] = useState("");
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const getBookBlobs = () => {
     request
@@ -256,6 +270,7 @@ export const Reader = () => {
     const selection = window.getSelection();
 
     if (!selection || selection?.isCollapsed) {
+      setShowTooltip(false);
       return;
     }
 
@@ -270,11 +285,19 @@ export const Reader = () => {
     console.log("%c Line:266 🥑 startOffset", "color:#e41a6a", startOffset);
     console.log("%c Line:266 🍢 endOffset", "color:#42b983", endOffset);
     const startContainerXPath = getXPath(range.startContainer);
-    console.log("%c Line:269 🍣 startContainerXPath", "color:#fca650", startContainerXPath);
+    console.log(
+      "%c Line:269 🍣 startContainerXPath",
+      "color:#fca650",
+      startContainerXPath
+    );
     const endContainerXPath = getXPath(range.endContainer);
-    console.log("%c Line:270 🍭 endContainerXPath", "color:#ed9ec7", endContainerXPath);
+    console.log(
+      "%c Line:270 🍭 endContainerXPath",
+      "color:#ed9ec7",
+      endContainerXPath
+    );
 
-
+    setShowTooltip(true);
   };
 
   return (
@@ -292,17 +315,44 @@ export const Reader = () => {
         />
         <div className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm">
           <div className="px-4 h-full overflow-y-scroll">
-            <div
-              className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
-              onClick={handleUserClickEvent}
-              onMouseUp={handleUserMouseUpEvent}
-            >
-              <style type="text/css" ref={styleRef} />
-              <section
-                className="book-section"
-                dangerouslySetInnerHTML={{ __html: fullContent }}
-              ></section>
-            </div>
+            <Selection.Root >
+              <Selection.Trigger>
+                <div
+                  className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
+                  onClick={handleUserClickEvent}
+                  onMouseUp={handleUserMouseUpEvent}
+                >
+                  <style type="text/css" ref={styleRef} />
+                  <section
+                    className="book-section"
+                    dangerouslySetInnerHTML={{ __html: fullContent }}
+                  ></section>
+                </div>
+              </Selection.Trigger>
+              <Selection.Portal>
+                <Selection.Content className="SelectionContent">
+                  <div className="p-4 bg-slate-400">
+                    <Command>
+                      <CommandInput placeholder="Type a command or search..." />
+                      <CommandList>
+                        <CommandEmpty>No results found.</CommandEmpty>
+                        <CommandGroup heading="Suggestions">
+                          <CommandItem>Calendar</CommandItem>
+                          <CommandItem>Search Emoji</CommandItem>
+                          <CommandItem>Calculator</CommandItem>
+                        </CommandGroup>
+                        <CommandSeparator />
+                        <CommandGroup heading="Settings">
+                          <CommandItem>Profile</CommandItem>
+                          <CommandItem>Billing</CommandItem>
+                          <CommandItem>Settings</CommandItem>
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </div>
+                </Selection.Content>
+              </Selection.Portal>
+            </Selection.Root>
           </div>
         </div>
         <div className="absolute top-0 right-0 bg-white rounded-lg">
