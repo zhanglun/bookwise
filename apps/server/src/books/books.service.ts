@@ -169,7 +169,7 @@ export class BooksService {
     const { metadata } = book;
 
     if (!metadata.publisher) {
-      return null;
+      return '';
     }
 
     return metadata.publisher['#text']
@@ -236,9 +236,10 @@ export class BooksService {
       fs.writeFileSync(bookPath, file.buffer);
       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
 
-      this.dataSource;
+      // this.dataSource;
 
       const bookModel = this.createBookModel(book);
+      console.log("🚀 ~ file: books.service.ts:242 ~ BooksService ~ bookModel:", bookModel)
       const author = await this.authorsService.findOneOrCreate({
         name: bookModel.author,
       });
