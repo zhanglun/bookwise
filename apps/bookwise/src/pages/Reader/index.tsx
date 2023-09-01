@@ -12,21 +12,17 @@ import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { useBearStore } from "@/store";
 import { Button } from "@/components/ui/button";
-import { InfoIcon, Palette, ScrollText } from "lucide-react";
+import {
+  Highlighter,
+  InfoIcon,
+  MessageSquare,
+  Palette,
+  ScrollText,
+  Share,
+} from "lucide-react";
 import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
-import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator,
-  CommandShortcut,
-} from "@/components/ui/command";
 
 export const Reader = () => {
   const location = useLocation();
@@ -42,6 +38,7 @@ export const Reader = () => {
   });
   const [catalog, setCatalog] = useState<BookCatalog[]>([]);
   const [currentHref, setCurrentHref] = useState<string>("");
+  const boundaryRef = useRef<HTMLDivElement>(null);
   const [currentId, setCurrentId] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
   const [fullContent, setFullContent] = useState("");
@@ -300,6 +297,12 @@ export const Reader = () => {
     setShowTooltip(true);
   };
 
+  useEffect(() => {
+    if (showTooltip) {
+      // document.
+    }
+  }, [showTooltip]);
+
   return (
     <div className="h-full relative pr-14">
       <div className="h-full rounded-lg bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
@@ -314,8 +317,8 @@ export const Reader = () => {
           }}
         />
         <div className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm">
-          <div className="px-4 h-full overflow-y-scroll">
-            <Selection.Root >
+          <div className="px-4 h-full overflow-y-scroll" id="boundaryRef">
+            <Selection.Root>
               <Selection.Trigger>
                 <div
                   className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
@@ -330,25 +333,22 @@ export const Reader = () => {
                 </div>
               </Selection.Trigger>
               <Selection.Portal>
-                <Selection.Content className="SelectionContent">
-                  <div className="p-4 bg-slate-400">
-                    <Command>
-                      <CommandInput placeholder="Type a command or search..." />
-                      <CommandList>
-                        <CommandEmpty>No results found.</CommandEmpty>
-                        <CommandGroup heading="Suggestions">
-                          <CommandItem>Calendar</CommandItem>
-                          <CommandItem>Search Emoji</CommandItem>
-                          <CommandItem>Calculator</CommandItem>
-                        </CommandGroup>
-                        <CommandSeparator />
-                        <CommandGroup heading="Settings">
-                          <CommandItem>Profile</CommandItem>
-                          <CommandItem>Billing</CommandItem>
-                          <CommandItem>Settings</CommandItem>
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
+                <Selection.Content
+                  className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                  collisionBoundary={document.getElementById("boundaryRef")}
+                  avoidCollisions={false}
+                  hideWhenDetached={true}
+                >
+                  <div className="">
+                    <Button size="icon" variant="ghost">
+                      <Highlighter size={14} />
+                    </Button>
+                    <Button size="icon" variant="ghost">
+                      <MessageSquare size={14} />
+                    </Button>
+                    <Button size="icon" variant="ghost">
+                      <Share size={14} />
+                    </Button>
                   </div>
                 </Selection.Content>
               </Selection.Portal>
