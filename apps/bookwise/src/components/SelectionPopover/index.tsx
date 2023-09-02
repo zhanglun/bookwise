@@ -444,6 +444,8 @@ const SelectionContentImpl = React.forwardRef<
     altBoundary: hasExplicitBoundaries,
   }
 
+  console.log("%c Line:442 🥐 detectOverflowOptions", "color:#42b983", detectOverflowOptions);
+
   const { x, y, strategy, placement, refs, middlewareData, isPositioned } = useFloating({
     strategy: 'fixed',
     placement: desiredPlacement,
@@ -654,6 +656,9 @@ const transformOrigin = (options: { arrowWidth: number; arrowHeight: number }): 
       x = `${rects.floating.width + arrowHeight}px`
       y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`
     }
+
+    console.log("%c Line:658 🍑 { data: { x, y } }", "color:#3f7cff", { data: { x, y } });
+
     return { data: { x, y } }
   },
 })

@@ -313,17 +313,22 @@ export const Reader = () => {
           onGoToPage={async (href: string, id: string) => {
             setCurrentHref(href);
             setCurrentId(id);
+
             await goToPage(href, id);
           }}
         />
-        <div className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm">
-          <div className="px-4 h-full overflow-y-scroll" id="boundaryRef">
+        <div
+          className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm"
+          id="boundaryRef"
+        >
+          <div className="px-4 h-full overflow-y-scroll">
             <Selection.Root>
               <Selection.Trigger>
                 <div
                   className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
                   onClick={handleUserClickEvent}
                   onMouseUp={handleUserMouseUpEvent}
+                  id="popover-container"
                 >
                   <style type="text/css" ref={styleRef} />
                   <section
@@ -332,7 +337,9 @@ export const Reader = () => {
                   ></section>
                 </div>
               </Selection.Trigger>
-              <Selection.Portal>
+              <Selection.Portal
+                container={document.getElementById("popover-container")}
+              >
                 <Selection.Content
                   className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
                   collisionBoundary={document.getElementById("boundaryRef")}
