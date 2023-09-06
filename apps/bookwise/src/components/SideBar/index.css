@@ -6,6 +6,6 @@
   }
 
   .side-menu-item.active {
-    @apply bg-stone-300/50;
+    @apply bg-white shadow-sm;
   }
 }

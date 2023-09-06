@@ -6,7 +6,7 @@ import "./index.css";
 export const Sidebar = () => {
   return (
     <div id="sidebar" className="overflow-hidden">
-      <div className="w-full h-full bg-white/50 shadow-sm rounded-md border border-[#efefef] border-opacity-60">
+      <div className="w-full h-full">
         <div className="p-3 flex flex-row space-x-3">
           <Button
             variant={"secondary"}
