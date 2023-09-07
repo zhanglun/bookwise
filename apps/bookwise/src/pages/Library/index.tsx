@@ -53,7 +53,7 @@ export const Library = () => {
   }, []);
 
   return (
-    <div className="bg-white flex h-full">
+    <div className="bg-white flex h-full overflow-hidden rounded-lg">
       <div className="flex-1 h-full grid grid-flow-row gap-3 overflow-y-scroll px-4 sm:px-4">
         <div>
           <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
