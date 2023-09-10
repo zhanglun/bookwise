@@ -318,7 +318,7 @@ export const Reader = () => {
           }}
         />
         <div
-          className="h-full overflow-hidden py-8 rounded-lg bg-white/100 shadow-sm"
+          className="h-full overflow-hidden py-8 rounded-e-lg bg-white/100 shadow-sm"
           id="boundaryRef"
         >
           <div className="px-4 h-full overflow-y-scroll">

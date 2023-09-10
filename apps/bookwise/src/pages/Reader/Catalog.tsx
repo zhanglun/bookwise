@@ -57,15 +57,9 @@ export const Catalog = (props: CatalogProps) => {
     <motion.div
       layout
       id="catalog"
-      className={clsx("grid grid-flow-row w-[296px] overflow-hidden", className)}
+      className={clsx("grid grid-flow-row w-[296px] overflow-hidden rounded-s-lg", className)}
     >
       <div className="grid grid-flow-col grid-cols-[1fr] gap-1 items-center px-5 py-2 mt-3">
-        {/*<span*/}
-        {/*  className="w-6 h-6 rounded-lg hover:bg-accent flex items-center justify-center"*/}
-        {/*  onClick={showSidebar}*/}
-        {/*>*/}
-        {/*  <ChevronsLeft size={18} />*/}
-        {/*</span>*/}
         <span className="text-md font-bold overflow-hidden whitespace-nowrap text-ellipsis">
           {metadata.title}
         </span>
