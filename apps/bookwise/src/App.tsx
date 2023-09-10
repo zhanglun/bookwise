@@ -46,7 +46,7 @@ function App() {
   const match = useMatch("/reader");
 
   const [selected, select] = useState<string | null>(null);
-  const [width, setWidth] = useState(250);
+  const [width, setWidth] = useState(220);
   const originalWidth = useRef(width);
   const originalClientX = useRef(width);
   const [isDragging, setDragging] = useState(false);
@@ -120,7 +120,7 @@ function App() {
       >
         <MotionConfig>
           <motion.div
-            className="flex-shrink-0 w-[250px]"
+            className="flex-shrink-0 w-[220px]"
             initial={false}
             animate={{
               width: locked === Locked.Locked && open === Open.Open ? width : 0,
@@ -134,12 +134,13 @@ function App() {
             layout
             data-show-unlocked-sidebar
             className={clsx(
-              "overflow-hidden fixed top-0 right-0 bottom-0 left-0 z-10 w-[250px] rounded-lg bg-white",
-              { "bg-white/0": open === Open.Open && locked === Locked.Locked }
+              "overflow-hidden fixed top-0 right-0 bottom-0 left-0 z-10 w-[220px] rounded-lg bg-white",
+              { "bg-white/0": open === Open.Open && locked === Locked.Locked },
+              { "shadow-lg": open === Open.Open && locked !== Locked.Locked }
             )}
             initial={false}
             animate={{
-              top: locked === Locked.Locked ? 0 : 53,
+              top: locked === Locked.Locked ? 0 : 54,
               width,
               left:
                 open === Open.Open
@@ -147,7 +148,7 @@ function App() {
                     ? 0
                     : 5
                   : -width - 10,
-              bottom: locked === Locked.Locked ? 0 : 5,
+              bottom: locked === Locked.Locked ? 0 : 54,
               transition: {
                 ease: [0.165, 0.84, 0.44, 1],
                 width: {

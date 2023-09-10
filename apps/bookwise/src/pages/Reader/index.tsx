@@ -66,7 +66,7 @@ export const Reader = () => {
   };
 
   const getBookAdditionalInfo = () => {
-    request.get(`books/${id}/addition-infos`).then((res) => {
+    request.get(`books/${id}/additional_infos`).then((res) => {
       console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
     });
   };
@@ -321,7 +321,7 @@ export const Reader = () => {
           className="h-full overflow-hidden py-8 rounded-e-lg bg-white/100 shadow-sm"
           id="boundaryRef"
         >
-          <div className="px-4 h-full overflow-y-scroll">
+          <div className="px-4 h-full overflow-y-scroll flex flex-row">
             <Selection.Root>
               <Selection.Trigger>
                 <div
@@ -360,6 +360,7 @@ export const Reader = () => {
                 </Selection.Content>
               </Selection.Portal>
             </Selection.Root>
+            {/* <div>asdfasdfsadf</div> */}
           </div>
         </div>
         <div className="absolute top-0 right-0 bg-white rounded-lg">

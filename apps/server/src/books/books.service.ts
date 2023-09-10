@@ -384,6 +384,7 @@ export class BooksService {
         },
       },
     });
+    console.log("🚀 ~ file: books.service.ts:387 ~ BooksService ~ getAdditionalInfo ~ record:", record)
 
     return record;
   }
