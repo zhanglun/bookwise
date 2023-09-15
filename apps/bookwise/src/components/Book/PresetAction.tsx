@@ -89,14 +89,16 @@ export function PresetActions(props: PresetActionProps) {
         </DropdownMenuContent>
       </DropdownMenu>
       <Dialog open={open} onOpenChange={setIsOpen}>
-        <DialogContent className="max-h-[90%] overflow-y-auto">
+        <DialogContent className="w-[50%] max-h-[90%] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Edit Metadata - {data.title}
+            </DialogTitle>
+          </DialogHeader>
           <div className="py-6">
-            <h4 className="text-sm text-muted-foreground">
-              Playground Warnings
-            </h4>
             <div className="flex items-start justify-between space-x-4 pt-3">
               <div>
-                <MetaForm />
+                <MetaForm defaultData={data}/>
               </div>
               {/* <Switch name="show" id="show" defaultChecked={true} />
               <Label className="grid gap-1 font-normal" htmlFor="show">

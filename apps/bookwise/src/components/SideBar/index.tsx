@@ -7,7 +7,7 @@ export const Sidebar = () => {
   return (
     <div id="sidebar" className="overflow-hidden">
       <div className="w-full h-full">
-        <div className="p-3 flex flex-row space-x-3">
+        <div className="flex flex-row space-x-3">
           <Button
             variant={"secondary"}
             size="sm"
@@ -20,7 +20,7 @@ export const Sidebar = () => {
             <Search size={16} />
           </Button>
         </div>
-        <div className="px-3 pt-6">
+        <div className="pt-6 pb-6 border-b">
           <NavItem to="/" title="Home" icon={<Home size={14} />} />
           <NavItem to="/library" title="Library" icon={<Library size={14} />} />
           <NavItem to="/starred" title="Starred" icon={<Star size={14} />} />

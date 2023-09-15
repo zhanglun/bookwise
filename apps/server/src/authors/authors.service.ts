@@ -11,6 +11,7 @@ export class AuthorsService {
     @InjectRepository(Author)
     private authorsRepository: Repository<Author>,
   ) {}
+
   async create(createAuthorDto: CreateAuthorDto) {
     console.log(
       '🚀 ~ file: authors.service.ts:8 ~ AuthorsService ~ create ~ createAuthorDto:',
@@ -34,8 +35,13 @@ export class AuthorsService {
     }
   }
 
-  findAll() {
-    return `This action returns all authors`;
+  async findAll() {
+    const [authors, total] = await this.authorsRepository.findAndCount();
+
+    return {
+      items: authors,
+      total,
+    };
   }
 
   findOne(id: number) {

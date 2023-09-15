@@ -14,15 +14,15 @@ export interface BookResItem {
   publish_at: Date;
   created_at: Date;
   updated_at: Date;
-  author: Author;
-  publisher: Publisher;
+  author: AuthorResItem;
+  publisher: PublisherResItem;
 }
 
-export interface Author {
+export interface AuthorResItem {
   id: string;
   name: string;
 }
-export interface Publisher {
+export interface PublisherResItem {
   id: string;
   name: string;
 }
