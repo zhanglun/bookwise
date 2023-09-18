@@ -18,12 +18,12 @@ import { Badge } from "@/components/ui/badge";
 
 export interface AuthorSelectProps {
   onValueChange: any;
-  defaultValue
+  defaultValue: string;
 }
 
-export const AuthorSelect = ({ onValueChange, defaultValue = null, className, ...props }: AuthorSelectProps) => {
+export const AuthorSelect = ({ onValueChange, defaultValue = null, className, open, setOpen, ...props }: AuthorSelectProps) => {
   console.log('defaultValue', defaultValue)
-  const [ open, setOpen ] = useState(false)
+  // const [ open, setOpen ] = useState(false)
   const [ selectedValues, setSelectedValues ] = useState([ defaultValue ]);
   const [ authorList, setAuthorList ] = useState<AuthorResItem[]>([]);
 

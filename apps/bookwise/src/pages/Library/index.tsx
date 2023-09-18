@@ -7,7 +7,7 @@ import { BookResItem } from "@/interface/book";
 import clsx from "clsx";
 import { BookSideDetail } from "./BookSideDetail";
 import { Button } from "@/components/ui/button";
-import { BookFilter } from "@/pages/Library/BookFilter";
+import { Index } from "@/pages/Library/BookFilter";
 import { useNavigate } from "react-router-dom";
 import { BookSorter } from "@/pages/Library/BookSorter";
 
@@ -78,7 +78,7 @@ export const Library = () => {
           </div>
           <div className="px-3 py-2"></div>
           <div className="px-3 py-2 flex justify-between">
-            <BookFilter />
+            <Index />
             <div>
               <BookSorter />
             </div>
