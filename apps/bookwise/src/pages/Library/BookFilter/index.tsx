@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/command";
 import { clsx } from "clsx";
 import { useState } from "react";
-import { AuthorSelect } from "@/components/MetaForm/AuthorSelect";
 import { AuthorFilter } from "@/pages/Library/BookFilter/AuthorFilter";
 
 export interface BookFilterProps {
@@ -60,13 +59,20 @@ const options: {
 export const Index = (props: BookFilterProps) => {
   const [title] = useState();
   const [open, setOpen] = useState(false);
-  const [subMenuOpen, setSubMenuOpen] = useState(false);
-  const [selectedFilter, setSelectedFilter] = useState([]);
+  const [selectedFilter, setSelectedFilter] = useState<
+    { open: boolean; value: string }[]
+  >([]);
 
-  const handleFieldSelect = (option: keyof typeof options) => {
-    console.log(option);
+  const updateSelectedFilter = (idx: number, newData: { open: boolean; value: string }) => {
+    selectedFilter[idx] = {
+      ...newData,
+    }
+
+    setSelectedFilter([...selectedFilter]);
+  }
+
+  const handleFieldSelect = () => {
     setOpen(false);
-    setSubMenuOpen(true);
   };
 
   return (
@@ -85,22 +91,15 @@ export const Index = (props: BookFilterProps) => {
               <CommandEmpty>No results found.</CommandEmpty>
               <CommandGroup>
                 {options.map((option) => {
-                  const isSelected = selectedFilter.indexOf(option.value) > -1;
                   return (
                     <CommandItem
                       key={option.value}
                       onSelect={() => {
-                        // if (isSelected) {
-                        //   setSelectedFilter(
-                        //     selectedFilter.filter((_) => {
-                        //       return _ !== option.value;
-                        //     })
-                        //   );
-                        // } else {
-                        //   setSelectedFilter([...selectedFilter, option.value]);
-                        // }
-                        setSelectedFilter([...selectedFilter, option.value]);
-                        handleFieldSelect(option);
+                        setSelectedFilter([
+                          ...selectedFilter,
+                          { open: true, value: option.value },
+                        ]);
+                        handleFieldSelect();
                       }}
                     >
                       {option.icon && (
@@ -116,12 +115,14 @@ export const Index = (props: BookFilterProps) => {
         </PopoverContent>
       </Popover>
       {selectedFilter.map((filter, idx) => {
-        if (filter === "author") {
+        if (filter.value === "author") {
           return (
             <AuthorFilter
               defaultValue=""
-              open={subMenuOpen}
-              onOpenChange={setSubMenuOpen}
+              open={filter.open}
+              onOpenChange={(status) => {
+                updateSelectedFilter(idx, {...filter, open: status})
+              }}
               icon={UserCircle2}
               title={"Author"}
               onValueChange={(value: any[]) => {
