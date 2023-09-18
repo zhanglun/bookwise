@@ -9,6 +9,7 @@ import { BookSideDetail } from "./BookSideDetail";
 import { Button } from "@/components/ui/button";
 import { BookFilter } from "@/pages/Library/BookFilter";
 import { useNavigate } from "react-router-dom";
+import { BookSorter } from "@/pages/Library/BookSorter";
 
 export const Library = () => {
   const navigate = useNavigate();
@@ -79,16 +80,7 @@ export const Library = () => {
           <div className="px-3 py-2 flex justify-between">
             <BookFilter />
             <div>
-              <Button variant="ghost" size="sm">
-                <span className="flex items-center gap-1 mr-1">
-                  {/* desc */}
-                  <ArrowDownWideNarrow size="16"/>
-                  {/* asc */}
-                  <ArrowUpWideNarrow size={16} />
-                  Author
-                </span>
-                <ChevronDown size="16"/>
-              </Button>
+              <BookSorter />
             </div>
           </div>
           <div
