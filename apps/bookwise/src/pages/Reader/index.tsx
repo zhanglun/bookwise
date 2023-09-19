@@ -32,21 +32,21 @@ export const Reader = () => {
     bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
   }));
-  const [bookInfo, setBookInfo] = useState<any>({
+  const [ bookInfo, setBookInfo ] = useState<any>({
     packaging: { metadata: {} },
     catalog: [],
   });
-  const [catalog, setCatalog] = useState<BookCatalog[]>([]);
-  const [currentHref, setCurrentHref] = useState<string>("");
+  const [ catalog, setCatalog ] = useState<BookCatalog[]>([]);
+  const [ currentHref, setCurrentHref ] = useState<string>("");
   const boundaryRef = useRef<HTMLDivElement>(null);
-  const [currentId, setCurrentId] = useState<string>("");
+  const [ currentId, setCurrentId ] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
-  const [fullContent, setFullContent] = useState("");
-  const [showTooltip, setShowTooltip] = useState(false);
+  const [ fullContent, setFullContent ] = useState("");
+  const [ showTooltip, setShowTooltip ] = useState(false);
 
   const getBookBlobs = () => {
     request
-      .get(`books/${id}/blobs`, {
+      .get(`books/${ id }/blobs`, {
         responseType: "blob",
       })
       .then((res) => {
@@ -60,13 +60,13 @@ export const Reader = () => {
   };
 
   const getBookDetail = () => {
-    request.get(`books/${id}`).then((res) => {
+    request.get(`books/${ id }`).then((res) => {
       store.addBookToStack(res.data);
     });
   };
 
   const getBookAdditionalInfo = () => {
-    request.get(`books/${id}/additional_infos`).then((res) => {
+    request.get(`books/${ id }/additional_infos`).then((res) => {
       console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
     });
   };
@@ -75,7 +75,7 @@ export const Reader = () => {
     getBookBlobs();
     getBookDetail();
     getBookAdditionalInfo();
-  }, [state]);
+  }, [ state ]);
 
   useEffect(() => {
     const loadCSS = async () => {
@@ -87,7 +87,7 @@ export const Reader = () => {
 
       let cssText = "";
 
-      for (const [key, file] of Object.entries(files)) {
+      for (const [ key, file ] of Object.entries(files)) {
         if (key.split(".").pop() === "css") {
           cssText += await accessFileContent(file as any, "text/css");
           cssText += "\n";
@@ -100,7 +100,7 @@ export const Reader = () => {
     };
 
     loadCSS();
-  }, [bookInfo]);
+  }, [ bookInfo ]);
 
   const convertImages = async (
     files: any,
@@ -261,7 +261,7 @@ export const Reader = () => {
     };
 
     bookInfo && generateFullContent();
-  }, [bookInfo]);
+  }, [ bookInfo ]);
 
   const handleUserMouseUpEvent = () => {
     const selection = window.getSelection();
@@ -301,21 +301,21 @@ export const Reader = () => {
     if (showTooltip) {
       // document.
     }
-  }, [showTooltip]);
+  }, [ showTooltip ]);
 
   return (
     <div className="h-full relative pr-14">
       <div className="h-full rounded-lg bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
         <Catalog
           className="h-full bg-white/50"
-          data={catalog}
-          packaging={bookInfo.packaging}
-          onGoToPage={async (href: string, id: string) => {
+          data={ catalog }
+          packaging={ bookInfo.packaging }
+          onGoToPage={ async (href: string, id: string) => {
             setCurrentHref(href);
             setCurrentId(id);
 
             await goToPage(href, id);
-          }}
+          } }
         />
         <div
           className="h-full overflow-hidden py-8 rounded-e-lg bg-white/100 shadow-sm"
@@ -326,53 +326,70 @@ export const Reader = () => {
               <Selection.Trigger>
                 <div
                   className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
-                  onClick={handleUserClickEvent}
-                  onMouseUp={handleUserMouseUpEvent}
+                  onClick={ handleUserClickEvent }
+                  onMouseUp={ handleUserMouseUpEvent }
                   id="popover-container"
                 >
-                  <style type="text/css" ref={styleRef} />
+                  <style type="text/css" ref={ styleRef }/>
                   <section
                     className="book-section"
-                    dangerouslySetInnerHTML={{ __html: fullContent }}
+                    dangerouslySetInnerHTML={ { __html: fullContent } }
                   ></section>
                 </div>
               </Selection.Trigger>
               <Selection.Portal
-                container={document.getElementById("popover-container")}
+                container={ document.getElementById("popover-container") }
               >
                 <Selection.Content
                   className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-                  collisionBoundary={document.getElementById("boundaryRef")}
-                  avoidCollisions={false}
-                  hideWhenDetached={true}
+                  collisionBoundary={ document.getElementById("boundaryRef") }
+                  avoidCollisions={ false }
+                  hideWhenDetached={ true }
                 >
-                  <div className="">
-                    <Button size="icon" variant="ghost">
-                      <Highlighter size={14} />
-                    </Button>
-                    <Button size="icon" variant="ghost">
-                      <MessageSquare size={14} />
-                    </Button>
-                    <Button size="icon" variant="ghost">
-                      <Share size={14} />
-                    </Button>
+                  <div className="px-2 py-1">
+                    <div>
+                      <Button size="icon" variant="ghost">
+                        <Highlighter size={ 14 }/>
+                      </Button>
+                      <Button size="icon" variant="ghost">
+                        <MessageSquare size={ 14 }/>
+                      </Button>
+                      <Button size="icon" variant="ghost">
+                        <Share size={ 14 }/>
+                      </Button>
+
+                    </div>
+                    <div className="flex gap-2">
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#ffd500' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#BFFF00' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#FF7F50' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#4B0082' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#008080' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#EE82EE' } }></span>
+
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#FF6F61' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#87CEEB' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#F44336' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#778899' } }></span>
+                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#00A86B' } }></span>
+                    </div>
                   </div>
                 </Selection.Content>
               </Selection.Portal>
             </Selection.Root>
-            {/* <div>asdfasdfsadf</div> */}
+            {/* <div>asdfasdfsadf</div> */ }
           </div>
         </div>
         <div className="absolute top-0 right-0 bg-white rounded-lg">
           <div className="p-1 flex flex-wrap flex-col">
             <Button size="icon" variant="ghost">
-              <Palette size={16} />
+              <Palette size={ 16 }/>
             </Button>
             <Button size="icon" variant="ghost">
-              <ScrollText size={16} />
+              <ScrollText size={ 16 }/>
             </Button>
             <Button size="icon" variant="ghost">
-              <InfoIcon size={16} />
+              <InfoIcon size={ 16 }/>
             </Button>
           </div>
         </div>
