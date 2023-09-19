@@ -2,10 +2,10 @@
 
 @layer components {
   .side-menu-item {
-    @apply flex items-center space-x-3 px-3 h-8 text-sm text-stone-800 hover:bg-stone-300/20 cursor-default rounded-lg;
+    @apply flex items-center justify-center h-8 mt-2 text-sm text-stone-800 hover:bg-white/30 cursor-default rounded-lg;
   }
 
-  .side-menu-item.active {
-    @apply bg-white shadow-sm;
+  .side-menu-item--active {
+    @apply bg-white shadow-sm hover:bg-white;
   }
 }

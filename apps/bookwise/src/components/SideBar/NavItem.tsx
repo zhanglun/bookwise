@@ -12,24 +12,22 @@ export const NavItem = (props: NavItemProps) => {
 
   return (
     <NavLink
-      className={clsx(
-        "side-menu-item",
+      className={
         ({
-          isActive,
-          isPending,
-        }: {
+           isActive,
+           isPending,
+         }: {
           isActive: boolean;
           isPending: boolean;
         }) => {
-          return isActive ? "active" : isPending ? "pending" : "";
+          return clsx("side-menu-item", isActive ? "side-menu-item--active" : isPending ? "pending" : "");
         }
-      )}
-      to={to}
+      }
+      to={ to }
     >
-      <span className="text-stone-600" >
-        {icon}
-      </span>
-      <span>{title}</span>
+      <div className="text-stone-600">
+        { icon }
+      </div>
     </NavLink>
   );
 };

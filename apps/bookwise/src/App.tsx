@@ -46,7 +46,7 @@ function App() {
   const match = useMatch("/reader");
 
   const [selected, select] = useState<string | null>(null);
-  const [width, setWidth] = useState(220);
+  const [width, setWidth] = useState(60);
   const originalWidth = useRef(width);
   const originalClientX = useRef(width);
   const [isDragging, setDragging] = useState(false);
@@ -64,7 +64,6 @@ function App() {
   }, [store.sidebarCollapse, match]);
 
   useEffect(() => {
-    console.log("====>");
     console.log(store.bookStack);
   }, [store.bookStack]);
 
@@ -120,7 +119,7 @@ function App() {
       >
         <MotionConfig>
           <motion.div
-            className="flex-shrink-0 w-[220px]"
+            className="flex-shrink-0"
             initial={false}
             animate={{
               width: locked === Locked.Locked && open === Open.Open ? width : 0,
@@ -134,9 +133,9 @@ function App() {
             layout
             data-show-unlocked-sidebar
             className={clsx(
-              "overflow-hidden fixed top-0 right-0 bottom-0 left-0 z-10 w-[220px] rounded-lg bg-white",
+              "overflow-hidden fixed top-0 right-0 bottom-0 left-0 z-10 rounded-lg bg-white pt-2 pl-2",
               { "bg-white/0": open === Open.Open && locked === Locked.Locked },
-              { "shadow-lg": open === Open.Open && locked !== Locked.Locked }
+              { "shadow-lg bg-slate-400 px-2": open === Open.Open && locked !== Locked.Locked }
             )}
             initial={false}
             animate={{
@@ -162,7 +161,7 @@ function App() {
               },
             }}
           >
-            <div className="bg-white/0 px-2 pt-2">
+            <div className="bg-white/0">
               <div className="flex gap-1">
                 {!store.sidebarCollapse && (
                   <Button
@@ -185,7 +184,7 @@ function App() {
                     <PanelLeftOpen size={18} />
                   </Button>
                 )}
-                <Button
+                {/* <Button
                   size="icon"
                   variant="ghost"
                   className="w-8 h-8 text-stone-700 hover:text-stone-800 hover:bg-white/30"
@@ -200,8 +199,9 @@ function App() {
                   onClick={() => navigate(1)}
                 >
                   <ChevronRight size={18} />
-                </Button>
+                </Button> */}
               </div>
+
               <Sidebar />
 
               <div className="absolute z-10 right-0 w-0 flex-grow-0 top-0 bottom-0">
