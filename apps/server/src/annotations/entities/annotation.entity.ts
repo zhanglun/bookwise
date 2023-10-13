@@ -14,6 +14,9 @@ export class Annotation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ManyToOne(() => Book, (book) => book.annotations)
+  book: Book;
+
   @Column({
     default: '',
   })
@@ -29,20 +32,20 @@ export class Annotation {
   })
   note: string;
 
-  // @ManyToOne(() => Author, (author) => author.books)
-  // @JoinColumn({ name: 'author_id' })
-  // author: Author;
+  @Column({ default: '#FFFFFF' })
+  color: string;
+
+  @Column({ default: 0 })
+  start_offset: number;
+
+  @Column({ default: 0 })
+  end_offset: number;
 
   @CreateDateColumn()
-  @Column({
-    type: 'date',
-    default: new Date().getTime(),
-  })
-  created_at: string;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  created_at: Date;
+
   @UpdateDateColumn()
-  @Column({
-    type: 'date',
-    default: new Date().getTime(),
-  })
-  updated_at: string;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updated_at: Date;
 }

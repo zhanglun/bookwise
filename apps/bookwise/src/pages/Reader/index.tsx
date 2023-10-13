@@ -1,5 +1,6 @@
 import { request } from "@/helpers/request";
 import { MouseEvent, useEffect, useRef, useState } from "react";
+import ePub from "epubjs";
 import { useLocation, useParams } from "react-router-dom";
 import {
   BookCatalog,
@@ -23,6 +24,20 @@ import {
 import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
+
+const colorList = [
+  '#ffd500',
+  '#BFFF00',
+  '#FF7F50',
+  '#4B0082',
+  '#008080',
+  '#EE82EE',
+  '#FF6F61',
+  '#87CEEB',
+  '#F44336',
+  '#778899',
+  '#00A86B',
+]
 
 export const Reader = () => {
   const location = useLocation();
@@ -50,6 +65,8 @@ export const Reader = () => {
         responseType: "blob",
       })
       .then((res) => {
+        const a = ePub(res.data);
+        console.log('========> a', a);
         return parseEpub(res.data);
       })
       .then((infos) => {
@@ -225,6 +242,7 @@ export const Reader = () => {
       const box = document.createElement("div");
 
       const loopCatalog = async (list: BookCatalog[]) => {
+        console.log('list ===> ', list)
         for (const item of list) {
           let { href } = item;
           let anchorId: string;
@@ -360,24 +378,17 @@ export const Reader = () => {
 
                     </div>
                     <div className="flex gap-2">
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#ffd500' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#BFFF00' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#FF7F50' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#4B0082' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#008080' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#EE82EE' } }></span>
-
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#FF6F61' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#87CEEB' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#F44336' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#778899' } }></span>
-                      <span className="w-5 h-5 rounded-full" style={ { backgroundColor: '#00A86B' } }></span>
+                      {colorList.map(color => {
+                        return <span
+                          className="w-5 h-5 rounded-full"
+                          style={ { backgroundColor: color } }
+                        ></span>
+                      })}
                     </div>
                   </div>
                 </Selection.Content>
               </Selection.Portal>
             </Selection.Root>
-            {/* <div>asdfasdfsadf</div> */ }
           </div>
         </div>
         <div className="absolute top-0 right-0 bg-white rounded-lg">

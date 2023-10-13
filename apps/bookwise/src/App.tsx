@@ -46,7 +46,7 @@ function App() {
   const match = useMatch("/reader");
 
   const [selected, select] = useState<string | null>(null);
-  const [width, setWidth] = useState(60);
+  const [width, setWidth] = useState(40);
   const originalWidth = useRef(width);
   const originalClientX = useRef(width);
   const [isDragging, setDragging] = useState(false);
@@ -108,7 +108,7 @@ function App() {
             ele = ele.parentElement;
           }
 
-          if (called === false)
+          if (!called)
             setOpen((open) =>
               locked === Locked.Unlocked ? Open.Closed : open
             );
