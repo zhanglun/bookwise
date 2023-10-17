@@ -7,14 +7,15 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Book } from "../../books/entities/book.entity";
+import { Book } from '../../books/entities/book.entity';
 
 @Entity('annotations')
 export class Annotation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Book, (book) => book.annotations)
+  @ManyToOne(() => Book)
+  @JoinColumn({ name: 'book_id' })
   book: Book;
 
   @Column({
@@ -42,10 +43,14 @@ export class Annotation {
   end_offset: number;
 
   @CreateDateColumn()
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'date', default: () => 'CURRENT_TIMESTAMP' })
   created_at: Date;
 
   @UpdateDateColumn()
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: 'date',
+    default: () => 'CURRENT_TIMESTAMP',
+    onUpdate: 'CURRENT_TIMESTAMP',
+  })
   updated_at: Date;
 }
