@@ -65,8 +65,6 @@ export const Reader = () => {
         responseType: "blob",
       })
       .then((res) => {
-        const a = ePub(res.data);
-        console.log('========> a', a);
         return parseEpub(res.data);
       })
       .then((infos) => {
@@ -199,9 +197,11 @@ export const Reader = () => {
         window.open(href);
       } else {
         const realHref = getAbsoluteUrl(currentHref, href);
+        const anchorId = realHref.split("#")[1];
+
         console.log(realHref);
 
-        goToPage(realHref, id);
+        goToPage(realHref, anchorId);
       }
     }
     // if (elem && (e.preventDefault(),
@@ -256,7 +256,7 @@ export const Reader = () => {
             const part = document.createElement("div");
             const body = await accessPageContent(files[href]);
 
-            part.id = item.id;
+            part.id = item.ncxId;
 
             if (body) {
               const images = body?.querySelectorAll("img, image");
@@ -381,6 +381,7 @@ export const Reader = () => {
                       {colorList.map(color => {
                         return <span
                           className="w-5 h-5 rounded-full"
+                          key={color}
                           style={ { backgroundColor: color } }
                         ></span>
                       })}

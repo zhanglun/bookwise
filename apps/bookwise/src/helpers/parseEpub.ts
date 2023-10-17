@@ -3,7 +3,7 @@ import {qsp} from "./queryElement";
 
 export interface BookCatalog {
   href: string;
-  id: string;
+  ncxId: string;
   label: string;
   parent: string | undefined;
   subitems: BookCatalog[];
@@ -324,7 +324,7 @@ export const parseNcx = async (
 
     console.log('===============>', current)
 
-    const id = current.getAttribute("id") || "";
+    const ncxId = current.getAttribute("id") || "";
     const content = current.querySelector("content");
     const src = basePath + (content?.getAttribute("src") || "");
     const navLabel = current.querySelector("navLabel");
@@ -343,14 +343,14 @@ export const parseNcx = async (
     }
 
     item = {
-      id: id,
+      ncxId: ncxId,
       href: src.trim(),
       label: text.trim(),
       subitems: subitems,
       parent: parentId,
     };
 
-    toc[item.id] = item;
+    toc[item.ncxId] = item;
 
     if (!item.parent) {
       list.push(item);

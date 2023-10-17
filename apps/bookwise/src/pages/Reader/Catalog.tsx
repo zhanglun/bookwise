@@ -16,7 +16,7 @@ export interface CatalogProps {
 export const Catalog = (props: CatalogProps) => {
   const { data, packaging, onGoToPage, className } = props;
   const { metadata } = packaging;
-  const [expanded, setExpanded] = useState(false);
+  const [ expanded, setExpanded ] = useState(false);
   const navigate = useNavigate();
 
   const goToPage = (href: string, id: string) => {
@@ -25,25 +25,26 @@ export const Catalog = (props: CatalogProps) => {
 
   const renderItems = (list: BookCatalog[], idx = 0) => {
     return list.map((item) => {
-      const { id, label, href, subitems } = item;
+      const { id, ncxId, label, href, subitems } = item;
 
       return (
-        <div className={clsx("text-sm text-stone-800 cursor-default")} key={id}>
+        <div className={ clsx("text-sm text-stone-800 cursor-default") } key={ ncxId }>
           <div
-            data-idx={idx}
-            data-href={href}
-            data-anchor-id={id}
-            className={clsx(
+            data-idx={ idx }
+            data-href={ href }
+            data-ncx-id={ ncxId }
+            data-anchor-id={ id }
+            className={ clsx(
               "hover:underline hover:text-accent-foreground overflow-hidden text-ellipsis whitespace-nowrap",
               "pb-4"
-            )}
-            onClick={() => goToPage(href, id)}
+            ) }
+            onClick={ () => goToPage(href, ncxId) }
           >
-            {label}
+            { label }
           </div>
-          {subitems.length > 0 && (
-            <div className="pl-4">{renderItems(subitems, idx + 1)}</div>
-          )}
+          { subitems.length > 0 && (
+            <div className="pl-4">{ renderItems(subitems, idx + 1) }</div>
+          ) }
         </div>
       );
     });
@@ -53,25 +54,25 @@ export const Catalog = (props: CatalogProps) => {
     <motion.div
       layout
       id="catalog"
-      className={clsx("grid grid-flow-row w-[296px] overflow-hidden rounded-s-lg", className)}
+      className={ clsx("grid grid-flow-row w-[296px] overflow-hidden rounded-s-lg", className) }
     >
       <div className="sticky top-0 left-0 px-3 py-3 border-b border-border">
         <Button
           size="icon"
           variant="ghost"
           className="w-8 h-8 text-stone-700 hover:text-stone-900 bg-stone-300/30 hover:bg-stone-500/30"
-          onClick={() => navigate(-1)}
+          onClick={ () => navigate(-1) }
         >
-          <ChevronsLeft size={18} />
+          <ChevronsLeft size={ 18 }/>
         </Button>
       </div>
       <div className="grid grid-flow-col grid-cols-[1fr] gap-1 items-center px-5 py-2 mt-3">
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-          {metadata.title}
+          { metadata.title }
         </span>
       </div>
       <div className="px-5 py-2 h-full overflow-y-scroll">
-        {renderItems(data)}
+        { renderItems(data) }
       </div>
     </motion.div>
   );
