@@ -321,9 +321,6 @@ export const parseNcx = async (
 
   for (let i = 0; i < length; ++i) {
     const current = navPoints[i];
-
-    console.log('===============>', current)
-
     const ncxId = current.getAttribute("id") || "";
     const content = current.querySelector("content");
     const src = basePath + (content?.getAttribute("src") || "");

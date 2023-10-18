@@ -122,9 +122,6 @@ export const Reader = () => {
     currentHref: string,
     images: NodeListOf<Element>
   ) => {
-    console.log("%c Line:82 🍫 files", "color:#33a5ff", files);
-    console.log("%c Line:86 🥑 images", "color:#42b983", images);
-
     for (const image of images) {
       let attr = "src";
       let href: string = image.getAttribute("src") || "";
@@ -238,11 +235,9 @@ export const Reader = () => {
   useEffect(() => {
     const generateFullContent = async () => {
       const { files, catalog } = bookInfo;
-      console.log("%c Line:212 🥟 catalog", "color:#4fff4B", catalog);
       const box = document.createElement("div");
 
       const loopCatalog = async (list: BookCatalog[]) => {
-        console.log('list ===> ', list)
         for (const item of list) {
           let { href } = item;
           let anchorId: string;
@@ -257,6 +252,7 @@ export const Reader = () => {
             const body = await accessPageContent(files[href]);
 
             part.id = item.ncxId;
+            part.dataset.ncxId = item.ncxId;
 
             if (body) {
               const images = body?.querySelectorAll("img, image");
@@ -312,7 +308,119 @@ export const Reader = () => {
       endContainerXPath
     );
 
-    setShowTooltip(true);
+    const startNode = range.startContainer;
+    const endNode = range.endContainer;
+    let startPageDiv = null;
+    let endPageDiv = null;
+    let startPageId = "";
+    let endPageId = "";
+
+    let currentNode = startNode;
+    while (currentNode) {
+      if (currentNode.dataset && 'ncxId' in currentNode.dataset) {
+        startPageDiv = currentNode;
+        startPageId = currentNode.dataset.ncxId;
+        break;
+      }
+      currentNode = currentNode.parentNode;
+
+      console.log('currentNode', currentNode)
+    }
+
+    currentNode = endNode;
+    while (currentNode) {
+      if (currentNode.dataset && 'ncxId' in currentNode.dataset) {
+        endPageDiv = currentNode;
+        endPageId = currentNode.dataset.ncxId;
+        break;
+      }
+      currentNode = currentNode.parentNode;
+    }
+
+    const startElement = document.getElementById(startPageId);
+    console.log("startElement", startElement);
+
+    const endElement = document.getElementById(endPageId);
+    console.log("endElement", endElement);
+
+
+    function getNodeAndOffset(wrap_dom, start=0, end=0){
+      const txtList = [];
+      const map = function(chlids){
+        [...chlids].forEach(el => {
+          if (el.nodeName === '#text') {
+            txtList.push(el)
+          } else {
+            map(el.childNodes)
+          }
+        })
+      }
+      // 递归遍历，提取出所有 #text
+      map(wrap_dom.childNodes);
+      // 计算文本的位置区间 [0,3]、[3, 8]、[8,10]
+      const clips = txtList.reduce((arr,item,index)=>{
+        const end = item.textContent.length + (arr[index-1]?arr[index-1][2]:0)
+        arr.push([item, end - item.textContent.length, end])
+        return arr
+      },[])
+      // 查找满足条件的范围区间
+      const startNode = clips.find(el => start >= el[1] && start < el[2]);
+      const endNode = clips.find(el => end >= el[1] && end < el[2]);
+      return [startNode[0], start - startNode[1], endNode[0], end - endNode[1]]
+    }
+
+    const nodes = getNodeAndOffset(startPageDiv, startOffset, endOffset);
+    // const node2 = getNodeAndOffset(endPageDiv, 7, 12);
+
+    console.log(nodes)
+
+    // const annotation = {
+    //   start_page_id: startPageId,
+    //   start_offset: startOffsetInParent,
+    //   end_page_id: endPageId,
+    //   end_offset: endOffsetInParent,
+    //   content: selectContent,
+    // }
+
+    // console.log("annotation", annotation)
+    // console.log('选中内容在页面中的 startOffset:', startOffset);
+    // console.log('选中内容在页面中的 startOffsetInParent:', startOffsetInParent);
+    // console.log('选中内容在页面中的 startOffsetInParent + startOffset:', startOffsetInParent + startOffset);
+
+    // 创建一个 <span> 元素
+//     const highlight = document.createElement('span');
+//     highlight.style.backgroundColor = 'yellow'; // 设置高亮的背景颜色
+//
+// // 将选中范围的内容包裹在 <span> 元素中
+//     range.surroundContents(highlight);
+//
+// // 清除选中范围，以便不再显示选中的高亮
+//     selection.removeAllRanges();
+    // 高亮文本范围内的元素或设置背景颜色
+    // if (startElement && endElement) {
+    //   const range = document.createRange();
+    //   range.setStart(startElement.firstChild?.firstChild, startOffsetInParent);
+    //   range.setEnd(endElement.firstChild?.firstChild, endOffsetInParent);
+    //
+    //   const highlight = document.createElement('span');
+    //   highlight.classList.add('highlight');
+    //   range.surroundContents(highlight);
+    // }
+
+    function highlightTextByOffset(startNode, endNode, startOffset, endOffset) {
+      const range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+    }
+
+// 使用示例
+    highlightTextByOffset(startPageDiv, endPageDiv, startOffsetInParent, endOffsetInParent);
+
+    // setShowTooltip(true);
   };
 
   useEffect(() => {
@@ -320,6 +428,9 @@ export const Reader = () => {
       // document.
     }
   }, [ showTooltip ]);
+
+  useEffect(() => {
+  }, [ fullContent ])
 
   return (
     <div className="h-full relative pr-14">
@@ -378,13 +489,13 @@ export const Reader = () => {
 
                     </div>
                     <div className="flex gap-2">
-                      {colorList.map(color => {
+                      { colorList.map(color => {
                         return <span
                           className="w-5 h-5 rounded-full"
-                          key={color}
+                          key={ color }
                           style={ { backgroundColor: color } }
                         ></span>
-                      })}
+                      }) }
                     </div>
                   </div>
                 </Selection.Content>

@@ -36,8 +36,18 @@ export class Annotation {
   @Column({ default: '#FFFFFF' })
   color: string;
 
+  @Column({
+    default: '',
+  })
+  start_page_id: string;
+
   @Column({ default: 0 })
   start_offset: number;
+
+  @Column({
+    default: '',
+  })
+  end_page_id: string;
 
   @Column({ default: 0 })
   end_offset: number;
