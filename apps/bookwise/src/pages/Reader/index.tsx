@@ -295,18 +295,18 @@ export const Reader = () => {
     const { startOffset, endOffset } = range;
     console.log("%c Line:266 🥑 startOffset", "color:#e41a6a", startOffset);
     console.log("%c Line:266 🍢 endOffset", "color:#42b983", endOffset);
-    const startContainerXPath = getXPath(range.startContainer);
-    console.log(
-      "%c Line:269 🍣 startContainerXPath",
-      "color:#fca650",
-      startContainerXPath
-    );
-    const endContainerXPath = getXPath(range.endContainer);
-    console.log(
-      "%c Line:270 🍭 endContainerXPath",
-      "color:#ed9ec7",
-      endContainerXPath
-    );
+    // const startContainerXPath = getXPath(range.startContainer);
+    // console.log(
+    //   "%c Line:269 🍣 startContainerXPath",
+    //   "color:#fca650",
+    //   startContainerXPath
+    // );
+    // const endContainerXPath = getXPath(range.endContainer);
+    // console.log(
+    //   "%c Line:270 🍭 endContainerXPath",
+    //   "color:#ed9ec7",
+    //   endContainerXPath
+    // );
 
     const startNode = range.startContainer;
     const endNode = range.endContainer;
@@ -322,9 +322,8 @@ export const Reader = () => {
         startPageId = currentNode.dataset.ncxId;
         break;
       }
-      currentNode = currentNode.parentNode;
 
-      console.log('currentNode', currentNode)
+      currentNode = currentNode.parentNode;
     }
 
     currentNode = endNode;
@@ -334,6 +333,7 @@ export const Reader = () => {
         endPageId = currentNode.dataset.ncxId;
         break;
       }
+
       currentNode = currentNode.parentNode;
     }
 
@@ -343,11 +343,10 @@ export const Reader = () => {
     const endElement = document.getElementById(endPageId);
     console.log("endElement", endElement);
 
-
-    function getNodeAndOffset(wrap_dom, start=0, end=0){
+    function getNodeAndOffset(wrap_dom, rangeNode, start = 0) {
       const txtList = [];
-      const map = function(chlids){
-        [...chlids].forEach(el => {
+      const map = function (children) {
+        [ ...children ].forEach(el => {
           if (el.nodeName === '#text') {
             txtList.push(el)
           } else {
@@ -357,22 +356,59 @@ export const Reader = () => {
       }
       // 递归遍历，提取出所有 #text
       map(wrap_dom.childNodes);
+      let startIdx = 0;
+
+      console.log('txtList', txtList);
+
       // 计算文本的位置区间 [0,3]、[3, 8]、[8,10]
-      const clips = txtList.reduce((arr,item,index)=>{
-        const end = item.textContent.length + (arr[index-1]?arr[index-1][2]:0)
-        arr.push([item, end - item.textContent.length, end])
+      const clips = txtList.reduce((arr, item, index) => {
+        if (item === rangeNode) {
+          startIdx = index;
+          console.log('<=====>', item);
+          console.log('<=====> startIdx', startIdx);
+        }
+
+        const end = item.textContent.length + (arr[index - 1] ? arr[index - 1][2] : 0)
+        arr.push([ item, end - item.textContent.length, end ])
         return arr
-      },[])
+      }, [])
+
+      console.log('clips', clips);
+      console.log('rangeNode', rangeNode);
+
       // 查找满足条件的范围区间
-      const startNode = clips.find(el => start >= el[1] && start < el[2]);
-      const endNode = clips.find(el => end >= el[1] && end < el[2]);
-      return [startNode[0], start - startNode[1], endNode[0], end - endNode[1]]
+      // const startNode = clips.find(el => start >= el[1] && start < el[2]);
+      // const endNode = clips.find(el => end >= el[1] && end < el[2]);
+      // return [startNode[0], start - startNode[1], endNode[0], end - endNode[1]]
+
+      const startIndex = clips.reduce((acu, cur, idx) => {
+        if (idx < startIdx) {
+          acu = cur[1];
+        } else if (idx === startIdx) {
+          acu = cur[1] + start;
+        }
+
+        console.log('acu', acu);
+
+        return acu;
+      }, 0);
+
+      return [ rangeNode, startOffset, startIndex ];
     }
 
-    const nodes = getNodeAndOffset(startPageDiv, startOffset, endOffset);
-    // const node2 = getNodeAndOffset(endPageDiv, 7, 12);
+    const startNodeInfo: [
+      node: Text,
+      originOffset: number,
+      offset: number,
+    ] = getNodeAndOffset(startPageDiv, startNode, startOffset);
+    const endNodeInfo: [
+      node: Text,
+      originOffset: number,
+      offset: number,
+    ] = getNodeAndOffset(endPageDiv, endNode, endOffset);
 
-    console.log(nodes)
+    console.log('startNodeInfo', startNodeInfo)
+    console.log('endNodeInfo', endNodeInfo)
 
     // const annotation = {
     //   start_page_id: startPageId,
@@ -387,38 +423,69 @@ export const Reader = () => {
     // console.log('选中内容在页面中的 startOffsetInParent:', startOffsetInParent);
     // console.log('选中内容在页面中的 startOffsetInParent + startOffset:', startOffsetInParent + startOffset);
 
-    // 创建一个 <span> 元素
-//     const highlight = document.createElement('span');
-//     highlight.style.backgroundColor = 'yellow'; // 设置高亮的背景颜色
-//
-// // 将选中范围的内容包裹在 <span> 元素中
-//     range.surroundContents(highlight);
-//
-// // 清除选中范围，以便不再显示选中的高亮
-//     selection.removeAllRanges();
-    // 高亮文本范围内的元素或设置背景颜色
-    // if (startElement && endElement) {
-    //   const range = document.createRange();
-    //   range.setStart(startElement.firstChild?.firstChild, startOffsetInParent);
-    //   range.setEnd(endElement.firstChild?.firstChild, endOffsetInParent);
-    //
-    //   const highlight = document.createElement('span');
-    //   highlight.classList.add('highlight');
-    //   range.surroundContents(highlight);
-    // }
+    function getElementByOffset(parentElement, s) {
+      let currentOffset = 0;
+      let targetNode = null;
+      let startOffset = -1;
 
-    function highlightTextByOffset(startNode, endNode, startOffset, endOffset) {
+      // 递归遍历父元素内的节点
+      function traverse(element) {
+        const childNodes = element.childNodes;
+
+        for (let i = 0; i < childNodes.length; i++) {
+          const node = childNodes[i];
+
+          if (node.nodeType === Node.TEXT_NODE) {
+            const nodeText = node.textContent;
+            const nodeLength = nodeText.length;
+            const start = currentOffset;
+            const end = start + nodeLength;
+
+            console.log('start and end', [start, end]);
+
+            // 检查偏移量是否在当前文本节点内
+            if (s >= start && s < end) {
+              targetNode = node;
+              startOffset = s - start;
+            }
+
+            currentOffset += nodeLength;
+          } else {
+            traverse(node);
+          }
+        }
+      }
+
+      traverse(parentElement);
+
+      return [targetNode, startOffset, s];
+    }
+
+    const startInfos = getElementByOffset(startPageDiv, startNodeInfo[2]);
+    const endInfos = getElementByOffset(endPageDiv, endNodeInfo[2]);
+
+    console.log("getElementByOffset startInfos", startInfos);
+    console.log("getElementByOffset end", endInfos);
+
+
+    function highlightTextByOffset(startNode, startOffset, endNode, endOffset) {
       const range = document.createRange();
       range.setStart(startNode, startOffset);
       range.setEnd(endNode, endOffset);
 
-      const selection = window.getSelection();
-      selection.removeAllRanges();
-      selection.addRange(range);
+      // 创建一个 <span> 元素
+      const highlight = document.createElement('span');
+      highlight.style.backgroundColor = 'yellow'; // 设置高亮的背景颜色
+
+      range.surroundContents(highlight);
+
+      // const selection = window.getSelection();
+      // selection.removeAllRanges();
+      // selection.addRange(range);
     }
 
-// 使用示例
-    highlightTextByOffset(startPageDiv, endPageDiv, startOffsetInParent, endOffsetInParent);
+    // 使用示例
+    highlightTextByOffset(startInfos[0], startInfos[1], endInfos[0], endInfos[1]);
 
     // setShowTooltip(true);
   };
@@ -451,20 +518,32 @@ export const Reader = () => {
           id="boundaryRef"
         >
           <div className="px-4 h-full overflow-y-scroll flex flex-row">
+            <div
+              className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
+              onClick={ handleUserClickEvent }
+              onMouseUp={ handleUserMouseUpEvent }
+              id="popover-container"
+            >
+              <style type="text/css" ref={ styleRef }/>
+              <section
+                className="book-section"
+                dangerouslySetInnerHTML={ { __html: fullContent } }
+              ></section>
+            </div>
             <Selection.Root>
               <Selection.Trigger>
-                <div
-                  className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
-                  onClick={ handleUserClickEvent }
-                  onMouseUp={ handleUserMouseUpEvent }
-                  id="popover-container"
-                >
-                  <style type="text/css" ref={ styleRef }/>
-                  <section
-                    className="book-section"
-                    dangerouslySetInnerHTML={ { __html: fullContent } }
-                  ></section>
-                </div>
+                {/*<div*/ }
+                {/*  className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"*/ }
+                {/*  onClick={ handleUserClickEvent }*/ }
+                {/*  onMouseUp={ handleUserMouseUpEvent }*/ }
+                {/*  id="popover-container"*/ }
+                {/*>*/ }
+                {/*  <style type="text/css" ref={ styleRef }/>*/ }
+                {/*  <section*/ }
+                {/*    className="book-section"*/ }
+                {/*    dangerouslySetInnerHTML={ { __html: fullContent } }*/ }
+                {/*  ></section>*/ }
+                {/*</div>*/ }
               </Selection.Trigger>
               <Selection.Portal
                 container={ document.getElementById("popover-container") }
