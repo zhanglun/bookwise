@@ -15,7 +15,7 @@ export const Sidebar = () => {
         <div className="pt-6 pb-6 border-b">
           <NavItem to="/" title="Home" icon={<Home size={16} />} />
           <NavItem to="/library" title="Library" icon={<Library size={16} />} />
-          <NavItem to="/starred" title="Starred" icon={<Star size={16} />} />
+          <NavItem to="/canvas" title="Canvas" icon={<Star size={16} />} />
         </div>
       </div>
     </div>

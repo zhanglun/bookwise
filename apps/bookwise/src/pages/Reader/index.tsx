@@ -24,6 +24,7 @@ import {
 import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
+import { Page } from "@/pages/Reader/Page";
 
 const colorList = [
   '#ffd500',
@@ -52,11 +53,11 @@ export const Reader = () => {
     catalog: [],
   });
   const [ catalog, setCatalog ] = useState<BookCatalog[]>([]);
+  const [ pageList, setPageList ] = useState<Page[]>([]);
   const [ currentHref, setCurrentHref ] = useState<string>("");
   const boundaryRef = useRef<HTMLDivElement>(null);
   const [ currentId, setCurrentId ] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
-  const [ fullContent, setFullContent ] = useState("");
   const [ showTooltip, setShowTooltip ] = useState(false);
 
   const getBookBlobs = () => {
@@ -235,31 +236,30 @@ export const Reader = () => {
   useEffect(() => {
     const generateFullContent = async () => {
       const { files, catalog } = bookInfo;
-      const box = document.createElement("div");
+      const pages: Page[] = [];
 
       const loopCatalog = async (list: BookCatalog[]) => {
         for (const item of list) {
           let { href } = item;
-          let anchorId: string;
 
           if (href.indexOf("#") >= 0) {
             href = href.split("#")[0];
-            anchorId = href.split("#")[0];
           }
 
           if (files[href]) {
             const part = document.createElement("div");
             const body = await accessPageContent(files[href]);
 
+
             part.id = item.ncxId;
             part.dataset.ncxId = item.ncxId;
 
             if (body) {
-              const images = body?.querySelectorAll("img, image");
-              await convertImages(files, href, images);
-
-              part.appendChild(body);
-              box.appendChild(part);
+              pages.push(<Page
+                ncxId={ item.ncxId }
+                content={ body.innerHTML }
+                bookInfo={ bookInfo }
+                ncxHref={ href }></Page>)
             }
 
             if (item.subitems) {
@@ -271,7 +271,7 @@ export const Reader = () => {
 
       await loopCatalog(catalog);
 
-      setFullContent(box.innerHTML);
+      setPageList(pages);
     };
 
     bookInfo && generateFullContent();
@@ -441,7 +441,7 @@ export const Reader = () => {
             const start = currentOffset;
             const end = start + nodeLength;
 
-            console.log('start and end', [start, end]);
+            console.log('start and end', [ start, end ]);
 
             // 检查偏移量是否在当前文本节点内
             if (s >= start && s < end) {
@@ -458,7 +458,7 @@ export const Reader = () => {
 
       traverse(parentElement);
 
-      return [targetNode, startOffset, s];
+      return [ targetNode, startOffset, s ];
     }
 
     const startInfos = getElementByOffset(startPageDiv, startNodeInfo[2]);
@@ -470,6 +470,7 @@ export const Reader = () => {
 
     function highlightTextByOffset(startNode, startOffset, endNode, endOffset) {
       const range = document.createRange();
+
       range.setStart(startNode, startOffset);
       range.setEnd(endNode, endOffset);
 
@@ -495,9 +496,6 @@ export const Reader = () => {
       // document.
     }
   }, [ showTooltip ]);
-
-  useEffect(() => {
-  }, [ fullContent ])
 
   return (
     <div className="h-full relative pr-14">
@@ -527,8 +525,9 @@ export const Reader = () => {
               <style type="text/css" ref={ styleRef }/>
               <section
                 className="book-section"
-                dangerouslySetInnerHTML={ { __html: fullContent } }
-              ></section>
+              >
+                { pageList.map((page) => page) }
+              </section>
             </div>
             <Selection.Root>
               <Selection.Trigger>

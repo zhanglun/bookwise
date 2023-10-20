@@ -9,8 +9,8 @@ import {
 } from "react-router-dom";
 import { Library } from "./pages/Library";
 import { Home } from "./pages/Home";
-import { Starred } from "./pages/Starred";
 import { Reader } from "./pages/Reader";
+import { Canvas } from "./pages/Canvas";
 
 const router = createBrowserRouter([
   {
@@ -26,8 +26,8 @@ const router = createBrowserRouter([
         element: <Library />,
       },
       {
-        path: "/starred",
-        element: <Starred />,
+        path: "/canvas",
+        element: <Canvas />,
       },
       {
         path: "/reader/:id",
