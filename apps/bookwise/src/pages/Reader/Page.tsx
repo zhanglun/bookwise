@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { accessImage } from "@/helpers/parseEpub";
+import { Board } from "@/pages/Reader/Board";
 
 export interface PageProps {
   ncxId: string;
@@ -69,8 +70,10 @@ export function Page(props: PageProps) {
     init();
   }, [ content ]);
 
-  return <div id={ ncxId } data-ncx-id={ ncxId } key={ ncxId }>
-    asdf
+  return <div id={ ncxId } data-ncx-id={ ncxId } key={ ncxId } className="relative">
+    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+      <Board/>
+    </div>
     <div ref={ DOMNodeRef }></div>
   </div>
 }

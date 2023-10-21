@@ -1,7 +1,8 @@
-import { request } from "@/helpers/request";
 import { MouseEvent, useEffect, useRef, useState } from "react";
+import Highlighter from 'web-highlighter';
 import ePub from "epubjs";
 import { useLocation, useParams } from "react-router-dom";
+import { request } from "@/helpers/request";
 import {
   BookCatalog,
   accessFileContent,
@@ -486,9 +487,9 @@ export const Reader = () => {
     }
 
     // 使用示例
-    highlightTextByOffset(startInfos[0], startInfos[1], endInfos[0], endInfos[1]);
+    // highlightTextByOffset(startInfos[0], startInfos[1], endInfos[0], endInfos[1]);
 
-    // setShowTooltip(true);
+    setShowTooltip(true);
   };
 
   useEffect(() => {
@@ -496,6 +497,10 @@ export const Reader = () => {
       // document.
     }
   }, [ showTooltip ]);
+
+  useEffect(() => {
+    (new Highlighter()).run();
+  }, [])
 
   return (
     <div className="h-full relative pr-14">
