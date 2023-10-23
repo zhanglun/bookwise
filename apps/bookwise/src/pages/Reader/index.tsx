@@ -1,5 +1,4 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
-import Highlighter from 'web-highlighter';
 import ePub from "epubjs";
 import { useLocation, useParams } from "react-router-dom";
 import { request } from "@/helpers/request";
@@ -26,6 +25,7 @@ import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
 import { Page } from "@/pages/Reader/Page";
+import CanvasHighlighter from "@/pages/Reader/Canvas";
 
 const colorList = [
   '#ffd500',
@@ -365,17 +365,12 @@ export const Reader = () => {
       const clips = txtList.reduce((arr, item, index) => {
         if (item === rangeNode) {
           startIdx = index;
-          console.log('<=====>', item);
-          console.log('<=====> startIdx', startIdx);
         }
 
         const end = item.textContent.length + (arr[index - 1] ? arr[index - 1][2] : 0)
         arr.push([ item, end - item.textContent.length, end ])
         return arr
       }, [])
-
-      console.log('clips', clips);
-      console.log('rangeNode', rangeNode);
 
       // 查找满足条件的范围区间
       // const startNode = clips.find(el => start >= el[1] && start < el[2]);
@@ -388,8 +383,6 @@ export const Reader = () => {
         } else if (idx === startIdx) {
           acu = cur[1] + start;
         }
-
-        console.log('acu', acu);
 
         return acu;
       }, 0);
@@ -407,9 +400,6 @@ export const Reader = () => {
       originOffset: number,
       offset: number,
     ] = getNodeAndOffset(endPageDiv, endNode, endOffset);
-
-    console.log('startNodeInfo', startNodeInfo)
-    console.log('endNodeInfo', endNodeInfo)
 
     // const annotation = {
     //   start_page_id: startPageId,
@@ -442,8 +432,6 @@ export const Reader = () => {
             const start = currentOffset;
             const end = start + nodeLength;
 
-            console.log('start and end', [ start, end ]);
-
             // 检查偏移量是否在当前文本节点内
             if (s >= start && s < end) {
               targetNode = node;
@@ -462,44 +450,19 @@ export const Reader = () => {
       return [ targetNode, startOffset, s ];
     }
 
-    const startInfos = getElementByOffset(startPageDiv, startNodeInfo[2]);
-    const endInfos = getElementByOffset(endPageDiv, endNodeInfo[2]);
-
-    console.log("getElementByOffset startInfos", startInfos);
-    console.log("getElementByOffset end", endInfos);
-
-
-    function highlightTextByOffset(startNode, startOffset, endNode, endOffset) {
-      const range = document.createRange();
-
-      range.setStart(startNode, startOffset);
-      range.setEnd(endNode, endOffset);
-
-      // 创建一个 <span> 元素
-      const highlight = document.createElement('span');
-      highlight.style.backgroundColor = 'yellow'; // 设置高亮的背景颜色
-
-      range.surroundContents(highlight);
-
-      // const selection = window.getSelection();
-      // selection.removeAllRanges();
-      // selection.addRange(range);
-    }
-
-    // 使用示例
-    // highlightTextByOffset(startInfos[0], startInfos[1], endInfos[0], endInfos[1]);
-
     setShowTooltip(true);
   };
 
   useEffect(() => {
-    if (showTooltip) {
-      // document.
-    }
-  }, [ showTooltip ]);
 
-  useEffect(() => {
-    (new Highlighter()).run();
+// container 为页面需要划词高亮区域的 DOM 对象
+    const container = document.getElementById('boundaryRef')
+    const highlighter = new CanvasHighlighter(container)
+    container.addEventListener('mouseup', () => {
+      const range = highlighter.getSelectionRange()
+      console.log(range);
+      if (range) highlighter.addRange(range)
+    })
   }, [])
 
   return (
@@ -530,6 +493,7 @@ export const Reader = () => {
               <style type="text/css" ref={ styleRef }/>
               <section
                 className="book-section"
+                id="book-section"
               >
                 { pageList.map((page) => page) }
               </section>

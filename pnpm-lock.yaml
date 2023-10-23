@@ -209,6 +209,9 @@ importers:
       framer-motion:
         specifier: ^10.15.1
         version: 10.15.1(react-dom@18.2.0)(react@18.2.0)
+      konva:
+        specifier: ^9.2.2
+        version: 9.2.2
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -236,9 +239,6 @@ importers:
       tailwindcss-animate:
         specifier: ^1.0.6
         version: 1.0.6(tailwindcss@3.3.3)
-      web-highlighter:
-        specifier: ^0.7.4
-        version: 0.7.4
       zod:
         specifier: ^3.22.2
         version: 3.22.2
@@ -6713,6 +6713,10 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+  /konva@9.2.2:
+    resolution: {integrity: sha512-Gyn5hQa/5+8pJvTn/IVyZWgum2otWXszuVCG/cevkAyKUFcmFv4tGbQhHFGtJPLQkGO+W6xfgRzyYIkNgKnPxA==}
+    dev: false
+
   /lazy-val@1.0.5:
     resolution: {integrity: sha512-0/BnGCCfyUMkBpeDgWihanIAF9JmZhHBgUhEqzvf+adhNGLoP6TaiI5oF8oyb3I45P+PcnrqihSf01M0l0G5+Q==}
     dev: true
@@ -9126,10 +9130,6 @@ packages:
     dependencies:
       defaults: 1.0.4
     dev: true
-
-  /web-highlighter@0.7.4:
-    resolution: {integrity: sha512-07mWw6ib+Abcr/fuKEWYPy1Y0MsCOz6yUUVw9xMpyt5UzyXWtSlcwzy2YqnccCP/LjtM9MZHQSo3dbGJII8h6w==}
-    dev: false
 
   /webidl-conversions@3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
