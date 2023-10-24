@@ -86,7 +86,7 @@ class CanvasHighlighter implements ICanvasHighlighter {
     this.stage.clear()
   }
 
-  private observeResize() {
+  observeResize() {
     const observer = new ResizeObserver(debounce(this.handleResize.bind(this), this.config.delay))
     observer.observe(this.root)
   }

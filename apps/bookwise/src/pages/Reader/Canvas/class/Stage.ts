@@ -39,6 +39,7 @@ export default class Stage {
 
   private createContainer() {
     const el = document.createElement('div')
+    el.className = "canvas-container"
     el.style.position = 'absolute'
     el.style.top = '0'
     el.style.left = '0'

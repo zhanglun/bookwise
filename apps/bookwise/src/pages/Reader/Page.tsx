@@ -71,9 +71,9 @@ export function Page(props: PageProps) {
   }, [ content ]);
 
   return <div id={ ncxId } data-ncx-id={ ncxId } key={ ncxId } className="relative">
-    <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-      <Board/>
-    </div>
+    {/*<div className="absolute top-0 left-0 w-full h-full pointer-events-none">*/}
+    {/*  <Board/>*/}
+    {/*</div>*/}
     <div ref={ DOMNodeRef }></div>
   </div>
 }
