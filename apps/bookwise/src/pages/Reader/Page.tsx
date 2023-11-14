@@ -84,7 +84,7 @@ export function Page(props: PageProps) {
 
   }, [ ncxId ]);
 
-  return <div id={ ncxId } data-ncx-id={ ncxId } key={ ncxId } className="relative">
+  return <div id={ ncxId } data-ncx-id={ ncxId } key={ ncxId } className="relative px-10 py-12 min-h-[100vh] my-5 shadow-md">
     {/*<div className="absolute top-0 left-0 w-full h-full pointer-events-none">*/ }
     {/*  <Board/>*/ }
     {/*</div>*/ }

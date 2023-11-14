@@ -118,47 +118,6 @@ export const Reader = () => {
     loadCSS();
   }, [ bookInfo ]);
 
-  const convertImages = async (
-    files: any,
-    currentHref: string,
-    images: NodeListOf<Element>
-  ) => {
-    for (const image of images) {
-      let attr = "src";
-      let href: string = image.getAttribute("src") || "";
-
-      if (!href) {
-        href =
-          image.getAttributeNS("http://www.w3.org/1999/xlink", "href") || "";
-        attr = "href";
-      }
-
-      if (!href) {
-        href = image.getAttribute("xlink:href") || "";
-        attr = "xlink:href";
-      }
-
-      href = getAbsoluteUrl(currentHref, href);
-      const name = href;
-
-      if (files[name]) {
-        const imageBlob = await accessImage(files[name]);
-
-        // 创建 FileReader 对象读取 Blob 数据
-        const reader = new FileReader();
-        reader.onload = (function (img) {
-          return function (event) {
-            const dataURL = event?.target?.result;
-
-            img.setAttribute(attr, (dataURL || "") as string);
-          };
-        })(image);
-
-        reader.readAsDataURL(imageBlob);
-      }
-    }
-  };
-
   const goToPage = (href: string, id: string) => {
     const target = document.getElementById(id);
     console.log("%c Line:149 🥔 target", "color:#33a5ff", target);
@@ -392,7 +351,6 @@ export const Reader = () => {
       return [ rangeNode, startOffset, startIndex ];
     }
 
-
     // const annotation = {
     //   start_page_id: startPageId,
     //   start_offset: startOffsetInParent,
@@ -424,13 +382,13 @@ export const Reader = () => {
           } }
         />
         <div
-          className="h-full overflow-hidden py-8 rounded-e-lg bg-white/100 shadow-sm"
+          className="h-full overflow-hidden rounded-e-lg bg-white/100 shadow-sm"
           id="boundaryRef"
         >
           <div id="box" className="h-full overflow-hidden">
-            <div className="px-4 h-full overflow-y-scroll flex flex-row">
+            <div className="h-full overflow-y-scroll flex flex-row">
               <div
-                className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"
+                className="flex-1 max-w-4xl m-auto leading-relaxed"
                 onClick={ handleUserClickEvent }
                 // onMouseUp={ handleUserMouseUpEvent }
                 id="popover-container"
