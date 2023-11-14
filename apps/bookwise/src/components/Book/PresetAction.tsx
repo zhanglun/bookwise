@@ -100,16 +100,6 @@ export function PresetActions(props: PresetActionProps) {
               <div>
                 <MetaForm defaultData={data}/>
               </div>
-              {/* <Switch name="show" id="show" defaultChecked={true} />
-              <Label className="grid gap-1 font-normal" htmlFor="show">
-                <span className="font-semibold">
-                  Show a warning when content is flagged
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  A warning will be shown when sexual, hateful, violent or
-                  self-harm content is detected.
-                </span>
-              </Label> */}
             </div>
           </div>
           <DialogFooter>

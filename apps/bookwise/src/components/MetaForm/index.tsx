@@ -60,7 +60,18 @@ export interface MetaFormProps {
 export function MetaForm(props: any) {
   const { defaultData } = props;
 
+  console.log("default data", defaultData)
+
   defaultData.author_id = defaultData.author?.id;
+
+  const date = new Date(defaultData.publish_at);
+
+  if (isNaN(date.getTime())) {
+    defaultData.publish_at = "";
+  } else {
+    // 日期有效
+    defaultData.publish_at = date;
+  }
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -117,10 +128,10 @@ export function MetaForm(props: any) {
         />
         <FormField
           control={ form.control }
-          name="dob"
+          name="publish_at"
           render={ ({ field }) => (
             <FormItem className="flex flex-col">
-              <FormLabel>Date of birth</FormLabel>
+              <FormLabel>Date of publish</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
                   <FormControl>
@@ -152,9 +163,9 @@ export function MetaForm(props: any) {
                   />
                 </PopoverContent>
               </Popover>
-              <FormDescription>
-                Your date of birth is used to calculate your age.
-              </FormDescription>
+              {/*<FormDescription>*/}
+              {/*  Your date of birth is used to calculate your age.*/}
+              {/*</FormDescription>*/}
               <FormMessage/>
             </FormItem>
           ) }
@@ -220,7 +231,7 @@ export function MetaForm(props: any) {
             </FormItem>
           ) }
         />
-        <Button type="submit">Update account</Button>
+        <Button type="submit">Confirm</Button>
       </form>
     </Form>
   )
