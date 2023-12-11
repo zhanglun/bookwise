@@ -44,7 +44,7 @@ export class BooksController {
 
   @Get()
   findAll(
-    @SortingParams(['title', 'author', 'publisher']) sort?: Sorting,
+    @SortingParams(['title', 'author', 'publisher', 'created_at']) sort?: Sorting,
     @FilteringParams(['author.name', 'publisher', 'format', 'language_id'])
     filter?: Filtering,
   ): Promise<PaginatedResource<Partial<Book>>> {

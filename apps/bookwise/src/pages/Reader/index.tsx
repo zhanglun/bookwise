@@ -215,6 +215,7 @@ export const Reader = () => {
             if (body) {
               pages.push(
                 <Page
+                  key={item.ncxId}
                   ncxId={ item.ncxId }
                   content={ body.innerHTML }
                   bookInfo={ bookInfo }
@@ -395,7 +396,7 @@ export const Reader = () => {
               >
                 <style type="text/css" ref={ styleRef }/>
                 <section className="book-section" id="book-section">
-                  {pageList.slice(0, 10).map((page) => page)}
+                  {pageList.map((page) => page)}
                 </section>
               </div>
               <Selection.Root>

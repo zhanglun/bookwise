@@ -12,7 +12,7 @@ export const Home = () => {
   useEffect(() => {
     request
       .get("/books", {
-        data: {
+        params: {
           sort: "created_at:desc",
         },
       })
