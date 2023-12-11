@@ -270,6 +270,10 @@ export class BooksService {
   ): Promise<PaginatedResource<Partial<Book>>> {
     const where = getWhere(filter);
     const order = getOrder(sort);
+
+    console.log('where', where);
+    console.log('order', order);
+
     const [books, total] = await this.bookRepository.findAndCount({
       where,
       order,

@@ -19,9 +19,28 @@ export const Library = () => {
     {} as BookResItem
   );
 
+  function getBookList(params) {
+    request.get("/books", {
+      params
+    }).then((res) => {
+      console.log("🚀 ~ file: index.tsx:34 ~ request.get ~ res:", res);
+      const { items, total } = res.data;
+
+      setBookList(items);
+    });
+  }
+
   const handleBookClick = (book: BookResItem) => {
     setCurrentBook(book);
   };
+
+  function handleSort(field: string, sort: string) {
+    console.log('field', field)
+    console.log('sort', sort)
+    getBookList({
+      sort: `${field}:${sort}`
+    })
+  }
 
   useEffect(() => {
     if (files.length) {
@@ -45,12 +64,7 @@ export const Library = () => {
   }, [files]);
 
   useEffect(() => {
-    request.get("/books").then((res) => {
-      console.log("🚀 ~ file: index.tsx:34 ~ request.get ~ res:", res);
-      const { items, total } = res.data;
-
-      setBookList(items);
-    });
+    getBookList({});
   }, []);
 
   return (
@@ -80,7 +94,7 @@ export const Library = () => {
           <div className="px-3 py-2 flex justify-between">
             <Index />
             <div>
-              <BookSorter />
+              <BookSorter onChange={handleSort}/>
             </div>
           </div>
           <div

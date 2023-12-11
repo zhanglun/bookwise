@@ -14,6 +14,7 @@ import {
   ExecutionContext,
 } from '@nestjs/common';
 import { Request } from 'express';
+
 export interface Sorting {
   property: string;
   direction: string;
@@ -31,14 +32,14 @@ export const SortingParams = createParamDecorator(
       throw new BadRequestException('Invalid sort parameter');
 
     // check the format of the sort query param
-    const sortPattern = /^([a-zA-Z0-9\_]+):(asc|desc)$/;
+    const sortPattern = /^([a-zA-Z0-9_.]+):(asc|desc)$/;
     if (!sort.match(sortPattern))
       throw new BadRequestException('Invalid sort parameter');
 
     // extract the property name and direction and check if they are valid
-    const [property, direction]: string[] = sort.split(':');
+    const [ property, direction ]: string[] = sort.split(':');
     if (!(validParams as string[]).includes(property))
-      throw new BadRequestException(`Invalid sort property: ${property}`);
+      throw new BadRequestException(`Invalid sort property: ${ property }`);
 
     return { property, direction };
   },
@@ -88,19 +89,32 @@ export const FilteringParams = createParamDecorator(
     }
 
     // extract the parameters and validate if the rule and the property are valid
-    const [property, rule, value] = filter.split(':');
+    const [ property, rule, value ] = filter.split(':');
     if (!data.includes(property))
-      throw new BadRequestException(`Invalid filter property: ${property}`);
+      throw new BadRequestException(`Invalid filter property: ${ property }`);
     if (!Object.values(FilterRule).includes(rule as FilterRule))
-      throw new BadRequestException(`Invalid filter rule: ${rule}`);
+      throw new BadRequestException(`Invalid filter rule: ${ rule }`);
 
     return { property, rule, value };
   },
 );
 
-export const getOrder = (sort: Sorting) =>
-  sort ? { [sort.property]: sort.direction } : {};
+export const getOrder = (sort: Sorting) => {
+  if (sort) {
+    const [ rs, key ] = sort.property.split(".");
+    if (key) {
+      return {
+        [rs]: {
+          [key]: sort.direction
+        }
+      }
+    } else {
+      return { [sort.property]: sort.direction }
+    }
+  }
 
+  return {};
+}
 export const getWhere = (filter: Filtering) => {
   if (!filter) return {};
 
@@ -136,9 +150,9 @@ export const getWhere = (filter: Filtering) => {
   if (filter.rule == FilterRule.LESS_THAN_OR_EQUALS)
     res = { [property]: LessThanOrEqual(filter.value) };
   if (filter.rule == FilterRule.LIKE)
-    res = { [property]: ILike(`%${filter.value}%`) };
+    res = { [property]: ILike(`%${ filter.value }%`) };
   if (filter.rule == FilterRule.NOT_LIKE)
-    res = { [property]: Not(ILike(`%${filter.value}%`)) };
+    res = { [property]: Not(ILike(`%${ filter.value }%`)) };
   if (filter.rule == FilterRule.IN)
     res = { [property]: In(filter.value.split(',')) };
   if (filter.rule == FilterRule.NOT_IN)

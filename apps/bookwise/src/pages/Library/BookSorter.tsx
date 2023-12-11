@@ -16,7 +16,7 @@ import {
 
 const fields = [
   {
-    key: "author",
+    key: "author.name",
     label: "Author",
   },
   {
@@ -49,16 +49,30 @@ const fields = [
   },
 ];
 
-export const BookSorter = () => {
+export interface BookSorterProps {
+  onChange: (field: string, sort: string) => void;
+}
+
+export const BookSorter = (props: BookSorterProps) => {
+  const { onChange } = props;
   const [ showLabel, setShowLabel ] = useState('Author');
   const [ checkedField, setCheckedField ] = useState("author");
   const [ orderBy, setOrderBy ] = useState("desc");
 
-  useEffect(() => {
-    const cur = fields.filter((_) => _.key === checkedField);
+  function handleFieldChange (key: string) {
+    const cur = fields.filter((_) => _.key === key);
+
+    console.log(cur)
 
     setShowLabel(cur[0].label)
-  }, [ checkedField ]);
+    setCheckedField(key)
+    onChange(key, orderBy)
+  }
+
+  function handleSortChange (key: string) {
+    setOrderBy(key)
+    onChange(checkedField, key)
+  }
 
   return (
     <div>
@@ -80,7 +94,7 @@ export const BookSorter = () => {
               <DropdownMenuCheckboxItem
                 key={ field.key }
                 checked={ checkedField === field.key }
-                onCheckedChange={ () => setCheckedField(field.key) }
+                onCheckedChange={ () => handleFieldChange(field.key) }
               >
                 { field.label }
               </DropdownMenuCheckboxItem>
@@ -90,13 +104,13 @@ export const BookSorter = () => {
           <DropdownMenuLabel>Order by</DropdownMenuLabel>
           <DropdownMenuCheckboxItem
             checked={ orderBy === "asc" }
-            onCheckedChange={ () => setOrderBy("asc") }
+            onCheckedChange={ () => handleSortChange("asc") }
           >
             ASC
           </DropdownMenuCheckboxItem>
           <DropdownMenuCheckboxItem
             checked={ orderBy === "desc" }
-            onCheckedChange={ () => setOrderBy("desc") }
+            onCheckedChange={ () => handleSortChange("desc") }
           >
             DESC
           </DropdownMenuCheckboxItem>
