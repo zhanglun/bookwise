@@ -271,9 +271,6 @@ export class BooksService {
     const where = getWhere(filter);
     const order = getOrder(sort);
 
-    console.log('where', where);
-    console.log('order', order);
-
     const [books, total] = await this.bookRepository.findAndCount({
       where,
       order,
@@ -296,14 +293,14 @@ export class BooksService {
   public async queryRecentlyReading() {
     return this.bookRepository.find({
       order: {
-        addition_info: {
+        additional_info: {
           read_progress_updated_at: 'desc',
         },
       },
       relations: {
         author: true,
         publisher: true,
-        addition_info: true,
+        additional_info: true,
       },
     });
   }

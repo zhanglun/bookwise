@@ -20,19 +20,19 @@ const fields = [
     label: "Author",
   },
   {
-    key: "publisher",
+    key: "publisher.name",
     label: "Publisher",
   },
   {
-    key: "datelastopened",
+    key: "additional_info.read_progress_updated_at",
     label: "Date last opened",
   },
   {
-    key: "datepublished",
+    key: "publish_at",
     label: "Date published",
   },
   {
-    key: "datesaved",
+    key: "updated_at",
     label: "Date saved",
   },
   {
@@ -40,7 +40,7 @@ const fields = [
     label: "Length",
   },
   {
-    key: "readprogress",
+    key: "additional_info.read_progress",
     label: "Read progress",
   },
   {

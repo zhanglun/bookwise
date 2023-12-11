@@ -33,7 +33,7 @@ export class Book {
 
   @OneToOne(() => AdditionalInfoEntity)
   @JoinColumn({ name: 'additional_info_id' })
-  addition_info: AdditionalInfoEntity;
+  additional_info: AdditionalInfoEntity;
 
   @Column({
     default: '',
