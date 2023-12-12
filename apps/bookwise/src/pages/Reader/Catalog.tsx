@@ -28,7 +28,10 @@ export const Catalog = (props: CatalogProps) => {
       const { id, ncxId, label, href, subitems } = item;
 
       return (
-        <div className={ clsx("text-sm text-stone-800 cursor-default") } key={ ncxId }>
+        <div
+          className={ clsx("text-sm text-stone-800 cursor-default") }
+          key={ ncxId }
+        >
           <div
             data-idx={ idx }
             data-href={ href }

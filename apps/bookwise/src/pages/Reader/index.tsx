@@ -119,7 +119,7 @@ export const Reader = () => {
   }, [ bookInfo ]);
 
   const goToPage = (href: string, id: string) => {
-    const target = document.getElementById(id);
+    const target = document.querySelector(`[data-spinehref="${href}"]`);
     console.log("%c Line:149 🥔 target", "color:#33a5ff", target);
     target?.scrollIntoView({ behavior: "smooth" });
   };
@@ -194,12 +194,16 @@ export const Reader = () => {
 
   useEffect(() => {
     const generateFullContent = async () => {
-      const { files, catalog } = bookInfo;
+      const { files, catalog, packaging } = bookInfo;
       const pages: Page[] = [];
 
-      const loopCatalog = async (list: BookCatalog[]) => {
+      const loopSpine = async (list: SpineItem[]) => {
+        console.log('list ===> ', list);
+
         for (const item of list) {
           let { href } = item;
+
+          console.log('href ===> ', href);
 
           if (href.indexOf("#") >= 0) {
             href = href.split("#")[0];
@@ -209,29 +213,29 @@ export const Reader = () => {
             const part = document.createElement("div");
             const body = await accessPageContent(files[href]);
 
-            part.id = item.ncxId;
-            part.dataset.ncxId = item.ncxId;
+            part.id = item.idref;
+            part.dataset.idref = item.idref;
 
             if (body) {
               pages.push(
                 <Page
-                  key={item.ncxId}
-                  ncxId={ item.ncxId }
+                  key={item.idref}
+                  idref={ item.idref }
                   content={ body.innerHTML }
                   bookInfo={ bookInfo }
-                  ncxHref={ href }
+                  href={ href }
                 ></Page>
               );
             }
 
-            if (item.subitems) {
-              await loopCatalog(item.subitems);
-            }
+            // if (item.subitems) {
+            //   await loopSpine(item.subitems);
+            // }
           }
         }
       };
 
-      await loopCatalog(catalog);
+      await loopSpine(packaging.spine);
 
       setPageList(pages);
     };
@@ -279,9 +283,9 @@ export const Reader = () => {
 
     let currentNode = startNode;
     while (currentNode) {
-      if (currentNode.dataset && "ncxId" in currentNode.dataset) {
+      if (currentNode.dataset && "idref" in currentNode.dataset) {
         startPageDiv = currentNode;
-        startPageId = currentNode.dataset.ncxId;
+        startPageId = currentNode.dataset.idref;
         break;
       }
 
@@ -290,9 +294,9 @@ export const Reader = () => {
 
     currentNode = endNode;
     while (currentNode) {
-      if (currentNode.dataset && "ncxId" in currentNode.dataset) {
+      if (currentNode.dataset && "idref" in currentNode.dataset) {
         endPageDiv = currentNode;
-        endPageId = currentNode.dataset.ncxId;
+        endPageId = currentNode.dataset.idref;
         break;
       }
 

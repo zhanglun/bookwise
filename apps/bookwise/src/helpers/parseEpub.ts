@@ -9,6 +9,13 @@ export interface BookCatalog {
   subitems: BookCatalog[];
 }
 
+export interface SpineItem {
+  id: stirng,
+  idref: string,
+  properties: Array<string>,
+  index: number
+}
+
 export interface BookContainer {
   packagePath: string;
   encoding: string;
@@ -202,7 +209,7 @@ export const parsePackage = async (
 
   // this.spineNodeIndex = indexOfElementNode(spineNode);
 
-  const spine = parseSpine(spineNode);
+  const spine = parseSpine(spineNode, manifest);
 
   // this.uniqueIdentifier = this.findUniqueIdentifier(packageDocument);
   const metadata = parseMetadata(metadataNode);
@@ -250,7 +257,7 @@ export const findNavPath = (manifestNode: Element) => {
   return node ? node.getAttribute("href") : false;
 };
 
-export const parseSpine = (spineNode: Element) => {
+export const parseSpine = (spineNode: Element, manifest): SpineItem[] => {
   const spine: {
     id: string;
     idref: string;
@@ -278,8 +285,8 @@ export const parseSpine = (spineNode: Element) => {
       idref: idref || "",
       linear: item.getAttribute("linear") || "yes",
       properties: propArray || [],
-      // "href" : manifest[Id].href,
-      // "url" :  manifest[Id].url,
+      href : manifest[idref].href,
+      url :  manifest[idref].url,
       index: index,
       // "cfiBase" : cfiBase
     };

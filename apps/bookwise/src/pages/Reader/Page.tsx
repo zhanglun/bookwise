@@ -5,15 +5,15 @@ import { Board } from "@/pages/Reader/Board";
 import CanvasHighlighter from "@/pages/Reader/Canvas";
 
 export interface PageProps {
-  ncxId: string;
+  idref: string;
   children?: any;
   content: string;
   bookInfo: any;
-  ncxHref: string;
+  href: string;
 }
 
 export function Page(props: PageProps) {
-  const { ncxId, content, bookInfo, ncxHref } = props;
+  const { idref, content, bookInfo, href } = props;
   const DOMNodeRef = useRef<any>(null);
   const convertImages = async (
     files: any,
@@ -64,7 +64,7 @@ export function Page(props: PageProps) {
         const { files } = bookInfo;
         const images = DOMNodeRef.current.querySelectorAll("img, image");
 
-        await convertImages(files, ncxHref, images);
+        await convertImages(files, href, images);
       }
     }
 
@@ -73,7 +73,7 @@ export function Page(props: PageProps) {
 
   useLayoutEffect(() => {
     setTimeout(() => {
-      const container = document.getElementById(ncxId);
+      const container = document.getElementById(idref);
       const highlighter = new CanvasHighlighter(container);
       container.addEventListener("mouseup", () => {
         const range = highlighter.getSelectionRange();
@@ -82,9 +82,10 @@ export function Page(props: PageProps) {
       },);
     }, 1000)
 
-  }, [ ncxId ]);
+  }, [ idref ]);
 
-  return <div id={ ncxId } data-ncx-id={ ncxId } key={ ncxId } className="relative px-10 py-12 min-h-[100vh] my-5 shadow-md">
+  return <div id={ idref } data-spineidref={ idref } data-spinehref={ href } key={ idref }
+              className="relative px-10 py-12 min-h-[100vh] my-5 shadow-md">
     {/*<div className="absolute top-0 left-0 w-full h-full pointer-events-none">*/ }
     {/*  <Board/>*/ }
     {/*</div>*/ }
