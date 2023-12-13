@@ -10,7 +10,7 @@ export interface BookCatalog {
 }
 
 export interface SpineItem {
-  id: stirng,
+  id: string,
   idref: string,
   properties: Array<string>,
   index: number

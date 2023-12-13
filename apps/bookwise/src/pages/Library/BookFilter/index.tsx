@@ -35,12 +35,12 @@ const options: {
   icon?: React.ComponentType<{ className?: string }>;
 }[] = [
   {
-    value: "author",
+    value: "author.name",
     label: "Author",
     icon: UserCircle2,
   },
   {
-    value: "publisher",
+    value: "publisher.name",
     label: "Publisher",
     icon: Building,
   },

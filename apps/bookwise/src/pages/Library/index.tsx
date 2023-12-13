@@ -117,9 +117,6 @@ export const Library = () => {
           </div>
         </div>
       </div>
-      <div className="px-4 pt-4 w-[290px]">
-        <BookSideDetail data={currentBook} />
-      </div>
     </div>
   );
 };

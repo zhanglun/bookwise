@@ -49,7 +49,7 @@ export const Reader = () => {
     addBookToStack: state.addBookToStack,
   }));
   const [ bookInfo, setBookInfo ] = useState<any>({
-    packaging: { metadata: {} },
+    packaging: { metadata: {}, spine: [] },
     catalog: [],
   });
   const [ catalog, setCatalog ] = useState<BookCatalog[]>([]);
@@ -196,12 +196,8 @@ export const Reader = () => {
       const pages: Page[] = [];
 
       const loopSpine = async (list: SpineItem[]) => {
-        console.log('list ===> ', list);
-
         for (const item of list) {
           let { href } = item;
-
-          console.log('href ===> ', href);
 
           if (href.indexOf("#") >= 0) {
             href = href.split("#")[0];
