@@ -26,6 +26,7 @@ export const Catalog = (props: CatalogProps) => {
   const renderItems = (list: BookCatalog[], idx = 0) => {
     return list.map((item) => {
       const { id, ncxId, label, href, subitems } = item;
+      const [realHref, anchorId] = href.split("#");
 
       return (
         <div
@@ -41,7 +42,7 @@ export const Catalog = (props: CatalogProps) => {
               "hover:underline hover:text-accent-foreground overflow-hidden text-ellipsis whitespace-nowrap",
               "pb-4"
             ) }
-            onClick={ () => goToPage(href, ncxId) }
+            onClick={ () => goToPage(realHref, anchorId) }
           >
             { label }
           </div>

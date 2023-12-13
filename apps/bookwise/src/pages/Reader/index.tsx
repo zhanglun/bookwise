@@ -7,7 +7,7 @@ import {
   accessFileContent,
   accessImage,
   parseEpub,
-  accessPageContent,
+  accessPageContent, SpineItem,
 } from "@/helpers/parseEpub";
 import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
@@ -142,7 +142,6 @@ export const Reader = () => {
       e.stopPropagation();
 
       const href = elem.getAttribute("href") || "";
-      const id = elem.dataset.anchorId || "";
 
       if (
         href &&
@@ -154,11 +153,10 @@ export const Reader = () => {
         window.open(href);
       } else {
         const realHref = getAbsoluteUrl(currentHref, href);
-        const anchorId = realHref.split("#")[1];
+        const [hrefId, anchorId ] = realHref.split("#");
 
-        console.log(realHref);
 
-        goToPage(realHref, anchorId);
+        goToPage(hrefId, anchorId);
       }
     }
     // if (elem && (e.preventDefault(),
@@ -194,7 +192,7 @@ export const Reader = () => {
 
   useEffect(() => {
     const generateFullContent = async () => {
-      const { files, catalog, packaging } = bookInfo;
+      const { files, packaging } = bookInfo;
       const pages: Page[] = [];
 
       const loopSpine = async (list: SpineItem[]) => {
