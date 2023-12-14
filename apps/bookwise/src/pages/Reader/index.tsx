@@ -1,5 +1,6 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
-import ePub from "epubjs";
+import ePub, { Book } from "epubjs";
+import Navigation from "epubjs/types/navigation";
 import { useLocation, useParams } from "react-router-dom";
 import { request } from "@/helpers/request";
 import {
@@ -25,6 +26,8 @@ import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
 import { Page } from "@/pages/Reader/Page";
+import { PackagingManifestObject, PackagingMetadataObject } from "epubjs/types/packaging";
+import { PageListItem } from "epubjs/types/pagelist";
 
 const colorList = [
   "#ffd500",
@@ -48,11 +51,10 @@ export const Reader = () => {
     bookStack: state.bookStack,
     addBookToStack: state.addBookToStack,
   }));
-  const [ bookInfo, setBookInfo ] = useState<any>({
-    packaging: { metadata: {}, spine: [] },
-    catalog: [],
-  });
-  const [ catalog, setCatalog ] = useState<BookCatalog[]>([]);
+  const [ loading, setLoading ] = useState(true);
+  const [ bookInfo, setBookInfo ] = useState<Book>(new Book());
+  const [ navigation, setNavigation ] = useState<Navigation>([]);
+  const [ metadata, setMetadata ] = useState<any>({});
   const [ pageList, setPageList ] = useState<Page[]>([]);
   const [ currentHref, setCurrentHref ] = useState<string>("");
   const boundaryRef = useRef<HTMLDivElement>(null);
@@ -66,12 +68,28 @@ export const Reader = () => {
         responseType: "blob",
       })
       .then((res) => {
-        return parseEpub(res.data);
+        const instance = new Book(res.data);
+
+        console.log(instance)
+
+        return instance.ready as [ PackagingMetadataObject, SpineItem[], PackagingManifestObject, string, Navigation, PageListItem[], string[] ]
       })
-      .then((infos) => {
-        console.log("%c Line:20 🍖 infos", "color:#2eafb0", infos);
-        setBookInfo(infos);
-        setCatalog(infos.catalog);
+      .then((instance) => {
+        const [ metadata, spine, manifest, cover, navigation, pageList, resources ] = instance;
+        console.log(instance)
+        setBookInfo({
+          metadata,
+          spine,
+          manifest,
+          cover,
+          navigation,
+          pageList,
+          resources
+        } as Book);
+        setNavigation(navigation);
+        console.log(":metadata", metadata)
+        setMetadata(metadata);
+        setLoading(false);
       });
   };
 
@@ -119,7 +137,7 @@ export const Reader = () => {
   }, [ bookInfo ]);
 
   const goToPage = (href: string, id: string) => {
-    const target = document.querySelector(`[data-spinehref="${href}"]`);
+    const target = document.querySelector(`[data-spinehref="${ href }"]`);
     console.log("%c Line:149 🥔 target", "color:#33a5ff", target);
     target?.scrollIntoView({ behavior: "smooth" });
   };
@@ -153,7 +171,7 @@ export const Reader = () => {
         window.open(href);
       } else {
         const realHref = getAbsoluteUrl(currentHref, href);
-        const [hrefId, anchorId ] = realHref.split("#");
+        const [ hrefId, anchorId ] = realHref.split("#");
 
 
         goToPage(hrefId, anchorId);
@@ -190,52 +208,52 @@ export const Reader = () => {
     // }
   };
 
-  useEffect(() => {
-    const generateFullContent = async () => {
-      const { files, packaging } = bookInfo;
-      const pages: Page[] = [];
-
-      const loopSpine = async (list: SpineItem[]) => {
-        for (const item of list) {
-          let { href } = item;
-
-          if (href.indexOf("#") >= 0) {
-            href = href.split("#")[0];
-          }
-
-          if (files[href]) {
-            const part = document.createElement("div");
-            const body = await accessPageContent(files[href]);
-
-            part.id = item.idref;
-            part.dataset.idref = item.idref;
-
-            if (body) {
-              pages.push(
-                <Page
-                  key={item.idref}
-                  idref={ item.idref }
-                  content={ body.innerHTML }
-                  bookInfo={ bookInfo }
-                  href={ href }
-                ></Page>
-              );
-            }
-
-            // if (item.subitems) {
-            //   await loopSpine(item.subitems);
-            // }
-          }
-        }
-      };
-
-      await loopSpine(packaging.spine);
-
-      setPageList(pages);
-    };
-
-    bookInfo && generateFullContent();
-  }, [ bookInfo ]);
+  // useEffect(() => {
+  //   const generateFullContent = async () => {
+  //     const { files, packaging } = bookInfo;
+  //     const pages: Page[] = [];
+  //
+  //     const loopSpine = async (list: SpineItem[]) => {
+  //       for (const item of list) {
+  //         let { href } = item;
+  //
+  //         if (href.indexOf("#") >= 0) {
+  //           href = href.split("#")[0];
+  //         }
+  //
+  //         if (files[href]) {
+  //           const part = document.createElement("div");
+  //           const body = await accessPageContent(files[href]);
+  //
+  //           part.id = item.idref;
+  //           part.dataset.idref = item.idref;
+  //
+  //           if (body) {
+  //             pages.push(
+  //               <Page
+  //                 key={item.idref}
+  //                 idref={ item.idref }
+  //                 content={ body.innerHTML }
+  //                 bookInfo={ bookInfo }
+  //                 href={ href }
+  //               ></Page>
+  //             );
+  //           }
+  //
+  //           // if (item.subitems) {
+  //           //   await loopSpine(item.subitems);
+  //           // }
+  //         }
+  //       }
+  //     };
+  //
+  //     await loopSpine(packaging.spine);
+  //
+  //     setPageList(pages);
+  //   };
+  //
+  //   bookInfo && generateFullContent();
+  // }, [ bookInfo ]);
 
   const handleUserMouseUpEvent = () => {
     const selection = window.getSelection();
@@ -368,103 +386,105 @@ export const Reader = () => {
 
   return (
     <div className="h-full relative pr-14">
-      <div className="h-full rounded-lg bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
-        <Catalog
-          className="h-full bg-white/50"
-          data={ catalog }
-          packaging={ bookInfo.packaging }
-          onGoToPage={ async (href: string, id: string) => {
-            setCurrentHref(href);
-            setCurrentId(id);
+      { loading && <div>loading</div> }
+      { !loading &&
+        <div className="h-full rounded-lg bg-white/50 grid grid-flow-col grid-cols-[minmax(0,max-content),_1fr]">
+          <Catalog
+            className="h-full bg-white/50"
+            data={ navigation }
+            manifest={ bookInfo.manifest }
+            onGoToPage={ async (href: string, id: string) => {
+              setCurrentHref(href);
+              setCurrentId(id);
 
-            await goToPage(href, id);
-          } }
-        />
-        <div
-          className="h-full overflow-hidden rounded-e-lg bg-white/100 shadow-sm"
-          id="boundaryRef"
-        >
-          <div id="box" className="h-full overflow-hidden">
-            <div className="h-full overflow-y-scroll flex flex-row">
-              <div
-                className="flex-1 max-w-4xl m-auto leading-relaxed"
-                onClick={ handleUserClickEvent }
-                // onMouseUp={ handleUserMouseUpEvent }
-                id="popover-container"
-              >
-                <style type="text/css" ref={ styleRef }/>
-                <section className="book-section" id="book-section">
-                  {pageList.map((page) => page)}
-                </section>
-              </div>
-              <Selection.Root>
-                <Selection.Trigger>
-                  {/*<div*/ }
-                  {/*  className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"*/ }
-                  {/*  onClick={ handleUserClickEvent }*/ }
-                  {/*  onMouseUp={ handleUserMouseUpEvent }*/ }
-                  {/*  id="popover-container"*/ }
-                  {/*>*/ }
-                  {/*  <style type="text/css" ref={ styleRef }/>*/ }
-                  {/*  <section*/ }
-                  {/*    className="book-section"*/ }
-                  {/*    dangerouslySetInnerHTML={ { __html: fullContent } }*/ }
-                  {/*  ></section>*/ }
-                  {/*</div>*/ }
-                </Selection.Trigger>
-                <Selection.Portal
-                  container={ document.getElementById("popover-container") }
+              await goToPage(href, id);
+            } }
+          />
+          <div
+            className="h-full overflow-hidden rounded-e-lg bg-white/100 shadow-sm"
+            id="boundaryRef"
+          >
+            <div id="box" className="h-full overflow-hidden">
+              <div className="h-full overflow-y-scroll flex flex-row">
+                <div
+                  className="flex-1 max-w-4xl m-auto leading-relaxed"
+                  onClick={ handleUserClickEvent }
+                  // onMouseUp={ handleUserMouseUpEvent }
+                  id="popover-container"
                 >
-                  <Selection.Content
-                    className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-                    collisionBoundary={ document.getElementById("boundaryRef") }
-                    avoidCollisions={ false }
-                    hideWhenDetached={ true }
+                  <style type="text/css" ref={ styleRef }/>
+                  <section className="book-section" id="book-section">
+                    { pageList.map((page) => page) }
+                  </section>
+                </div>
+                <Selection.Root>
+                  <Selection.Trigger>
+                    {/*<div*/ }
+                    {/*  className="flex-1 max-w-4xl px-4 sm:px-4 py-10 m-auto leading-relaxed"*/ }
+                    {/*  onClick={ handleUserClickEvent }*/ }
+                    {/*  onMouseUp={ handleUserMouseUpEvent }*/ }
+                    {/*  id="popover-container"*/ }
+                    {/*>*/ }
+                    {/*  <style type="text/css" ref={ styleRef }/>*/ }
+                    {/*  <section*/ }
+                    {/*    className="book-section"*/ }
+                    {/*    dangerouslySetInnerHTML={ { __html: fullContent } }*/ }
+                    {/*  ></section>*/ }
+                    {/*</div>*/ }
+                  </Selection.Trigger>
+                  <Selection.Portal
+                    container={ document.getElementById("popover-container") }
                   >
-                    <div className="px-2 py-1">
-                      <div>
-                        <Button size="icon" variant="ghost">
-                          <Highlighter size={ 14 }/>
-                        </Button>
-                        <Button size="icon" variant="ghost">
-                          <MessageSquare size={ 14 }/>
-                        </Button>
-                        <Button size="icon" variant="ghost">
-                          <Share size={ 14 }/>
-                        </Button>
+                    <Selection.Content
+                      className="rounded-md border bg-popover p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+                      collisionBoundary={ document.getElementById("boundaryRef") }
+                      avoidCollisions={ false }
+                      hideWhenDetached={ true }
+                    >
+                      <div className="px-2 py-1">
+                        <div>
+                          <Button size="icon" variant="ghost">
+                            <Highlighter size={ 14 }/>
+                          </Button>
+                          <Button size="icon" variant="ghost">
+                            <MessageSquare size={ 14 }/>
+                          </Button>
+                          <Button size="icon" variant="ghost">
+                            <Share size={ 14 }/>
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          { colorList.map((color) => {
+                            return (
+                              <span
+                                className="w-5 h-5 rounded-full"
+                                key={ color }
+                                style={ { backgroundColor: color } }
+                              ></span>
+                            );
+                          }) }
+                        </div>
                       </div>
-                      <div className="flex gap-2">
-                        { colorList.map((color) => {
-                          return (
-                            <span
-                              className="w-5 h-5 rounded-full"
-                              key={ color }
-                              style={ { backgroundColor: color } }
-                            ></span>
-                          );
-                        }) }
-                      </div>
-                    </div>
-                  </Selection.Content>
-                </Selection.Portal>
-              </Selection.Root>
+                    </Selection.Content>
+                  </Selection.Portal>
+                </Selection.Root>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="absolute top-0 right-0 bg-white rounded-lg">
-          <div className="p-1 flex flex-wrap flex-col">
-            <Button size="icon" variant="ghost">
-              <Palette size={ 16 }/>
-            </Button>
-            <Button size="icon" variant="ghost">
-              <ScrollText size={ 16 }/>
-            </Button>
-            <Button size="icon" variant="ghost">
-              <InfoIcon size={ 16 }/>
-            </Button>
+          <div className="absolute top-0 right-0 bg-white rounded-lg">
+            <div className="p-1 flex flex-wrap flex-col">
+              <Button size="icon" variant="ghost">
+                <Palette size={ 16 }/>
+              </Button>
+              <Button size="icon" variant="ghost">
+                <ScrollText size={ 16 }/>
+              </Button>
+              <Button size="icon" variant="ghost">
+                <InfoIcon size={ 16 }/>
+              </Button>
+            </div>
           </div>
-        </div>
-      </div>
+        </div> }
     </div>
   );
 };

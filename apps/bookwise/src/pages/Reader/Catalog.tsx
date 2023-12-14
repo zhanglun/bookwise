@@ -5,17 +5,19 @@ import { animate, motion } from "framer-motion";
 import { BookCatalog } from "@/helpers/parseEpub";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { NavItem } from "epubjs";
+import Navigation from "epubjs/types/navigation";
+import { PackagingManifestObject } from "epubjs/types/packaging";
 
 export interface CatalogProps {
-  data: BookCatalog[];
-  packaging: any;
+  data: Navigation;
+  manifest: PackagingManifestObject;
   onGoToPage: (href: string, id: string) => void;
   className?: string;
 }
 
 export const Catalog = (props: CatalogProps) => {
-  const { data, packaging, onGoToPage, className } = props;
-  const { metadata } = packaging;
+  const { data, manifest, onGoToPage, className } = props;
   const [ expanded, setExpanded ] = useState(false);
   const navigate = useNavigate();
 
@@ -23,21 +25,19 @@ export const Catalog = (props: CatalogProps) => {
     onGoToPage(href, id);
   };
 
-  const renderItems = (list: BookCatalog[], idx = 0) => {
+  const renderItems = (list: NavItem[], idx = 0) => {
     return list.map((item) => {
-      const { id, ncxId, label, href, subitems } = item;
+      const { id, label, href, subitems } = item;
       const [realHref, anchorId] = href.split("#");
 
       return (
         <div
           className={ clsx("text-sm text-stone-800 cursor-default") }
-          key={ ncxId }
+          key={ id }
         >
           <div
-            data-idx={ idx }
+            data-id={ id }
             data-href={ href }
-            data-ncx-id={ ncxId }
-            data-anchor-id={ id }
             className={ clsx(
               "hover:underline hover:text-accent-foreground overflow-hidden text-ellipsis whitespace-nowrap",
               "pb-4"
@@ -72,11 +72,11 @@ export const Catalog = (props: CatalogProps) => {
       </div>
       <div className="grid grid-flow-col grid-cols-[1fr] gap-1 items-center px-5 py-2 mt-3">
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-          { metadata.title }
+          { manifest.title }
         </span>
       </div>
       <div className="px-5 py-2 h-full overflow-y-scroll">
-        { renderItems(data) }
+        { renderItems(data.toc) }
       </div>
     </motion.div>
   );
