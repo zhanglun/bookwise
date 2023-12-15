@@ -1,14 +1,11 @@
 import { MouseEvent, useEffect, useRef, useState } from "react";
-import ePub, { Book } from "epubjs";
-import Navigation from "epubjs/types/navigation";
 import { useLocation, useParams } from "react-router-dom";
+import Book from "epubjs";
 import { request } from "@/helpers/request";
 import {
-  BookCatalog,
   accessFileContent,
-  accessImage,
   parseEpub,
-  accessPageContent, SpineItem,
+  accessPageContent, SpineItem, BookNavItem, EpubObject, PackagingMetadataObject, BookManifest,
 } from "@/helpers/parseEpub";
 import { Catalog } from "./Catalog";
 import { getAbsoluteUrl } from "@/helpers/utils";
@@ -26,8 +23,6 @@ import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
 import { Page } from "@/pages/Reader/Page";
-import { PackagingManifestObject, PackagingMetadataObject } from "epubjs/types/packaging";
-import { PageListItem } from "epubjs/types/pagelist";
 
 const colorList = [
   "#ffd500",
@@ -52,15 +47,19 @@ export const Reader = () => {
     addBookToStack: state.addBookToStack,
   }));
   const [ loading, setLoading ] = useState(true);
-  const [ bookInfo, setBookInfo ] = useState<Book>(new Book());
-  const [ navigation, setNavigation ] = useState<Navigation>([]);
-  const [ metadata, setMetadata ] = useState<any>({});
-  const [ pageList, setPageList ] = useState<Page[]>([]);
+  const [ bookInfo, setBookInfo ] = useState<EpubObject>({} as EpubObject);
+  const [ navigation, setNavigation ] = useState<BookNavItem[]>([]);
+  const [ spine, setSpine ] = useState<SpineItem[]>([]);
+  const [ metadata, setMetadata ] = useState<PackagingMetadataObject>({} as PackagingMetadataObject);
+  const [ manifest, setManifest ] = useState<BookManifest>({} as BookManifest);
+  const [ pageList, setPageList ] = useState<typeof Page[]>([]);
   const [ currentHref, setCurrentHref ] = useState<string>("");
   const boundaryRef = useRef<HTMLDivElement>(null);
   const [ currentId, setCurrentId ] = useState<string>("");
   const styleRef = useRef<HTMLStyleElement>(null);
   const [ showTooltip, setShowTooltip ] = useState(false);
+
+  const [ bookResult, setBookResult ] = useState();
 
   const getBookBlobs = () => {
     request
@@ -69,26 +68,22 @@ export const Reader = () => {
       })
       .then((res) => {
         const instance = new Book(res.data);
-
         console.log(instance)
-
-        return instance.ready as [ PackagingMetadataObject, SpineItem[], PackagingManifestObject, string, Navigation, PageListItem[], string[] ]
+        return parseEpub(res.data);
       })
       .then((instance) => {
-        const [ metadata, spine, manifest, cover, navigation, pageList, resources ] = instance;
+        console.log(instance);
+        const { files, metadata, spine, manifest, cover, navigation, pageList, resources } = instance;
         console.log(instance)
         setBookInfo({
-          metadata,
-          spine,
-          manifest,
-          cover,
-          navigation,
-          pageList,
-          resources
-        } as Book);
+          ...instance,
+        });
         setNavigation(navigation);
         console.log(":metadata", metadata)
+        console.log(":pageList", spine)
         setMetadata(metadata);
+        setManifest(manifest);
+        setSpine(spine);
         setLoading(false);
       });
   };
@@ -137,7 +132,7 @@ export const Reader = () => {
   }, [ bookInfo ]);
 
   const goToPage = (href: string, id: string) => {
-    const target = document.querySelector(`[data-spinehref="${ href }"]`);
+    const target = document.querySelector(`[data-spine-href="${ href }"]`);
     console.log("%c Line:149 🥔 target", "color:#33a5ff", target);
     target?.scrollIntoView({ behavior: "smooth" });
   };
@@ -208,52 +203,53 @@ export const Reader = () => {
     // }
   };
 
-  // useEffect(() => {
-  //   const generateFullContent = async () => {
-  //     const { files, packaging } = bookInfo;
-  //     const pages: Page[] = [];
-  //
-  //     const loopSpine = async (list: SpineItem[]) => {
-  //       for (const item of list) {
-  //         let { href } = item;
-  //
-  //         if (href.indexOf("#") >= 0) {
-  //           href = href.split("#")[0];
-  //         }
-  //
-  //         if (files[href]) {
-  //           const part = document.createElement("div");
-  //           const body = await accessPageContent(files[href]);
-  //
-  //           part.id = item.idref;
-  //           part.dataset.idref = item.idref;
-  //
-  //           if (body) {
-  //             pages.push(
-  //               <Page
-  //                 key={item.idref}
-  //                 idref={ item.idref }
-  //                 content={ body.innerHTML }
-  //                 bookInfo={ bookInfo }
-  //                 href={ href }
-  //               ></Page>
-  //             );
-  //           }
-  //
-  //           // if (item.subitems) {
-  //           //   await loopSpine(item.subitems);
-  //           // }
-  //         }
-  //       }
-  //     };
-  //
-  //     await loopSpine(packaging.spine);
-  //
-  //     setPageList(pages);
-  //   };
-  //
-  //   bookInfo && generateFullContent();
-  // }, [ bookInfo ]);
+  useEffect(() => {
+    const generateFullContent = async () => {
+      const { files, packaging } = bookInfo;
+      const pages: any[] = [];
+
+      const loopSpine = async (list: SpineItem[]) => {
+        for (const item of list) {
+          let { href, url } = item;
+
+          if (href.indexOf("#") >= 0) {
+            href = href.split("#")[0];
+          }
+
+          console.log("href", href)
+          console.log("url", url)
+
+          if (files[url]) {
+            const part = document.createElement("div");
+            const body = await accessPageContent(files[url]);
+
+            part.id = item.idref;
+            part.dataset.idref = item.idref;
+
+            if (body) {
+              pages.push(
+                <Page
+                  key={ item.idref }
+                  idref={ item.idref }
+                  content={ body.innerHTML }
+                  bookInfo={ bookInfo }
+                  href={ href }
+                  url={ url }
+                ></Page>
+              );
+            }
+          }
+        }
+
+      };
+
+      await loopSpine(spine);
+
+      setPageList(pages);
+    };
+
+    spine && spine.length > 0 && generateFullContent();
+  }, [ bookInfo, spine ]);
 
   const handleUserMouseUpEvent = () => {
     const selection = window.getSelection();
@@ -392,7 +388,7 @@ export const Reader = () => {
           <Catalog
             className="h-full bg-white/50"
             data={ navigation }
-            manifest={ bookInfo.manifest }
+            metadata={ metadata }
             onGoToPage={ async (href: string, id: string) => {
               setCurrentHref(href);
               setCurrentId(id);

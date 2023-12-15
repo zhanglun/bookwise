@@ -1,8 +1,7 @@
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { accessImage } from "@/helpers/parseEpub";
 import { Board } from "@/pages/Reader/Board";
-import CanvasHighlighter from "@/pages/Reader/Canvas";
 
 export interface PageProps {
   idref: string;
@@ -10,11 +9,12 @@ export interface PageProps {
   content: string;
   bookInfo: any;
   href: string;
+  url: string;
 }
 
 export function Page(props: PageProps) {
-  const { idref, content, bookInfo, href } = props;
-  const DOMNodeRef = useRef<any>(null);
+  const { idref, content, bookInfo, href, url } = props;
+  const DOMNodeRef = useRef<HTMLDivElement | undefined>();
   const convertImages = async (
     files: any,
     currentHref: string,
@@ -69,26 +69,21 @@ export function Page(props: PageProps) {
     }
 
     init();
-  }, [ content ]);
+  }, [content]);
 
-  useLayoutEffect(() => {
-    setTimeout(() => {
-      const container = document.getElementById(idref);
-      const highlighter = new CanvasHighlighter(container);
-      container.addEventListener("mouseup", () => {
-        const range = highlighter.getSelectionRange();
-        console.log(range);
-        if (range) highlighter.addRange(range);
-      },);
-    }, 1000)
-
-  }, [ idref ]);
-
-  return <div id={ idref } data-spineidref={ idref } data-spinehref={ href } key={ idref }
-              className="relative px-10 py-12 min-h-[100vh] my-5 shadow-md">
-    {/*<div className="absolute top-0 left-0 w-full h-full pointer-events-none">*/ }
-    {/*  <Board/>*/ }
-    {/*</div>*/ }
-    <div ref={ DOMNodeRef }></div>
-  </div>
+  return (
+    <div
+      id={idref}
+      data-spine-idref={idref}
+      data-spine-href={href}
+      data-spine-url={url}
+      key={idref}
+      className="relative px-10 py-12 min-h-[100vh] my-5 shadow-md"
+    >
+      {/*<div className="absolute top-0 left-0 w-full h-full pointer-events-none">*/}
+      {/*  <Board/>*/}
+      {/*</div>*/}
+      <div ref={DOMNodeRef}></div>
+    </div>
+  );
 }

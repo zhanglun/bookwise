@@ -1,25 +1,65 @@
 import JSZip from "jszip";
 import {qsp} from "./queryElement";
 
-export interface BookCatalog {
+export interface BookNavItem {
   href: string;
+  url: string;
   ncxId: string;
   label: string;
-  parent: string | undefined;
-  subitems: BookCatalog[];
+  parent?: string;
+  subitems?: BookNavItem[];
 }
 
 export interface SpineItem {
   id: string,
   idref: string,
   properties: Array<string>,
-  index: number
+  index: number,
+  url: string,
+  href: string,
 }
 
 export interface BookContainer {
   packagePath: string;
   encoding: string;
 }
+
+export interface EpubBaseObject {
+  files: { [key: string]: JSZip.JSZipObject };
+  container: BookContainer;
+  basePath: string;
+  packaging: any;
+  navigation: BookNavItem[];
+}
+
+export interface PackagingMetadataObject {
+  title: string,
+  creator: string,
+  description: string,
+  publish_at: string,
+  publisher: string,
+  identifier: string,
+  language: string,
+  rights: string,
+  modified_date: string,
+  layout: string,
+  orientation: string,
+  flow: string,
+  viewport: string,
+  spread: string
+}
+
+export interface PackagingObject {
+  manifest: BookManifest;
+  navPath: string;
+  ncxPath: string;
+  coverPath: string;
+  // spineNodeIndex: number;
+  spine: any[];
+  metadata: PackagingMetadataObject;
+}
+
+export interface EpubObject extends EpubBaseObject, PackagingObject {}
 
 export const parseContainerXML = async (
   data: JSZip.JSZipObject | null
@@ -149,15 +189,7 @@ const parseMetadata = (node: Element) => {
 export const parsePackage = async (
   basePath: string,
   data: JSZip.JSZipObject | null
-): Promise<{
-  manifest: BookManifest;
-  navPath: string;
-  ncxPath: string;
-  coverPath: string;
-  // spineNodeIndex: number;
-  spine: any[];
-  metadata: any;
-}> => {
+): Promise<PackagingObject> => {
   if (!data) {
     console.error("No content.opf");
 
@@ -169,7 +201,7 @@ export const parsePackage = async (
       // spineNodeIndex: 0,
       spine: [],
       metadata: {},
-    };
+    } as PackagingObject;
   }
 
   const res = await data?.async("uint8array");
@@ -209,7 +241,7 @@ export const parsePackage = async (
 
   // this.spineNodeIndex = indexOfElementNode(spineNode);
 
-  const spine = parseSpine(spineNode, manifest);
+  const spine = parseSpine(spineNode, manifest, basePath);
 
   // this.uniqueIdentifier = this.findUniqueIdentifier(packageDocument);
   const metadata = parseMetadata(metadataNode);
@@ -226,7 +258,7 @@ export const parsePackage = async (
     ncxPath: ncxPath,
     coverPath: coverPath,
     // spineNodeIndex: this.spineNodeIndex,
-  };
+  } as PackagingObject;
 };
 
 export const findNcxPath = (manifestNode: Element, spineNode: Element) => {
@@ -257,14 +289,8 @@ export const findNavPath = (manifestNode: Element) => {
   return node ? node.getAttribute("href") : false;
 };
 
-export const parseSpine = (spineNode: Element, manifest): SpineItem[] => {
-  const spine: {
-    id: string;
-    idref: string;
-    linear: string;
-    properties: string[];
-    index: number;
-  }[] = [];
+export const parseSpine = (spineNode: Element, manifest, basePath): SpineItem[] => {
+  const spine: SpineItem[] = [];
 
   const selected = spineNode.querySelectorAll("itemref");
   // const items = Array.prototype.slice.call(selected);
@@ -274,6 +300,7 @@ export const parseSpine = (spineNode: Element, manifest): SpineItem[] => {
   //-- Add to array to maintain ordering and cross reference with manifest
   selected.forEach(function (item: Element, index: number) {
     const idref = item.getAttribute("idref");
+    const manifestItem = manifest[idref];
     // var cfiBase = epubcfi.generateChapterComponent(spineNodeIndex, index, Id);
     const props = item.getAttribute("properties") || "";
     const propArray = props.length ? props.split(" ") : [];
@@ -285,11 +312,14 @@ export const parseSpine = (spineNode: Element, manifest): SpineItem[] => {
       idref: idref || "",
       linear: item.getAttribute("linear") || "yes",
       properties: propArray || [],
-      href : manifest[idref].href,
-      url :  manifest[idref].url,
       index: index,
       // "cfiBase" : cfiBase
-    };
+    } as SpineItem;
+
+    if (manifestItem) {
+      itemref.href = manifestItem.href;
+      itemref.url = basePath + manifestItem.href;
+    }
 
     spine.push(itemref);
   });
@@ -300,7 +330,7 @@ export const parseSpine = (spineNode: Element, manifest): SpineItem[] => {
 export const parseNcx = async (
   basePath: string,
   data: JSZip.JSZipObject | null
-): Promise<BookCatalog[]> => {
+): Promise<BookNavItem[]> => {
   if (!data) {
     console.error("No toc.ncx");
 
@@ -320,7 +350,7 @@ export const parseNcx = async (
 
   const navPoints = doc.querySelectorAll("navPoint");
   const length = navPoints.length;
-  const toc: { [key: string]: BookCatalog } = {};
+  const toc: { [key: string]: BookNavItem } = {};
   const list = [];
   let item;
 
@@ -330,12 +360,13 @@ export const parseNcx = async (
     const current = navPoints[i];
     const ncxId = current.getAttribute("id") || "";
     const content = current.querySelector("content");
-    const src = basePath + (content?.getAttribute("src") || "");
+    const href = content?.getAttribute("src");
+    const url = basePath + (href || "");
     const navLabel = current.querySelector("navLabel");
     const text = navLabel?.textContent ? navLabel.textContent : "";
-    const subitems: BookCatalog[] = [];
+    const subitems: BookNavItem[] = [];
     const parentNode = current.parentNode;
-    let parent: BookCatalog;
+    let parent: BookNavItem;
     let parentId = "";
 
     if (
@@ -348,7 +379,8 @@ export const parseNcx = async (
 
     item = {
       ncxId: ncxId,
-      href: src.trim(),
+      href,
+      url,
       label: text.trim(),
       subitems: subitems,
       parent: parentId,
@@ -397,13 +429,7 @@ export const findCoverPath = (packageDocument: HTMLElement | Document) => {
 
 export const parseEpub = async (
   bookBlob: Blob
-): Promise<{
-  files: { [key: string]: JSZip.JSZipObject };
-  container: BookContainer;
-  basePath: string;
-  packaging: any;
-  catalog: BookCatalog[];
-}> => {
+): Promise<EpubObject> => {
   // unzip
   const zip = new JSZip();
   const result = await zip.loadAsync(bookBlob);
@@ -423,9 +449,9 @@ export const parseEpub = async (
 
   const { ncxPath } = packaging;
   const ncx = await zip.file(ncxPath);
-  const catalog = await parseNcx(basePath, ncx);
+  const navigation = await parseNcx(basePath, ncx);
 
-  return { files, container, basePath, packaging, catalog };
+  return { files, container, basePath, packaging, navigation, ...packaging };
 };
 
 export const accessFileContent = async (
