@@ -148,7 +148,7 @@ const getElementText = (node: Element, tag: string): string => {
   return "";
 };
 
-const parseMetadata = (node: Element) => {
+const parseMetadata = (node: Element): PackagingMetadataObject => {
   const title = getElementText(node, "title");
   const creator = getElementText(node, "creator");
   const subject = getElementText(node, "subject");
@@ -194,13 +194,13 @@ export const parsePackage = async (
     console.error("No content.opf");
 
     return {
-      manifest: {},
+      manifest: {} as BookManifest,
       navPath: "",
       ncxPath: "",
       coverPath: "",
       // spineNodeIndex: 0,
       spine: [],
-      metadata: {},
+      metadata: {} as PackagingMetadataObject,
     } as PackagingObject;
   }
 
@@ -289,7 +289,7 @@ export const findNavPath = (manifestNode: Element) => {
   return node ? node.getAttribute("href") : false;
 };
 
-export const parseSpine = (spineNode: Element, manifest, basePath): SpineItem[] => {
+export const parseSpine = (spineNode: Element, manifest: BookManifest, basePath: string): SpineItem[] => {
   const spine: SpineItem[] = [];
 
   const selected = spineNode.querySelectorAll("itemref");

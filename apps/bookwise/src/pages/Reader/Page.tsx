@@ -14,7 +14,7 @@ export interface PageProps {
 
 export function Page(props: PageProps) {
   const { idref, content, bookInfo, href, url } = props;
-  const DOMNodeRef = useRef<HTMLDivElement | undefined>();
+  const DOMNodeRef = useRef<HTMLDivElement>(null);
   const convertImages = async (
     files: any,
     currentHref: string,

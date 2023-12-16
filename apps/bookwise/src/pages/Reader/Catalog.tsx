@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { ChevronsLeft } from "lucide-react";
 import clsx from "clsx";
-import { animate, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { BookNavItem, PackagingMetadataObject } from "@/helpers/parseEpub";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +14,6 @@ export interface CatalogProps {
 
 export const Catalog = (props: CatalogProps) => {
   const { data, metadata, onGoToPage, className } = props;
-  const [ expanded, setExpanded ] = useState(false);
   const navigate = useNavigate();
 
   const goToPage = (href: string, id: string) => {
@@ -24,16 +22,15 @@ export const Catalog = (props: CatalogProps) => {
 
   const renderItems = (list: BookNavItem[], idx = 0) => {
     return list.map((item) => {
-      const { id, label, href, url, subitems } = item;
+      const { label, href, url, subitems } = item;
       const [realHref, anchorId] = href.split("#");
 
       return (
         <div
           className={ clsx("text-sm text-stone-800 cursor-default") }
-          key={ id }
+          key={ url }
         >
           <div
-            data-id={ id }
             data-href={ href }
             data-url={ url }
             className={ clsx(
