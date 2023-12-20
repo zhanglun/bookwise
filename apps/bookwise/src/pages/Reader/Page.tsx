@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import HTMLReactParser from 'html-react-parser';
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { accessImage } from "@/helpers/parseEpub";
 import { Board } from "@/pages/Reader/Board";
@@ -15,6 +16,7 @@ export interface PageProps {
 export function Page(props: PageProps) {
   const { idref, content, bookInfo, href, url } = props;
   const DOMNodeRef = useRef<HTMLDivElement>(null);
+  const [ size, setSize ] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
   const convertImages = async (
     files: any,
     currentHref: string,
@@ -68,22 +70,34 @@ export function Page(props: PageProps) {
       }
     }
 
-    init();
-  }, [content]);
+    init().then((res) => {
+      const width = DOMNodeRef.current.offsetWidth;
+      const height = DOMNodeRef.current.offsetHeight;
+
+      setSize({ width, height })
+    });
+  }, [ content ]);
+
+  const renderView = () => {
+    return <div className={ "px-10 py-12 w-full min-h-full" }>
+      <Board content={ HTMLReactParser(content) } width={ size.width } height={ size.height }/>
+    </div>
+  };
+
 
   return (
     <div
-      id={idref}
-      data-spine-idref={idref}
-      data-spine-href={href}
-      data-spine-url={url}
-      key={idref}
-      className="relative px-10 py-12 min-h-[100vh] my-5 shadow-md"
+      id={ idref }
+      data-spine-idref={ idref }
+      data-spine-href={ href }
+      data-spine-url={ url }
+      key={ idref }
+      className="min-h-[100vh] my-5 shadow-md"
     >
-      {/*<div className="absolute top-0 left-0 w-full h-full pointer-events-none">*/}
-      {/*  <Board/>*/}
-      {/*</div>*/}
-      <div ref={DOMNodeRef}></div>
+      <div className={ "px-10 py-12 w-full min-h-full absolute left-[-9999px]" }>
+        <div ref={ DOMNodeRef } className={ "page-content" }></div>
+      </div>
+      { renderView() }
     </div>
   );
 }
