@@ -11,6 +11,7 @@ import { Library } from "./pages/Library";
 import { Home } from "./pages/Home";
 import { Reader } from "./pages/Reader";
 import { Canvas } from "./pages/Canvas";
+import { Settings } from "@/pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -26,12 +27,12 @@ const router = createBrowserRouter([
         element: <Library />,
       },
       {
-        path: "/canvas",
-        element: <Canvas />,
-      },
-      {
         path: "/reader/:id",
         element: <Reader />,
+      },
+      {
+        path: "/settings",
+        element: <Settings />,
       },
     ],
   },

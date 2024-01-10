@@ -56,7 +56,7 @@ export interface BookSorterProps {
 export const BookSorter = (props: BookSorterProps) => {
   const { onChange } = props;
   const [ showLabel, setShowLabel ] = useState('Author');
-  const [ checkedField, setCheckedField ] = useState("author");
+  const [ checkedField, setCheckedField ] = useState("author.name");
   const [ orderBy, setOrderBy ] = useState("desc");
 
   function handleFieldChange (key: string) {

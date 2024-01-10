@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
 export const createCoverLink = (path: string): string => {
   const env = import.meta.env;
   let base = "";

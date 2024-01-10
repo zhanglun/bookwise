@@ -36,20 +36,6 @@ export const Home = () => {
 
   return (
     <div className="shadow-lg rounded-lg overflow-hidden bg-white h-full grid grid-flow-row gap-3 overflow-y-scroll px-4 sm:px-4">
-      <div className="px-3 pt-7 pb-2 text-2xl font-bold text-stone-900">
-        Home
-      </div>
-      <div className="px-3 py-3 space-x-3">
-        <div className="border border-stone-200 rounded-lg pl-6 py-3 w-[340px] flex items-center space-x-3 hover:bg-stone-100">
-          <BookPlus size={20} className="text-indigo-500" />
-          <div className="grid grid-flow-row">
-            <span className="text-sm font-bold text-stone-700">New Book</span>
-            <span className="text-[10px] text-stone-500">
-              Start reading a new book
-            </span>
-          </div>
-        </div>
-      </div>
       <div className="px-3 pt-5 pb-2 text-xl font-bold text-stone-900">
         Recently added
       </div>

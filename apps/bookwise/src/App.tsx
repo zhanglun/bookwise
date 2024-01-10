@@ -161,7 +161,7 @@ function App() {
               },
             }}
           >
-            <div className="bg-white/0">
+            <div className="bg-white/0 h-full flex flex-col">
               <div className="flex gap-1">
                 {!store.sidebarCollapse && (
                   <Button

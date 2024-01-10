@@ -80,7 +80,7 @@ export function Page(props: PageProps) {
 
   const renderView = () => {
     return <div className={ "px-10 py-12 w-full min-h-full" }>
-      <Board content={ HTMLReactParser(content) } width={ size.width } height={ size.height }/>
+      <Board content={ HTMLReactParser(content) } width={ size.width } height={ size.height } id={idref}/>
     </div>
   };
 
