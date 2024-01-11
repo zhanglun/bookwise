@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import HTMLReactParser from 'html-react-parser';
+import HTMLReactParser from "html-react-parser";
 import { getAbsoluteUrl } from "@/helpers/utils";
 import { accessImage } from "@/helpers/parseEpub";
-import { Board } from "@/pages/Reader/Board";
 
 export interface PageProps {
   idref: string;
@@ -16,12 +15,16 @@ export interface PageProps {
 export function Page(props: PageProps) {
   const { idref, content, bookInfo, href, url } = props;
   const DOMNodeRef = useRef<HTMLDivElement>(null);
-  const [ size, setSize ] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
+  const [size, setSize] = useState<{ width: number; height: number }>({
+    width: 0,
+    height: 0,
+  });
   const convertImages = async (
     files: any,
     currentHref: string,
     images: NodeListOf<Element>
   ) => {
+    console.log("🚀 ~ Page ~ files:", files)
     for (const image of images) {
       let attr = "src";
       let href: string = image.getAttribute("src") || "";
@@ -38,16 +41,23 @@ export function Page(props: PageProps) {
       }
 
       href = getAbsoluteUrl(currentHref, href);
+
+      console.log(href)
+
       const name = href;
 
       if (files[name]) {
         const imageBlob = await accessImage(files[name]);
+
+        console.log('imageBlob', imageBlob)
 
         // 创建 FileReader 对象读取 Blob 数据
         const reader = new FileReader();
         reader.onload = (function (img) {
           return function (event) {
             const dataURL = event?.target?.result;
+
+            console.log("dataURL ===>", dataURL)
 
             img.setAttribute(attr, (dataURL || "") as string);
           };
@@ -66,6 +76,8 @@ export function Page(props: PageProps) {
         const { files } = bookInfo;
         const images = DOMNodeRef.current.querySelectorAll("img, image");
 
+        console.log("🚀 ~ init ~ images:", images)
+
         await convertImages(files, href, images);
       }
     }
@@ -74,30 +86,31 @@ export function Page(props: PageProps) {
       const width = DOMNodeRef.current.offsetWidth;
       const height = DOMNodeRef.current.offsetHeight;
 
-      setSize({ width, height })
+      setSize({ width, height });
     });
-  }, [ content ]);
+  }, [content]);
 
   const renderView = () => {
-    return <div className={ "px-10 py-12 w-full min-h-full" }>
-      <Board content={ HTMLReactParser(content) } width={ size.width } height={ size.height } id={idref}/>
-    </div>
+    return (
+      <div className={"px-10 py-12 w-full min-h-full"}>
+        <div id={idref}>{HTMLReactParser(content)}</div>
+      </div>
+    );
   };
-
 
   return (
     <div
-      id={ idref }
-      data-spine-idref={ idref }
-      data-spine-href={ href }
-      data-spine-url={ url }
-      key={ idref }
+      id={idref}
+      data-spine-idref={idref}
+      data-spine-href={href}
+      data-spine-url={url}
+      key={idref}
       className="min-h-[100vh] my-5 shadow-md"
     >
-      <div className={ "px-10 py-12 w-full min-h-full absolute left-[-9999px]" }>
-        <div ref={ DOMNodeRef } className={ "page-content" }></div>
+      <div className={"px-10 py-12 w-full min-h-full absolute left-[-9999px]"}>
+        <div ref={DOMNodeRef} className={"page-content"}></div>
       </div>
-      { renderView() }
+      {renderView()}
     </div>
   );
 }
