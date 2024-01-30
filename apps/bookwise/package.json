@@ -18,6 +18,7 @@
     "@floating-ui/dom": "^1.5.1",
     "@floating-ui/react-dom": "^2.0.2",
     "@hookform/resolvers": "^3.2.0",
+    "@nextui-org/react": "^2.2.9",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.4",
     "@radix-ui/react-arrow": "^1.0.3",

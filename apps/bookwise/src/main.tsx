@@ -3,15 +3,12 @@ import App from "./App.tsx";
 import "./global.css";
 import "./index.css";
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Library } from "./pages/Library";
 import { Home } from "./pages/Home";
 import { Reader } from "./pages/Reader";
-import { Canvas } from "./pages/Canvas";
 import { Settings } from "@/pages/Settings";
+import { NextUIProvider } from "@nextui-org/react";
 
 const router = createBrowserRouter([
   {
@@ -39,7 +36,9 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <RouterProvider router={router} />
+  <NextUIProvider>
+    <RouterProvider router={router} />
+  </NextUIProvider>,
 );
 
 postMessage({ payload: "removeLoading" }, "*");
