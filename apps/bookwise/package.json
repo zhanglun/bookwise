@@ -1,5 +1,5 @@
 {
-  "name": "bookwise",
+  "name": "@bookwise/electron",
   "description": "book wise, read wise",
   "author": {
     "email": "zhanglun1410@gmail.com",
