@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { NextUIProvider } from "@nextui-org/react";
 import App from "./App.tsx";
 import { Home } from "./views/Home";
 import { Library } from "./views/Library";
@@ -30,12 +29,5 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <NextUIProvider className="h-full">
-    <RouterProvider router={router} />,
-  </NextUIProvider>,
+  <RouterProvider router={router} />,
 );
-
-// ReactDOM.createRoot(document.getElementById("root")!).render(
-//     <App />
-//   </NextUIProvider>,
-// );

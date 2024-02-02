@@ -8,7 +8,6 @@ import { Library } from "./pages/Library";
 import { Home } from "./pages/Home";
 import { Reader } from "./pages/Reader";
 import { Settings } from "@/pages/Settings";
-import { NextUIProvider } from "@nextui-org/react";
 
 const router = createBrowserRouter([
   {
@@ -36,9 +35,7 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <NextUIProvider>
-    <RouterProvider router={router} />
-  </NextUIProvider>,
+  <RouterProvider router={router} />
 );
 
 postMessage({ payload: "removeLoading" }, "*");
