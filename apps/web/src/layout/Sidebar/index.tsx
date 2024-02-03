@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { LibraryIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { getBookInfoFromFileData } from "@/helpers/epub";
 
 export const Sidebar = () => {
   const [ files, setFiles ] = useState<File[]>([]);
@@ -29,11 +30,17 @@ export const Sidebar = () => {
     input.click();
   };
 
+  function saveFileAsBook (file: File) {
+    const bookInfo = getBookInfoFromFileData(file);
+  }
+
   useEffect(() => {
     if (files.length) {
 
       for (const file of files) {
         console.log("🚀 ~ file: index.tsx:16 ~ useEffect ~ file:", file);
+        const bookInfo = getBookInfoFromFileData(file);
+
       }
     }
   }, [ files ]);
