@@ -10,10 +10,14 @@ export interface EpubViewerProps {
 
 export const EpubViewer = ({uuid}: EpubViewerProps) => {
   const [instance, setInstance] = useState<EpubObject>({} as EpubObject)
+  const [files, setFiles] = useState([]);
+
   function getEpubBlobs() {
     request.get(`books/${uuid}/blobs`, {
       responseType: 'blob',
     }).then((res) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
       const instance = new Book(res.data);
       console.log("instance", instance);
       console.log(instance.navigation)
@@ -30,12 +34,14 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
     });
   };
 
+
+
   useEffect(() => {
     getEpubBlobs();
     getBookAdditionalInfo();
   }, [uuid]);
 
   return <div>
-    <Toc navigation={instance?.navigation} metadata={instance?.metadata} onGoToPage={() => {}} />
+    <Toc navigation={instance?.navigation} metadata={instance?.metadata} onItemClick={() => {}} />
   </div>
 }
