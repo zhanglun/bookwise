@@ -13,7 +13,7 @@ export const Book = (props: BookProps) => {
 
   return (
     <div
-      className="border border-border rounded-lg isolation bg-white w-[208px] transition-all hover:scale-[1.02] hover:shadow-hover-book group duration-[0.5s]"
+      className="border border-border rounded-lg isolation bg-white transition-all hover:scale-[1.02] hover:shadow-hover-book group duration-[0.5s]"
       onMouseEnter={() => onHover && onHover(data)}
     >
       <div className="h-[308px] flex flex-col">

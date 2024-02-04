@@ -2,6 +2,7 @@ import { Book } from "@/components/Book";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { useNavigate } from "react-router-dom";
+import {BookResItem} from "@/interface/book.ts";
 
 export const Home = () => {
   const [recentlyAdd, setRecentlyAdd] = useState([]);
@@ -17,6 +18,9 @@ export const Home = () => {
       })
       .then((res) => {
         const { items, total } = res.data;
+
+        console.log('total', total);
+        console.log('items', items);
 
         setRecentlyAdd(items);
       });
@@ -34,7 +38,7 @@ export const Home = () => {
   }, []);
 
   return (
-    <div className="shadow-lg rounded-lg overflow-hidden bg-white h-full grid grid-flow-row gap-3 overflow-y-scroll px-4 sm:px-4">
+    <div className="shadow-lg rounded-lg overflow-hidden bg-white h-full grid grid-flow-row gap-3 overflow-y-auto px-4 sm:px-4">
       <div className="px-3 pt-5 pb-2 text-xl font-bold text-stone-900">
         Recently added
       </div>
@@ -44,7 +48,7 @@ export const Home = () => {
             <Book
               key={book.id}
               data={book}
-              onClick={() => navigate(`/reader/${book.id}`)}
+              onClick={() => navigate(`/viewer/${book.id}`)}
             />
           );
         })}
@@ -53,12 +57,12 @@ export const Home = () => {
         Recently reading
       </div>
       <div className="px-3 py-2 grid grid-cols-[repeat(auto-fill,minmax(208px,1fr))] sm:gap-x-1 sm:gap-y-7 xl:gap-x-3 xl:gap-y-9">
-        {recentlyReading.map((book: any) => {
+        {recentlyReading.map((book: BookResItem) => {
           return (
             <Book
               key={book.id}
               data={book}
-              onClick={() => navigate(`/reader/${book.id}`)}
+              onClick={() => navigate(`/viewer/${book.id}`)}
             />
           );
         })}

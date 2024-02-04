@@ -19,7 +19,6 @@ import {
   ScrollText,
   Share,
 } from "lucide-react";
-import getXPath from "@/helpers/getXPath";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
 import { Page } from "@/pages/Reader/Page";

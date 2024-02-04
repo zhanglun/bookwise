@@ -6,6 +6,7 @@ import { Library } from "./views/Library";
 import { Search } from "./views/Search/index.tsx";
 
 import "./index.css";
+import {Viewer} from "@/views/Viewer";
 
 const router = createBrowserRouter([
   {
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
         element: <Library />,
       },
     ],
+  },
+  {
+    path: "/viewer/:uuid",
+    element: <Viewer />,
   },
 ]);
 
