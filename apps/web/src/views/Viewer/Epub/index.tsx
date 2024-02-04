@@ -1,8 +1,9 @@
 import Book from "epubjs";
 import {request} from "@/helpers/request.ts";
 import {useEffect, useState} from "react";
-import {EpubObject, parseEpub} from "@/helpers/epub";
-import {Toc} from "@/layout/Toc";
+import {accessPageContent, EpubObject, parseEpub, SpineItem} from "@/helpers/epub";
+import {Toc} from "@/views/Viewer/Epub/Toc.tsx";
+import {PageCanvas} from "@/views/Viewer/Epub/Canvas.tsx";
 
 export interface EpubViewerProps {
   uuid: string;
@@ -10,7 +11,7 @@ export interface EpubViewerProps {
 
 export const EpubViewer = ({uuid}: EpubViewerProps) => {
   const [instance, setInstance] = useState<EpubObject>({} as EpubObject)
-  const [files, setFiles] = useState([]);
+  const [ pageList, setPageList ] = useState<typeof PageCanvas[]>([]);
 
   function getEpubBlobs() {
     request.get(`books/${uuid}/blobs`, {
@@ -23,7 +24,6 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
       console.log(instance.navigation)
       return parseEpub(res.data);
     }).then((res) => {
-      console.log(res);
       setInstance(res);
     });
   }
@@ -34,14 +34,65 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
     });
   };
 
-
-
   useEffect(() => {
     getEpubBlobs();
     getBookAdditionalInfo();
   }, [uuid]);
 
-  return <div>
+  useEffect(() => {
+    const generateFullContent = async () => {
+      const { files} = instance;
+      const pages: any[] = [];
+
+      const loopSpine = async (list: SpineItem[]) => {
+        for (const item of list) {
+          console.log(item);
+          let { href, url } = item;
+
+          if (href.indexOf("#") >= 0) {
+            href = href.split("#")[0];
+          }
+
+          console.log("href", href)
+          console.log("url", url)
+
+          if (files[url]) {
+            const part = document.createElement("div");
+            const body = await accessPageContent(files[url]);
+
+            part.id = item.idref;
+            part.dataset.idref = item.idref;
+
+            if (body) {
+              pages.push(
+                  <PageCanvas
+                      key={ item.idref }
+                      idref={ item.idref }
+                      content={ body.innerHTML }
+                      bookInfo={ instance }
+                      href={ href }
+                      url={ url }
+                  ></PageCanvas>
+              );
+            }
+          }
+        }
+
+      };
+
+      await loopSpine(instance.spine);
+
+      setPageList(pages);
+    };
+
+    instance.spine && instance.spine.length > 0 && generateFullContent();
+  }, [ instance ]);
+
+  return <div className={"grid grid-cols-[auto_1fr]"}>
     <Toc navigation={instance?.navigation} metadata={instance?.metadata} onItemClick={() => {}} />
+    <div>dd</div>
+    <section className="" id="book-section">
+      { pageList.map((page) => page) }
+    </section>
   </div>
 }

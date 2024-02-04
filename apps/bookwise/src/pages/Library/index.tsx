@@ -21,7 +21,7 @@ export const Library = () => {
     request.get("/books", {
       params
     }).then((res) => {
-      console.log("🚀 ~ file: index.tsx:34 ~ request.get ~ res:", res);
+      console.log("🚀 ~ file: Toc.tsx:34 ~ request.get ~ res:", res);
       const { items, total } = res.data;
 
       setBookList(items);

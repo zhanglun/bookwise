@@ -38,7 +38,7 @@ export const Sidebar = () => {
     if (files.length) {
 
       for (const file of files) {
-        console.log("🚀 ~ file: index.tsx:16 ~ useEffect ~ file:", file);
+        console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
         // const bookInfo = getBookInfoFromFileData(file);
       }
     }

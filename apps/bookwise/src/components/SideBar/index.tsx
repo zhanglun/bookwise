@@ -28,17 +28,17 @@ export const Sidebar = () => {
 
       for (const file of files) {
         formData.append("files", file);
-        console.log("🚀 ~ file: index.tsx:16 ~ useEffect ~ file:", file);
+        console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
       }
 
-      console.log("🚀 ~ file: index.tsx:13 ~ useEffect ~ formData:", formData);
+      console.log("🚀 ~ file: Toc.tsx:13 ~ useEffect ~ formData:", formData);
 
       request
         .post("/books/upload", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then((res) => {
-          console.log("🚀 ~ file: index.tsx:25 ~ useEffect ~ res:", res);
+          console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
         });
     }
   }, [files]);

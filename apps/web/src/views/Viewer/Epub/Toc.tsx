@@ -48,7 +48,7 @@ export const Toc = (props: TocProps) => {
     <div
       id="catalog"
       className={clsx(
-        "grid grid-flow-row w-[296px] overflow-hidden rounded-s-lg",
+        "w-[296px] overflow-auto rounded-s-lg fixed top-0 left-0 bottom-0",
         className
       )}
     >
