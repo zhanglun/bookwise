@@ -23,6 +23,11 @@ export class Book {
   })
   title: string;
 
+  @Column({
+    default: '',
+  })
+  cover: string;
+
   @ManyToOne(() => Author, (author) => author.books)
   @JoinColumn({ name: 'author_id' })
   author: Author;

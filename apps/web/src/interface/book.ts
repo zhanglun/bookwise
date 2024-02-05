@@ -1,6 +1,7 @@
 export interface BookResItem {
   id: string;
   title: string;
+  cover: string;
   subject: string;
   description: string;
   contributor: string;

@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { LibraryIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
-import { getBookInfoFromFileData } from "@/helpers/epub";
+import { request } from "@/helpers/request";
 
 export const Sidebar = () => {
   const [ files, setFiles ] = useState<File[]>([]);
@@ -30,17 +30,24 @@ export const Sidebar = () => {
     input.click();
   };
 
-  // function saveFileAsBook (file: File) {
-  //   const bookInfo = getBookInfoFromFileData(file);
-  // }
-
   useEffect(() => {
     if (files.length) {
+      const formData = new FormData();
 
       for (const file of files) {
+        formData.append("files", file);
         console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
-        // const bookInfo = getBookInfoFromFileData(file);
       }
+
+      console.log("🚀 ~ file: Toc.tsx:13 ~ useEffect ~ formData:", formData);
+
+      request
+        .post("/books/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((res) => {
+          console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
+        })
     }
   }, [ files ]);
 

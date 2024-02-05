@@ -23,24 +23,24 @@ export const Sidebar = () => {
   const [files, openFileDialog] = useSelectFromDisk();
 
   useEffect(() => {
-    if (files.length) {
-      const formData = new FormData();
-
-      for (const file of files) {
-        formData.append("files", file);
-        console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
-      }
-
-      console.log("🚀 ~ file: Toc.tsx:13 ~ useEffect ~ formData:", formData);
-
-      request
-        .post("/books/upload", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then((res) => {
-          console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
-        });
-    }
+    // if (files.length) {
+    //   const formData = new FormData();
+    //
+    //   for (const file of files) {
+    //     formData.append("files", file);
+    //     console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
+    //   }
+    //
+    //   console.log("🚀 ~ file: Toc.tsx:13 ~ useEffect ~ formData:", formData);
+    //
+    //   request
+    //     .post("/books/upload", formData, {
+    //       headers: { "Content-Type": "multipart/form-data" },
+    //     })
+    //     .then((res) => {
+    //       console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
+    //     });
+    // }
   }, [files]);
 
 

@@ -60,7 +60,7 @@ export class BooksService {
     private dataSource: DataSource,
   ) {}
 
-  public parseCover(book: Epub, bf: Buffer) {
+  public parseCover(book: Epub, bf: Buffer): [buf: Buffer, str: string] {
     let coverHref = '';
     const { metadata, manifest } = book;
 
@@ -79,7 +79,7 @@ export class BooksService {
     const zip = new AdmZip(bf);
     const zipEntries = zip.getEntries();
     const a = zipEntries.reduce((acu, z) => {
-      console.log(z.entryName);
+      console.log('z.entry', z.entryName);
       if (z.entryName.lastIndexOf(coverHref) != -1) {
         acu = z.getData();
       }
@@ -87,7 +87,7 @@ export class BooksService {
       return acu;
     }, null as Buffer);
 
-    return a;
+    return [a, a.toString('base64')];
   }
 
   public parseEpubBook(content: Buffer): Epub {
@@ -234,11 +234,12 @@ export class BooksService {
       }
 
       fs.writeFileSync(bookPath, file.buffer);
-      cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover);
-
-      // this.dataSource;
+      cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover[0]);
 
       const bookModel = this.createBookModel(book);
+
+      bookModel.cover = cover[1];
+
       console.log("🚀 ~ file: books.service.ts:242 ~ BooksService ~ bookModel:", bookModel)
       const author = await this.authorsService.findOneOrCreate({
         name: bookModel.author,

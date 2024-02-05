@@ -2,7 +2,7 @@ import { BookResItem } from "@/interface/book";
 import { Cover } from "./Cover";
 
 export interface BookProps {
-  data: any;
+  data: BookResItem;
   onCoverClick?: (book: BookResItem) => void;
   onClick?: (book: BookResItem) => void;
   onHover?: (book: BookResItem) => void;

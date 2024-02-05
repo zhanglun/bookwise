@@ -10,14 +10,8 @@ export interface CoverProps {
 
 export const Cover = (props: CoverProps) => {
   const {onClick, book} = props;
-  console.log("🚀 ~ Cover ~ props:", props)
-  const [path, setPath] = useState("");
 
-  useEffect(() => {
-    setPath(createCoverLink(book.path) || "");
-  }, [book]);
-
-  return path ? (<div
+  return book.cover ? (<div
       className={clsx(
         "bg-muted overflow-hidden shadow-cover",
         "before:content-[' '] before:absolute before:top-0 before:left-0 before:right-0 before:bottom-0",
@@ -25,7 +19,7 @@ export const Cover = (props: CoverProps) => {
       )}
       onClick={() => onClick && onClick(book)}
     >
-      <img src={path} alt={book.title} className="object-fill"/>
+      <img src={`data:image/png;base64,${book.cover}`} alt={book.title} className="object-fill"/>
     </div>
   ) : (
     <div>s</div>)
