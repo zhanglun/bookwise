@@ -19,7 +19,6 @@ export function PageCanvas(props: PageProps) {
     width: 0,
     height: 0,
   });
-  const parsedDOMRef = useRef(null);
   const convertImages = async (
     files: any,
     currentHref: string,
@@ -37,16 +36,19 @@ export function PageCanvas(props: PageProps) {
 
       href = getAbsoluteUrl(currentHref, href);
 
-      console.log('href ===>', href);
+      console.log("href ===>", href);
 
       const name = href;
 
       if (files[name]) {
-        const imageBlob = await accessImage(files[name], 'image/jpeg');
+        const imageBlob = await accessImage(files[name], "image/jpeg");
 
         console.log("image", image);
         console.log("attr", attr);
-        console.log("URL.createObjectURL(imageBlob)", URL.createObjectURL(imageBlob))
+        console.log(
+          "URL.createObjectURL(imageBlob)",
+          URL.createObjectURL(imageBlob)
+        );
 
         image.setAttribute(attr, URL.createObjectURL(imageBlob));
       }
@@ -57,7 +59,7 @@ export function PageCanvas(props: PageProps) {
     async function init() {
       const { files } = bookInfo;
       const parser = new DOMParser();
-      const dom = parser.parseFromString(content, 'text/html');
+      const dom = parser.parseFromString(content, "text/html");
       // parsedDOMRef.current = dom;
       const images = dom.querySelectorAll("img, image");
 
@@ -65,13 +67,18 @@ export function PageCanvas(props: PageProps) {
 
       await convertImages(files, href, images);
 
-      document.querySelector(`#${idref}`)?.appendChild(dom.body.querySelectorAll("*"));
+      const $box = document
+        .querySelector(`#${ idref }-box`);
+      const childNodes = Array.from(dom.body.childNodes);
+
+      childNodes.forEach(node => {
+        $box.appendChild(node);
+      });
     }
 
-
     init().then((res) => {
-      const width = DOMNodeRef.current.offsetWidth;
-      const height = DOMNodeRef.current.offsetHeight;
+      const width = DOMNodeRef.current?.offsetWidth;
+      const height = DOMNodeRef.current?.offsetHeight;
 
       setSize({ width, height });
     });
@@ -90,7 +97,7 @@ export function PageCanvas(props: PageProps) {
         <div ref={ DOMNodeRef } className={ "page-content" }></div>
       </div>
       <div className={ "px-10 py-12 w-full min-h-full" }>
-        <div id={ idref }></div>
+        <div id={ `${ idref }-box` }></div>
       </div>
     </div>
   );
