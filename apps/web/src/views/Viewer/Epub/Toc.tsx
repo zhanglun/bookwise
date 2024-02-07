@@ -48,7 +48,7 @@ export const Toc = (props: TocProps) => {
     <div
       id="catalog"
       className={clsx(
-        "w-[296px] overflow-auto rounded-s-lg fixed top-0 left-0 bottom-0",
+        "w-[296px] overflow-auto rounded-s-lg",
         className
       )}
     >

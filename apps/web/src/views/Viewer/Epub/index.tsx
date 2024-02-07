@@ -1,20 +1,20 @@
 import Book from "epubjs";
-import {request} from "@/helpers/request.ts";
-import {useEffect, useState} from "react";
-import {accessPageContent, EpubObject, parseEpub, SpineItem} from "@/helpers/epub";
-import {Toc} from "@/views/Viewer/Epub/Toc.tsx";
-import {PageCanvas} from "@/views/Viewer/Epub/Canvas.tsx";
+import { request } from "@/helpers/request.ts";
+import { useEffect, useState } from "react";
+import { accessPageContent, EpubObject, parseEpub, SpineItem } from "@/helpers/epub";
+import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
+import { PageCanvas } from "@/views/Viewer/Epub/Canvas.tsx";
 
 export interface EpubViewerProps {
   uuid: string;
 }
 
-export const EpubViewer = ({uuid}: EpubViewerProps) => {
-  const [instance, setInstance] = useState<EpubObject>({} as EpubObject)
+export const EpubViewer = ({ uuid }: EpubViewerProps) => {
+  const [ instance, setInstance ] = useState<EpubObject>({} as EpubObject)
   const [ pageList, setPageList ] = useState<typeof PageCanvas[]>([]);
 
   function getEpubBlobs() {
-    request.get(`books/${uuid}/blobs`, {
+    request.get(`books/${ uuid }/blobs`, {
       responseType: 'blob',
     }).then((res) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -29,7 +29,7 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
   }
 
   const getBookAdditionalInfo = () => {
-    request.get(`books/${uuid}/additional_infos`).then((res) => {
+    request.get(`books/${ uuid }/additional_infos`).then((res) => {
       console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
     });
   };
@@ -37,11 +37,11 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
   useEffect(() => {
     getEpubBlobs();
     getBookAdditionalInfo();
-  }, [uuid]);
+  }, [ uuid ]);
 
   useEffect(() => {
     const generateFullContent = async () => {
-      const { files} = instance;
+      const { files } = instance;
       const pages: any[] = [];
 
       const loopSpine = async (list: SpineItem[]) => {
@@ -65,14 +65,14 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
 
             if (body) {
               pages.push(
-                  <PageCanvas
-                      key={ item.idref }
-                      idref={ item.idref }
-                      content={ body.innerHTML }
-                      bookInfo={ instance }
-                      href={ href }
-                      url={ url }
-                  ></PageCanvas>
+                <PageCanvas
+                  key={ item.idref }
+                  idref={ item.idref }
+                  content={ body.innerHTML }
+                  bookInfo={ instance }
+                  href={ href }
+                  url={ url }
+                ></PageCanvas>
               );
             }
           }
@@ -88,9 +88,11 @@ export const EpubViewer = ({uuid}: EpubViewerProps) => {
     instance.spine && instance.spine.length > 0 && generateFullContent();
   }, [ instance ]);
 
-  return <div className={"grid grid-cols-[auto_1fr]"}>
-    <Toc navigation={instance?.navigation} metadata={instance?.metadata} onItemClick={() => {}} />
-    <div>dd</div>
+  return <div className={ "grid grid-cols-[auto_1fr]" }>
+    <div className={ " fixed top-0 left-0 bottom-0" }>
+      <Toc navigation={ instance?.navigation } metadata={ instance?.metadata } onItemClick={ () => {
+      } }/>
+    </div>
     <section className="" id="book-section">
       { pageList.map((page) => page) }
     </section>

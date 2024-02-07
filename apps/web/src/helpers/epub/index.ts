@@ -8,7 +8,7 @@ import JSZip from "jszip";
  * @returns {element[]} elements
  * @memberof Core
  */
-export function qsp(el: Element | Document, sel: string, props: {[key: string]: string}) {
+export function qsp(el: Element | Document, sel: string, props: { [key: string]: string }) {
   let q, filtered;
 
   if (typeof el.querySelector != "undefined") {
@@ -24,10 +24,10 @@ export function qsp(el: Element | Document, sel: string, props: {[key: string]: 
   } else {
     q = el.getElementsByTagName(sel);
 
-    filtered = Array.prototype.slice.call(q, 0).filter(function(el) {
+    filtered = Array.prototype.slice.call(q, 0).filter(function (el) {
       for (const prop in props) {
 
-        if(el.getAttribute(prop) === props[prop]){
+        if (el.getAttribute(prop) === props[prop]) {
           return true;
         }
       }
@@ -98,7 +98,8 @@ export interface PackagingObject {
   metadata: PackagingMetadataObject;
 }
 
-export interface EpubObject extends EpubBaseObject, PackagingObject {}
+export interface EpubObject extends EpubBaseObject, PackagingObject {
+}
 
 export const parseContainerXML = async (
   data: JSZip.JSZipObject | null
@@ -113,7 +114,7 @@ export const parseContainerXML = async (
   }
 
   const res = await data?.async("uint8array");
-  const t = await new Blob([res], { type: "opf" }).text();
+  const t = await new Blob([ res ], { type: "opf" }).text();
   const parser = new DOMParser();
   const doc = parser.parseFromString(t, "application/xml");
 
@@ -244,7 +245,7 @@ export const parsePackage = async (
   }
 
   const res = await data?.async("uint8array");
-  const t = await new Blob([res], { type: "opf" }).text();
+  const t = await new Blob([ res ], { type: "opf" }).text();
   const parser = new DOMParser();
   const packageDocument = parser.parseFromString(t, "application/xml");
 
@@ -315,7 +316,7 @@ export const findNcxPath = (manifestNode: Element, spineNode: Element) => {
 
     if (tocId) {
       // node = manifestNode.querySelector("item[id='" + tocId + "']");
-      node = manifestNode.querySelector(`#${tocId}`);
+      node = manifestNode.querySelector(`#${ tocId }`);
     }
   }
 
@@ -377,7 +378,7 @@ export const parseNcx = async (
   }
 
   const res = await data?.async("uint8array");
-  const t = await new Blob([res], { type: "xml" }).text();
+  const t = await new Blob([ res ], { type: "xml" }).text();
   const parser = new DOMParser();
   const doc = parser.parseFromString(t, "application/xml");
 
@@ -498,14 +499,14 @@ export const accessFileContent = async (
   type?: string
 ) => {
   const unit8 = await file.async("uint8array");
-  const blob = await new Blob([unit8], { type: type || "text" }).text();
+  const blob = await new Blob([ unit8 ], { type: type || "text" }).text();
 
   return blob;
 };
 
-export const accessImage = async (file: JSZip.JSZipObject): Promise<Blob> => {
+export const accessImage = async (file: JSZip.JSZipObject, type): Promise<Blob> => {
   const unit8 = await file.async("uint8array");
-  return new Blob([unit8]);
+  return new Blob([ unit8 ], { type });
 };
 
 export const accessPageContent = async (file: JSZip.JSZipObject) => {

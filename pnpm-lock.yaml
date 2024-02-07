@@ -305,6 +305,7 @@ importers:
       eslint-plugin-react-hooks: ^4.6.0
       eslint-plugin-react-refresh: ^0.4.5
       framer-motion: ^10.15.1
+      html-react-parser: ^5.0.10
       postcss: ^8.4.27
       react: ^18.2.0
       react-dom: ^18.2.0
@@ -318,6 +319,7 @@ importers:
       daisyui: 4.6.1_postcss@8.4.34
       epubjs: 0.3.93
       framer-motion: 10.18.0_biqbaboplfbrettd7655fr4n2y
+      html-react-parser: 5.1.2_react@18.2.0
       postcss: 8.4.34
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
