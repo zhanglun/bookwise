@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import HTMLReactParser from "html-react-parser";
-import { accessFileContent, accessImage } from "@/helpers/epub";
+import { accessImage } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
 
 export interface PageProps {
@@ -15,7 +15,7 @@ export interface PageProps {
 export function PageCanvas(props: PageProps) {
   const { idref, content, bookInfo, href, url } = props;
   const DOMNodeRef = useRef<HTMLDivElement>(null);
-  const [ size, setSize ] = useState<{ width: number; height: number }>({
+  const [size, setSize] = useState<{ width: number; height: number }>({
     width: 0,
     height: 0,
   });
@@ -67,11 +67,10 @@ export function PageCanvas(props: PageProps) {
 
       await convertImages(files, href, images);
 
-      const $box = document
-        .querySelector(`#${ idref }-box`);
+      const $box = document.querySelector(`#${idref}-box`);
       const childNodes = Array.from(dom.body.childNodes);
 
-      childNodes.forEach(node => {
+      childNodes.forEach((node) => {
         $box.appendChild(node);
       });
     }
@@ -82,23 +81,25 @@ export function PageCanvas(props: PageProps) {
 
       setSize({ width, height });
     });
-  }, [ content ]);
+  }, [content]);
 
   return (
     <div
-      id={ idref }
-      data-spine-idref={ idref }
-      data-spine-href={ href }
-      data-spine-url={ url }
-      key={ idref }
-      className="min-h-[100vh] my-5 shadow-md"
+      id={idref}
+      data-spine-idref={idref}
+      data-spine-href={href}
+      data-spine-url={url}
+      key={idref}
+      className="min-h-[100vh] my-5 shadow-md relative"
     >
-      <div className={ "px-10 py-12 w-full min-h-full absolute left-[-9999px]" }>
-        <div ref={ DOMNodeRef } className={ "page-content" }></div>
+      <div className={"px-10 py-12 w-full min-h-full"} ref={DOMNodeRef}>
+        <div id={`${idref}-box`}></div>
       </div>
-      <div className={ "px-10 py-12 w-full min-h-full" }>
-        <div id={ `${ idref }-box` }></div>
-      </div>
+      <canvas
+        width={size.width}
+        height={size.height}
+        className="absolute left-0 top-0 pointer-events-none"
+      />
     </div>
   );
 }
