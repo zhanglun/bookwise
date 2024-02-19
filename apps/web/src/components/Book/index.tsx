@@ -13,11 +13,11 @@ export const Book = (props: BookProps) => {
 
   return (
     <div
-      className="border border-border rounded-lg isolation bg-white transition-all hover:scale-[1.02] hover:shadow-hover-book group duration-[0.5s]"
+      className="w-[210px] border border-border rounded-lg isolation bg-white transition-all duration-[0.5s] hover:scale-[1.02] hover:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] group"
       onMouseEnter={() => onHover && onHover(data)}
     >
       <div className="h-[308px] flex flex-col">
-        <div className="w-full h-[202px] flex items-center justify-center relative opacity-90">
+        <div className="w-full h-[202px] flex items-center justify-center relative opacity-90 group-hover:opacity-100">
           <Cover book={data} onClick={() => onClick && onClick(data)} />
         </div>
         <div className="flex-1 p-3 flex flex-col border-t border-border">
