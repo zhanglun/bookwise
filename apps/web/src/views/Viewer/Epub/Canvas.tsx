@@ -124,7 +124,6 @@ export function PageCanvas(props: PageProps) {
       <Selection.Root>
         <Selection.Trigger>
           <div className={"px-10 py-12 w-full min-h-full"} ref={DOMNodeRef}>
-            <Button>asdfasdf</Button>
             <div id={`${idref}-box`}></div>
           </div>
         </Selection.Trigger>
@@ -132,16 +131,15 @@ export function PageCanvas(props: PageProps) {
           <Theme asChild>
             <Selection.Content
               className="rounded-md border bg-popover bg-white p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-              collisionBoundary={document.getElementById("boundaryRef")}
-              avoidCollisions={false}
+              avoidCollisions={true}
               hideWhenDetached={true}
             >
               <div className="px-2 py-1">
-                <div>
-                  <Button variant="ghost">
+                <div className="flex gap-1">
+                  <Button>
                     <Highlighter size={14} />
                   </Button>
-                  <Button variant="ghost">
+                  <Button>
                     <MessageSquare size={14} />
                   </Button>
                   <Button variant="ghost">
@@ -152,9 +150,10 @@ export function PageCanvas(props: PageProps) {
                   {colorList.map((color) => {
                     return (
                       <span
-                        className="w-5 h-5 rounded-full"
+                        className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100"
                         key={color}
                         style={{ backgroundColor: color }}
+                        onClick={() => handleSelectColor(color)}
                       ></span>
                     );
                   })}
