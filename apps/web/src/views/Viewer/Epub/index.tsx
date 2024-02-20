@@ -54,15 +54,11 @@ export const EpubViewer = ({ uuid }: EpubViewerProps) => {
 
       const loopSpine = async (list: SpineItem[]) => {
         for (const item of list) {
-          console.log(item);
           let { href, url } = item;
 
           if (href.indexOf("#") >= 0) {
             href = href.split("#")[0];
           }
-
-          console.log("href", href);
-          console.log("url", url);
 
           if (files[url]) {
             const part = document.createElement("div");
@@ -105,7 +101,7 @@ export const EpubViewer = ({ uuid }: EpubViewerProps) => {
         />
       </div>
       <section className="" id="book-section">
-        {pageList.map((page) => page)}
+        {pageList.slice(0, 10).map((page) => page)}
       </section>
     </div>
   );
