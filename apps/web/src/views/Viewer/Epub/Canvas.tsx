@@ -7,6 +7,7 @@ import {
   ScrollText,
   Share,
 } from "lucide-react";
+import { Theme } from "@radix-ui/themes";
 import * as Selection from "@/components/SelectionPopover";
 import "@/components/SelectionPopover/index.css";
 import { Button } from "@radix-ui/themes";
@@ -123,41 +124,44 @@ export function PageCanvas(props: PageProps) {
       <Selection.Root>
         <Selection.Trigger>
           <div className={"px-10 py-12 w-full min-h-full"} ref={DOMNodeRef}>
+            <Button>asdfasdf</Button>
             <div id={`${idref}-box`}></div>
           </div>
         </Selection.Trigger>
         <Selection.Portal>
-          <Selection.Content
-            className="rounded-md border bg-popover bg-white p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            collisionBoundary={document.getElementById("boundaryRef")}
-            avoidCollisions={false}
-            hideWhenDetached={true}
-          >
-            <div className="px-2 py-1">
-              <div>
-                <Button size="1" variant="ghost">
-                  <Highlighter size={14} />
-                </Button>
-                <Button size="2" variant="ghost">
-                  <MessageSquare size={14} />
-                </Button>
-                <Button size="3" variant="ghost">
-                  <Share size={14} />
-                </Button>
+          <Theme asChild>
+            <Selection.Content
+              className="rounded-md border bg-popover bg-white p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
+              collisionBoundary={document.getElementById("boundaryRef")}
+              avoidCollisions={false}
+              hideWhenDetached={true}
+            >
+              <div className="px-2 py-1">
+                <div>
+                  <Button variant="ghost">
+                    <Highlighter size={14} />
+                  </Button>
+                  <Button variant="ghost">
+                    <MessageSquare size={14} />
+                  </Button>
+                  <Button variant="ghost">
+                    <Share size={14} />
+                  </Button>
+                </div>
+                <div className="flex gap-2">
+                  {colorList.map((color) => {
+                    return (
+                      <span
+                        className="w-5 h-5 rounded-full"
+                        key={color}
+                        style={{ backgroundColor: color }}
+                      ></span>
+                    );
+                  })}
+                </div>
               </div>
-              <div className="flex gap-2">
-                {colorList.map((color) => {
-                  return (
-                    <span
-                      className="w-5 h-5 rounded-full"
-                      key={color}
-                      style={{ backgroundColor: color }}
-                    ></span>
-                  );
-                })}
-              </div>
-            </div>
-          </Selection.Content>
+            </Selection.Content>
+          </Theme>
         </Selection.Portal>
       </Selection.Root>
     </div>

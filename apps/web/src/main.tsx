@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Theme } from "@radix-ui/themes";
 
 import App from "./App.tsx";
 import { Home } from "./views/Home";
@@ -9,17 +8,14 @@ import { Search } from "./views/Search/index.tsx";
 
 import { Viewer } from "@/views/Viewer";
 
-import "@radix-ui/themes/styles.css";
+import { Theme } from "@radix-ui/themes";
+
 import "./index.css";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <Theme>
-        <App></App>
-      </Theme>
-    ),
+    element: <App></App>,
     children: [
       {
         path: "/",
@@ -42,5 +38,7 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <RouterProvider router={router} />
+  <Theme>
+    <RouterProvider router={router} />
+  </Theme>
 );
