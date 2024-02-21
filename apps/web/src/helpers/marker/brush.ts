@@ -1,9 +1,9 @@
 import Konva from "konva";
 import { RectPosition, TextMarkConfig } from "./types";
 
-const RECT_PREFIX = 'rect-'
-const LINE_PREFIX = 'line-'
-const SHAPE_PREFIX = 'shape-'
+const RECT_PREFIX = "rect-";
+const LINE_PREFIX = "line-";
+const SHAPE_PREFIX = "shape-";
 
 export class Brush {
   private root: HTMLElement;
@@ -46,6 +46,7 @@ export class Brush {
     el.style.right = "0";
     el.style.bottom = "0";
     el.style.pointerEvents = "none";
+    el.style.mixBlendMode = "multiply";
     return el;
   }
 

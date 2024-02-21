@@ -13,6 +13,7 @@ import "@/components/SelectionPopover/index.css";
 import { Button } from "@radix-ui/themes";
 import { accessImage } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
+import { Marker } from "@/helpers/marker";
 
 export interface PageProps {
   idref: string;
@@ -40,11 +41,7 @@ const colorList = [
 export function PageCanvas(props: PageProps) {
   const { idref, content, bookInfo, href, url } = props;
   const DOMNodeRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState<{ width: number; height: number }>({
-    width: 0,
-    height: 0,
-  });
-  const [showTooltip, setShowTooltip] = useState(false);
+  const markerRef = useRef<Marker>(Object.create({}));
   const convertImages = async (
     files: any,
     currentHref: string,
@@ -71,6 +68,19 @@ export function PageCanvas(props: PageProps) {
     }
   };
 
+  function handleSelectColor(color: string) {
+    const config = {
+      rectFill: color,
+      lineStroke: "green",
+      strokeWidth: 3,
+    };
+    const mark = markerRef.current.getSelectionRange(null, config);
+
+    if (mark) markerRef.current.addMark(mark);
+
+    window?.getSelection()?.removeAllRanges()
+  }
+
   useEffect(() => {
     async function init() {
       const { files } = bookInfo;
@@ -89,26 +99,9 @@ export function PageCanvas(props: PageProps) {
     }
 
     init().then((res) => {
-      const width = DOMNodeRef.current?.offsetWidth;
-      const height = DOMNodeRef.current?.offsetHeight;
-
-      setSize({ width, height });
-
-      // if (DOMNodeRef.current) {
-      //   const markers = new Marker(DOMNodeRef.current);
-      //   DOMNodeRef.current.addEventListener("mouseup", () => {
-      //     const config = {
-      //       rectFill: "red",
-      //       lineStroke: "green",
-      //       strokeWidth: 2,
-      //     };
-      //     const mark = markers.getSelectionRange(null, config);
-      //     console.log("%c Line:89 🍬 mark", "color:#ffdd4d", mark);
-      //     if (mark) markers.addMark(mark);
-
-      //     console.log(markers.marks);
-      //   });
-      // }
+      if (DOMNodeRef.current) {
+        markerRef.current = new Marker(DOMNodeRef.current);
+      }
     });
   }, [content]);
 
@@ -121,7 +114,7 @@ export function PageCanvas(props: PageProps) {
       key={idref}
       className="min-h-[100vh] my-5 shadow-md relative"
     >
-      <Selection.Root>
+      <Selection.Root whileSelect>
         <Selection.Trigger>
           <div className={"px-10 py-12 w-full min-h-full"} ref={DOMNodeRef}>
             <div id={`${idref}-box`}></div>
