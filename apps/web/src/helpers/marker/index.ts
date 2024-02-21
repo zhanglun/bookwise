@@ -46,7 +46,7 @@ export class Marker {
     return true;
   }
 
-  getRange(id: string): Mark | null {
+  getMark(id: string): Mark | null {
     const range = this.marks.find((i) => i.id === id);
     console.log("%c Line:70 🥖 range", "color:#4fff4B", range);
     return range || null;
@@ -60,7 +60,7 @@ export class Marker {
     return true;
   }
 
-  updateRange(range: Mark) {
+  updateMark(range: Mark) {
     this.deleteRange(range.id);
     this.addMark(range);
   }
@@ -93,5 +93,13 @@ export class Marker {
   private handleResize() {
     this.brush.updateStageSize();
     this.renderRanges(this.marks);
+  }
+
+  getMarkerIdByPointer(x: number, y: number) {
+    return this.brush.getGroupIdByPointer(x, y)
+  }
+
+  getAllMarkerIdByPointer(x: number, y: number) {
+    return this.brush.getAllGroupIdByPointer(x, y)
   }
 }

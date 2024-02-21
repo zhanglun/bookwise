@@ -1,49 +1,25 @@
-import { useEffect, useRef, useState } from "react";
-import {
-  Highlighter,
-  InfoIcon,
-  MessageSquare,
-  Palette,
-  ScrollText,
-  Share,
-} from "lucide-react";
-import { Theme } from "@radix-ui/themes";
-import * as Selection from "@/components/SelectionPopover";
-import "@/components/SelectionPopover/index.css";
-import { Button } from "@radix-ui/themes";
-import { accessImage } from "@/helpers/epub";
+import { useState, useEffect, useRef } from "react";
+import { EpubObject, accessImage } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
 import { Marker } from "@/helpers/marker";
+import { JSZipObject } from "jszip";
+import { MarkerToolbar } from "@/components/MakerToolbar";
 
 export interface PageProps {
   idref: string;
-  children?: any;
   content: string;
-  bookInfo: any;
+  bookInfo: EpubObject;
   href: string;
   url: string;
 }
 
-const colorList = [
-  "#ffd500",
-  "#BFFF00",
-  "#FF7F50",
-  "#4B0082",
-  "#008080",
-  "#EE82EE",
-  "#FF6F61",
-  "#87CEEB",
-  "#F44336",
-  "#778899",
-  "#00A86B",
-];
-
 export function PageCanvas(props: PageProps) {
   const { idref, content, bookInfo, href, url } = props;
+  const [showToolbar, setShowToolbar] = useState(false);
   const DOMNodeRef = useRef<HTMLDivElement>(null);
   const markerRef = useRef<Marker>(Object.create({}));
   const convertImages = async (
-    files: any,
+    files: { [key: string]: JSZipObject },
     currentHref: string,
     images: NodeListOf<Element>
   ) => {
@@ -69,6 +45,7 @@ export function PageCanvas(props: PageProps) {
   };
 
   function handleSelectColor(color: string) {
+    console.log("%c Line:33 🍞 color", "color:#b03734", color);
     const config = {
       rectFill: color,
       lineStroke: "green",
@@ -76,9 +53,11 @@ export function PageCanvas(props: PageProps) {
     };
     const mark = markerRef.current.getSelectionRange(null, config);
 
+    console.log("%c Line:54 🍭 mark", "color:#7f2b82", mark);
+
     if (mark) markerRef.current.addMark(mark);
 
-    window?.getSelection()?.removeAllRanges()
+    window?.getSelection()?.removeAllRanges();
   }
 
   useEffect(() => {
@@ -105,6 +84,21 @@ export function PageCanvas(props: PageProps) {
     });
   }, [content]);
 
+  useEffect(() => {
+    document.addEventListener("click", (event) => {
+      // 通过传入点击位置获取 range id
+      const id = markerRef.current.getMarkerIdByPointer(
+        event.clientX,
+        event.clientY
+      );
+
+      if (id) {
+        const mark = markerRef.current.getMark(id);
+        mark && markerRef.current.updateMark(mark);
+      }
+    });
+  }, []);
+
   return (
     <div
       id={idref}
@@ -114,48 +108,9 @@ export function PageCanvas(props: PageProps) {
       key={idref}
       className="min-h-[100vh] my-5 shadow-md relative"
     >
-      <Selection.Root whileSelect>
-        <Selection.Trigger>
-          <div className={"px-10 py-12 w-full min-h-full"} ref={DOMNodeRef}>
-            <div id={`${idref}-box`}></div>
-          </div>
-        </Selection.Trigger>
-        <Selection.Portal>
-          <Theme asChild>
-            <Selection.Content
-              className="rounded-md border bg-popover bg-white p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-              avoidCollisions={true}
-              hideWhenDetached={true}
-            >
-              <div className="px-2 py-1">
-                <div className="flex gap-1">
-                  <Button>
-                    <Highlighter size={14} />
-                  </Button>
-                  <Button>
-                    <MessageSquare size={14} />
-                  </Button>
-                  <Button variant="ghost">
-                    <Share size={14} />
-                  </Button>
-                </div>
-                <div className="flex gap-2">
-                  {colorList.map((color) => {
-                    return (
-                      <span
-                        className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100"
-                        key={color}
-                        style={{ backgroundColor: color }}
-                        onClick={() => handleSelectColor(color)}
-                      ></span>
-                    );
-                  })}
-                </div>
-              </div>
-            </Selection.Content>
-          </Theme>
-        </Selection.Portal>
-      </Selection.Root>
+      <div className={"px-10 py-12 w-full min-h-full"} ref={DOMNodeRef}>
+        <div id={`${idref}-box`}></div>
+      </div>
     </div>
   );
 }

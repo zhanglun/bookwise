@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import * as React from 'react'
 import { createContext } from '@radix-ui/react-context'
 import { useComposedRefs } from '@radix-ui/react-compose-refs'

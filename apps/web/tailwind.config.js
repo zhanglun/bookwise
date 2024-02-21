@@ -4,4 +4,9 @@ module.exports = {
   content: [
     "./src/**/*.{ts,tsx}",
   ],
+  theme: {
+    colors: ({ colors }) => ({
+      ...colors,
+    }),
+  }
 };

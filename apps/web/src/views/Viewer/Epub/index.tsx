@@ -9,6 +9,7 @@ import {
 } from "@/helpers/epub";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
 import { PageCanvas } from "@/views/Viewer/Epub/Canvas.tsx";
+import { MarkerToolbar } from "@/components/MakerToolbar";
 
 export interface EpubViewerProps {
   uuid: string;
@@ -101,7 +102,8 @@ export const EpubViewer = ({ uuid }: EpubViewerProps) => {
         />
       </div>
       <section className="" id="book-section">
-        {pageList.slice(0, 10).map((page) => page)}
+        {pageList.slice(10, 12).map((page) => page)}
+        <MarkerToolbar />
       </section>
     </div>
   );
