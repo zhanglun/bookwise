@@ -2,7 +2,6 @@ import Book from "epubjs";
 import { request } from "@/helpers/request.ts";
 import { memo, useEffect, useRef, useState } from "react";
 import {
-  accessPageContent,
   EpubObject,
   parseEpub,
   SpineItem,
@@ -15,6 +14,7 @@ import {
 } from "@/views/Viewer/Epub/Canvas.tsx";
 import { MarkerToolbar } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
+import { Mark } from "@/helpers/marker/types";
 
 export interface EpubViewerProps {
   uuid: string;
@@ -28,6 +28,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
     interactiveObject: state.interactiveObject,
     updateInteractiveObject: state.updateInteractiveObject,
   }));
+  const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
 
   function getEpubBlobs() {
     request
@@ -92,21 +93,26 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
   }, [instance]);
 
   function handleSelectColor(color: string) {
-    console.log("%c Line:33 🍞 color", "color:#b03734", color);
     const config = {
       rectFill: color,
-      lineStroke: "green",
       strokeWidth: 3,
     };
 
     const { marker, selection } = store.interactiveObject[0];
-    const mark = marker.getSelectionRange(selection, config);
 
-    console.log("%c Line:54 🍭 mark", "color:#7f2b82", mark);
-
-    if (mark) marker.addMark(mark);
+    if (activatedMark) {
+      activatedMark.config.rectFill = color;
+      marker.updateMark(activatedMark);
+    } else {
+      const mark = marker.getSelectionRange(selection, config);
+      if (mark) marker.addMark(mark);
+    }
 
     window?.getSelection()?.removeAllRanges();
+  }
+
+  function handleStrokeChange(stroke: string) {
+    // TODO:
   }
 
   useEffect(() => {
@@ -180,16 +186,15 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
         const pageForwardedRef = pageRefs.current[pageId];
 
         if (pageForwardedRef) {
-          // 通过传入点击位置获取 range id
           const id = pageForwardedRef.marker.getMarkIdByPointer(
             event.clientX,
             event.clientY
           );
-          // 激活新点击的 range
+
           if (id) {
-            const range = pageForwardedRef.marker.getMark(id);
-            console.log("%c Line:172 🌭 range", "color:#42b983", range);
-            // this.highlighter.updateRange(range);
+            const mark = pageForwardedRef.marker.getMark(id);
+
+            setActivatedMark(mark);
           }
         }
       }
@@ -232,7 +237,10 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
           );
         })}
       </section>
-      <MarkerToolbar onSelectColor={handleSelectColor} />
+      <MarkerToolbar
+        onStrokeChange={handleStrokeChange}
+        onSelectColor={handleSelectColor}
+      />
     </div>
   );
 });

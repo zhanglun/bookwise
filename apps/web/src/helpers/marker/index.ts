@@ -48,9 +48,9 @@ export class Marker {
   }
 
   getMark(id: string): Mark | null {
-    const range = this.marks.find((i) => i.id === id);
-    console.log("%c Line:70 🥖 range", "color:#4fff4B", range);
-    return range || null;
+    const mark = this.marks.find((i) => i.id === id);
+    console.log("%c Line:70 🥖 range", "color:#4fff4B", mark);
+    return mark || null;
   }
 
   deleteRange(id: string) {
