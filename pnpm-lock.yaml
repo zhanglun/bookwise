@@ -332,6 +332,7 @@ importers:
       tailwindcss: ^3.3.3
       typescript: ^5.2.2
       vite: ^5.0.8
+      zustand: ^4.4.1
     dependencies:
       '@floating-ui/react': 0.26.9_biqbaboplfbrettd7655fr4n2y
       '@floating-ui/react-dom': 2.0.8_biqbaboplfbrettd7655fr4n2y
@@ -362,6 +363,7 @@ importers:
       react-router-dom: 6.22.0_biqbaboplfbrettd7655fr4n2y
       sonner: 1.4.0_biqbaboplfbrettd7655fr4n2y
       tailwindcss: 3.4.1
+      zustand: 4.5.0_eteh3so6nztr56vqc4nbg6qqla
     devDependencies:
       '@types/react': 18.2.55
       '@types/react-dom': 18.2.18

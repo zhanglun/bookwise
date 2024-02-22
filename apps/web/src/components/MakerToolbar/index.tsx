@@ -27,6 +27,20 @@ import {
 } from "@floating-ui/react";
 import type { Placement, Middleware } from "@floating-ui/react";
 
+const colorList = [
+  "#ffd500",
+  "#BFFF00",
+  "#FF7F50",
+  "#4B0082",
+  "#008080",
+  "#EE82EE",
+  "#FF6F61",
+  "#87CEEB",
+  "#F44336",
+  "#778899",
+  "#00A86B",
+];
+
 interface MarkerToolbarProps {
   children?: React.ReactNode;
   open?: boolean;
@@ -91,7 +105,7 @@ const transformOrigin = (options: {
   },
 });
 
-export const MarkerToolbar = (props: MarkerToolbarProps) => {
+export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
   const {
     open: openProp,
     defaultOpen,
@@ -114,6 +128,7 @@ export const MarkerToolbar = (props: MarkerToolbarProps) => {
     onPointerDownOutside,
     onFocusOutside,
     onInteractOutside,
+    onSelectColor,
     ...contentProps
   } = props;
   const openTimerRef = React.useRef(0);
@@ -233,52 +248,6 @@ export const MarkerToolbar = (props: MarkerToolbarProps) => {
   }, []);
 
   return (
-    // <Selection.Root whileSelect open={open}>
-    //   <Selection.Trigger ref={forwardedRef} asChild>
-    //     {children}
-    //   </Selection.Trigger>
-    //   <Selection.Portal>
-    //     <Theme asChild>
-    //       <Selection.Content
-    //         className="rounded-md border bg-popover bg-white p-1 text-popover-foreground shadow-md outline-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-    //         avoidCollisions={true}
-    //         hideWhenDetached={true}
-    //       >
-    //         <div className="px-2 py-1">
-    //           <div className="flex gap-4">
-    //             <IconButton>
-    //               <Highlighter size={14} />
-    //             </IconButton>
-    //             <IconButton>
-    //               <MessageSquare size={14} />
-    //             </IconButton>
-    //             <IconButton variant="ghost">
-    //               <Share size={14} />
-    //             </IconButton>
-    //             <IconButton variant="ghost">
-    //               <Underline size={14} />
-    //             </IconButton>
-    //           </div>
-    //           <div className="flex gap-2">
-    //             {colorList.map((color) => {
-    //               return (
-    //                 <span
-    //                   className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100"
-    //                   key={color}
-    //                   style={{ backgroundColor: color }}
-    //                   onClick={() => {
-    //                     onSelectColor(color);
-    //                     setOpen(false);
-    //                   }}
-    //                 ></span>
-    //               );
-    //             })}
-    //           </div>
-    //         </div>
-    //       </Selection.Content>
-    //     </Theme>
-    //   </Selection.Portal>
-    // </Selection.Root>
     <div
       ref={refs.setFloating}
       style={{
@@ -287,77 +256,102 @@ export const MarkerToolbar = (props: MarkerToolbarProps) => {
       }}
       {...getFloatingProps()}
     >
-      {isOpen && <Toolbar.Root
-        className="flex p-[10px] w-full min-w-max rounded-md bg-white shadow-[0px_0px_0px_1px_rgba(60,64,67,0.05),0px_1.5px_4px_rgba(60,64,67,0.1),0px_3px_10px_rgba(60,64,67,0.2)]"
-        aria-label="Formatting options"
-      >
-        <Toolbar.ToggleGroup type="multiple" aria-label="Text formatting">
-          <Toolbar.ToggleItem
-            className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-            value="bold"
-            aria-label="Bold"
-          >
-            <FontBoldIcon />
-          </Toolbar.ToggleItem>
-          <Toolbar.ToggleItem
-            className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-            value="italic"
-            aria-label="Italic"
-          >
-            <FontItalicIcon />
-          </Toolbar.ToggleItem>
-          <Toolbar.ToggleItem
-            className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-            value="strikethrough"
-            aria-label="Strike through"
-          >
-            <StrikethroughIcon />
-          </Toolbar.ToggleItem>
-        </Toolbar.ToggleGroup>
-        <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
-        <Toolbar.ToggleGroup
-          type="single"
-          defaultValue="center"
-          aria-label="Text alignment"
+      {true && (
+        <Toolbar.Root
+          className="flex p-[10px] w-full min-w-max rounded-md bg-white shadow-[0px_0px_0px_1px_rgba(60,64,67,0.05),0px_1.5px_4px_rgba(60,64,67,0.1),0px_3px_10px_rgba(60,64,67,0.2)]"
+          aria-label="Formatting options"
         >
-          <Toolbar.ToggleItem
-            className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-            value="left"
-            aria-label="Left aligned"
-          >
-            <TextAlignLeftIcon />
-          </Toolbar.ToggleItem>
-          <Toolbar.ToggleItem
-            className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-            value="center"
-            aria-label="Center aligned"
-          >
-            <TextAlignCenterIcon />
-          </Toolbar.ToggleItem>
-          <Toolbar.ToggleItem
-            className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-            value="right"
-            aria-label="Right aligned"
-          >
-            <TextAlignRightIcon />
-          </Toolbar.ToggleItem>
-        </Toolbar.ToggleGroup>
-        <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
-        <Toolbar.Link
-          className="bg-transparent text-mauve11 hidden sm:inline-flex justify-center items-center hover:bg-transparent hover:cursor-pointer flex-shrink-0 flex-grow-0 basis-auto h-[25px] px-[5px] rounded text-[13px] leading-none bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
-          href="#"
-          target="_blank"
-          style={{ marginRight: 10 }}
-        >
-          Edited 2 hours ago
-        </Toolbar.Link>
-        <Toolbar.Button
-          className="px-[10px] text-white bg-violet9 flex-shrink-0 flex-grow-0 basis-auto h-[25px] rounded inline-flex text-[13px] leading-none items-center justify-center outline-none hover:bg-violet10 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7"
-          style={{ marginLeft: "auto" }}
-        >
-          Share
-        </Toolbar.Button>
-      </Toolbar.Root>}
+          <Theme asChild>
+            <div onClick={() => {
+              console.log(document.getSelection())
+            }}>
+              <Toolbar.ToggleGroup type="multiple" aria-label="Text formatting">
+                <Toolbar.ToggleItem
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                  value="bold"
+                  aria-label="Bold"
+                >
+                  <FontBoldIcon />
+                </Toolbar.ToggleItem>
+                <Toolbar.ToggleItem
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                  value="italic"
+                  aria-label="Italic"
+                >
+                  <FontItalicIcon />
+                </Toolbar.ToggleItem>
+                <Toolbar.ToggleItem
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                  value="strikethrough"
+                  aria-label="Strike through"
+                >
+                  <StrikethroughIcon />
+                </Toolbar.ToggleItem>
+              </Toolbar.ToggleGroup>
+              <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
+              <Toolbar.ToggleGroup
+                type="single"
+                defaultValue="center"
+                aria-label="Text alignment"
+              >
+                <Toolbar.ToggleItem
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                  value="left"
+                  aria-label="Left aligned"
+                >
+                  <TextAlignLeftIcon />
+                </Toolbar.ToggleItem>
+                <Toolbar.ToggleItem
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                  value="center"
+                  aria-label="Center aligned"
+                >
+                  <TextAlignCenterIcon />
+                </Toolbar.ToggleItem>
+                <Toolbar.ToggleItem
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                  value="right"
+                  aria-label="Right aligned"
+                >
+                  <TextAlignRightIcon />
+                </Toolbar.ToggleItem>
+              </Toolbar.ToggleGroup>
+              <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
+              <Toolbar.Link
+                className="bg-transparent text-mauve11 hidden sm:inline-flex justify-center items-center hover:bg-transparent hover:cursor-pointer flex-shrink-0 flex-grow-0 basis-auto h-[25px] px-[5px] rounded text-[13px] leading-none bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet11 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet5 data-[state=on]:text-violet11"
+                href="#"
+                target="_blank"
+                style={{ marginRight: 10 }}
+              >
+                Edited 2 hours ago
+              </Toolbar.Link>
+              <Toolbar.Button
+                className="px-[10px] text-white bg-violet-900 flex-shrink-0 flex-grow-0 basis-auto h-[25px] rounded inline-flex text-[13px] leading-none items-center justify-center outline-none hover:bg-violet-600 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet-700"
+                style={{ marginLeft: "auto" }}
+              >
+                Share
+              </Toolbar.Button>
+              <div>
+                <div className="flex gap-2">
+                  {colorList.map((color) => {
+                    return (
+                      <span
+                        className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100 select-none"
+                        key={color}
+                        style={{ backgroundColor: color }}
+                        onClick={() => {
+                          onSelectColor(color);
+                          setOpen(false);
+                        }}
+                      ></span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </Theme>
+        </Toolbar.Root>
+      )}
     </div>
   );
-};
+});

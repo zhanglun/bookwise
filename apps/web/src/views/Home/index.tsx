@@ -37,8 +37,17 @@ export const Home = () => {
       });
   }, []);
 
+  useEffect(() => {
+  }, []);
+
+  function test() {
+    const selection = window.getSelection();
+    console.log(selection);
+  }
+
   return (
     <div className="shadow-lg rounded-lg overflow-hidden bg-white h-full grid grid-flow-row gap-3 overflow-y-auto px-4 sm:px-4">
+      <button onClick={() => {test()}} className="bg-slate-600">Test</button>
       <div className="px-3 pt-5 pb-2 text-xl font-bold text-stone-900">
         Recently added
       </div>

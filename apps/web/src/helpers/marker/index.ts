@@ -21,6 +21,7 @@ export class Marker {
 
   getSelectionRange(selection: Selection | null, config: TextMarkConfig) {
     selection = selection || document.getSelection();
+    console.log("%c Line:24 🍏 selection", "color:#b03734", selection);
     if (!selection) return null;
     return this.textMarker.createRange(selection, config);
   }

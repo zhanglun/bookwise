@@ -1,6 +1,6 @@
 import Book from "epubjs";
 import { request } from "@/helpers/request.ts";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import {
   accessPageContent,
   EpubObject,
@@ -8,16 +8,26 @@ import {
   SpineItem,
 } from "@/helpers/epub";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
-import { PageCanvas } from "@/views/Viewer/Epub/Canvas.tsx";
+import {
+  PageCanvas,
+  PageCanvasRef,
+  PageProps,
+} from "@/views/Viewer/Epub/Canvas.tsx";
 import { MarkerToolbar } from "@/components/MakerToolbar";
+import { useBearStore } from "@/store";
 
 export interface EpubViewerProps {
   uuid: string;
 }
 
-export const EpubViewer = ({ uuid }: EpubViewerProps) => {
+export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
   const [instance, setInstance] = useState<EpubObject>({} as EpubObject);
-  const [pageList, setPageList] = useState<(typeof PageCanvas)[]>([]);
+  const [pageList, setPageList] = useState<PageProps[]>([]);
+  const pageRefs = useRef<{ [key: string]: PageCanvasRef }>({});
+  const store = useBearStore((state) => ({
+    interactiveObject: state.interactiveObject,
+    updateInteractiveObject: state.updateInteractiveObject,
+  }));
 
   function getEpubBlobs() {
     request
@@ -62,24 +72,13 @@ export const EpubViewer = ({ uuid }: EpubViewerProps) => {
           }
 
           if (files[url]) {
-            const part = document.createElement("div");
-            const body = await accessPageContent(files[url]);
-
-            part.id = item.idref;
-            part.dataset.idref = item.idref;
-
-            if (body) {
-              pages.push(
-                <PageCanvas
-                  key={item.idref}
-                  idref={item.idref}
-                  content={body.innerHTML}
-                  bookInfo={instance}
-                  href={href}
-                  url={url}
-                ></PageCanvas>
-              );
-            }
+            pages.push({
+              idref: item.idref,
+              bookInfo: instance,
+              file: files[url],
+              href,
+              url,
+            });
           }
         }
       };
@@ -92,6 +91,73 @@ export const EpubViewer = ({ uuid }: EpubViewerProps) => {
     instance.spine && instance.spine.length > 0 && generateFullContent();
   }, [instance]);
 
+  function handleSelectColor(color: string) {
+    console.log("%c Line:33 🍞 color", "color:#b03734", color);
+    const config = {
+      rectFill: color,
+      lineStroke: "green",
+      strokeWidth: 3,
+    };
+
+    const { marker, selection } = store.interactiveObject[0];
+    const mark = marker.getSelectionRange(selection, config);
+
+    console.log("%c Line:54 🍭 mark", "color:#7f2b82", mark);
+
+    if (mark) marker.addMark(mark);
+
+    window?.getSelection()?.removeAllRanges();
+  }
+
+  useEffect(() => {
+    function getSelectionParentElement() {
+      function loop(el: any) {
+        if (el.id === "book-section") {
+          return el;
+        }
+
+        if (!el.dataset || !el.dataset.spineIdref) {
+          return loop(el.parentNode);
+        }
+
+        return el;
+      }
+
+      let parentEl = null,
+        sel;
+      if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel && sel.rangeCount) {
+          parentEl = loop(sel.getRangeAt(0).commonAncestorContainer);
+        }
+      } else if ((sel = document.selection) && sel.type != "Control") {
+        parentEl = sel.createRange().parentElement();
+      }
+
+      return parentEl;
+    }
+
+    function watchSelection() {
+      const el = getSelectionParentElement();
+      console.log("%c Line:131 🧀 el", "color:#2eafb0", el);
+      const pageId = el.getAttribute("id");
+
+      const pageForwardedRef = pageRefs.current[pageId]
+      if (pageForwardedRef) {
+        store.updateInteractiveObject([
+          {
+            marker: pageForwardedRef.marker,
+            selection: window.getSelection(),
+          },
+        ]);
+      }
+    }
+
+    document
+      .getElementById("book-section")
+      ?.addEventListener("mouseup", watchSelection);
+  }, []);
+
   return (
     <div className={"grid grid-cols-[auto_1fr]"}>
       <div className={"fixed top-0 left-0 bottom-0 hidden"}>
@@ -102,9 +168,17 @@ export const EpubViewer = ({ uuid }: EpubViewerProps) => {
         />
       </div>
       <section className="" id="book-section">
-        {pageList.slice(10, 12).map((page) => page)}
-        <MarkerToolbar />
+        {pageList.slice(10, 12).map((page) => {
+          return (
+            <PageCanvas
+              key={page.idref}
+              ref={(ref) => (pageRefs.current[page.idref] = ref)}
+              {...page}
+            ></PageCanvas>
+          );
+        })}
       </section>
+      <MarkerToolbar onSelectColor={handleSelectColor} />
     </div>
   );
-};
+});
