@@ -24,9 +24,6 @@ export interface PageCanvasRef {
 export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
   (props: PageProps, forwardedRef) => {
     const { idref, bookInfo, file, href, url } = props;
-    const store = useBearStore((state) => ({
-      updateInteractiveObject: state.updateInteractiveObject,
-    }));
     const DOMNodeRef = useRef<HTMLDivElement | null>(null);
     const selectionRef = useRef<Selection | null>(null);
     const markerRef = useRef<Marker>(Object.create({}));
@@ -78,10 +75,12 @@ export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
         }
       }
 
+      if (DOMNodeRef.current) {
+        markerRef.current = new Marker(DOMNodeRef.current);
+      }
+
       init().then(() => {
-        if (DOMNodeRef.current) {
-          markerRef.current = new Marker(DOMNodeRef.current);
-        }
+        console.log("init page content done!!!")
       });
     }, [file]);
 

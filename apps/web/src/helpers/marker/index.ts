@@ -96,11 +96,11 @@ export class Marker {
     this.renderRanges(this.marks);
   }
 
-  getMarkerIdByPointer(x: number, y: number) {
+  getMarkIdByPointer(x: number, y: number) {
     return this.brush.getGroupIdByPointer(x, y)
   }
 
-  getAllMarkerIdByPointer(x: number, y: number) {
+  getAllMarkIdByPointer(x: number, y: number) {
     return this.brush.getAllGroupIdByPointer(x, y)
   }
 }

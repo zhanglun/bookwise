@@ -2,6 +2,11 @@ export interface MarkConfig {
 
 }
 
+export interface MarkAnnotation {
+  content: "",
+
+}
+
 export interface TextMarkConfig {
   rectFill: string;
   lineStroke: string;
@@ -32,6 +37,7 @@ export interface Mark {
   id: string;
   type: MarkTypeEnum,
   data: TextMark,
+  annotation: MarkAnnotation,
   config: TextMarkConfig,
 }
 

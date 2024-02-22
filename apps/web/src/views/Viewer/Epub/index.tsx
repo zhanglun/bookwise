@@ -138,11 +138,18 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
     }
 
     function watchSelection() {
+      const selection = window.getSelection();
+
+      if (selection?.isCollapsed) {
+        return;
+      }
+
       const el = getSelectionParentElement();
       console.log("%c Line:131 🧀 el", "color:#2eafb0", el);
       const pageId = el.getAttribute("id");
 
-      const pageForwardedRef = pageRefs.current[pageId]
+      const pageForwardedRef = pageRefs.current[pageId];
+
       if (pageForwardedRef) {
         store.updateInteractiveObject([
           {
@@ -153,9 +160,56 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
       }
     }
 
+    function activeToolbar(event: any) {
+      let target = event.target as HTMLElement;
+
+      while (!target.dataset || !target.dataset.spineIdref) {
+        if (target.id === "book-section") {
+          break;
+        }
+
+        if (target.dataset && target.dataset.spineIdref) {
+          break;
+        }
+
+        target = target.parentElement || target;
+      }
+
+      if (target?.dataset?.spineIdref) {
+        const pageId = target.dataset.spineIdref;
+        const pageForwardedRef = pageRefs.current[pageId];
+
+        if (pageForwardedRef) {
+          // 通过传入点击位置获取 range id
+          const id = pageForwardedRef.marker.getMarkIdByPointer(
+            event.clientX,
+            event.clientY
+          );
+          // 激活新点击的 range
+          if (id) {
+            const range = pageForwardedRef.marker.getMark(id);
+            console.log("%c Line:172 🌭 range", "color:#42b983", range);
+            // this.highlighter.updateRange(range);
+          }
+        }
+      }
+    }
+
     document
       .getElementById("book-section")
       ?.addEventListener("mouseup", watchSelection);
+    document
+      .getElementById("book-section")
+      ?.addEventListener("click", activeToolbar, { capture: true });
+
+    return () => {
+      document
+        .getElementById("book-section")
+        ?.removeEventListener("mouseup", watchSelection);
+      document
+        .getElementById("book-section")
+        ?.removeEventListener("click", activeToolbar);
+    };
   }, []);
 
   return (
