@@ -40,7 +40,7 @@ export default class TextMarker {
   }
 
   createRange(selection: Selection, config: TextMarkConfig): Mark | null {
-    // if (!this.isValidSelection(selection)) return null;
+    if (!this.isValidSelection(selection)) return null;
 
     const {
       startContainer: start,

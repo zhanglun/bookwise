@@ -13,7 +13,7 @@ import {
   PageCanvasRef,
   PageProps,
 } from "@/views/Viewer/Epub/Canvas.tsx";
-import { MarkerToolbar } from "@/components/MakerToolbar";
+import { MarkerToolbar } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 
 export interface EpubViewerProps {
