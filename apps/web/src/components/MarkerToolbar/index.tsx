@@ -12,6 +12,8 @@ import {
 
 import {
   useFloating,
+  useClick,
+  useRole,
   useDismiss,
   useInteractions,
   autoUpdate,
@@ -138,24 +140,7 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
     getBoundingClientRect: () => DOMRect.fromRect(),
     getClientRects: () => new DOMRectList(),
   });
-  const [open = false, setOpen] = useControllableState({
-    prop: openProp,
-    defaultProp: defaultOpen,
-    onChange: onOpenChange,
-  });
-  const handleOpen = React.useCallback(
-    (callback: () => void) => {
-      clearTimeout(closeTimerRef.current);
-      openTimerRef.current = window.setTimeout(callback, openDelay);
-    },
-    [openDelay]
-  );
-  const handleClose = React.useCallback(() => {
-    clearTimeout(openTimerRef.current);
-    closeTimerRef.current = window.setTimeout(() => setOpen(false), closeDelay);
-  }, [closeDelay, setOpen]);
-
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen , setIsOpen] = useState(openProp);
   const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
   const arrowSize = useSize(arrow);
   const arrowWidth = arrowSize?.width ?? 0;
@@ -188,6 +173,8 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
     isPositioned,
     context,
   } = useFloating({
+    open: isOpen,
+    onOpenChange: setIsOpen,
     strategy: "fixed",
     placement: desiredPlacement,
     whileElementsMounted: autoUpdate,
@@ -215,9 +202,11 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
     ],
   });
 
+  const click = useClick(context);
   const dismiss = useDismiss(context);
+  const role = useRole(context);
 
-  const { getFloatingProps } = useInteractions([dismiss]);
+  const { getFloatingProps } = useInteractions([dismiss, click,role]);
 
   useEffect(() => {
     const handleSelection = () => {
@@ -251,6 +240,10 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
     console.log("%c Line:249 🍯 value", "color:#6ec1c2", value);
     onStrokeChange(value);
   }
+
+  useEffect(() => {
+    setIsOpen(openProp);
+  }, [openProp]);
 
   return (
     <div
@@ -310,7 +303,7 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
                         style={{ backgroundColor: color }}
                         onClick={() => {
                           onSelectColor(color);
-                          setOpen(false);
+                          setIsOpen(false);
                         }}
                       ></span>
                     );

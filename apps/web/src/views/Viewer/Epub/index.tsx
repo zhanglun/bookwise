@@ -15,6 +15,7 @@ import {
 import { MarkerToolbar } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 import { Mark } from "@/helpers/marker/types";
+import PopoverDemo from "@/components/MarkerToolbar/popover";
 
 export interface EpubViewerProps {
   uuid: string;
@@ -29,6 +30,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
     updateInteractiveObject: state.updateInteractiveObject,
   }));
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
 
   function getEpubBlobs() {
     request
@@ -181,6 +183,8 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
         target = target.parentElement || target;
       }
 
+      console.log("%c Line:184 🍖 target", "color:#42b983", target);
+
       if (target?.dataset?.spineIdref) {
         const pageId = target.dataset.spineIdref;
         const pageForwardedRef = pageRefs.current[pageId];
@@ -195,6 +199,10 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
             const mark = pageForwardedRef.marker.getMark(id);
 
             setActivatedMark(mark);
+            setOpen(true);
+          } else {
+            setActivatedMark(null);
+            setOpen(false);
           }
         }
       }
@@ -238,6 +246,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
         })}
       </section>
       <MarkerToolbar
+        open={open}
         onStrokeChange={handleStrokeChange}
         onSelectColor={handleSelectColor}
       />

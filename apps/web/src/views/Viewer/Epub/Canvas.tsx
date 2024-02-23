@@ -3,7 +3,6 @@ import { EpubObject, accessImage, accessPageContent } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
 import { Marker } from "@/helpers/marker";
 import { JSZipObject } from "jszip";
-import { useBearStore } from "@/store";
 
 export interface PageProps {
   idref: string;
