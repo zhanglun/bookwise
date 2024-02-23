@@ -133,6 +133,9 @@ export class Brush {
     const { top, left } = this.getRootPosition();
     x = x - left;
     y = y - top;
+
+    console.log("%c Line:138 🍊 this.groups", "color:#6ec1c2", this.groups);
+
     const target = this.groups.find((i) => {
       return i.positions.some((j) => {
         return (
@@ -140,6 +143,9 @@ export class Brush {
         );
       });
     });
+
+    console.log("%c Line:144 🥟 target", "color:#4fff4B", target);
+
     if (target) {
       return target.group.id();
     } else {
@@ -166,15 +172,19 @@ export class Brush {
     return this.root.getBoundingClientRect();
   }
 
-  deleteRange(id: string) {
+  deleteMark(id: string) {
     const index = this.groups.findIndex((i) => i.id === id);
+
     if (index === -1) return false;
+
     this.groups.splice(index, 1);
+
     const group = this.layer.find("#" + id)[0];
+
     group && group.destroy();
   }
 
-  getRangePositions(id: string) {
+  getMarkPositions(id: string) {
     const group = this.groups.find((i) => i.id === id);
     return group ? group.positions : null;
   }

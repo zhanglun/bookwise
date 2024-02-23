@@ -12,10 +12,9 @@ import {
   PageCanvasRef,
   PageProps,
 } from "@/views/Viewer/Epub/Canvas.tsx";
-import { MarkerToolbar } from "@/components/MarkerToolbar";
+import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 import { Mark } from "@/helpers/marker/types";
-import PopoverDemo from "@/components/MarkerToolbar/popover";
 
 export interface EpubViewerProps {
   uuid: string;
@@ -30,6 +29,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
     updateInteractiveObject: state.updateInteractiveObject,
   }));
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
+  const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null)
   const [open, setOpen] = useState<boolean>(false);
 
   function getEpubBlobs() {
@@ -197,6 +197,12 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
 
           if (id) {
             const mark = pageForwardedRef.marker.getMark(id);
+            const virtualRange = pageForwardedRef.marker.getRangeFromMark(mark);
+
+            virtualRange && setVirtualRef({
+              getBoundingClientRect: () => virtualRange.getBoundingClientRect(),
+              getClientRects: () => virtualRange.getClientRects(),
+            })
 
             setActivatedMark(mark);
             setOpen(true);
@@ -246,7 +252,8 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
         })}
       </section>
       <MarkerToolbar
-        open={open}
+        onVirtualRefChange={() => {}}
+        virtualRef={virtualRef}
         onStrokeChange={handleStrokeChange}
         onSelectColor={handleSelectColor}
       />

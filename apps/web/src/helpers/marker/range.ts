@@ -158,4 +158,16 @@ export default class TextMarker {
     }
     return node;
   }
+
+  getRangeFromMark(mark: Mark) {
+    const startContainer = this.getNodeByPath(mark.data.start.path);
+    const endContainer = this.getNodeByPath(mark.data.end.path);
+
+    const range = document.createRange();
+
+    startContainer && range.setStart(startContainer, mark.data.start.offset);
+    endContainer && range.setEnd(endContainer,  mark.data.end.offset);
+
+    return range;
+  }
 }

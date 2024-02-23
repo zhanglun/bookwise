@@ -53,21 +53,32 @@ export class Marker {
     return mark || null;
   }
 
-  deleteRange(id: string) {
+  deleteMark(id: string) {
     const index = this.marks.findIndex((i) => i.id === id);
+
     if (index === -1) return false;
+
     this.marks.splice(index, 1);
-    // this.brush.deleteRange(id)
+    this.brush.deleteMark(id)
+
     return true;
   }
 
-  updateMark(range: Mark) {
-    this.deleteRange(range.id);
-    this.addMark(range);
+  updateMark(mark: Mark) {
+    this.deleteMark(mark.id);
+    this.addMark(mark);
   }
 
-  getRangePositions(id: string): RectPosition[] | null {
-    return this.brush.getRangePositions(id);
+  getMarkPositions(id: string): RectPosition[] | null {
+    return this.brush.getMarkPositions(id);
+  }
+
+  getRangeFromMark(mark: Mark | null) {
+    if (!mark) {
+      return null;
+    }
+
+    return this.textMarker.getRangeFromMark(mark);
   }
 
   getAllRange(): Mark[] {

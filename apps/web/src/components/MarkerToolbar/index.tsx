@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useState } from "react";
 import { Theme, IconButton } from "@radix-ui/themes";
 import * as Toolbar from "@radix-ui/react-toolbar";
 import { useSize } from "@radix-ui/react-use-size";
-import { useControllableState } from "@radix-ui/react-use-controllable-state";
 import {
   UnderlineIcon,
   StrikethroughIcon,
@@ -41,6 +40,11 @@ const colorList = [
   "#00A86B",
 ];
 
+export type VirtualReference = {
+  getBoundingClientRect(): DOMRect;
+  getClientRects(): DOMRectList;
+};
+
 interface MarkerToolbarProps {
   children?: React.ReactNode;
   open?: boolean;
@@ -50,6 +54,8 @@ interface MarkerToolbarProps {
   disabled?: boolean;
   openDelay?: number;
   closeDelay?: number;
+  virtualRef: VirtualReference | null;
+  onVirtualRefChange(virtualRef: VirtualReference): void;
   onSelectColor: (color: string) => void;
   onStrokeChange: (stroke: string) => void;
 }
@@ -136,11 +142,8 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
   const openTimerRef = React.useRef(0);
   const closeTimerRef = React.useRef(0);
   const [content, setContent] = React.useState<HTMLDivElement | null>(null);
-  const [virtualRef, setVirtualRef] = React.useState({
-    getBoundingClientRect: () => DOMRect.fromRect(),
-    getClientRects: () => new DOMRectList(),
-  });
-  const [isOpen , setIsOpen] = useState(openProp);
+  // const [virtualRef, setVirtualRef] = React.useState(props.virtualRef);
+  const [isOpen, setIsOpen] = useState(openProp);
   const [arrow, setArrow] = React.useState<HTMLSpanElement | null>(null);
   const arrowSize = useSize(arrow);
   const arrowWidth = arrowSize?.width ?? 0;
@@ -206,44 +209,63 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
   const dismiss = useDismiss(context);
   const role = useRole(context);
 
-  const { getFloatingProps } = useInteractions([dismiss, click,role]);
+  const { getFloatingProps } = useInteractions([dismiss, click, role]);
 
   useEffect(() => {
-    const handleSelection = () => {
-      const selection = document.getSelection();
-      if (!selection) return;
-
-      const range =
-        typeof selection?.rangeCount === "number" && selection.rangeCount > 0
-          ? selection.getRangeAt(0)
-          : null;
-
-      if (selection?.isCollapsed) {
-        setIsOpen(false);
+    function handleMouseUp(event: MouseEvent) {
+      if (refs.floating.current?.contains(event.target as Element | null)) {
         return;
       }
 
-      if (range) {
-        refs.setReference({
-          getBoundingClientRect: () => range.getBoundingClientRect(),
-          getClientRects: () => range.getClientRects(),
-        });
-        setIsOpen(true);
-      }
-    };
-    document.addEventListener("selectionchange", handleSelection);
-    return () =>
-      document.removeEventListener("selectionchange", handleSelection);
-  }, []);
+      setTimeout(() => {
+        const selection = window.getSelection();
+        const range =
+          typeof selection?.rangeCount === "number" && selection.rangeCount > 0
+            ? selection.getRangeAt(0)
+            : null;
 
-  function handleStrokeChange (value: string) {
+        if (selection?.isCollapsed) {
+          setIsOpen(false);
+          return;
+        }
+
+        if (range) {
+          refs.setReference({
+            getBoundingClientRect: () => range.getBoundingClientRect(),
+            getClientRects: () => range.getClientRects(),
+          });
+          setIsOpen(true);
+        }
+      });
+    }
+
+    function handleMouseDown(event: MouseEvent) {
+      if (refs.floating.current?.contains(event.target as Element | null)) {
+        return;
+      }
+
+      if (window.getSelection()?.isCollapsed) {
+        setIsOpen(false);
+      }
+    }
+
+    window.addEventListener("mouseup", handleMouseUp);
+    window.addEventListener("mousedown", handleMouseDown);
+
+    return () => {
+      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("mousedown", handleMouseDown);
+    };
+  }, [refs]);
+
+  function handleStrokeChange(value: string) {
     console.log("%c Line:249 🍯 value", "color:#6ec1c2", value);
     onStrokeChange(value);
   }
 
-  useEffect(() => {
-    setIsOpen(openProp);
-  }, [openProp]);
+  useLayoutEffect(() => {
+    props.virtualRef && refs.setReference(props.virtualRef)
+  }, [props.virtualRef, refs])
 
   return (
     <div
@@ -261,7 +283,11 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
         >
           <Theme asChild>
             <div>
-              <Toolbar.ToggleGroup type="single" aria-label="Draw stroke" onValueChange={handleStrokeChange}>
+              <Toolbar.ToggleGroup
+                type="single"
+                aria-label="Draw stroke"
+                onValueChange={handleStrokeChange}
+              >
                 <Toolbar.ToggleItem
                   className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet-900 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
                   value="underline"
