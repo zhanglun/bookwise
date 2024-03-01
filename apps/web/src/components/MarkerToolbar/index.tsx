@@ -263,9 +263,10 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
     onStrokeChange(value);
   }
 
-  useLayoutEffect(() => {
-    props.virtualRef && refs.setReference(props.virtualRef)
-  }, [props.virtualRef, refs])
+  useEffect(() => {
+    props.virtualRef && refs.setReference(props.virtualRef);
+    console.log("%c Line:268 🍯 props.virtualRef", "color:#e41a6a", props.virtualRef);
+  }, [props.virtualRef, refs]);
 
   return (
     <div
@@ -277,68 +278,67 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
       {...getFloatingProps()}
     >
       {isOpen && (
-        <Toolbar.Root
-          className="flex p-[10px] w-full min-w-max rounded-md bg-white shadow-[0px_0px_0px_1px_rgba(60,64,67,0.05),0px_1.5px_4px_rgba(60,64,67,0.1),0px_3px_10px_rgba(60,64,67,0.2)]"
-          aria-label="Formatting options"
-        >
-          <Theme asChild>
-            <div>
-              <Toolbar.ToggleGroup
-                type="single"
-                aria-label="Draw stroke"
-                onValueChange={handleStrokeChange}
-              >
-                <Toolbar.ToggleItem
-                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet-900 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
-                  value="underline"
-                  aria-label="Underline"
+        <Theme asChild>
+          <Toolbar.Root
+            className="flex p-[10px] w-full min-w-max rounded-md bg-white shadow-[0px_0px_0px_1px_rgba(60,64,67,0.05),0px_1.5px_4px_rgba(60,64,67,0.1),0px_3px_10px_rgba(60,64,67,0.2)]"
+            aria-label="Formatting options"
+          >
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2">
+                <Toolbar.ToggleGroup
+                  type="single"
+                  aria-label="Draw stroke"
+                  onValueChange={handleStrokeChange}
                 >
-                  <UnderlineIcon />
-                </Toolbar.ToggleItem>
-                <Toolbar.ToggleItem
-                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet-900 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
+                  <Toolbar.ToggleItem
+                    className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 w-8 h-8 px-[5px] rounded inline-flex text-[18px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet-300 hover:text-violet-900 focus:relative focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
+                    value="underline"
+                    aria-label="Underline"
+                  >
+                    <UnderlineIcon />
+                  </Toolbar.ToggleItem>
+                  <Toolbar.ToggleItem
+                    className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 w-8 h-8 px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet-300 hover:text-violet-900 focus:relative focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
+                    value="strikethrough"
+                    aria-label="Strike through"
+                  >
+                    <StrikethroughIcon />
+                  </Toolbar.ToggleItem>
+                </Toolbar.ToggleGroup>
+                <Toolbar.Button
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 w-8 h-8 px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet-300 hover:text-violet-900 focus:relative focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
                   value="strikethrough"
                   aria-label="Strike through"
                 >
-                  <StrikethroughIcon />
-                </Toolbar.ToggleItem>
-              </Toolbar.ToggleGroup>
-              <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
-              <Toolbar.Button
-                className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet-900 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
-                value="strikethrough"
-                aria-label="Strike through"
-              >
-                <CopyIcon />
-              </Toolbar.Button>
-              <Toolbar.Button
-                className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 h-[25px] px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet3 hover:text-violet-900 focus:relative focus:shadow-[0_0_0_2px] focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
-                value="strikethrough"
-                aria-label="Strike through"
-              >
-                <Share1Icon />
-              </Toolbar.Button>
-              <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
-              <div>
-                <div className="flex gap-2">
-                  {colorList.map((color) => {
-                    return (
-                      <span
-                        className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100 select-none"
-                        key={color}
-                        style={{ backgroundColor: color }}
-                        onClick={() => {
-                          onSelectColor(color);
-                          setIsOpen(false);
-                        }}
-                      ></span>
-                    );
-                  })}
-                </div>
+                  <CopyIcon />
+                </Toolbar.Button>
+                <Toolbar.Button
+                  className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 w-8 h-8 px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet-300 hover:text-violet-900 focus:relative focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
+                  value="strikethrough"
+                  aria-label="Strike through"
+                >
+                  <Share1Icon />
+                </Toolbar.Button>
+                <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
+              </div>
+              <div className="flex gap-2">
+                {colorList.map((color) => {
+                  return (
+                    <span
+                      className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100 select-none"
+                      key={color}
+                      style={{ backgroundColor: color }}
+                      onClick={() => {
+                        onSelectColor(color);
+                        setIsOpen(false);
+                      }}
+                    ></span>
+                  );
+                })}
               </div>
             </div>
-          </Theme>
-        </Toolbar.Root>
+          </Toolbar.Root>
+        </Theme>
       )}
     </div>
   );

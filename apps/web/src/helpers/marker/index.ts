@@ -6,8 +6,8 @@ import { Mark, RectPosition, TextMarkConfig } from "./types";
 export class Marker {
   private root: HTMLElement;
 
-  private brush: Brush;
-  private textMarker: TextMarker;
+  public brush: Brush;
+  public textMarker: TextMarker;
 
   public marks: Mark[];
 

@@ -1,11 +1,7 @@
 import Book from "epubjs";
 import { request } from "@/helpers/request.ts";
 import { memo, useEffect, useRef, useState } from "react";
-import {
-  EpubObject,
-  parseEpub,
-  SpineItem,
-} from "@/helpers/epub";
+import { EpubObject, parseEpub, SpineItem } from "@/helpers/epub";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
 import {
   PageCanvas,
@@ -29,7 +25,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
     updateInteractiveObject: state.updateInteractiveObject,
   }));
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
-  const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null)
+  const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
   const [open, setOpen] = useState<boolean>(false);
 
   function getEpubBlobs() {
@@ -145,28 +141,22 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
       return parentEl;
     }
 
-    function watchSelection() {
-      const selection = window.getSelection();
+    // function watchSelection() {
+    //   const el = getSelectionParentElement();
+    //   console.log("%c Line:131 🧀 el", "color:#2eafb0", el);
+    //   const pageId = el.getAttribute("id");
 
-      if (selection?.isCollapsed) {
-        return;
-      }
+    //   const pageForwardedRef = pageRefs.current[pageId];
 
-      const el = getSelectionParentElement();
-      console.log("%c Line:131 🧀 el", "color:#2eafb0", el);
-      const pageId = el.getAttribute("id");
-
-      const pageForwardedRef = pageRefs.current[pageId];
-
-      if (pageForwardedRef) {
-        store.updateInteractiveObject([
-          {
-            marker: pageForwardedRef.marker,
-            selection: window.getSelection(),
-          },
-        ]);
-      }
-    }
+    //   if (pageForwardedRef) {
+    //     store.updateInteractiveObject([
+    //       {
+    //         marker: pageForwardedRef.marker,
+    //         selection: window.getSelection(),
+    //       },
+    //     ]);
+    //   }
+    // }
 
     function activeToolbar(event: any) {
       let target = event.target as HTMLElement;
@@ -190,6 +180,22 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
         const pageForwardedRef = pageRefs.current[pageId];
 
         if (pageForwardedRef) {
+          store.updateInteractiveObject([
+            {
+              marker: pageForwardedRef.marker,
+              selection: window.getSelection(),
+            },
+          ]);
+          const selection = window.getSelection();
+          let tempMark;
+          if (selection) {
+            tempMark = pageForwardedRef.marker.textMarker.createRange(
+              selection,
+              { rectFill: "black", lineStroke: "red", strokeWidth: 3 }
+            );
+          }
+          console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);
+
           const id = pageForwardedRef.marker.getMarkIdByPointer(
             event.clientX,
             event.clientY
@@ -197,12 +203,15 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
 
           if (id) {
             const mark = pageForwardedRef.marker.getMark(id);
+            console.log("%c Line:206 🥚 mark", "color:#e41a6a", mark);
             const virtualRange = pageForwardedRef.marker.getRangeFromMark(mark);
 
-            virtualRange && setVirtualRef({
-              getBoundingClientRect: () => virtualRange.getBoundingClientRect(),
-              getClientRects: () => virtualRange.getClientRects(),
-            })
+            virtualRange &&
+              setVirtualRef({
+                getBoundingClientRect: () =>
+                  virtualRange.getBoundingClientRect(),
+                getClientRects: () => virtualRange.getClientRects(),
+              });
 
             setActivatedMark(mark);
             setOpen(true);
@@ -216,18 +225,12 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
 
     document
       .getElementById("book-section")
-      ?.addEventListener("mouseup", watchSelection);
-    document
-      .getElementById("book-section")
-      ?.addEventListener("click", activeToolbar, { capture: true });
+      ?.addEventListener("mouseup", activeToolbar);
 
     return () => {
       document
         .getElementById("book-section")
-        ?.removeEventListener("mouseup", watchSelection);
-      document
-        .getElementById("book-section")
-        ?.removeEventListener("click", activeToolbar);
+        ?.removeEventListener("mouseup", activeToolbar);
     };
   }, []);
 
@@ -252,6 +255,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
         })}
       </section>
       <MarkerToolbar
+        open={open}
         onVirtualRefChange={() => {}}
         virtualRef={virtualRef}
         onStrokeChange={handleStrokeChange}
