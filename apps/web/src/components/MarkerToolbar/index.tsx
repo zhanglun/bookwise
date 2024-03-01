@@ -217,6 +217,8 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
         return;
       }
 
+      console.log("handleMouseUp");
+
       setTimeout(() => {
         const selection = window.getSelection();
         const range =
@@ -224,7 +226,7 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
             ? selection.getRangeAt(0)
             : null;
 
-        if (selection?.isCollapsed) {
+        if (selection && selection?.isCollapsed && !props.virtualRef) {
           setIsOpen(false);
           return;
         }
@@ -234,6 +236,9 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
             getBoundingClientRect: () => range.getBoundingClientRect(),
             getClientRects: () => range.getClientRects(),
           });
+          setIsOpen(true);
+        } else if (props.virtualRef) {
+          refs.setReference(props.virtualRef);
           setIsOpen(true);
         }
       });
@@ -256,17 +261,12 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
       window.removeEventListener("mouseup", handleMouseUp);
       window.removeEventListener("mousedown", handleMouseDown);
     };
-  }, [refs]);
+  }, [refs, props.virtualRef]);
 
   function handleStrokeChange(value: string) {
     console.log("%c Line:249 🍯 value", "color:#6ec1c2", value);
     onStrokeChange(value);
   }
-
-  useEffect(() => {
-    props.virtualRef && refs.setReference(props.virtualRef);
-    console.log("%c Line:268 🍯 props.virtualRef", "color:#e41a6a", props.virtualRef);
-  }, [props.virtualRef, refs]);
 
   return (
     <div

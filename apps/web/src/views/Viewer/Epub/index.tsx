@@ -217,6 +217,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
             setOpen(true);
           } else {
             setActivatedMark(null);
+            setVirtualRef(null);
             setOpen(false);
           }
         }
