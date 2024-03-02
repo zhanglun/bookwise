@@ -22,6 +22,11 @@ import { AnnotationsModule } from './annotations/annotations.module';
       autoLoadEntities: true,
       synchronize: true,
       entities: [Book, Author],
+      "migrationsTableName": "custom_migration_table",
+      "migrations": ["migration/*.js"],
+      "cli": {
+        "migrationsDir": "migration"
+      }
     }),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -37,5 +42,5 @@ import { AnnotationsModule } from './annotations/annotations.module';
   providers: [AppService],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) { }
 }

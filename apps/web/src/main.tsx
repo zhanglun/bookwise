@@ -10,6 +10,7 @@ import { Viewer } from "@/views/Viewer";
 
 import { Theme } from "@radix-ui/themes";
 
+import "./test.ts";
 import "./index.css";
 
 const router = createBrowserRouter([
