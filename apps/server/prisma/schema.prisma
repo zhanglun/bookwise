@@ -14,6 +14,26 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
-model Book {
+enum BookFormat {
+  EPUB
+  MOBI
+  PDF
+  TEXT
+}
 
+model Book {
+  id          Int      @id @default(autoincrement())
+  title       String
+  cover       String
+  subject     String
+  description String
+  contributor String
+  source      String
+  language_id String
+  format      BookFormat
+  page_count  Int
+  isbn        String
+  publish_at  DateTime
+  created_at  DateTime
+  updated_at  DateTime
 }

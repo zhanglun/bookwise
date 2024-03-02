@@ -8,26 +8,12 @@ import { BooksModule } from './books/books.module';
 import { SettingsModule } from './settings/settings.module';
 import configuration from './config/configuration';
 
-import { Book } from './books/entities/book.entity';
 import { AuthorsModule } from './authors/authors.module';
-import { Author } from './authors/entities/author.entity';
 import { PublishersModule } from './publishers/publishers.module';
 import { AnnotationsModule } from './annotations/annotations.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: 'bookwise.db',
-      autoLoadEntities: true,
-      synchronize: true,
-      entities: [Book, Author],
-      "migrationsTableName": "custom_migration_table",
-      "migrations": ["migration/*.js"],
-      "cli": {
-        "migrationsDir": "migration"
-      }
-    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
