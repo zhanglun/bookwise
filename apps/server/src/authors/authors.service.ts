@@ -1,58 +1,58 @@
 import { Injectable } from '@nestjs/common';
+import { Author, Prisma } from '@prisma/client';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
-import { Repository } from 'typeorm';
-import { Author } from './entities/author.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class AuthorsService {
-  constructor(
-    @InjectRepository(Author)
-    private authorsRepository: Repository<Author>,
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
-  async create(createAuthorDto: CreateAuthorDto) {
-    console.log(
-      '🚀 ~ file: authors.service.ts:8 ~ AuthorsService ~ create ~ createAuthorDto:',
-      createAuthorDto,
-    );
-
-    const record = await this.authorsRepository.save(createAuthorDto);
-
-    return record;
-  }
-
-  async findOneOrCreate(createAuthorDto: CreateAuthorDto) {
-    const author = await this.authorsRepository.findOne({
-      where: { name: createAuthorDto.name },
+  async author(
+    authorWhereUniqueInput: Prisma.AuthorWhereUniqueInput,
+  ): Promise<Author | null> {
+    return this.prisma.author.findUnique({
+      where: authorWhereUniqueInput,
     });
-
-    if (author) {
-      return author;
-    } else {
-      return await this.authorsRepository.save(createAuthorDto);
-    }
   }
 
-  async findAll() {
-    const [authors, total] = await this.authorsRepository.findAndCount();
-
-    return {
-      items: authors,
-      total,
-    };
+  async authors(params: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.AuthorWhereUniqueInput;
+    where?: Prisma.AuthorWhereInput;
+    orderBy?: Prisma.AuthorOrderByWithRelationInput;
+  }): Promise<Author[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    return this.prisma.author.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} author`;
+  async createAuthor(data: Prisma.AuthorCreateInput): Promise<Author> {
+    return this.prisma.author.create({
+      data,
+    });
   }
 
-  update(id: number, updateAuthorDto: UpdateAuthorDto) {
-    return `This action updates a #${id} author`;
+  async updateAuthor(params: {
+    where: Prisma.AuthorWhereUniqueInput;
+    data: Prisma.AuthorUpdateInput;
+  }): Promise<Author> {
+    const { where, data } = params;
+    return this.prisma.author.update({
+      data,
+      where,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} author`;
+  async deleteAuthor(where: Prisma.AuthorWhereUniqueInput): Promise<Author> {
+    return this.prisma.author.delete({
+      where,
+    });
   }
 }

@@ -22,7 +22,7 @@ enum BookFormat {
 }
 
 model Book {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String
   cover       String
   subject     String
@@ -36,4 +36,12 @@ model Book {
   publish_at  DateTime
   created_at  DateTime
   updated_at  DateTime
+  Authors     Author[]
+}
+
+model Author {
+  id     Int    @id @default(autoincrement())
+  name   String @unique
+  Book   Book?  @relation(fields: [bookId], references: [id])
+  bookId Int?
 }
