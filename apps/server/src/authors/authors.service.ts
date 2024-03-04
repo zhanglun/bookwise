@@ -8,51 +8,32 @@ import { PrismaService } from '../prisma.service';
 export class AuthorsService {
   constructor(private prisma: PrismaService) {}
 
-  async author(
-    authorWhereUniqueInput: Prisma.AuthorWhereUniqueInput,
-  ): Promise<Author | null> {
+  async author(id: number): Promise<Author | null> {
     return this.prisma.author.findUnique({
-      where: authorWhereUniqueInput,
+      where: { id },
     });
   }
 
-  async authors(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.AuthorWhereUniqueInput;
-    where?: Prisma.AuthorWhereInput;
-    orderBy?: Prisma.AuthorOrderByWithRelationInput;
-  }): Promise<Author[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.author.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+  async authors(): Promise<Author[]> {
+    return this.prisma.author.findMany();
   }
 
-  async createAuthor(data: Prisma.AuthorCreateInput): Promise<Author> {
+  async createAuthor(data: CreateAuthorDto): Promise<Author> {
     return this.prisma.author.create({
       data,
     });
   }
 
-  async updateAuthor(params: {
-    where: Prisma.AuthorWhereUniqueInput;
-    data: Prisma.AuthorUpdateInput;
-  }): Promise<Author> {
-    const { where, data } = params;
+  async updateAuthor(id: number, data: UpdateAuthorDto): Promise<Author> {
     return this.prisma.author.update({
       data,
-      where,
+      where: { id },
     });
   }
 
-  async deleteAuthor(where: Prisma.AuthorWhereUniqueInput): Promise<Author> {
+  async deleteAuthor(id: number): Promise<Author> {
     return this.prisma.author.delete({
-      where,
+      where: { id },
     });
   }
 }

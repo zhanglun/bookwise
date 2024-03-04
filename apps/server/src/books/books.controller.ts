@@ -31,11 +31,11 @@ export class BooksController {
   private readonly logger = new Logger(BooksController.name);
   constructor(private booksService: BooksService) {}
 
-  @Get('cover')
-  @Header('Content-Type', 'image/jpg')
-  getBookCover(@Query() query: { path: string }): StreamableFile {
-    return this.booksService.getCoverFigure(query.path);
-  }
+  // @Get('cover')
+  // @Header('Content-Type', 'image/jpg')
+  // getBookCover(@Query() query: { path: string }): StreamableFile {
+  //   return this.booksService.getCoverFigure(query.path);
+  // }
 
   @Get('/recently-reading')
   queryRecentlyReading(): Promise<Book[]> {
@@ -71,14 +71,14 @@ export class BooksController {
     return this.booksService.findOneWithId(param.id);
   }
 
-  @Get('/:id/blobs')
-  async getBookFileBlobsWithId(
-    @Param() param: { id: string },
-  ): Promise<StreamableFile> {
-    const file = await this.booksService.getBookFileBlobs(param.id);
+  // @Get('/:id/blobs')
+  // async getBookFileBlobsWithId(
+  //   @Param() param: { id: string },
+  // ): Promise<StreamableFile> {
+  //   const file = await this.booksService.getBookFileBlobs(param.id);
 
-    return new StreamableFile(file);
-  }
+  //   return new StreamableFile(file);
+  // }
 
   @Get('/:id/additional_infos')
   async getBookAdditionalInfo(@Param() param: { id: string }) {

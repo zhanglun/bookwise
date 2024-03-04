@@ -7,16 +7,15 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { Book } from '../../books/entities/book.entity';
 
 @Entity('annotations')
 export class Annotation {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Book)
-  @JoinColumn({ name: 'book_id' })
-  book: Book;
+  // @ManyToOne(() => Book)
+  // @JoinColumn({ name: 'book_id' })
+  // book: Book;
 
   @Column({
     default: '',

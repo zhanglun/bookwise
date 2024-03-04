@@ -6,12 +6,12 @@
 
 generator client {
   provider = "prisma-client-js"
+  // output   = "./generated/client"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum BookFormat {
@@ -22,26 +22,62 @@ enum BookFormat {
 }
 
 model Book {
-  id          Int        @id @default(autoincrement())
-  title       String
-  cover       String
-  subject     String
-  description String
-  contributor String
-  source      String
-  language_id String
-  format      BookFormat
-  page_count  Int
-  isbn        String
-  publish_at  DateTime
-  created_at  DateTime
-  updated_at  DateTime
-  Authors     Author[]
+  id               Int                  @id @default(autoincrement())
+  title            String
+  cover            String
+  subject          String
+  description      String
+  contributor      String
+  source           String
+  language_id      String
+  format           BookFormat
+  page_count       Int
+  isbn             String
+  publish_at       DateTime
+  created_at       DateTime
+  updated_at       DateTime
+  authors          AuthorsWithBooks[]
+  publisher        PublisherWithBooks[]
+  additional_infos BookAdditionalInfo?
+}
+
+model BookAdditionalInfo {
+  id                       Int      @id @default(autoincrement())
+  spine_index              String
+  read_progress            Float
+  read_progress_updated_at DateTime
+  book                     Book     @relation(fields: [bookId], references: [id])
+  bookId                   Int      @unique
 }
 
 model Author {
-  id     Int    @id @default(autoincrement())
-  name   String @unique
-  Book   Book?  @relation(fields: [bookId], references: [id])
-  bookId Int?
+  id    Int                @id @default(autoincrement())
+  name  String             @unique
+  books AuthorsWithBooks[]
+}
+
+model AuthorsWithBooks {
+  book       Book     @relation(fields: [bookId], references: [id])
+  bookId     Int
+  author     Author   @relation(fields: [authorId], references: [id])
+  authorId   Int
+  created_at DateTime
+
+  @@id([bookId, authorId])
+}
+
+model Publisher {
+  id    Int                  @id @default(autoincrement())
+  name  String               @unique
+  books PublisherWithBooks[]
+}
+
+model PublisherWithBooks {
+  book        Book      @relation(fields: [bookId], references: [id])
+  bookId      Int
+  publisher   Publisher @relation(fields: [publisherId], references: [id])
+  publisherId Int
+  created_at  DateTime
+
+  @@id([bookId, publisherId])
 }

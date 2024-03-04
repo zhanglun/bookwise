@@ -17,26 +17,26 @@ export class AuthorsController {
 
   @Post()
   create(@Body() createAuthorDto: CreateAuthorDto) {
-    return this.authorsService.create(createAuthorDto);
+    return this.authorsService.createAuthor(createAuthorDto);
   }
 
   @Get()
   findAll() {
-    return this.authorsService.findAll();
+    return this.authorsService.authors();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.authorsService.findOne(+id);
+    return this.authorsService.author(+id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateAuthorDto: UpdateAuthorDto) {
-    return this.authorsService.update(+id, updateAuthorDto);
+    return this.authorsService.updateAuthor(+id, updateAuthorDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.authorsService.remove(+id);
+    return this.authorsService.deleteAuthor(+id);
   }
 }

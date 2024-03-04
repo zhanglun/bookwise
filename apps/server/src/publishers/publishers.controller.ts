@@ -17,17 +17,17 @@ export class PublishersController {
 
   @Post()
   create(@Body() createPublisherDto: CreatePublisherDto) {
-    return this.publishersService.create(createPublisherDto);
+    return this.publishersService.createPublisher(createPublisherDto);
   }
 
   @Get()
   findAll() {
-    return this.publishersService.findAll();
+    return this.publishersService.publishers();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.publishersService.findOne(+id);
+    return this.publishersService.author(+id);
   }
 
   @Patch(':id')
@@ -35,11 +35,11 @@ export class PublishersController {
     @Param('id') id: string,
     @Body() updatePublisherDto: UpdatePublisherDto,
   ) {
-    return this.publishersService.update(+id, updatePublisherDto);
+    return this.publishersService.updatePublisher(+id, updatePublisherDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.publishersService.remove(+id);
+    return this.publishersService.deletePublisher(+id);
   }
 }

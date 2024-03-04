@@ -1,13 +1,12 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable, Injectable, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import * as AdmZip from 'adm-zip';
 import { XMLParser } from 'fast-xml-parser';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
-import { Book } from './entities/book.entity';
 import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
@@ -16,7 +15,6 @@ import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 import { PrismaService } from 'src/prisma.service';
 import { Book, Prisma } from '@prisma/client';
-
 
 interface EpubIdentifier {
   scheme: string;
@@ -51,60 +49,88 @@ export interface Epub {
 }
 
 @Injectable()
-export class BookService {
-  constructor(private prisma: PrismaService) {
+export class BooksService {
+  constructor(private prisma: PrismaService) {}
 
-  }
-
-  async user(
-    userWhereUniqueInput: Prisma.UserWhereUniqueInput,
-  ): Promise<Book | null> {
-    return this.prisma.user.findUnique({
-      where: userWhereUniqueInput,
+  public async queryRecentlyReading() {
+    return this.prisma.book.findMany({
+      orderBy: {
+        additionalInfo: {
+          read_progress_updated_at: 'desc',
+        },
+      },
+      includes: {
+        author: true,
+        publisher: true,
+        additional_info: true,
+      },
     });
   }
+  public async findAll(
+    sort?: Sorting,
+    filter?: Filtering,
+  ): Promise<PaginatedResource<Partial<Book>>> {
+    const where = getWhere(filter);
+    const order = getOrder(sort);
 
-  async users(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.user.findMany({
-      skip,
-      take,
-      cursor,
+    const [books, total] = await this.prisma.book.count({
       where,
-      orderBy,
+      order,
+      includes: {
+        author: true,
+        publisher: true,
+      },
     });
+
+    return {
+      items: books,
+      total: total,
+    };
   }
 
-  async createUser(data: Prisma.UserCreateInput): Promise<User> {
-    return this.prisma.user.create({
-      data,
-    });
+  public async findOneWithId(id: number) {
+    return this.prisma.book.findUnique({ where: { id } });
   }
 
-  async updateUser(params: {
-    where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
-  }): Promise<User> {
-    const { where, data } = params;
-    return this.prisma.user.update({
-      data,
-      where,
-    });
-  }
+  public async updateAdditionalInfo(
+    book_id: number,
+    updateAdditionalInfoDto: UpdateAdditionalInfoDto,
+  ) {
+    const book = await this.prisma.book.findUnique({ where: { id: book_id } });
 
-  async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
-    return this.prisma.user.delete({
-      where,
+    if (!book) {
+      return;
+    }
+
+    const record = await this.prisma.bookAdditionalInfo.findUnique({
+      include: {
+        books: {
+          where: {
+            id: book_id,
+          },
+        },
+      },
     });
+
+    if (!record) {
+      const infoEntity = this.prisma.bookAdditionalInfo.create({
+        ...updateAdditionalInfoDto,
+        book,
+      });
+
+      await this.prisma.bookAdditionalInfo.create({ data: infoEntity });
+    } else {
+      const res = await this.prisma.bookAdditionalInfo.update({
+        where: { id: record.id },
+        data: {
+          ...updateAdditionalInfoDto,
+        },
+      });
+    }
+
+    return record;
   }
 }
-
 // @Injectable()
 // export class BooksService {
 //   constructor(
@@ -323,47 +349,6 @@ export class BookService {
 //     };
 //   }
 
-//   public async findAll(
-//     sort?: Sorting,
-//     filter?: Filtering,
-//   ): Promise<PaginatedResource<Partial<Book>>> {
-//     const where = getWhere(filter);
-//     const order = getOrder(sort);
-
-//     const [books, total] = await this.bookRepository.findAndCount({
-//       where,
-//       order,
-//       relations: {
-//         author: true,
-//         publisher: true,
-//       },
-//     });
-
-//     return {
-//       items: books,
-//       total: total,
-//     };
-//   }
-
-//   public async findOneWithId(id: string) {
-//     return this.bookRepository.findOneBy({ id });
-//   }
-
-//   public async queryRecentlyReading() {
-//     return this.bookRepository.find({
-//       order: {
-//         additional_info: {
-//           read_progress_updated_at: 'desc',
-//         },
-//       },
-//       relations: {
-//         author: true,
-//         publisher: true,
-//         additional_info: true,
-//       },
-//     });
-//   }
-
 //   public async getBookFileBlobs(id: string): Promise<fs.ReadStream> {
 //     const bookEntity = await this.bookRepository.findOneBy({ id });
 
@@ -435,55 +420,4 @@ export class BookService {
 //     return new StreamableFile(file);
 //   }
 
-//   public async getAdditionalInfo(book_id: string) {
-//     const record = await this.additionalInfoRepository.findOne({
-//       relations: ['book'],
-//       where: {
-//         book: {
-//           id: book_id,
-//         },
-//       },
-//     });
-//     console.log("🚀 ~ file: books.service.ts:387 ~ BooksService ~ getAdditionalInfo ~ record:", record)
-
-//     return record;
-//   }
-
-//   public async updateAdditionalInfo(
-//     book_id: string,
-//     updateAdditionalInfoDto: UpdateAdditionalInfoDto,
-//   ) {
-//     const book = await this.bookRepository.findOneBy({ id: book_id });
-
-//     if (!book) {
-//       return;
-//     }
-
-//     const record = await this.additionalInfoRepository.findOne({
-//       relations: ['book'],
-//       where: {
-//         book: {
-//           id: book_id,
-//         },
-//       },
-//     });
-
-//     if (!record) {
-//       const infoEntity = this.additionalInfoRepository.create({
-//         ...updateAdditionalInfoDto,
-//         book,
-//       });
-
-//       await this.additionalInfoRepository.save(infoEntity);
-//     } else {
-//       const res = await this.additionalInfoRepository.update(
-//         { id: record.id },
-//         {
-//           ...updateAdditionalInfoDto,
-//         },
-//       );
-//     }
-
-//     return record;
-//   }
 // }
