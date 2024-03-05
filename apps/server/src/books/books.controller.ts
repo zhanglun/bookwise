@@ -24,7 +24,7 @@ import {
   Sorting,
   SortingParams,
 } from './books.decorator';
-import { Book } from "@prisma/client";
+import { Book } from '@prisma/client';
 
 @Controller('books')
 export class BooksController {
@@ -46,7 +46,7 @@ export class BooksController {
   findAll(
     @SortingParams([
       'title',
-      'author.name',
+      'authors.name',
       'publisher.name',
       'additional_info.read_progress_updated_at',
       'additional_info.read_progress',
@@ -55,7 +55,13 @@ export class BooksController {
       'publish_at',
     ])
     sort?: Sorting,
-    @FilteringParams(['author.name', 'publisher', 'format', 'language_id'])
+    @FilteringParams([
+      'title',
+      'authors.name',
+      'publisher',
+      'format',
+      'language_id',
+    ])
     filter?: Filtering,
   ): Promise<PaginatedResource<Partial<Book>>> {
     this.logger.log(

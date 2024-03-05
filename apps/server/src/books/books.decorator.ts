@@ -1,14 +1,4 @@
 import {
-  IsNull,
-  Not,
-  LessThan,
-  LessThanOrEqual,
-  MoreThan,
-  MoreThanOrEqual,
-  ILike,
-  In,
-} from 'typeorm';
-import {
   BadRequestException,
   createParamDecorator,
   ExecutionContext,
@@ -115,7 +105,7 @@ export const getOrder = (sort: Sorting) => {
 
   return {};
 };
-export const getWhere = (filter: Filtering) => {
+export const getWhere = (filter: any) => {
   if (!filter) return {};
 
   let shouldWrap = false;
@@ -124,39 +114,44 @@ export const getWhere = (filter: Filtering) => {
   let res = {};
 
   if (filter.property.indexOf('.') > -1) {
+    console.log(
+      "%c Line:117 🥕 ilter.property.indexOf('.')",
+      'color:#2eafb0',
+      filter.property.indexOf('.'),
+    );
     shouldWrap = true;
     wrapperKey = filter.property.split('.')[0];
     property = filter.property.split('.')[1];
   }
 
   if (filter.rule == FilterRule.IS_NULL) {
-    res = { [property]: IsNull() };
+    res = { [property]: null };
   }
 
   if (filter.rule == FilterRule.IS_NOT_NULL)
-    res = { [property]: Not(IsNull()) };
+    res = { [property]: { not: null } };
   if (filter.rule == FilterRule.EQUALS) {
     res = { [property]: filter.value };
   }
   if (filter.rule == FilterRule.NOT_EQUALS) {
-    res = { [property]: Not(filter.value) };
+    res = { [property]: { not: filter.value } };
   }
   if (filter.rule == FilterRule.GREATER_THAN)
-    res = { [property]: MoreThan(filter.value) };
+    res = { [property]: { gt: filter.value } };
   if (filter.rule == FilterRule.GREATER_THAN_OR_EQUALS)
-    res = { [property]: MoreThanOrEqual(filter.value) };
+    res = { [property]: { gte: filter.value } };
   if (filter.rule == FilterRule.LESS_THAN)
-    res = { [property]: LessThan(filter.value) };
+    res = { [property]: { lt: filter.value } };
   if (filter.rule == FilterRule.LESS_THAN_OR_EQUALS)
-    res = { [property]: LessThanOrEqual(filter.value) };
+    res = { [property]: { lte: filter.value } };
   if (filter.rule == FilterRule.LIKE)
-    res = { [property]: ILike(`%${filter.value}%`) };
+    res = { [property]: { contains: filter.value } };
   if (filter.rule == FilterRule.NOT_LIKE)
-    res = { [property]: Not(ILike(`%${filter.value}%`)) };
+    res = { NOT: { [property]: { contains: filter.value } } };
   if (filter.rule == FilterRule.IN)
-    res = { [property]: In(filter.value.split(',')) };
+    res = { [property]: { in: filter.value.split(',') } };
   if (filter.rule == FilterRule.NOT_IN)
-    res = { [property]: Not(In(filter.value.split(','))) };
+    res = { [property]: { notIn: filter.value.split(',') } };
 
-  return shouldWrap ? { [wrapperKey]: res } : res;
+  return shouldWrap ? { [wrapperKey]: { some: { ...res } } } : res;
 };

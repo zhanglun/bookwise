@@ -67,16 +67,25 @@ export class BooksService {
     sort?: Sorting,
     filter?: Filtering,
   ): Promise<PaginatedResource<Partial<Book>>> {
-    const where = getWhere(filter);
-    const order = getOrder(sort);
+    const finder = getWhere(filter);
 
-    const record = await this.prisma.book.count({
-      where,
-      orderBy: order,
-      // include: {
-      //   authors: true,
-      //   publisher: true,
-      // },
+    const order = getOrder(sort);
+    console.log('%c Line:73 🌶 orer', 'color:#33a5ff', order);
+
+    // const a = {
+    //   ...(!!finder.select ? finder : { where: finder }),
+    // };
+
+    console.log('%c Line:76 🌽 a', 'color:#2eafb0', finder);
+
+    const record = await this.prisma.book.findMany({
+      // ...((!!finder.select ? finder : { where: finder }) as any),
+      where: finder,
+      // orderBy: order,
+      include: {
+        authors: true,
+        publisher: true,
+      },
     });
 
     console.log(record);
@@ -137,7 +146,7 @@ export class BooksService {
     };
 
     if (bookEntity) {
-      const deleteResult = await this.prisma.book.delete({ where: { id }});
+      const deleteResult = await this.prisma.book.delete({ where: { id } });
 
       result.removedRow = 1;
 
