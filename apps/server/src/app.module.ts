@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksModule } from './books/books.module';
@@ -10,7 +8,7 @@ import configuration from './config/configuration';
 
 import { AuthorsModule } from './authors/authors.module';
 import { PublishersModule } from './publishers/publishers.module';
-import { AnnotationsModule } from './annotations/annotations.module';
+import { NotesModule } from './notes/notes.module';
 
 @Module({
   imports: [
@@ -22,11 +20,11 @@ import { AnnotationsModule } from './annotations/annotations.module';
     SettingsModule,
     AuthorsModule,
     PublishersModule,
-    AnnotationsModule,
+    NotesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {
-  constructor(private dataSource: DataSource) { }
+  constructor() {}
 }

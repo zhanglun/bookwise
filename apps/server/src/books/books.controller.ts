@@ -16,7 +16,6 @@ import {
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
-import { Book } from './entities/book.entity';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 import { PaginatedResource } from './dto/find-book.dto';
 import {
@@ -25,6 +24,7 @@ import {
   Sorting,
   SortingParams,
 } from './books.decorator';
+import { Book } from "@prisma/client";
 
 @Controller('books')
 export class BooksController {
@@ -67,7 +67,7 @@ export class BooksController {
   }
 
   @Get('/:id')
-  findBookDetailWithId(@Param() param: { id: string }): Promise<Book> {
+  findBookDetailWithId(@Param() param: { id: number }): Promise<Book> {
     return this.booksService.findOneWithId(param.id);
   }
 
@@ -80,14 +80,14 @@ export class BooksController {
   //   return new StreamableFile(file);
   // }
 
-  @Get('/:id/additional_infos')
-  async getBookAdditionalInfo(@Param() param: { id: string }) {
-    return this.booksService.getAdditionalInfo(param.id);
-  }
+  // @Get('/:id/additional_infos')
+  // async getBookAdditionalInfo(@Param() param: { id: number }) {
+  //   return this.booksService.getAdditionalInfo(param.id);
+  // }
 
   @Post('/:id/additional_infos')
   async updateBookAdditionalInfo(
-    @Param() param: { id: string },
+    @Param() param: { id: number },
     @Body() updateAdditionalInfoDto: UpdateAdditionalInfoDto,
   ) {
     return this.booksService.updateAdditionalInfo(
@@ -102,7 +102,7 @@ export class BooksController {
     removedDir: string;
     removedRow: number;
   }> {
-    return this.booksService.deleteBook(query.id);
+    return this.booksService.deleteBook(+query.id);
   }
 
   @Post()
@@ -110,24 +110,24 @@ export class BooksController {
     return [];
   }
 
-  @Post('upload')
-  @HttpCode(200)
-  @Header('Content-Type', 'application/json; charset=utf-8')
-  @UseInterceptors(FilesInterceptor('files'))
-  async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-    console.log(
-      '🚀 ~ file: books.controller.ts:42 ~ BooksController ~ files:',
-      files,
-    );
-    try {
-      const res = await this.booksService.saveBookToLibrary(files);
-      console.log(
-        '🚀 ~ file: books.controller.ts:54 ~ BooksController ~ uploadFile ~ res:',
-        res,
-      );
-      return res;
-    } catch (err) {
-      return err;
-    }
-  }
+  // @Post('upload')
+  // @HttpCode(200)
+  // @Header('Content-Type', 'application/json; charset=utf-8')
+  // @UseInterceptors(FilesInterceptor('files'))
+  // async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
+  //   console.log(
+  //     '🚀 ~ file: books.controller.ts:42 ~ BooksController ~ files:',
+  //     files,
+  //   );
+  //   try {
+  //     const res = await this.booksService.saveBookToLibrary(files);
+  //     console.log(
+  //       '🚀 ~ file: books.controller.ts:54 ~ BooksController ~ uploadFile ~ res:',
+  //       res,
+  //     );
+  //     return res;
+  //   } catch (err) {
+  //     return err;
+  //   }
+  // }
 }

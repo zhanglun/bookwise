@@ -1,8 +1,6 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Injectable, Injectable, StreamableFile } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import * as AdmZip from 'adm-zip';
 import { XMLParser } from 'fast-xml-parser';
 import * as MimeType from 'mime-types';
@@ -10,7 +8,6 @@ import { SettingsService } from '../settings/settings.service';
 import { AuthorsService } from 'src/authors/authors.service';
 import { PublishersService } from 'src/publishers/publishers.service';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
-import { AdditionalInfoEntity } from './entities/additional-info.entity';
 import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 import { PrismaService } from 'src/prisma.service';
@@ -55,14 +52,14 @@ export class BooksService {
   public async queryRecentlyReading() {
     return this.prisma.book.findMany({
       orderBy: {
-        additionalInfo: {
+        additional_infos: {
           read_progress_updated_at: 'desc',
         },
       },
-      includes: {
-        author: true,
+      include: {
+        authors: true,
         publisher: true,
-        additional_info: true,
+        additional_infos: true,
       },
     });
   }
@@ -73,18 +70,20 @@ export class BooksService {
     const where = getWhere(filter);
     const order = getOrder(sort);
 
-    const [books, total] = await this.prisma.book.count({
+    const record = await this.prisma.book.count({
       where,
-      order,
-      includes: {
-        author: true,
-        publisher: true,
-      },
+      orderBy: order,
+      // include: {
+      //   authors: true,
+      //   publisher: true,
+      // },
     });
 
+    console.log(record);
+
     return {
-      items: books,
-      total: total,
+      items: [],
+      total: 0,
     };
   }
 
@@ -96,39 +95,73 @@ export class BooksService {
     book_id: number,
     updateAdditionalInfoDto: UpdateAdditionalInfoDto,
   ) {
-    const book = await this.prisma.book.findUnique({ where: { id: book_id } });
+    // const book = await this.prisma.book.findUnique({ where: { id: book_id } });
+    // if (!book) {
+    //   return;
+    // }
+    // const record = await this.prisma.bookAdditionalInfo.findUnique({
+    //   relationLoadStrategy: 'query',
+    //   include: {
+    //     book: {
+    //       bookId: book_id,
+    //     },
+    //   },
+    // });
+    // if (!record) {
+    //   return this.prisma.bookAdditionalInfo.create({
+    //     data: {
+    //       ...updateAdditionalInfoDto,
+    //       book,
+    //     },
+    //   });
+    // } else {
+    //   const res = await this.prisma.bookAdditionalInfo.update({
+    //     where: { id: record.id },
+    //     data: {
+    //       ...updateAdditionalInfoDto,
+    //     },
+    //   });
+    // }
+    // return record;
+  }
+  public async deleteBook(id: number) {
+    const bookEntity = await this.prisma.book.findUnique({ where: { id } });
+    const result: {
+      removeExist: boolean;
+      removedDir: string;
+      removedRow: number;
+    } = {
+      removeExist: false,
+      removedDir: '',
+      removedRow: 0,
+    };
 
-    if (!book) {
-      return;
+    if (bookEntity) {
+      const deleteResult = await this.prisma.book.delete({ where: { id }});
+
+      result.removedRow = 1;
+
+      if (deleteResult && fs.existsSync(bookEntity.path)) {
+        let folderDir = bookEntity.path;
+
+        // folderDir.pop();
+
+        // console.log(
+        //   '🚀 ~ file: books.service.ts:288 ~ BooksService ~ deleteBook ~ folderDir:',
+        //   folderDir,
+        // );
+
+        // folderDir = folderDir.join(path.sep) as string;
+
+        if (fs.existsSync(folderDir)) {
+          fs.rmSync(folderDir, { recursive: true, force: true });
+          result.removeExist = true;
+          result.removedDir = folderDir;
+        }
+      }
     }
 
-    const record = await this.prisma.bookAdditionalInfo.findUnique({
-      include: {
-        books: {
-          where: {
-            id: book_id,
-          },
-        },
-      },
-    });
-
-    if (!record) {
-      const infoEntity = this.prisma.bookAdditionalInfo.create({
-        ...updateAdditionalInfoDto,
-        book,
-      });
-
-      await this.prisma.bookAdditionalInfo.create({ data: infoEntity });
-    } else {
-      const res = await this.prisma.bookAdditionalInfo.update({
-        where: { id: record.id },
-        data: {
-          ...updateAdditionalInfoDto,
-        },
-      });
-    }
-
-    return record;
+    return result;
   }
 }
 // @Injectable()
