@@ -26,6 +26,11 @@ import {
 } from './books.decorator';
 import { Book } from '@prisma/client';
 
+export interface AddBooKBody {
+  book: Book;
+  // blob: Blob;
+}
+
 @Controller('books')
 export class BooksController {
   private readonly logger = new Logger(BooksController.name);
@@ -112,7 +117,8 @@ export class BooksController {
   }
 
   @Post()
-  addOne(): any {
+  addOne(@Body() body: AddBooKBody): any {
+    console.log("%c Line:121 🥐 body", "color:#e41a6a", body);
     return [];
   }
 

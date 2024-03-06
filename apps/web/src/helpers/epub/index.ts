@@ -74,6 +74,8 @@ export interface EpubBaseObject {
 export interface PackagingMetadataObject {
   title: string,
   creator: string,
+  subject: string,
+  contributor: string,
   description: string,
   publish_at: string,
   publisher: string,
