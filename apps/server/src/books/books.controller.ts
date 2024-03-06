@@ -46,7 +46,7 @@ export class BooksController {
   findAll(
     @SortingParams([
       'title',
-      'authors.name',
+      'author.name',
       'publisher.name',
       'additional_info.read_progress_updated_at',
       'additional_info.read_progress',
@@ -57,8 +57,8 @@ export class BooksController {
     sort?: Sorting,
     @FilteringParams([
       'title',
-      'authors.name',
-      'publisher',
+      'author_id',
+      'publisher_id',
       'format',
       'language_id',
     ])

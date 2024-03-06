@@ -72,16 +72,20 @@ export class BooksService {
     const order = getOrder(sort);
     console.log('%c Line:73 🌶 orer', 'color:#33a5ff', order);
 
-    // const a = {
-    //   ...(!!finder.select ? finder : { where: finder }),
-    // };
-
     console.log('%c Line:76 🌽 a', 'color:#2eafb0', finder);
 
     const record = await this.prisma.book.findMany({
-      // ...((!!finder.select ? finder : { where: finder }) as any),
-      where: finder,
-      // orderBy: order,
+      // where: finder,
+      // where: {
+      //   authors: {
+      //     none: {
+      //       author: {
+      //         name: 'ga',
+      //       },
+      //     },
+      //   },
+      // },
+      orderBy: order,
       include: {
         authors: true,
         publisher: true,
