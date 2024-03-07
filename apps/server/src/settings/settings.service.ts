@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
+import YAML from 'yaml';
 
 const settingFileName = 'setting.json5';
 @Injectable()
@@ -24,6 +25,11 @@ export class SettingsService {
     const homedir = os.homedir();
 
     return path.join(homedir, '.config', 'bookwise');
+  }
+
+  public getSetting() {
+    const file = fs.readFileSync(this.getSettingPath(), 'utf8');
+    return YAML.parse(file);
   }
 
   public getLibraryPath() {

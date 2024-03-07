@@ -118,28 +118,27 @@ export class BooksController {
 
   @Post()
   addOne(@Body() body: AddBooKBody): any {
-    console.log("%c Line:121 🥐 body", "color:#e41a6a", body);
+    console.log('%c Line:121 🥐 body', 'color:#e41a6a', body);
+    //TODO: create book record
     return [];
   }
 
-  // @Post('upload')
-  // @HttpCode(200)
-  // @Header('Content-Type', 'application/json; charset=utf-8')
-  // @UseInterceptors(FilesInterceptor('files'))
-  // async uploadFile(@UploadedFiles() files: Array<Express.Multer.File>) {
-  //   console.log(
-  //     '🚀 ~ file: books.controller.ts:42 ~ BooksController ~ files:',
-  //     files,
-  //   );
-  //   try {
-  //     const res = await this.booksService.saveBookToLibrary(files);
-  //     console.log(
-  //       '🚀 ~ file: books.controller.ts:54 ~ BooksController ~ uploadFile ~ res:',
-  //       res,
-  //     );
-  //     return res;
-  //   } catch (err) {
-  //     return err;
-  //   }
-  // }
+  @Post('upload/files')
+  @HttpCode(200)
+  @Header('Content-Type', 'application/json; charset=utf-8')
+  @UseInterceptors(FilesInterceptor('files'))
+  async uploadFile(
+    @UploadedFiles() files: Array<Express.Multer.File>,
+    @Body() body: any,
+  ) {
+    const book = JSON.parse(body.book);
+    const cover = body.cover;
+    const file = files[0];
+    const res = await this.booksService.saveBookToLibrary(file, book, cover);
+    console.log(
+      '🚀 ~ file: books.controller.ts:54 ~ BooksController ~ uploadFile ~ res:',
+      res,
+    );
+    return res;
+  }
 }

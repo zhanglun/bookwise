@@ -3,8 +3,22 @@ import { Sidebar } from "./layout/Sidebar";
 import { Toaster } from 'sonner'
 
 import "./App.css";
+import { useEffect } from "react";
+import { request } from "./helpers/request";
+import { useBearStore } from "./store";
 
 function App() {
+  const store = useBearStore((state) => ({
+    updateSettings: state.updateSetting
+  }))
+
+  useEffect(() => {
+    request.get('/settings').then((res) => {
+      console.log("%c Line:12 🍢 res", "color:#4fff4B", res.data);
+      store.updateSettings(res.data);
+    })
+  }, []);
+
   return (
     <>
       <Toaster/>

@@ -2,10 +2,13 @@ import { NavLink } from "react-router-dom";
 import { LibraryIcon, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
-import { Book } from "epubjs";
 import { parseEpub } from "@/helpers/epub";
+import { useBearStore } from "@/store";
 
 export const Sidebar = () => {
+  const store = useBearStore((state) => ({
+    settings: state.settings,
+  }));
   const [files, setFiles] = useState<File[]>([]);
 
   const openFileDialog = (): void => {
@@ -39,8 +42,7 @@ export const Sidebar = () => {
 
       const parseFileAndSaveIt = async (file: File) => {
         const bookPkg = await parseEpub(file);
-
-        const { metadata } = bookPkg;
+        const { metadata, coverPath } = bookPkg;
         const book = {
           title: metadata.title,
           cover: "",
@@ -52,16 +54,25 @@ export const Sidebar = () => {
           format: "",
           page_count: 0,
           isbn: "",
-          path: "",
-          publish_at: metadata.publish_at,
           authors: metadata.creator,
+          publisher: metadata.publisher,
+          publish_at: metadata.publish_at,
         };
 
-        formData.append("files", file);
-        formData.append("books", book);
+        formData.append("files", file, metadata.title);
+        formData.append("book", JSON.stringify(book));
+        formData.append("cover", coverPath);
+
+        // request
+        //   .post("/books", book, {
+        //     headers: { "Content-Type": "multipart/form-data" },
+        //   })
+        //   .then((res) => {
+        //     console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
+        //   });
 
         request
-          .post("/books", book, {
+          .post("/books/upload/files", formData, {
             headers: { "Content-Type": "multipart/form-data" },
           })
           .then((res) => {
@@ -70,24 +81,13 @@ export const Sidebar = () => {
       };
 
       for (const file of files) {
+        console.log("%c Line:83 🍤 file", "color:#465975", file);
         // formData.append("files", file);
         // formData.append("books", await parseEpub(file));
         // console.log("%c Line:72 🍢 formData", "color:#ea7e5c", formData);
         // console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
         fns.push(parseFileAndSaveIt(file));
       }
-
-      // Promise.all(fns).then((res) => {
-      //   console.log("%c Line:47 🌭 res", "color:#ea7e5c", res);
-      // });
-
-      // request
-      //   .post("/books/upload", formData, {
-      //     headers: { "Content-Type": "multipart/form-data" },
-      //   })
-      //   .then((res) => {
-      //     console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
-      //   })
     }
   }, [files]);
 

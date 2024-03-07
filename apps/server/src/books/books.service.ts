@@ -12,6 +12,7 @@ import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 import { PrismaService } from 'src/prisma.service';
 import { Book, Prisma } from '@prisma/client';
+import { AddBooKBody } from './books.controller';
 
 interface EpubIdentifier {
   scheme: string;
@@ -47,7 +48,12 @@ export interface Epub {
 
 @Injectable()
 export class BooksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private settingsService: SettingsService,
+    private authorsService: AuthorsService,
+    private publishersService: PublishersService,
+  ) {}
 
   public async queryRecentlyReading() {
     return this.prisma.book.findMany({
@@ -175,6 +181,139 @@ export class BooksService {
     }
 
     return result;
+  }
+  public parseCover(cover: string, bf: Buffer): [buf: Buffer, str: string] {
+    console.log('%c Line:186 🥒 cover', 'color:#6ec1c2', cover);
+
+    const zip = new AdmZip(bf);
+    const zipEntries = zip.getEntries();
+    const a = zipEntries.reduce((acu, z) => {
+      console.log('z.entry', z.entryName);
+      if (z.entryName.lastIndexOf(cover) != -1) {
+        acu = z.getData();
+      }
+
+      return acu;
+    }, null as Buffer);
+
+    return [a, a.toString('base64')];
+  }
+
+  public async saveBookToLibrary(
+    file: Express.Multer.File,
+    book: any,
+    coverPath: string,
+  ): Promise<any> {
+    const libPath = this.settingsService.getLibraryPath();
+    const infos = [];
+
+    const { mimetype, buffer } = file;
+
+    if (mimetype !== 'application/epub+zip') {
+      return;
+    }
+
+    console.log(
+      '🚀 ~ file: books.service.ts:141 ~ BooksService ~ files.forEach ~ book:',
+      book,
+    );
+    console.log('%c Line:206 🍷 coverPath', 'color:#ffdd4d', coverPath);
+    const inventoryPath = path.join(libPath, book.title);
+    const bookPath = path.join(
+      inventoryPath,
+      `${book.title}.${MimeType.extension(mimetype)}`,
+    );
+
+    const cover = this.parseCover(coverPath, buffer);
+
+    console.log('%c Line:222 🍰 bookPath', 'color:#42b983', bookPath);
+    console.log('%c Line:227 🧀 cover', 'color:#93c0a4', cover);
+
+    if (!fs.existsSync(inventoryPath)) {
+      fs.mkdirSync(inventoryPath);
+    }
+
+    fs.writeFileSync(bookPath, file.buffer);
+    cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover[0]);
+
+    const bookModel = { ...book };
+
+    bookModel.path = bookPath;
+    bookModel.cover = cover[1];
+
+    console.log(
+      '🚀 ~ file: books.service.ts:242 ~ BooksService ~ bookModel:',
+      bookModel,
+    );
+
+    const author = await this.prisma.author.upsert({
+      where: {
+        name: book.authors,
+      },
+      update: {
+        name: book.authors,
+      },
+      create: {
+        name: book.authors,
+      },
+    });
+    const publisher = await this.prisma.publisher.upsert({
+      where: {
+        name: book.publisher,
+      },
+      update: {
+        name: book.publisher,
+      },
+      create: {
+        name: book.publisher,
+      },
+    });
+
+    const language = await this.prisma.language.upsert({
+      where: {
+        code: book.language,
+      },
+      update: {
+        code: book.language,
+      },
+      create: {
+        code: book.language,
+      },
+    });
+
+    console.log('%c Line:249 🍩 author', 'color:#b03734', author);
+    console.log('%c Line:254 🍌 publisher', 'color:#ea7e5c', publisher);
+    console.log('%c Line:273 🥚 language', 'color:#3f7cff', language);
+
+    const bookPo = await this.prisma.book.create({
+      data: {
+        ...bookModel,
+        authors: {
+          connect: { id: author.id },
+        },
+        publisher: {
+          connect: { id: publisher.id },
+        },
+        language: {
+          connect: { id: language.id },
+        },
+      },
+    });
+
+    // const bookEntity = this.bookRepository.create({
+    //   ...bookModel,
+    //   author,
+    //   publisher,
+    //   path: bookPath,
+    // });
+
+    // const bookPO = await this.dataSource.manager.save(bookEntity);
+
+    // infos.push(bookPO);
+
+    return {
+      // ...bookPo,
+    };
   }
 }
 // @Injectable()
@@ -325,74 +464,6 @@ export class BooksService {
 //     };
 
 //     return result;
-//   }
-
-//   public async saveBookToLibrary(
-//     files: Array<Express.Multer.File>,
-//   ): Promise<any> {
-//     const libPath = this.settingsService.getLibraryPath();
-//     const infos = [];
-
-//     for (const file of files) {
-//       const { mimetype, buffer } = file;
-
-//       if (mimetype !== 'application/epub+zip') {
-//         return;
-//       }
-
-//       const book = this.parseEpubBook(buffer);
-//       console.log(
-//         '🚀 ~ file: books.service.ts:141 ~ BooksService ~ files.forEach ~ book:',
-//         book,
-//       );
-//       const cover = this.parseCover(book, buffer);
-//       const title = book.metadata.title['#text']
-//         ? book.metadata.title['#text']
-//         : book.metadata.title;
-//       console.log(
-//         '🚀 ~ file: books.service.ts:152 ~ BooksService ~ files.forEach ~ book.metadata.title:',
-//         book.metadata.title,
-//       );
-//       const inventoryPath = path.join(libPath, title);
-//       const bookPath = path.join(
-//         inventoryPath,
-//         `${title}.${MimeType.extension(mimetype)}`,
-//       );
-
-//       if (!fs.existsSync(inventoryPath)) {
-//         fs.mkdirSync(inventoryPath);
-//       }
-
-//       fs.writeFileSync(bookPath, file.buffer);
-//       cover && fs.writeFileSync(path.join(inventoryPath, 'cover.jpg'), cover[0]);
-
-//       const bookModel = this.createBookModel(book);
-
-//       bookModel.cover = cover[1];
-
-//       console.log("🚀 ~ file: books.service.ts:242 ~ BooksService ~ bookModel:", bookModel)
-//       const author = await this.authorsService.findOneOrCreate({
-//         name: bookModel.author,
-//       });
-//       const publisher = await this.publishersService.findOneOrCreate({
-//         name: bookModel.publisher,
-//       });
-
-//       const bookEntity = this.bookRepository.create({
-//         ...bookModel,
-//         author,
-//         publisher,
-//         path: bookPath,
-//       });
-
-//       const bookPO = await this.dataSource.manager.save(bookEntity);
-
-//       infos.push(bookPO);
-//     }
-
-//     return {
-//       infos,
-//     };
 //   }
 
 //   public async getBookFileBlobs(id: string): Promise<fs.ReadStream> {

@@ -22,25 +22,44 @@ enum BookFormat {
 }
 
 model Book {
-  id               Int                  @id @default(autoincrement())
-  title            String
-  cover            String
-  subject          String
-  description      String
-  contributor      String
-  source           String
-  language_id      String
-  format           BookFormat
-  page_count       Int
-  isbn             String
-  path             String
-  publish_at       DateTime
-  created_at       DateTime
-  updated_at       DateTime
-  authors          AuthorsWithBooks[]
-  publisher        PublisherWithBooks[]
-  additional_infos BookAdditionalInfo?
-  notes            Note[]
+  id                       Int                         @id @default(autoincrement())
+  title                    String
+  cover                    String
+  subject                  String
+  description              String
+  contributor              String
+  source                   String
+  format                   BookFormat
+  page_count               Int
+  isbn                     String
+  path                     String
+  publish_at               DateTime
+  created_at               DateTime                    @default(now())
+  updated_at               DateTime                    @updatedAt()
+  authors                  AuthorBookRelationship[]
+  publisher                PublisherBookRelationship[]
+  additional_infos         BookAdditionalInfo?
+  notes                    Note[]
+  language                 Language                    @relation(fields: [language_id], references: [id])
+  language_id              Int
+  LanguageBookRelationship LanguageBookRelationship[]
+}
+
+model Language {
+  id                       Int                        @id @default(autoincrement())
+  code                     String                     @unique
+  Book                     Book[]
+  LanguageBookRelationship LanguageBookRelationship[]
+}
+
+model LanguageBookRelationship {
+  book        Book     @relation(fields: [book_id], references: [id])
+  book_id     Int
+  language    Language @relation(fields: [language_id], references: [id])
+  language_id Int
+  created_at  DateTime @default(now())
+
+  @@id([book_id, language_id])
 }
 
 model BookAdditionalInfo {
@@ -53,32 +72,32 @@ model BookAdditionalInfo {
 }
 
 model Author {
-  id        Int                @id @default(autoincrement())
-  name      String             @unique
-  books     AuthorsWithBooks[]
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
+  id        Int                      @id @default(autoincrement())
+  name      String                   @unique
+  books     AuthorBookRelationship[]
+  createdAt DateTime                 @default(now())
+  updatedAt DateTime                 @updatedAt
 }
 
-model AuthorsWithBooks {
+model AuthorBookRelationship {
   book       Book     @relation(fields: [book_id], references: [id])
   book_id    Int
   author     Author   @relation(fields: [author_id], references: [id])
   author_id  Int
-  created_at DateTime
+  created_at DateTime @default(now())
 
   @@id([book_id, author_id])
 }
 
 model Publisher {
-  id        Int                  @id @default(autoincrement())
-  name      String               @unique
-  books     PublisherWithBooks[]
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
+  id        Int                         @id @default(autoincrement())
+  name      String                      @unique
+  books     PublisherBookRelationship[]
+  createdAt DateTime                    @default(now())
+  updatedAt DateTime                    @updatedAt
 }
 
-model PublisherWithBooks {
+model PublisherBookRelationship {
   book         Book      @relation(fields: [book_id], references: [id])
   book_id      Int
   publisher    Publisher @relation(fields: [publisher_id], references: [id])
