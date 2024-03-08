@@ -11,7 +11,7 @@ import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 import { PrismaService } from 'src/prisma.service';
-import { Book, Prisma } from '@prisma/client';
+import { Book, BookFormat, Prisma } from '@prisma/client';
 import { AddBooKBody } from './books.controller';
 
 interface EpubIdentifier {
@@ -208,6 +208,7 @@ export class BooksService {
     const infos = [];
 
     const { mimetype, buffer } = file;
+    const ext = BookFormat[MimeType.extension(mimetype).toUpperCase()];
 
     if (mimetype !== 'application/epub+zip') {
       return;
@@ -219,15 +220,11 @@ export class BooksService {
     );
     console.log('%c Line:206 🍷 coverPath', 'color:#ffdd4d', coverPath);
     const inventoryPath = path.join(libPath, book.title);
-    const bookPath = path.join(
-      inventoryPath,
-      `${book.title}.${MimeType.extension(mimetype)}`,
-    );
+    const bookPath = path.join(inventoryPath, `${book.title}.${ext}`);
 
     const cover = this.parseCover(coverPath, buffer);
 
     console.log('%c Line:222 🍰 bookPath', 'color:#42b983', bookPath);
-    console.log('%c Line:227 🧀 cover', 'color:#93c0a4', cover);
 
     if (!fs.existsSync(inventoryPath)) {
       fs.mkdirSync(inventoryPath);
@@ -240,6 +237,7 @@ export class BooksService {
 
     bookModel.path = bookPath;
     bookModel.cover = cover[1];
+    bookModel.format = ext;
 
     console.log(
       '🚀 ~ file: books.service.ts:242 ~ BooksService ~ bookModel:',
@@ -289,10 +287,18 @@ export class BooksService {
       data: {
         ...bookModel,
         authors: {
-          connect: { id: author.id },
+          create: [
+            {
+              author: { connect: { id: author.id } },
+            },
+          ],
         },
         publisher: {
-          connect: { id: publisher.id },
+          create: [
+            {
+              publisher: { connect: { id: publisher.id } },
+            },
+          ],
         },
         language: {
           connect: { id: language.id },
@@ -300,19 +306,8 @@ export class BooksService {
       },
     });
 
-    // const bookEntity = this.bookRepository.create({
-    //   ...bookModel,
-    //   author,
-    //   publisher,
-    //   path: bookPath,
-    // });
-
-    // const bookPO = await this.dataSource.manager.save(bookEntity);
-
-    // infos.push(bookPO);
-
     return {
-      // ...bookPo,
+      ...bookPo,
     };
   }
 }
