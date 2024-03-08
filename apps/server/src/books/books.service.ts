@@ -11,7 +11,7 @@ import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 import { PrismaService } from 'src/prisma.service';
-import { Book, BookFormat, Prisma } from '@prisma/client';
+import { Book, BookFormat } from '@prisma/client';
 import { AddBooKBody } from './books.controller';
 
 interface EpubIdentifier {
@@ -108,6 +108,10 @@ export class BooksService {
 
   public async findOneWithId(id: number) {
     return this.prisma.book.findUnique({ where: { id } });
+  }
+
+  public async findOneWithTitle(title: string) {
+    return this.prisma.book.findUnique({ where: { title } });
   }
 
   public async updateAdditionalInfo(

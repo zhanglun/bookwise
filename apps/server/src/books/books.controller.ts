@@ -13,6 +13,7 @@ import {
   Delete,
   Res,
   Logger,
+  ConflictException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BooksService } from './books.service';
@@ -25,6 +26,9 @@ import {
   SortingParams,
 } from './books.decorator';
 import { Book } from '@prisma/client';
+import { PrismaClientExceptionFilter } from 'src/global/filters/prisma.filter';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Message } from 'src/global/messages';
 
 export interface AddBooKBody {
   book: Book;
@@ -134,11 +138,16 @@ export class BooksController {
     const book = JSON.parse(body.book);
     const cover = body.cover;
     const file = files[0];
-    const res = await this.booksService.saveBookToLibrary(file, book, cover);
-    console.log(
-      '🚀 ~ file: books.controller.ts:54 ~ BooksController ~ uploadFile ~ res:',
-      res,
-    );
-    return res;
+
+    const bookRecord = await this.booksService.findOneWithTitle(book.title);
+
+    if (bookRecord) {
+      throw new ConflictException(
+        Message.resourceAlreadyExist.replace('{{name}}', book.title),
+      );
+    } else {
+      const res = await this.booksService.saveBookToLibrary(file, book, cover);
+      return res;
+    }
   }
 }

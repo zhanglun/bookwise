@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
-import { UpdateNoteDto } from './dto/update-note.dto';
+import { UpdateNoteDto } from './dto/update-annotation.dto';
 
 @Controller('notes')
 export class NotesController {
