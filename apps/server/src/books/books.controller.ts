@@ -26,8 +26,6 @@ import {
   SortingParams,
 } from './books.decorator';
 import { Book } from '@prisma/client';
-import { PrismaClientExceptionFilter } from 'src/global/filters/prisma.filter';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Message } from 'src/global/messages';
 
 export interface AddBooKBody {
@@ -86,14 +84,16 @@ export class BooksController {
     return this.booksService.findOneWithId(param.id);
   }
 
-  // @Get('/:id/blobs')
-  // async getBookFileBlobsWithId(
-  //   @Param() param: { id: string },
-  // ): Promise<StreamableFile> {
-  //   const file = await this.booksService.getBookFileBlobs(param.id);
+  @Get('/:id/blobs')
+  async getBookFileBlobsWithId(
+    @Param() param: { id: string },
+  ): Promise<StreamableFile> {
+    const file = await this.booksService.getBookFileBlobs(
+      parseInt(param.id, 10),
+    );
 
-  //   return new StreamableFile(file);
-  // }
+    return new StreamableFile(file);
+  }
 
   // @Get('/:id/additional_infos')
   // async getBookAdditionalInfo(@Param() param: { id: number }) {
@@ -118,13 +118,6 @@ export class BooksController {
     removedRow: number;
   }> {
     return this.booksService.deleteBook(+query.id);
-  }
-
-  @Post()
-  addOne(@Body() body: AddBooKBody): any {
-    console.log('%c Line:121 🥐 body', 'color:#e41a6a', body);
-    //TODO: create book record
-    return [];
   }
 
   @Post('upload/files')

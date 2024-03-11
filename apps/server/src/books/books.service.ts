@@ -1,8 +1,7 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as AdmZip from 'adm-zip';
-import { XMLParser } from 'fast-xml-parser';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
 import { AuthorsService } from 'src/authors/authors.service';
@@ -12,7 +11,6 @@ import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
 import { PrismaService } from 'src/prisma.service';
 import { Book, BookFormat } from '@prisma/client';
-import { AddBooKBody } from './books.controller';
 
 interface EpubIdentifier {
   scheme: string;
@@ -314,6 +312,20 @@ export class BooksService {
       ...bookPo,
     };
   }
+
+  public async getBookFileBlobs(id: number): Promise<fs.ReadStream> {
+    const bookEntity = await this.findOneWithId(id);
+
+    console.log('%c Line:276 🍆 bookEntity', 'color:#f5ce50', bookEntity);
+
+    if (bookEntity) {
+      const { path } = bookEntity;
+
+      if (fs.existsSync(path)) {
+        return fs.createReadStream(path);
+      }
+    }
+  }
 }
 // @Injectable()
 // export class BooksService {
@@ -463,20 +475,6 @@ export class BooksService {
 //     };
 
 //     return result;
-//   }
-
-//   public async getBookFileBlobs(id: string): Promise<fs.ReadStream> {
-//     const bookEntity = await this.bookRepository.findOneBy({ id });
-
-//     console.log('%c Line:276 🍆 bookEntity', 'color:#f5ce50', bookEntity);
-
-//     if (bookEntity) {
-//       const { path } = bookEntity;
-
-//       if (fs.existsSync(path)) {
-//         return fs.createReadStream(path);
-//       }
-//     }
 //   }
 
 //   public async deleteBook(id: string) {
