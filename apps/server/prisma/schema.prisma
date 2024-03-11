@@ -6,7 +6,7 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
+  // previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -36,8 +36,8 @@ model Book {
   publish_at               DateTime
   created_at               DateTime                    @default(now())
   updated_at               DateTime                    @updatedAt()
-  authors                  AuthorBookRelationship[]
-  publisher                PublisherBookRelationship[]
+  authors                  Author[]
+  publisher                Publisher[]
   additional_infos         BookAdditionalInfo?
   notes                    Note[]
   language                 Language                    @relation(fields: [language_id], references: [id])
@@ -74,37 +74,17 @@ model BookAdditionalInfo {
 model Author {
   id        Int                      @id @default(autoincrement())
   name      String                   @unique
-  books     AuthorBookRelationship[]
+  books     Book[]
   createdAt DateTime                 @default(now())
   updatedAt DateTime                 @updatedAt
-}
-
-model AuthorBookRelationship {
-  book       Book     @relation(fields: [book_id], references: [id])
-  book_id    Int
-  author     Author   @relation(fields: [author_id], references: [id])
-  author_id  Int
-  created_at DateTime @default(now())
-
-  @@id([book_id, author_id])
 }
 
 model Publisher {
   id        Int                         @id @default(autoincrement())
   name      String                      @unique
-  books     PublisherBookRelationship[]
+  books     Book[]
   createdAt DateTime                    @default(now())
   updatedAt DateTime                    @updatedAt
-}
-
-model PublisherBookRelationship {
-  book         Book      @relation(fields: [book_id], references: [id])
-  book_id      Int
-  publisher    Publisher @relation(fields: [publisher_id], references: [id])
-  publisher_id Int
-  createdAt    DateTime  @default(now())
-
-  @@id([book_id, publisher_id])
 }
 
 enum NoteType {

@@ -47,7 +47,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
   }
 
   const getBookAdditionalInfo = () => {
-    request.get(`books/${uuid}/additional_infos`).then((res) => {
+    request.get(`books/${uuid}`).then((res) => {
       console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
     });
   };

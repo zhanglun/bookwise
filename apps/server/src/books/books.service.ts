@@ -105,12 +105,28 @@ export class BooksService {
   }
 
   public async findOneWithId(id: number) {
-    return this.prisma.book.findUnique({ where: { id } });
+    return this.prisma.book.findUnique({
+      where: { id },
+      include: {
+        authors: true,
+        publisher: true,
+        additional_infos: true,
+        language: true,
+      },
+    });
   }
 
   public async findOneWithTitle(title: string) {
     return this.prisma.book.findUnique({ where: { title } });
   }
+
+  // public async getAdditionalInfo(id: number) {
+  //   return this.prisma.bookAdditionalInfo.findUnique({
+  //     where: {
+  //       book_id: id,
+  //     },
+  //   });
+  // }
 
   public async updateAdditionalInfo(
     book_id: number,
@@ -288,20 +304,8 @@ export class BooksService {
     const bookPo = await this.prisma.book.create({
       data: {
         ...bookModel,
-        authors: {
-          create: [
-            {
-              author: { connect: { id: author.id } },
-            },
-          ],
-        },
-        publisher: {
-          create: [
-            {
-              publisher: { connect: { id: publisher.id } },
-            },
-          ],
-        },
+        authors: { connect: { id: author.id } },
+        publisher: { connect: { id: publisher.id } },
         language: {
           connect: { id: language.id },
         },

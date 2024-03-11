@@ -80,8 +80,8 @@ export class BooksController {
   }
 
   @Get('/:id')
-  findBookDetailWithId(@Param() param: { id: number }): Promise<Book> {
-    return this.booksService.findOneWithId(param.id);
+  findBookDetailWithId(@Param() param: { id: string }): Promise<Book> {
+    return this.booksService.findOneWithId(parseInt(param.id, 10));
   }
 
   @Get('/:id/blobs')
