@@ -223,8 +223,6 @@ export class BooksService {
     coverPath: string,
   ): Promise<any> {
     const libPath = this.settingsService.getLibraryPath();
-    const infos = [];
-
     const { mimetype, buffer } = file;
     const ext = BookFormat[MimeType.extension(mimetype).toUpperCase()];
 
@@ -311,6 +309,18 @@ export class BooksService {
         },
       },
     });
+
+    if (bookPo.id) {
+      await this.prisma.bookAdditionalInfo.create({
+        data: {
+          spine_index: '',
+          read_progress: 0.0,
+          book: {
+            connect: { id: bookPo.id },
+          },
+        },
+      });
+    }
 
     return {
       ...bookPo,

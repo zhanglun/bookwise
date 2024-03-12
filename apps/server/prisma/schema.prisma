@@ -5,7 +5,7 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
+  provider = "prisma-client-js"
   // previewFeatures = ["relationJoins"]
 }
 
@@ -22,8 +22,8 @@ enum BookFormat {
 }
 
 model Book {
-  id                       Int                         @id @default(autoincrement())
-  title                    String                      @unique
+  id                       Int                        @id @default(autoincrement())
+  title                    String                     @unique
   cover                    String
   subject                  String
   description              String
@@ -34,13 +34,13 @@ model Book {
   isbn                     String
   path                     String
   publish_at               DateTime
-  created_at               DateTime                    @default(now())
-  updated_at               DateTime                    @updatedAt()
+  created_at               DateTime                   @default(now())
+  updated_at               DateTime                   @updatedAt()
   authors                  Author[]
   publisher                Publisher[]
   additional_infos         BookAdditionalInfo?
   notes                    Note[]
-  language                 Language                    @relation(fields: [language_id], references: [id])
+  language                 Language                   @relation(fields: [language_id], references: [id])
   language_id              Int
   LanguageBookRelationship LanguageBookRelationship[]
 }
@@ -64,27 +64,27 @@ model LanguageBookRelationship {
 
 model BookAdditionalInfo {
   id                       Int      @id @default(autoincrement())
-  spine_index              String
-  read_progress            Float
-  read_progress_updated_at DateTime
+  spine_index              String   @default("")
+  read_progress            Float    @default(0.0)
+  read_progress_updated_at DateTime @default(now())
   book                     Book     @relation(fields: [book_id], references: [id])
   book_id                  Int      @unique
 }
 
 model Author {
-  id        Int                      @id @default(autoincrement())
-  name      String                   @unique
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
   books     Book[]
-  createdAt DateTime                 @default(now())
-  updatedAt DateTime                 @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Publisher {
-  id        Int                         @id @default(autoincrement())
-  name      String                      @unique
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
   books     Book[]
-  createdAt DateTime                    @default(now())
-  updatedAt DateTime                    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum NoteType {
