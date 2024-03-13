@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Author } from '@prisma/client';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { UpdateAuthorDto } from './dto/update-author.dto';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma.service';
 
 @Injectable()
 export class AuthorsService {

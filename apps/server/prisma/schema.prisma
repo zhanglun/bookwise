@@ -93,12 +93,14 @@ enum NoteType {
 }
 
 model Note {
-  id        Int      @id @default(autoincrement())
-  book      Book     @relation(fields: [book_id], references: [id])
-  book_id   Int
-  type      NoteType
-  title     String
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id              Int      @id @default(autoincrement())
+  book            Book     @relation(fields: [book_id], references: [id])
+  book_id         Int
+  type            NoteType
+  title           String   @default("")
+  content         String   @default("")
+  position_metics Json
+  style_config    Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

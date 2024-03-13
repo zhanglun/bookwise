@@ -26,7 +26,7 @@ import {
   SortingParams,
 } from './books.decorator';
 import { Book } from '@prisma/client';
-import { Message } from 'src/global/messages';
+import { Message } from 'src/common/messages';
 
 export interface AddBooKBody {
   book: Book;

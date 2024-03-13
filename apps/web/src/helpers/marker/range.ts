@@ -63,8 +63,8 @@ export default class TextMarker {
     return {
       id: uuid(8),
       type: MarkTypeEnum.TEXT,
+      content: selection.toString(),
       data: {
-        text: selection.toString(),
         start: {
           path: sPath,
           offset: startOffset,

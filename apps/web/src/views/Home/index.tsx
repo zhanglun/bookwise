@@ -37,8 +37,7 @@ export const Home = () => {
       });
   }, []);
 
-  useEffect(() => {
-  }, []);
+  useEffect(() => {}, []);
 
   function test() {
     const selection = window.getSelection();
@@ -67,15 +66,19 @@ export const Home = () => {
         Recently reading
       </div>
       <div className="">
-        {recentlyReading.map((book: BookResItem) => {
-          return (
-            <Book
-              key={book.id}
-              data={book}
-              onClick={() => navigate(`/viewer/${book.id}`)}
-            />
-          );
-        })}
+        <ol className="px-3 py-2 flex flex-row gap-4">
+          {recentlyReading.map((book: BookResItem) => {
+            return (
+              <li>
+                <Book
+                  key={book.id}
+                  data={book}
+                  onClick={() => navigate(`/viewer/${book.id}`)}
+                />
+              </li>
+            );
+          })}
+        </ol>
       </div>
     </div>
   );

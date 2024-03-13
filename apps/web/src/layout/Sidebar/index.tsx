@@ -56,7 +56,7 @@ export const Sidebar = () => {
           isbn: "",
           authors: metadata.creator,
           publisher: metadata.publisher,
-          publish_at: metadata.publish_at,
+          publish_at: new Date(metadata.publish_at),
         };
 
         formData.append("files", file, metadata.title);

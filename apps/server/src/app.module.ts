@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BooksModule } from './books/books.module';
-import { SettingsModule } from './settings/settings.module';
+import { BooksModule } from './modules/books/books.module';
+import { SettingsModule } from './modules/settings/settings.module';
 import configuration from './config/configuration';
 
-import { AuthorsModule } from './authors/authors.module';
-import { PublishersModule } from './publishers/publishers.module';
-import { NotesModule } from './notes/notes.module';
+import { AuthorsModule } from './modules/authors/authors.module';
+import { PublishersModule } from './modules/publishers/publishers.module';
+import { NotesModule } from './modules/notes/notes.module';
 
 @Module({
   imports: [

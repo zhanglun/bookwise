@@ -13,10 +13,10 @@ import { useBearStore } from "@/store";
 import { Mark } from "@/helpers/marker/types";
 
 export interface EpubViewerProps {
-  uuid: string;
+  bookId: string;
 }
 
-export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
+export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [instance, setInstance] = useState<EpubObject>({} as EpubObject);
   const [pageList, setPageList] = useState<PageProps[]>([]);
   const pageRefs = useRef<{ [key: string]: PageCanvasRef }>({});
@@ -30,7 +30,7 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
 
   function getEpubBlobs() {
     request
-      .get(`books/${uuid}/blobs`, {
+      .get(`books/${bookId}/blobs`, {
         responseType: "blob",
       })
       .then((res) => {
@@ -47,15 +47,26 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
   }
 
   const getBookAdditionalInfo = () => {
-    request.get(`books/${uuid}`).then((res) => {
+    request.get(`books/${bookId}`).then((res) => {
       console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
     });
   };
 
+  function getNotes() {
+    request.get('/notes', {
+      data: {
+        bookId: bookId
+      }
+    }).then((res) => {
+
+    });
+  }
+
   useEffect(() => {
     getEpubBlobs();
     getBookAdditionalInfo();
-  }, [uuid]);
+    getNotes()
+  }, [bookId]);
 
   useEffect(() => {
     const generateFullContent = async () => {
@@ -97,13 +108,31 @@ export const EpubViewer = memo(({ uuid }: EpubViewerProps) => {
     };
 
     const { marker, selection } = store.interactiveObject[0];
+    let mark = activatedMark;
 
-    if (activatedMark) {
-      activatedMark.config.rectFill = color;
-      marker.updateMark(activatedMark);
+    if (mark) {
+      mark.config.rectFill = color;
+      marker.updateMark(mark);
     } else {
-      const mark = marker.getSelectionRange(selection, config);
+      mark = marker.getSelectionRange(selection, config);
       if (mark) marker.addMark(mark);
+    }
+
+    console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+
+    if (mark) {
+      request
+        .post("/notes", {
+          book_id: parseInt(bookId, 10),
+          type: mark.type,
+          title: mark.title,
+          content: mark.content,
+          position_metics: mark.data,
+          style_config: mark.config,
+        })
+        .then((res) => {
+          console.log("%c Line:123 🌭 res", "color:#42b983", res);
+        });
     }
 
     window?.getSelection()?.removeAllRanges();

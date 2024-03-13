@@ -34,7 +34,6 @@ export class Marker {
 
   addMark(mark: Mark): boolean {
     const rects = this.textMarker.createRects(mark);
-    console.log("%c Line:34 🍞 rects", "color:#ea7e5c", rects);
 
     if (rects.length === 0) return false;
 

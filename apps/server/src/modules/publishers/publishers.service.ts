@@ -3,7 +3,7 @@ import { CreatePublisherDto } from './dto/create-publisher.dto';
 import { UpdatePublisherDto } from './dto/update-publisher.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Publisher, Prisma } from '@prisma/client';
-import { PrismaService } from '../prisma.service';
+import { PrismaService } from '../../prisma.service';
 
 @Injectable()
 export class PublishersService {

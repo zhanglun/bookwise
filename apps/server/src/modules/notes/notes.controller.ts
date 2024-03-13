@@ -6,23 +6,43 @@ import {
   Patch,
   Param,
   Delete,
+  HttpCode,
+  Query,
 } from '@nestjs/common';
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-annotation.dto';
+import {
+  Filtering,
+  FilteringParams,
+  Sorting,
+  SortingParams,
+} from 'src/modules/books/books.decorator';
 
 @Controller('notes')
 export class NotesController {
   constructor(private readonly notesService: NotesService) {}
 
   @Post()
+  @HttpCode(200)
   create(@Body() createNoteDto: CreateNoteDto) {
     return this.notesService.create(createNoteDto);
   }
 
   @Get()
-  findAll() {
-    return this.notesService.findAll();
+  findAll(
+    @SortingParams([
+      'title',
+      'content',
+      'book_id',
+      'type',
+      'created_at',
+      'updated_at',
+    ])
+    sort?: Sorting,
+    @FilteringParams(['title', 'content', 'book_id']) filter?: Filtering,
+  ) {
+    return this.notesService.findAll(sort, filter);
   }
 
   @Get(':id')
@@ -31,10 +51,7 @@ export class NotesController {
   }
 
   @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateNoteDto: UpdateNoteDto,
-  ) {
+  update(@Param('id') id: string, @Body() updateNoteDto: UpdateNoteDto) {
     return this.notesService.update(+id, updateNoteDto);
   }
 

@@ -4,8 +4,8 @@ import { Injectable } from '@nestjs/common';
 import * as AdmZip from 'adm-zip';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
-import { AuthorsService } from 'src/authors/authors.service';
-import { PublishersService } from 'src/publishers/publishers.service';
+import { AuthorsService } from 'src/modules/authors/authors.service';
+import { PublishersService } from 'src/modules/publishers/publishers.service';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 import { PaginatedResource } from './dto/find-book.dto';
 import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
@@ -328,6 +328,7 @@ export class BooksService {
   }
 
   public async getBookFileBlobs(id: number): Promise<fs.ReadStream> {
+    console.log("%c Line:332 🍩 id", "color:#3f7cff", id);
     const bookEntity = await this.findOneWithId(id);
 
     console.log('%c Line:276 🍆 bookEntity', 'color:#f5ce50', bookEntity);
