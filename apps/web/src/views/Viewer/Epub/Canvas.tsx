@@ -8,8 +8,9 @@ export interface PageProps {
   idref: string;
   bookInfo: EpubObject;
   file: JSZipObject;
+  spineIndex: number;
   href: string;
-  url: string;
+  absoluteUrl: string;
 }
 
 export interface PageCanvasRef {
@@ -17,12 +18,13 @@ export interface PageCanvasRef {
   DOMNode: HTMLDivElement | null;
   selection: Selection | null;
   pageId: string;
-  url: string;
+  spineIndex: number;
+  absoluteUrl: string;
 }
 
 export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
   (props: PageProps, forwardedRef) => {
-    const { idref, bookInfo, file, href, url } = props;
+    const { idref, bookInfo, file, href, spineIndex, absoluteUrl } = props;
     const DOMNodeRef = useRef<HTMLDivElement | null>(null);
     const selectionRef = useRef<Selection | null>(null);
     const markerRef = useRef<Marker>(Object.create({}));
@@ -88,15 +90,17 @@ export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
       marker: markerRef.current,
       selection: selectionRef.current,
       pageId: idref,
-      url: url,
+      spineIndex: spineIndex,
+      absoluteUrl: absoluteUrl,
     }));
 
     return (
       <div
         id={idref}
         data-spine-idref={idref}
+        data-spine-index={spineIndex}
         data-spine-href={href}
-        data-spine-url={url}
+        data-spine-absolute-url={absoluteUrl}
         key={idref}
         className="min-h-[100vh] my-5 shadow-md relative"
         ref={DOMNodeRef}

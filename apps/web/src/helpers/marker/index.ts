@@ -1,7 +1,7 @@
 import debounce from "lodash-es/debounce";
 import TextMarker from "./range";
 import { Brush } from "./brush";
-import { Mark, RectPosition, TextMarkConfig } from "./types";
+import { ExtraInfo, Mark, RectPosition, TextMarkConfig } from "./types";
 
 export class Marker {
   private root: HTMLElement;
@@ -19,11 +19,11 @@ export class Marker {
     this.observeResize();
   }
 
-  getSelectionRange(selection: Selection | null, config: TextMarkConfig) {
+  getSelectionRange(selection: Selection | null, config: TextMarkConfig, extraInfo: ExtraInfo) {
     selection = selection || document.getSelection();
     console.log("%c Line:24 🍏 selection", "color:#b03734", selection);
     if (!selection) return null;
-    return this.textMarker.createRange(selection, config);
+    return this.textMarker.createRange(selection, config, extraInfo);
   }
 
   getSelectionPosition(selection?: Selection | null) {

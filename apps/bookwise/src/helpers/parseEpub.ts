@@ -15,8 +15,8 @@ export interface SpineItem {
   idref: string,
   properties: Array<string>,
   index: number,
-  url: string,
   href: string,
+  absoluteUrl: string,
 }
 
 export interface BookContainer {
@@ -318,7 +318,7 @@ export const parseSpine = (spineNode: Element, manifest: BookManifest, basePath:
 
     if (manifestItem) {
       itemref.href = manifestItem.href;
-      itemref.url = basePath + manifestItem.href;
+      itemref.absoluteUrl = basePath + manifestItem.href;
     }
 
     spine.push(itemref);

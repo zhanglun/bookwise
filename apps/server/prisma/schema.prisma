@@ -96,6 +96,8 @@ model Note {
   id              Int      @id @default(autoincrement())
   book            Book     @relation(fields: [book_id], references: [id])
   book_id         Int
+  spine_index     Int      @default(0)
+  spine_name      String   @default("")
   type            NoteType
   title           String   @default("")
   content         String   @default("")

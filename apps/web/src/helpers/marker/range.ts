@@ -1,4 +1,4 @@
-import { Mark } from "./types";
+import { ExtraInfo, Mark } from "./types";
 import {
   getStartAndEndRangeText,
   getTextNodeRects,
@@ -39,7 +39,11 @@ export default class TextMarker {
     return true;
   }
 
-  createRange(selection: Selection, config: TextMarkConfig): Mark | null {
+  createRange(
+    selection: Selection,
+    config: TextMarkConfig,
+    extraInfo: ExtraInfo
+  ): Mark | null {
     if (!this.isValidSelection(selection)) return null;
 
     const {
@@ -64,6 +68,7 @@ export default class TextMarker {
       id: uuid(8),
       type: MarkTypeEnum.TEXT,
       content: selection.toString(),
+      ...extraInfo,
       data: {
         start: {
           path: sPath,
@@ -166,7 +171,7 @@ export default class TextMarker {
     const range = document.createRange();
 
     startContainer && range.setStart(startContainer, mark.data.start.offset);
-    endContainer && range.setEnd(endContainer,  mark.data.end.offset);
+    endContainer && range.setEnd(endContainer, mark.data.end.offset);
 
     return range;
   }

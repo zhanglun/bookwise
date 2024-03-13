@@ -53,19 +53,24 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   };
 
   function getNotes() {
-    request.get('/notes', {
-      data: {
-        bookId: bookId
-      }
-    }).then((res) => {
-
-    });
+    request
+      .get("/notes", {
+        data: {
+          bookId: bookId,
+        },
+      })
+      .then((res) => {
+        const { data: notes } = res;
+        notes.forEach((note) => {
+          // marker.addMark(note);
+        });
+      });
   }
 
   useEffect(() => {
     getEpubBlobs();
     getBookAdditionalInfo();
-    getNotes()
+    getNotes();
   }, [bookId]);
 
   useEffect(() => {
@@ -75,7 +80,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
       const loopSpine = async (list: SpineItem[]) => {
         for (const item of list) {
-          let { href, url } = item;
+          let { href, url, index } = item;
 
           if (href.indexOf("#") >= 0) {
             href = href.split("#")[0];
@@ -86,8 +91,9 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
               idref: item.idref,
               bookInfo: instance,
               file: files[url],
+              spineIndex: index,
               href,
-              url,
+              absoluteUrl: url,
             });
           }
         }
@@ -107,32 +113,47 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       strokeWidth: 3,
     };
 
-    const { marker, selection } = store.interactiveObject[0];
+    // const { marker, selection } = store.interactiveObject[0];
     let mark = activatedMark;
+    const parent = getSelectionParentElement();
 
-    if (mark) {
-      mark.config.rectFill = color;
-      marker.updateMark(mark);
-    } else {
-      mark = marker.getSelectionRange(selection, config);
-      if (mark) marker.addMark(mark);
-    }
+    if (parent?.dataset?.spineIdref) {
+      const pageId = parent.dataset.spineIdref;
+      const spineIndex = parent.dataset.spineIndex;
+      const spineName = parent.dataset.spineHref;
+      const pageForwardedRef = pageRefs.current[pageId];
+      const { marker, selection } = pageForwardedRef;
 
-    console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
-
-    if (mark) {
-      request
-        .post("/notes", {
-          book_id: parseInt(bookId, 10),
-          type: mark.type,
-          title: mark.title,
-          content: mark.content,
-          position_metics: mark.data,
-          style_config: mark.config,
-        })
-        .then((res) => {
-          console.log("%c Line:123 🌭 res", "color:#42b983", res);
+      if (mark) {
+        mark.config.rectFill = color;
+        marker.updateMark(mark);
+      } else {
+        mark = marker.getSelectionRange(selection, config, {
+          spine_index: spineIndex,
+          spine_name: spineName,
         });
+
+        if (mark) marker.addMark(mark);
+      }
+
+      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+
+      if (mark) {
+        request
+          .post("/notes", {
+            book_id: parseInt(bookId, 10),
+            spine_index: "",
+            spine_name: "",
+            type: mark.type,
+            title: mark.title,
+            content: mark.content,
+            position_metics: mark.data,
+            style_config: mark.config,
+          })
+          .then((res) => {
+            console.log("%c Line:123 🌭 res", "color:#42b983", res);
+          });
+      }
     }
 
     window?.getSelection()?.removeAllRanges();
@@ -142,51 +163,34 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     // TODO:
   }
 
-  useEffect(() => {
-    function getSelectionParentElement() {
-      function loop(el: any) {
-        if (el.id === "book-section") {
-          return el;
-        }
-
-        if (!el.dataset || !el.dataset.spineIdref) {
-          return loop(el.parentNode);
-        }
-
+  function getSelectionParentElement() {
+    function loop(el: any) {
+      if (el.id === "book-section") {
         return el;
       }
 
-      let parentEl = null,
-        sel;
-      if (window.getSelection) {
-        sel = window.getSelection();
-        if (sel && sel.rangeCount) {
-          parentEl = loop(sel.getRangeAt(0).commonAncestorContainer);
-        }
-      } else if ((sel = document.selection) && sel.type != "Control") {
-        parentEl = sel.createRange().parentElement();
+      if (!el.dataset || !el.dataset.spineIdref) {
+        return loop(el.parentNode);
       }
 
-      return parentEl;
+      return el;
     }
 
-    // function watchSelection() {
-    //   const el = getSelectionParentElement();
-    //   console.log("%c Line:131 🧀 el", "color:#2eafb0", el);
-    //   const pageId = el.getAttribute("id");
+    let parentEl = null,
+      sel;
+    if (window.getSelection) {
+      sel = window.getSelection();
+      if (sel && sel.rangeCount) {
+        parentEl = loop(sel.getRangeAt(0).commonAncestorContainer);
+      }
+    } else if ((sel = document.selection) && sel.type != "Control") {
+      parentEl = sel.createRange().parentElement();
+    }
 
-    //   const pageForwardedRef = pageRefs.current[pageId];
+    return parentEl;
+  }
 
-    //   if (pageForwardedRef) {
-    //     store.updateInteractiveObject([
-    //       {
-    //         marker: pageForwardedRef.marker,
-    //         selection: window.getSelection(),
-    //       },
-    //     ]);
-    //   }
-    // }
-
+  useEffect(() => {
     function activeToolbar(event: any) {
       let target = event.target as HTMLElement;
 
@@ -206,6 +210,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
       if (target?.dataset?.spineIdref) {
         const pageId = target.dataset.spineIdref;
+        const spineIndex = target.dataset.spineIndex;
+        const spineName = target.dataset.spineHref;
         const pageForwardedRef = pageRefs.current[pageId];
 
         if (pageForwardedRef) {
@@ -220,7 +226,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           if (selection) {
             tempMark = pageForwardedRef.marker.textMarker.createRange(
               selection,
-              { rectFill: "black", lineStroke: "red", strokeWidth: 3 }
+              { rectFill: "black", lineStroke: "red", strokeWidth: 3 },
+              {
+                spine_index: spineIndex,
+                spine_name: spineName,
+              }
             );
           }
           console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);

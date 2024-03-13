@@ -1,5 +1,8 @@
-export interface MarkConfig {
+export interface MarkConfig {}
 
+export interface ExtraInfo {
+  spine_index: number;
+  spine_name: string;
 }
 
 export interface TextMarkConfig {
@@ -9,36 +12,37 @@ export interface TextMarkConfig {
 }
 
 export enum MarkTypeEnum {
-  TEXT = 'TEXT',
-  RECT = 'RECT'
+  TEXT = "TEXT",
+  RECT = "RECT",
 }
 
 export interface TextMarkNode {
-  path: number[]
-  offset: number
-  text: string
+  path: number[];
+  offset: number;
+  text: string;
 }
 
 export interface TextMark {
-  start: TextMarkNode,
-  end: TextMarkNode,
+  start: TextMarkNode;
+  end: TextMarkNode;
 }
 
-export interface RectMark {
-}
+export interface RectMark {}
 
 export interface Mark {
   id: string;
-  type: MarkTypeEnum,
-  title?: string,
-  content?: string,
-  data: TextMark,
-  config: TextMarkConfig,
+  type: MarkTypeEnum;
+  spine_index: number;
+  spine_name: string;
+  title?: string;
+  content?: string;
+  data: TextMark;
+  config: TextMarkConfig;
 }
 
 export interface RectPosition {
-  x: number
-  y: number
-  width: number
-  height: number
+  x: number;
+  y: number;
+  width: number;
+  height: number;
 }
