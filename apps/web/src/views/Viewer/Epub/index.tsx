@@ -10,7 +10,7 @@ import {
 } from "@/views/Viewer/Epub/Canvas.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
-import { Mark } from "@/helpers/marker/types";
+import { Mark, TextMark } from "@/helpers/marker/types";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -27,6 +27,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
   const [open, setOpen] = useState<boolean>(false);
+  const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
 
   function getEpubBlobs() {
     request
@@ -61,16 +62,24 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       })
       .then((res) => {
         const { data: notes } = res;
-        notes.forEach((note) => {
-          // marker.addMark(note);
+        notes.forEach((note: Mark) => {
+          note.position_metics = JSON.parse(note.position_metics);
+          note.style_config = JSON.parse(note.style_config);
+
+          notesMap[note.spine_index] = notesMap[note.spine_index] || [];
+          notesMap[note.spine_index].push(note);
+        });
+
+        setNotesMap({
+          ...notesMap,
         });
       });
   }
 
   useEffect(() => {
+    getNotes();
     getEpubBlobs();
     getBookAdditionalInfo();
-    getNotes();
   }, [bookId]);
 
   useEffect(() => {
@@ -94,6 +103,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
               spineIndex: index,
               href,
               absoluteUrl: url,
+              notes: notesMap[index],
             });
           }
         }
@@ -211,8 +221,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
       if (target?.dataset?.spineIdref) {
         const pageId = target.dataset.spineIdref;
-        const spineIndex = target.dataset.spineIndex;
-        const spineName = target.dataset.spineHref;
+        const spineIndex = parseInt(target.dataset.spineIndex || "0", 10);
+        const spineName = target.dataset.spineHref || "";
         const pageForwardedRef = pageRefs.current[pageId];
 
         if (pageForwardedRef) {

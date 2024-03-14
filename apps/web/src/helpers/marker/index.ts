@@ -39,9 +39,9 @@ export class Marker {
 
     this.marks.push(mark);
 
-    const { id, config } = mark;
+    const { id, style_config } = mark;
 
-    this.brush.renderRange(rects, id, config);
+    this.brush.renderRange(rects, id, style_config);
 
     return true;
   }

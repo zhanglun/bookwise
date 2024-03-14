@@ -3,6 +3,7 @@ import { EpubObject, accessImage, accessPageContent } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
 import { Marker } from "@/helpers/marker";
 import { JSZipObject } from "jszip";
+import { Mark } from "@/helpers/marker/types";
 
 export interface PageProps {
   idref: string;
@@ -11,6 +12,7 @@ export interface PageProps {
   spineIndex: number;
   href: string;
   absoluteUrl: string;
+  notes: Mark[];
 }
 
 export interface PageCanvasRef {
@@ -24,10 +26,13 @@ export interface PageCanvasRef {
 
 export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
   (props: PageProps, forwardedRef) => {
-    const { idref, bookInfo, file, href, spineIndex, absoluteUrl } = props;
+    const { idref, bookInfo, file, href, spineIndex, absoluteUrl, notes } =
+      props;
+    console.log("%c Line:30 🍏 notes", "color:#3f7cff", notes);
     const DOMNodeRef = useRef<HTMLDivElement | null>(null);
     const selectionRef = useRef<Selection | null>(null);
     const markerRef = useRef<Marker>(Object.create({}));
+
     const convertImages = async (
       files: { [key: string]: JSZipObject },
       currentHref: string,
@@ -81,9 +86,13 @@ export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
       }
 
       init().then(() => {
-        console.log("init page content done!!!")
+        console.log("init page content done!!!");
       });
     }, [file]);
+
+    useEffect(() => {
+      notes && markerRef.current.renderRanges(notes);
+    }, [notes]);
 
     useImperativeHandle(forwardedRef, () => ({
       DOMNode: DOMNodeRef.current,

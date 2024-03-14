@@ -36,8 +36,8 @@ export interface Mark {
   spine_name: string;
   title?: string;
   content?: string;
-  data: TextMark;
-  config: TextMarkConfig;
+  position_metics: TextMark;
+  style_config: TextMarkConfig;
 }
 
 export interface RectPosition {
