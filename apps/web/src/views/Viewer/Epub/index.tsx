@@ -129,7 +129,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         marker.updateMark(mark);
       } else {
         mark = marker.getSelectionRange(selection, config, {
-          spine_index: spineIndex,
+          spine_index: parseInt(spineIndex, 10),
           spine_name: spineName,
         });
 
@@ -142,8 +142,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         request
           .post("/notes", {
             book_id: parseInt(bookId, 10),
-            spine_index: "",
-            spine_name: "",
+            spine_index: mark.spine_index,
+            spine_name: mark.spine_name,
             type: mark.type,
             title: mark.title,
             content: mark.content,
@@ -161,6 +161,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   function handleStrokeChange(stroke: string) {
     // TODO:
+    console.log("%c Line:163 🍌 stroke", "color:#2eafb0", stroke);
   }
 
   function getSelectionParentElement() {
