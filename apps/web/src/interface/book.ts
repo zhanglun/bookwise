@@ -1,3 +1,5 @@
+import { Mark } from "@/helpers/marker/types";
+
 export interface BookResItem {
   id: string;
   title: string;
@@ -30,4 +32,8 @@ export interface PublisherResItem {
 
 export enum Format {
   Epub = "epub",
+}
+
+
+export interface NoteResItem extends Mark {
 }

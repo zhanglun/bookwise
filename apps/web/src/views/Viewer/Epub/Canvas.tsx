@@ -1,4 +1,10 @@
-import { useEffect, useRef, useImperativeHandle, forwardRef } from "react";
+import React, {
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  useLayoutEffect,
+} from "react";
 import { EpubObject, accessImage, accessPageContent } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
 import { Marker } from "@/helpers/marker";
@@ -24,10 +30,11 @@ export interface PageCanvasRef {
   absoluteUrl: string;
 }
 
-export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
-  (props: PageProps, forwardedRef) => {
+export const PageCanvas = React.memo(
+  forwardRef<PageCanvasRef, PageProps>((props: PageProps, forwardedRef) => {
     const { idref, bookInfo, file, href, spineIndex, absoluteUrl, notes } =
       props;
+    console.log("%c Line:35 🥚 href", "color:#7f2b82", href);
     console.log("%c Line:30 🍏 notes", "color:#3f7cff", notes);
     const DOMNodeRef = useRef<HTMLDivElement | null>(null);
     const selectionRef = useRef<Selection | null>(null);
@@ -91,7 +98,10 @@ export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
     }, [file]);
 
     useEffect(() => {
-      notes && markerRef.current.renderRanges(notes);
+      setTimeout(() => {
+        console.log("%c Line:103 🍧 notes", "color:#465975", notes);
+        notes && notes.length && markerRef.current.renderRanges(notes);
+      }, 3000);
     }, [notes]);
 
     useImperativeHandle(forwardedRef, () => ({
@@ -119,5 +129,5 @@ export const PageCanvas = forwardRef<PageCanvasRef, PageProps>(
         </div>
       </div>
     );
-  }
+  })
 );

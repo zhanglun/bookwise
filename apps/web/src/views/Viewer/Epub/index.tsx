@@ -70,11 +70,15 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           notesMap[note.spine_index].push(note);
         });
 
+        console.log("%c Line:71 🍰 notesMap", "color:#b03734", notesMap);
+
         setNotesMap({
           ...notesMap,
         });
       });
   }
+
+  console.log("%c Line:82 🍓 notesMap", "color:#b03734", notesMap);
 
   useEffect(() => {
     getNotes();
@@ -135,7 +139,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       const { marker, selection } = pageForwardedRef;
 
       if (mark) {
-        mark.config.rectFill = color;
+        mark.style_config.rectFill = color;
         marker.updateMark(mark);
       } else {
         mark = marker.getSelectionRange(selection, config, {
@@ -157,8 +161,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             type: mark.type,
             title: mark.title,
             content: mark.content,
-            position_metics: mark.data,
-            style_config: mark.config,
+            position_metics: mark.position_metics,
+            style_config: mark.style_config,
           })
           .then((res) => {
             console.log("%c Line:123 🌭 res", "color:#42b983", res);
@@ -295,7 +299,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         />
       </div>
       <section className="" id="book-section">
-        {pageList.slice(10, 12).map((page) => {
+        {pageList.map((page) => {
           return (
             <PageCanvas
               key={page.idref}

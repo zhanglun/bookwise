@@ -6,9 +6,9 @@ export interface ExtraInfo {
 }
 
 export interface TextMarkConfig {
-  rectFill: string;
-  lineStroke: string;
-  strokeWidth: number;
+  rectFill?: string;
+  lineStroke?: string;
+  strokeWidth?: number;
 }
 
 export enum MarkTypeEnum {
