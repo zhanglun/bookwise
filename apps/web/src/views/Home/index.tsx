@@ -39,18 +39,13 @@ export const Home = () => {
 
   useEffect(() => {}, []);
 
-  function test() {
-    const selection = window.getSelection();
-    console.log(selection);
-  }
-
   return (
-    <div className="shadow-lg rounded-lg overflow-hidden bg-white h-full grid grid-flow-row gap-3 overflow-y-auto px-4 sm:px-4">
-      <div className="px-3 pt-5 pb-2 text-xl font-bold text-stone-900">
+    <div className="rounded-lg overflow-hidden bg-cell text-cell-foreground h-full grid grid-flow-row gap-3 overflow-y-auto px-4 sm:px-4">
+      <div className="px-3 pt-5 pb-2 text-xl font-bold ">
         Recently added
       </div>
       <ol className="px-3 py-2 flex flex-row gap-4">
-        {recentlyAdd.map((book: any) => {
+        {recentlyAdd.map((book: BookResItem) => {
           return (
             <li>
               <Book
@@ -62,7 +57,7 @@ export const Home = () => {
           );
         })}
       </ol>
-      <div className="px-3 pt-5 pb-2 text-xl font-bold text-stone-900">
+      <div className="px-3 pt-5 pb-2 text-xl font-bold">
         Recently reading
       </div>
       <div className="">

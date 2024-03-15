@@ -12,6 +12,7 @@
   "dependencies": {
     "@floating-ui/react": "^0.26.9",
     "@floating-ui/react-dom": "^2.0.2",
+    "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-arrow": "^1.0.3",
     "@radix-ui/react-compose-refs": "^1.0.1",
     "@radix-ui/react-context": "^1.0.1",

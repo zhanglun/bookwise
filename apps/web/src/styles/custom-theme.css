@@ -1,7 +1,18 @@
-:root {
-  --canvasBackground: red;
-  /*--canvasForeground: black;*/
+/* Import only the scales you need */
+@import '@radix-ui/colors/gray.css';
+@import '@radix-ui/colors/blue.css';
+@import '@radix-ui/colors/green.css';
+@import '@radix-ui/colors/red.css';
+@import '@radix-ui/colors/gray-dark.css';
+@import '@radix-ui/colors/blue-dark.css';
+@import '@radix-ui/colors/green-dark.css';
+@import '@radix-ui/colors/red-dark.css';
 
-  /*--panelBackground: #121212;*/
-  /*--panelForeground: #fdfdfd;*/
+:root {
+  --page-background: #fff;
+}
+
+
+.dark {
+  --page-background: #0b0b0b;
 }

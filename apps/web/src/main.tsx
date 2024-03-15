@@ -39,7 +39,7 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Theme>
+  <Theme className="w-full h-full" appearance="light">
     <RouterProvider router={router} />
   </Theme>
 );

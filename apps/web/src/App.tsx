@@ -22,7 +22,7 @@ function App() {
   return (
     <>
       <Toaster/>
-      <div className="text-foreground bg-background grid h-full grid-cols-[auto_1fr] gap-2 p-3">
+      <div className="text-foreground bg-app grid w-full h-full grid-cols-[auto_1fr] gap-2 p-3">
         <div>
           <Sidebar/>
         </div>

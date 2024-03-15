@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { LibraryIcon, Plus } from "lucide-react";
+import { HomeIcon, LibraryIcon, Plus, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { parseEpub } from "@/helpers/epub";
 import { useBearStore } from "@/store";
+import { Switch } from "@radix-ui/themes";
 
 export const Sidebar = () => {
   const store = useBearStore((state) => ({
@@ -91,13 +92,26 @@ export const Sidebar = () => {
     }
   }, [files]);
 
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+
+  const toggleDarkMode = (checked: boolean) => {
+    setDarkMode(checked);
+
+    if (darkMode) {
+      document.body.classList.remove("dark");
+    } else {
+      document.body.classList.add("dark");
+    }
+  };
+
   return (
     <div className="grid h-full w-[320px] gap-3">
-      <div className=" bg-panel rounded-md">
-        <NavLink to={"/"}>Home</NavLink>
-        <NavLink to={"/search"}>Search</NavLink>
+      <div className="bg-cell text-cell-foreground rounded-md">
+        <Switch onCheckedChange={toggleDarkMode}/>
+        <NavLink to={"/"} className="flex items-center gap-2"><HomeIcon size={20}/>Home</NavLink>
+        <NavLink to={"/search"} className=""><SearchIcon size={22}/>Search</NavLink>
       </div>
-      <div className=" bg-panel rounded-md">
+      <div className="bg-cell text-cell-foreground rounded-md">
         <div className="flex items-center justify-between">
           <div>
             <LibraryIcon />
