@@ -43,6 +43,10 @@ export class BooksController {
   // getBookCover(@Query() query: { path: string }): StreamableFile {
   //   return this.booksService.getCoverFigure(query.path);
   // }
+  @Get('/recently-add')
+  queryRecentlyAdd(): Promise<Book[]> {
+    return this.booksService.queryRecentlyAdd();
+  }
 
   @Get('/recently-reading')
   queryRecentlyReading(): Promise<Book[]> {

@@ -17,7 +17,7 @@ import {
   FilteringParams,
   Sorting,
   SortingParams,
-} from 'src/modules/books/books.decorator';
+} from './notes.decorator';
 
 @Controller('notes')
 export class NotesController {

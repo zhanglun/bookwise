@@ -17,8 +17,8 @@ export interface BookResItem {
   publish_at: Date;
   created_at: Date;
   updated_at: Date;
-  author: AuthorResItem;
-  publisher: PublisherResItem;
+  authors: AuthorResItem[];
+  publishers: PublisherResItem[];
 }
 
 export interface AuthorResItem {

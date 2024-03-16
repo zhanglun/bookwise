@@ -53,11 +53,33 @@ export class BooksService {
     private publishersService: PublishersService,
   ) {}
 
+  public async queryRecentlyAdd() {
+    return this.prisma.book.findMany({
+      orderBy: {
+        created_at: 'desc',
+      },
+      skip: 0,
+      take: 20,
+      include: {
+        authors: true,
+        publisher: true,
+        additional_infos: true,
+      },
+    });
+  }
+
   public async queryRecentlyReading() {
     return this.prisma.book.findMany({
       orderBy: {
         additional_infos: {
           read_progress_updated_at: 'desc',
+        },
+      },
+      where: {
+        additional_infos: {
+          read_progress: {
+            gt: 0,
+          },
         },
       },
       include: {
@@ -328,7 +350,7 @@ export class BooksService {
   }
 
   public async getBookFileBlobs(id: number): Promise<fs.ReadStream> {
-    console.log("%c Line:332 🍩 id", "color:#3f7cff", id);
+    console.log('%c Line:332 🍩 id', 'color:#3f7cff', id);
     const bookEntity = await this.findOneWithId(id);
 
     console.log('%c Line:276 🍆 bookEntity', 'color:#f5ce50', bookEntity);

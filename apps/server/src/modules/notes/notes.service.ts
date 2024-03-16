@@ -2,12 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-annotation.dto';
 import { PrismaService } from 'src/prisma.service';
-import {
-  Filtering,
-  Sorting,
-  getOrder,
-  getWhere,
-} from 'src/modules/books/books.decorator';
+import { Filtering, Sorting, getOrder, getWhere } from './notes.decorator';
 
 @Injectable()
 export class NotesService {
@@ -30,11 +25,17 @@ export class NotesService {
     });
   }
 
-  async findAll(sort?: Sorting, filter?: Filtering) {
-    const finder = getWhere(filter);
+  async findAll(sort?: Sorting, filter?: any) {
+    console.log('🚀 ~ NotesService ~ findAll ~ filter:', filter);
     const order = getOrder(sort);
+    const where = filter.map(getWhere).reduce((acu, cur) => {
+      acu = { ...cur };
+      return acu;
+    }, {});
+    console.log('🚀 ~ NotesService ~ findAll ~ where:', where);
     const record = await this.prisma.note.findMany({
       orderBy: order,
+      where: where,
       include: {
         book: {
           select: {

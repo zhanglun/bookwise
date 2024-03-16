@@ -56,8 +56,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   function getNotes() {
     request
       .get("/notes", {
-        data: {
-          bookId: bookId,
+        params: {
+          filter: [`book_id:eq:${bookId}`, `content:like:要么`],
         },
       })
       .then((res) => {
@@ -81,9 +81,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   console.log("%c Line:82 🍓 notesMap", "color:#b03734", notesMap);
 
   useEffect(() => {
-    getNotes();
-    getEpubBlobs();
-    getBookAdditionalInfo();
+    if (bookId) {
+      getNotes();
+      getEpubBlobs();
+      getBookAdditionalInfo();
+    }
   }, [bookId]);
 
   useEffect(() => {
@@ -290,7 +292,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }, []);
 
   return (
-    <div className={"grid grid-cols-[auto_1fr]"}>
+    <div className={"bg-gray-100"}>
       <div className={"fixed top-0 left-0 bottom-0 hidden"}>
         <Toc
           navigation={instance?.navigation}
@@ -298,7 +300,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           onItemClick={() => {}}
         />
       </div>
-      <section className="" id="book-section">
+      <section className="w-1/2 m-auto" id="book-section">
         {pageList.map((page) => {
           return (
             <PageCanvas

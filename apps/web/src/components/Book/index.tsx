@@ -10,6 +10,7 @@ export interface BookProps {
 
 export const Book = (props: BookProps) => {
   const { data, onClick, onHover } = props;
+  const { authors } = data;
 
   return (
     <div
@@ -20,13 +21,18 @@ export const Book = (props: BookProps) => {
         <div className="w-full h-[202px] flex items-center justify-center relative opacity-90 group-hover:opacity-100">
           <Cover book={data} onClick={() => onClick && onClick(data)} />
         </div>
-        <div className="flex-1 p-3 flex flex-col border-t border-border">
+        <div className="flex-1 p-3 flex flex-col gap-1 border-t border-border">
+          <div>
+            <span className="text-xs">{data.format}</span>
+          </div>
           <h1 className="text-sm font-bold line-clamp-2 leading-5 mb-1 flex-1 balance">
             {data.title}
           </h1>
           <div className="leading-5 flex flex-row items-center text-xs leading text-muted-foreground">
             <span className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
-              {data.author?.name}
+              {authors.map((author) => {
+                return <span>{author.name}</span>;
+              })}
             </span>
           </div>
         </div>
