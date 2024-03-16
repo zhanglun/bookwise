@@ -107,15 +107,27 @@ export const Sidebar = () => {
   return (
     <div className="grid h-full w-[320px] gap-3">
       <div className="bg-cell text-cell-foreground rounded-md">
-        <Switch onCheckedChange={toggleDarkMode}/>
-        <NavLink to={"/"} className="flex items-center gap-2"><HomeIcon size={20}/>Home</NavLink>
-        <NavLink to={"/search"} className=""><SearchIcon size={22}/>Search</NavLink>
+        <Switch onCheckedChange={toggleDarkMode} />
+        <NavLink
+          to={"/"}
+          className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12"
+        >
+          <HomeIcon size={22} />
+          <span>Home</span>
+        </NavLink>
+        <NavLink
+          to={"/search"}
+          className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12"
+        >
+          <SearchIcon size={22} />
+          <span>Search</span>
+        </NavLink>
       </div>
       <div className="bg-cell text-cell-foreground rounded-md">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12">
             <LibraryIcon />
-            Library
+            <span>Library</span>
           </div>
           <div>
             <div className="tooltip" data-tip="Add new book">

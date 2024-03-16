@@ -11,7 +11,7 @@ export const Home = () => {
 
   useEffect(() => {
     request
-      .get("/books", {
+      .get("/books/recently-add", {
         params: {
           sort: "created_at:desc",
         },
