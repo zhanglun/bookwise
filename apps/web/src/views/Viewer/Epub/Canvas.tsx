@@ -34,8 +34,6 @@ export const PageCanvas = React.memo(
   forwardRef<PageCanvasRef, PageProps>((props: PageProps, forwardedRef) => {
     const { idref, bookInfo, file, href, spineIndex, absoluteUrl, notes } =
       props;
-    console.log("%c Line:35 🥚 href", "color:#7f2b82", href);
-    console.log("%c Line:30 🍏 notes", "color:#3f7cff", notes);
     const DOMNodeRef = useRef<HTMLDivElement | null>(null);
     const selectionRef = useRef<Selection | null>(null);
     const markerRef = useRef<Marker>(Object.create({}));
@@ -121,10 +119,10 @@ export const PageCanvas = React.memo(
         data-spine-href={href}
         data-spine-absolute-url={absoluteUrl}
         key={idref}
-        className="h-[100vh] py-4 -mb-2 relative"
+        className="relative py-3"
         ref={DOMNodeRef}
       >
-        <div className={"px-10 py-12 w-full h-full shadow-md bg-app"}>
+        <div className={"px-10 py-12 w-full min-h-[100vh] shadow-md bg-app"}>
           <div id={`${idref}-box`}></div>
         </div>
       </div>
