@@ -11,6 +11,7 @@ import {
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 import { Mark, TextMark } from "@/helpers/marker/types";
+import { List, AutoSizer } from "react-virtualized";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -291,6 +292,18 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     };
   }, []);
 
+  function rowRenderer({
+    key, // Unique key within array of rows
+    index, // Index of row within collection
+    isScrolling, // The List is currently being scrolled
+    isVisible, // This row is visible within the List (eg it is not an overscanned row)
+    style, // Style object to be applied to row (to position it)
+  }) {
+    const page = pageList[index];
+
+    return <PageCanvas key={key} ref={page.idref} {...page}></PageCanvas>;
+  }
+
   return (
     <div className={"bg-gray-100"}>
       <div className={"fixed top-0 left-0 bottom-0 hidden"}>
@@ -300,8 +313,19 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           onItemClick={() => {}}
         />
       </div>
-      <section className="w-1/2 m-auto" id="book-section">
-        {pageList.map((page) => {
+      <section className="w-5/6 lg:w-1/2 m-auto h-[100vh]" id="book-section">
+        <AutoSizer>
+          {({ width, height }) => (
+            <List
+              width={width}
+              height={height}
+              rowCount={pageList.length}
+              rowHeight={200}
+              rowRenderer={rowRenderer}
+            />
+          )}
+        </AutoSizer>
+        {/* {pageList.map((page) => {
           return (
             <PageCanvas
               key={page.idref}
@@ -309,7 +333,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
               {...page}
             ></PageCanvas>
           );
-        })}
+        })} */}
       </section>
       <MarkerToolbar
         open={open}

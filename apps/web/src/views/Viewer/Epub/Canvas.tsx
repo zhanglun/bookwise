@@ -119,10 +119,10 @@ export const PageCanvas = React.memo(
         data-spine-href={href}
         data-spine-absolute-url={absoluteUrl}
         key={idref}
-        className="relative py-3"
+        className="relative"
         ref={DOMNodeRef}
       >
-        <div className={"px-10 py-12 w-full min-h-[100vh] shadow-md bg-app"}>
+        <div className={"px-10 py-12 w-full min-h-[100vh] bg-app"}>
           <div id={`${idref}-box`}></div>
         </div>
       </div>
