@@ -1,24 +1,20 @@
-import Book from "epubjs";
+import ePub, { Book, Contents, EpubCFI, Rendition } from "epubjs";
 import { request } from "@/helpers/request.ts";
 import { memo, useEffect, useRef, useState } from "react";
-import { EpubObject, parseEpub, SpineItem } from "@/helpers/epub";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
-import {
-  PageCanvas,
-  PageCanvasRef,
-  PageProps,
-} from "@/views/Viewer/Epub/Canvas.tsx";
+import { PageCanvasRef, PageProps } from "@/views/Viewer/Epub/Canvas.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 import { Mark, TextMark } from "@/helpers/marker/types";
-import { List, AutoSizer } from "react-virtualized";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface EpubViewerProps {
   bookId: string;
 }
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
-  const [instance, setInstance] = useState<EpubObject>({} as EpubObject);
+  const [book, setBook] = useState<Book>();
+  const [rendition, setRendition] = useState<Rendition>();
   const [pageList, setPageList] = useState<PageProps[]>([]);
   const pageRefs = useRef<{ [key: string]: PageCanvasRef }>({});
   const store = useBearStore((state) => ({
@@ -37,14 +33,23 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       })
       .then((res) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-expect-error
-        const instance = new Book(res.data);
-        console.log("instance", instance);
-        console.log(instance.navigation);
-        return parseEpub(res.data);
-      })
-      .then((res) => {
-        setInstance(res);
+        const book = ePub(res.data);
+        setBook(book);
+
+        const rendition = book.renderTo("book-section", {
+          manager: "continuous",
+          flow: "paginated",
+          width: "100%",
+          height: "100%",
+        });
+
+        setRendition(rendition);
+
+        const displayed = rendition.display();
+
+        displayed.then(function (renderer) {
+          console.log("%c Line:58 🌶 renderer", "color:#2eafb0", renderer);
+        });
       });
   }
 
@@ -89,259 +94,77 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }, [bookId]);
 
-  useEffect(() => {
-    const generateFullContent = async () => {
-      const { files } = instance;
-      const pages: any[] = [];
-
-      const loopSpine = async (list: SpineItem[]) => {
-        for (const item of list) {
-          let { href, url, index } = item;
-
-          if (href.indexOf("#") >= 0) {
-            href = href.split("#")[0];
-          }
-
-          if (files[url]) {
-            pages.push({
-              idref: item.idref,
-              bookInfo: instance,
-              file: files[url],
-              spineIndex: index,
-              href,
-              absoluteUrl: url,
-              notes: notesMap[index],
-            });
-          }
-        }
-      };
-
-      await loopSpine(instance.spine);
-
-      setPageList(pages);
-    };
-
-    instance.spine && instance.spine.length > 0 && generateFullContent();
-  }, [instance]);
-
-  function handleSelectColor(color: string) {
-    const config = {
-      rectFill: color,
-      strokeWidth: 3,
-    };
-
-    // const { marker, selection } = store.interactiveObject[0];
-    let mark = activatedMark;
-    const parent = getSelectionParentElement();
-
-    if (parent?.dataset?.spineIdref) {
-      const pageId = parent.dataset.spineIdref;
-      const spineIndex = parent.dataset.spineIndex;
-      const spineName = parent.dataset.spineHref;
-      const pageForwardedRef = pageRefs.current[pageId];
-      const { marker, selection } = pageForwardedRef;
-
-      if (mark) {
-        mark.style_config.rectFill = color;
-        marker.updateMark(mark);
-      } else {
-        mark = marker.getSelectionRange(selection, config, {
-          spine_index: parseInt(spineIndex, 10),
-          spine_name: spineName,
-        });
-
-        if (mark) marker.addMark(mark);
-      }
-
-      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
-
-      if (mark) {
-        request
-          .post("/notes", {
-            book_id: parseInt(bookId, 10),
-            spine_index: mark.spine_index,
-            spine_name: mark.spine_name,
-            type: mark.type,
-            title: mark.title,
-            content: mark.content,
-            position_metics: mark.position_metics,
-            style_config: mark.style_config,
-          })
-          .then((res) => {
-            console.log("%c Line:123 🌭 res", "color:#42b983", res);
-          });
-      }
-    }
-
-    window?.getSelection()?.removeAllRanges();
-  }
-
-  function handleStrokeChange(stroke: string) {
-    // TODO:
-    console.log("%c Line:163 🍌 stroke", "color:#2eafb0", stroke);
-  }
-
-  function getSelectionParentElement() {
-    function loop(el: any) {
-      if (el.id === "book-section") {
-        return el;
-      }
-
-      if (!el.dataset || !el.dataset.spineIdref) {
-        return loop(el.parentNode);
-      }
-
-      return el;
-    }
-
-    let parentEl = null,
-      sel;
-    if (window.getSelection) {
-      sel = window.getSelection();
-      if (sel && sel.rangeCount) {
-        parentEl = loop(sel.getRangeAt(0).commonAncestorContainer);
-      }
-    } else if ((sel = document.selection) && sel.type != "Control") {
-      parentEl = sel.createRange().parentElement();
-    }
-
-    return parentEl;
+  function handleRenditionSelect(cfiRange: EpubCFI, contents: Contents) {
+    console.log("%c Line:94 🍩 cfiRange", "color:#6ec1c2", cfiRange);
+    console.log("%c Line:94 🥤 contents", "color:#fca650", contents);
+    const { content, document, sectionIndex } = contents;
+    console.log("%c Line:97 🍓 document", "color:#4fff4B", document);
+    console.log("%c Line:97 🍪 content", "color:#ea7e5c", content);
+    const currentSection = book?.spine.get(sectionIndex);
+    console.log(
+      "%c Line:103 🍷 currentSection",
+      "color:#2eafb0",
+      currentSection
+    );
   }
 
   useEffect(() => {
-    function activeToolbar(event: any) {
-      let target = event.target as HTMLElement;
-
-      while (!target.dataset || !target.dataset.spineIdref) {
-        if (target.id === "book-section") {
-          break;
-        }
-
-        if (target.dataset && target.dataset.spineIdref) {
-          break;
-        }
-
-        target = target.parentElement || target;
-      }
-
-      console.log("%c Line:184 🍖 target", "color:#42b983", target);
-
-      if (target?.dataset?.spineIdref) {
-        const pageId = target.dataset.spineIdref;
-        const spineIndex = parseInt(target.dataset.spineIndex || "0", 10);
-        const spineName = target.dataset.spineHref || "";
-        const pageForwardedRef = pageRefs.current[pageId];
-
-        if (pageForwardedRef) {
-          store.updateInteractiveObject([
-            {
-              marker: pageForwardedRef.marker,
-              selection: window.getSelection(),
-            },
-          ]);
-          const selection = window.getSelection();
-          let tempMark;
-          if (selection) {
-            tempMark = pageForwardedRef.marker.textMarker.createRange(
-              selection,
-              { rectFill: "black", lineStroke: "red", strokeWidth: 3 },
-              {
-                spine_index: spineIndex,
-                spine_name: spineName,
-              }
-            );
-          }
-          console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);
-
-          const id = pageForwardedRef.marker.getMarkIdByPointer(
-            event.clientX,
-            event.clientY
-          );
-
-          if (id) {
-            const mark = pageForwardedRef.marker.getMark(id);
-            console.log("%c Line:206 🥚 mark", "color:#e41a6a", mark);
-            const virtualRange = pageForwardedRef.marker.getRangeFromMark(mark);
-
-            virtualRange &&
-              setVirtualRef({
-                getBoundingClientRect: () =>
-                  virtualRange.getBoundingClientRect(),
-                getClientRects: () => virtualRange.getClientRects(),
-              });
-
-            setActivatedMark(mark);
-            setOpen(true);
-          } else {
-            setActivatedMark(null);
-            setVirtualRef(null);
-            setOpen(false);
-          }
-        }
-      }
+    function nextPage() {
+      rendition?.next();
     }
 
-    document
-      .getElementById("book-section")
-      ?.addEventListener("mouseup", activeToolbar);
+    function prevPage() {
+      rendition?.prev();
+    }
 
-    return () => {
-      document
-        .getElementById("book-section")
-        ?.removeEventListener("mouseup", activeToolbar);
+    const next = document.getElementById("next");
+    const prev = document.getElementById("prev");
+
+    next?.addEventListener("click", nextPage, false);
+    prev?.addEventListener("click", prevPage, false);
+
+    const keyListener = function (e) {
+      // Left Key
+      if ((e.keyCode || e.which) == 37) {
+        prevPage();
+      }
+
+      // Right Key
+      if ((e.keyCode || e.which) == 39) {
+        nextPage();
+      }
     };
-  }, []);
 
-  function rowRenderer({
-    key, // Unique key within array of rows
-    index, // Index of row within collection
-    isScrolling, // The List is currently being scrolled
-    isVisible, // This row is visible within the List (eg it is not an overscanned row)
-    style, // Style object to be applied to row (to position it)
-  }) {
-    const page = pageList[index];
+    rendition?.on("keyup", keyListener);
+    rendition?.on("selected", handleRenditionSelect);
 
-    return <PageCanvas key={key} ref={page.idref} {...page}></PageCanvas>;
-  }
+    document.addEventListener("keyup", keyListener, false);
+
+    return function () {
+      rendition?.off("keyup", keyListener);
+      rendition?.off("selected", handleRenditionSelect);
+      document.addEventListener("keyup", keyListener, false);
+    };
+  }, [rendition]);
 
   return (
     <div className={"bg-gray-100"}>
-      <div className={"fixed top-0 left-0 bottom-0 hidden"}>
-        <Toc
+      <div className={"fixed top-0 left-0 bottom-0"}>
+        {/* <Toc
           navigation={instance?.navigation}
           metadata={instance?.metadata}
           onItemClick={() => {}}
-        />
+        /> */}
       </div>
-      <section className="w-5/6 lg:w-1/2 m-auto h-[100vh]" id="book-section">
-        <AutoSizer>
-          {({ width, height }) => (
-            <List
-              width={width}
-              height={height}
-              rowCount={pageList.length}
-              rowHeight={200}
-              rowRenderer={rowRenderer}
-            />
-          )}
-        </AutoSizer>
-        {/* {pageList.map((page) => {
-          return (
-            <PageCanvas
-              key={page.idref}
-              ref={(ref) => (pageRefs.current[page.idref] = ref)}
-              {...page}
-            ></PageCanvas>
-          );
-        })} */}
-      </section>
-      <MarkerToolbar
-        open={open}
-        onVirtualRefChange={() => {}}
-        virtualRef={virtualRef}
-        onStrokeChange={handleStrokeChange}
-        onSelectColor={handleSelectColor}
-      />
+      <div className="w-[100vw] px-[60px]">
+        <span id="prev" className="absolute top-1/2 right-[10px[] w-[40px]">
+          <ChevronLeft></ChevronLeft>
+        </span>
+        <section className="w-full h-[100vh]" id="book-section"></section>
+        <span id="next" className="absolute top-1/2 right-[10px] w-[40px]">
+          <ChevronRight></ChevronRight>
+        </span>
+      </div>
     </div>
   );
 });
