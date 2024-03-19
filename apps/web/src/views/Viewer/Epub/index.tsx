@@ -7,6 +7,7 @@ import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 import { Mark, TextMark } from "@/helpers/marker/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Marker } from "@/helpers/marker";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -106,6 +107,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       "color:#2eafb0",
       currentSection
     );
+    const marker = new Marker(content as HTMLElement);
+    console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
   }
 
   useEffect(() => {
