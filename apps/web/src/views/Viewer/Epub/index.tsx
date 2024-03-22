@@ -8,6 +8,7 @@ import { useBearStore } from "@/store";
 import { Mark, TextMark } from "@/helpers/marker/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Marker } from "@/helpers/marker";
+import Section from "epubjs/types/section";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -24,6 +25,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }));
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
+  const markerRef = useRef<{ [key: number]: Marker }>(Object.create({}));
   const [open, setOpen] = useState<boolean>(false);
   const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
 
@@ -95,6 +97,63 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }, [bookId]);
 
+  function handleSelectColor(color: string) {
+    const config = {
+      rectFill: color,
+      strokeWidth: 3,
+    };
+
+    // const { marker, selection } = store.interactiveObject[0];
+    let mark = activatedMark;
+    const parent = getSelectionParentElement();
+
+    if (parent?.dataset?.spineIdref) {
+      const pageId = parent.dataset.spineIdref;
+      const spineIndex = parent.dataset.spineIndex;
+      const spineName = parent.dataset.spineHref;
+      const pageForwardedRef = pageRefs.current[pageId];
+      const { marker, selection } = pageForwardedRef;
+
+      if (mark) {
+        mark.style_config.rectFill = color;
+        marker.updateMark(mark);
+      } else {
+        mark = marker.getSelectionRange(selection, config, {
+          spine_index: parseInt(spineIndex, 10),
+          spine_name: spineName,
+        });
+
+        if (mark) marker.addMark(mark);
+      }
+
+      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+
+      if (mark) {
+        request
+          .post("/notes", {
+            book_id: parseInt(bookId, 10),
+            spine_index: mark.spine_index,
+            spine_name: mark.spine_name,
+            type: mark.type,
+            title: mark.title,
+            content: mark.content,
+            position_metics: mark.position_metics,
+            style_config: mark.style_config,
+          })
+          .then((res) => {
+            console.log("%c Line:123 🌭 res", "color:#42b983", res);
+          });
+      }
+    }
+
+    window?.getSelection()?.removeAllRanges();
+  }
+
+  function handleStrokeChange(stroke: string) {
+    // TODO:
+    console.log("%c Line:163 🍌 stroke", "color:#2eafb0", stroke);
+  }
+
   function handleRenditionSelect(cfiRange: EpubCFI, contents: Contents) {
     console.log("%c Line:94 🍩 cfiRange", "color:#6ec1c2", cfiRange);
     console.log("%c Line:94 🥤 contents", "color:#fca650", contents);
@@ -107,7 +166,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       "color:#2eafb0",
       currentSection
     );
-    const marker = new Marker(content as HTMLElement);
+    // const marker = new Marker(content as HTMLElement);
     console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
   }
 
@@ -138,14 +197,61 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       }
     };
 
+    const initMarkerAndNotes = () => {
+      // markerRef.current = new Marker
+    };
+
     rendition?.on("keyup", keyListener);
     rendition?.on("selected", handleRenditionSelect);
+
+    rendition?.on("rendered", () => {
+      console.log(
+        "%c Line:213 🥔 rendition.getContents()",
+        "color:#3f7cff",
+        rendition.getContents()
+      );
+
+      const contents = rendition.getContents();
+      console.log("%c Line:211 🍯 contents", "color:#e41a6a", contents);
+
+      [].forEach.call(contents, (c) => {
+        const { sectionIndex, content } = c;
+        console.log("%c Line:220 🍉 content", "color:#4fff4B", content);
+
+        if (!markerRef.current[sectionIndex]) {
+          markerRef.current[sectionIndex] = new Marker(content);
+        }
+      })
+
+      // console.log("%c Line:218 🍧 markerRef.current", "color:#465975", markerRef.current);
+      // // TODO: reset marker
+
+      // initMarkerAndNotes();
+    });
+
+    // rendition?.hooks.content.register(function (contents: Contents) {
+    //   const body = contents.content as HTMLBodyElement;
+    //   const el = document.createElement("div");
+    //   el.className = "canvas-container";
+    //   el.style.position = "absolute";
+    //   el.style.top = "0";
+    //   el.style.left = "0";
+    //   el.style.right = "0";
+    //   el.style.bottom = "0";
+    //   el.style.pointerEvents = "none";
+    //   el.style.mixBlendMode = "multiply";
+
+    //   body.style.position = "relative";
+    //   body.appendChild(el);
+
+    // });
 
     document.addEventListener("keyup", keyListener, false);
 
     return function () {
       rendition?.off("keyup", keyListener);
       rendition?.off("selected", handleRenditionSelect);
+
       document.addEventListener("keyup", keyListener, false);
     };
   }, [rendition]);
@@ -168,6 +274,13 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           <ChevronRight></ChevronRight>
         </span>
       </div>
+      <MarkerToolbar
+        open={open}
+        onVirtualRefChange={() => {}}
+        virtualRef={virtualRef}
+        onStrokeChange={handleStrokeChange}
+        onSelectColor={handleSelectColor}
+      />
     </div>
   );
 });
