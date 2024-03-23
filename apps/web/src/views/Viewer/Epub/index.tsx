@@ -24,7 +24,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     updateInteractiveObject: state.updateInteractiveObject,
   }));
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
+  const [interactiveSection, setInteractiveSection] = useState<Section>();
+  const [interactiveWindow, setInteractiveWindow] = useState<Window>();
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
+  const rootBoundary = useRef<Document>(Object.create({}));
   const markerRef = useRef<{ [key: string]: Marker }>(Object.create({}));
   const [open, setOpen] = useState<boolean>(false);
   const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
@@ -105,14 +108,13 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     // const { marker, selection } = store.interactiveObject[0];
     let mark = activatedMark;
-    const parent = getSelectionParentElement();
 
-    if (parent?.dataset?.spineIdref) {
-      const pageId = parent.dataset.spineIdref;
-      const spineIndex = parent.dataset.spineIndex;
-      const spineName = parent.dataset.spineHref;
-      const pageForwardedRef = pageRefs.current[pageId];
-      const { marker, selection } = pageForwardedRef;
+    if (interactiveSection && interactiveWindow) {
+      const { index: spineIndex, href: spineName, idref} = interactiveSection;
+      const marker = markerRef.current[idref]
+      const selection = interactiveWindow.getSelection();
+
+      console.log(selection)
 
       if (mark) {
         mark.style_config.rectFill = color;
@@ -146,7 +148,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       }
     }
 
-    window?.getSelection()?.removeAllRanges();
+    // window?.getSelection()?.removeAllRanges();
   }
 
   function handleStrokeChange(stroke: string) {
@@ -166,6 +168,9 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       "color:#2eafb0",
       currentSection
     );
+
+    setInteractiveSection(currentSection);
+    setInteractiveWindow(contentWindow);
 
     if (currentSection) {
       const marker = markerRef.current[currentSection?.idref];
@@ -195,8 +200,19 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
               spine_name: spineName,
             }
           );
+
+          const virtualRange = marker.getRangeFromMark(tempMark);
+
+          virtualRange &&
+          setVirtualRef({
+            getBoundingClientRect: () =>
+              virtualRange.getBoundingClientRect(),
+            getClientRects: () => virtualRange.getClientRects(),
+          });
+
+          console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);
         }
-        console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);
+
         // const id = marker.getMarkIdByPointer(
         //   event.clientX,
         //   event.clientY
@@ -274,37 +290,54 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         const section = book?.spine.get(sectionIndex);
 
         if (section && section.idref && !markerRef.current[section.idref]) {
-          const canvas = (content as HTMLBodyElement).querySelector(
-            ".canvas-container"
-          );
+          // const canvas = (content as HTMLBodyElement).querySelector(
+          //   ".canvas-container"
+          // );
+          const body = content as HTMLBodyElement;
+          const el = document.createElement("div");
+
+          el.className = "canvas-container";
+          el.style.position = "absolute";
+          el.style.top = "0";
+          el.style.left = "0";
+          el.style.pointerEvents = "none";
+          el.style.mixBlendMode = "multiply";
+
+            el.style.width = content.parentNode.offsetWidth + 'px';
+            el.style.height = content.parentNode.offsetHeight + 'px';
+
+            body.style.position = "relative";
+            body.appendChild(el);
 
           markerRef.current[section.idref] = new Marker(
             content,
-            canvas as HTMLDivElement
+            el as HTMLDivElement
           );
+          rootBoundary.current = section.document;
         }
       });
-
-      // console.log("%c Line:218 🍧 markerRef.current", "color:#465975", markerRef.current);
-      // // TODO: reset marker
 
       // initMarkerAndNotes();
     });
 
     rendition?.hooks.content.register(function (contents: Contents) {
-      const body = contents.content as HTMLBodyElement;
-      const el = document.createElement("div");
-      el.className = "canvas-container";
-      el.style.position = "absolute";
-      el.style.top = "0";
-      el.style.left = "0";
-      el.style.right = "0";
-      el.style.bottom = "0";
-      el.style.pointerEvents = "none";
-      el.style.mixBlendMode = "multiply";
-
-      body.style.position = "relative";
-      body.appendChild(el);
+      // const body = contents.content as HTMLBodyElement;
+      // const el = document.createElement("div");
+      //
+      // el.className = "canvas-container";
+      // el.style.position = "absolute";
+      // el.style.top = "0";
+      // el.style.left = "0";
+      // el.style.pointerEvents = "none";
+      // el.style.mixBlendMode = "multiply";
+      //
+      //   console.log('contents.documentElement', getComputedStyle(contents.window.frameElement).width);
+      //   console.log('contents.documentElement.offsetWidth', contents.documentElement.offsetWidth);
+      //   el.style.width = contents.documentElement.offsetWidth + 'px';
+      //   el.style.height = contents.documentElement.offsetHeight + 'px';
+      //
+      //   body.style.position = "relative";
+      //   body.appendChild(el);
     });
 
     document.addEventListener("keyup", keyListener, false);

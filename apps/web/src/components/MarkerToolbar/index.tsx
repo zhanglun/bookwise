@@ -1,7 +1,7 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import { Theme, IconButton } from "@radix-ui/themes";
+import React, {useEffect, useLayoutEffect, useState} from "react";
+import {Theme, IconButton} from "@radix-ui/themes";
 import * as Toolbar from "@radix-ui/react-toolbar";
-import { useSize } from "@radix-ui/react-use-size";
+import {useSize} from "@radix-ui/react-use-size";
 import {
   UnderlineIcon,
   StrikethroughIcon,
@@ -24,7 +24,7 @@ import {
   arrow as floatingUIarrow,
   inline,
 } from "@floating-ui/react";
-import type { Placement, Middleware } from "@floating-ui/react";
+import type {Placement, Middleware} from "@floating-ui/react";
 
 const colorList = [
   "#ffd500",
@@ -49,13 +49,17 @@ interface MarkerToolbarProps {
   children?: React.ReactNode;
   open?: boolean;
   defaultOpen?: boolean;
+
   onOpenChange?(open: boolean): void;
+
   whileSelect?: boolean;
   disabled?: boolean;
   openDelay?: number;
   closeDelay?: number;
   virtualRef: VirtualReference | null;
+
   onVirtualRefChange(virtualRef: VirtualReference): void;
+
   onSelectColor: (color: string) => void;
   onStrokeChange: (stroke: string) => void;
 }
@@ -76,7 +80,7 @@ const transformOrigin = (options: {
   name: "transformOrigin",
   options,
   fn(data) {
-    const { placement, rects, middlewareData } = data;
+    const {placement, rects, middlewareData} = data;
 
     const cannotCenterArrow = middlewareData.arrow?.centerOffset !== 0;
     const isArrowHidden = cannotCenterArrow;
@@ -84,9 +88,9 @@ const transformOrigin = (options: {
     const arrowHeight = isArrowHidden ? 0 : options.arrowHeight;
 
     const [placedSide, placedAlign] = getSideAndAlignFromPlacement(placement);
-    const noArrowAlign = { start: "0%", center: "50%", end: "100%" }[
+    const noArrowAlign = {start: "0%", center: "50%", end: "100%"}[
       placedAlign
-    ];
+      ];
 
     const arrowXCenter = (middlewareData.arrow?.x ?? 0) + arrowWidth / 2;
     const arrowYCenter = (middlewareData.arrow?.y ?? 0) + arrowHeight / 2;
@@ -108,7 +112,7 @@ const transformOrigin = (options: {
       y = isArrowHidden ? noArrowAlign : `${arrowYCenter}px`;
     }
 
-    return { data: { x, y } };
+    return {data: {x, y}};
   },
 });
 
@@ -154,7 +158,7 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
   const collisionPadding =
     typeof collisionPaddingProp === "number"
       ? collisionPaddingProp
-      : { top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp };
+      : {top: 0, right: 0, bottom: 0, left: 0, ...collisionPaddingProp};
   const boundary = Array.isArray(collisionBoundary)
     ? collisionBoundary
     : [collisionBoundary];
@@ -191,17 +195,17 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
       avoidCollisions ? flip(detectOverflowOptions) : undefined,
       avoidCollisions
         ? shift({
-            mainAxis: true,
-            crossAxis: false,
-            limiter: sticky === "partial" ? limitShift() : undefined,
-            ...detectOverflowOptions,
-          })
+          mainAxis: true,
+          crossAxis: false,
+          limiter: sticky === "partial" ? limitShift() : undefined,
+          ...detectOverflowOptions,
+        })
         : undefined,
       arrow
-        ? floatingUIarrow({ element: arrow, padding: arrowPadding })
+        ? floatingUIarrow({element: arrow, padding: arrowPadding})
         : undefined,
-      transformOrigin({ arrowWidth, arrowHeight }),
-      hideWhenDetached ? hide({ strategy: "referenceHidden" }) : undefined,
+      transformOrigin({arrowWidth, arrowHeight}),
+      hideWhenDetached ? hide({strategy: "referenceHidden"}) : undefined,
     ],
   });
 
@@ -209,58 +213,62 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
   const dismiss = useDismiss(context);
   const role = useRole(context);
 
-  const { getFloatingProps } = useInteractions([dismiss, click, role]);
+  const {getFloatingProps} = useInteractions([dismiss, click, role]);
 
   useEffect(() => {
-    function handleMouseUp(event: MouseEvent) {
-      if (refs.floating.current?.contains(event.target as Element | null)) {
-        return;
-      }
+    // function handleMouseUp(event: MouseEvent) {
+    //   if (refs.floating.current?.contains(event.target as Element | null)) {
+    //     return;
+    //   }
+    //
+    //   console.log("handleMouseUp");
+    //
+    //   setTimeout(() => {
+    //     const selection = window.getSelection();
+    //     const range =
+    //       typeof selection?.rangeCount === "number" && selection.rangeCount > 0
+    //         ? selection.getRangeAt(0)
+    //         : null;
+    //
+    //     if (selection && selection?.isCollapsed && !props.virtualRef) {
+    //       setIsOpen(false);
+    //       return;
+    //     }
+    //
+    //     if (range) {
+    //       refs.setReference({
+    //         getBoundingClientRect: () => range.getBoundingClientRect(),
+    //         getClientRects: () => range.getClientRects(),
+    //       });
+    //       setIsOpen(true);
+    //     } else if (props.virtualRef) {
+    //       refs.setReference(props.virtualRef);
+    //       setIsOpen(true);
+    //     }
+    //   });
+    // }
 
-      console.log("handleMouseUp");
-
-      setTimeout(() => {
-        const selection = window.getSelection();
-        const range =
-          typeof selection?.rangeCount === "number" && selection.rangeCount > 0
-            ? selection.getRangeAt(0)
-            : null;
-
-        if (selection && selection?.isCollapsed && !props.virtualRef) {
-          setIsOpen(false);
-          return;
-        }
-
-        if (range) {
-          refs.setReference({
-            getBoundingClientRect: () => range.getBoundingClientRect(),
-            getClientRects: () => range.getClientRects(),
-          });
-          setIsOpen(true);
-        } else if (props.virtualRef) {
-          refs.setReference(props.virtualRef);
-          setIsOpen(true);
-        }
-      });
+    // function handleMouseDown(event: MouseEvent) {
+    //   if (refs.floating.current?.contains(event.target as Element | null)) {
+    //     return;
+    //   }
+    //
+    //   if (window.getSelection()?.isCollapsed) {
+    //     setIsOpen(false);
+    //   }
+    // }
+    //
+    // window.addEventListener("mouseup", handleMouseUp);
+    // window.addEventListener("mousedown", handleMouseDown);
+    //
+    // return () => {
+    //   window.removeEventListener("mouseup", handleMouseUp);
+    //   window.removeEventListener("mousedown", handleMouseDown);
+    // };
+    if (props.virtualRef) {
+      refs.setReference(props.virtualRef);
+      setIsOpen(true);
     }
-
-    function handleMouseDown(event: MouseEvent) {
-      if (refs.floating.current?.contains(event.target as Element | null)) {
-        return;
-      }
-
-      if (window.getSelection()?.isCollapsed) {
-        setIsOpen(false);
-      }
-    }
-
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("mousedown", handleMouseDown);
-
-    return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("mousedown", handleMouseDown);
-    };
   }, [refs, props.virtualRef]);
 
   function handleStrokeChange(value: string) {
@@ -295,14 +303,14 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
                     value="underline"
                     aria-label="Underline"
                   >
-                    <UnderlineIcon />
+                    <UnderlineIcon/>
                   </Toolbar.ToggleItem>
                   <Toolbar.ToggleItem
                     className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 w-8 h-8 px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet-300 hover:text-violet-900 focus:relative focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
                     value="strikethrough"
                     aria-label="Strike through"
                   >
-                    <StrikethroughIcon />
+                    <StrikethroughIcon/>
                   </Toolbar.ToggleItem>
                 </Toolbar.ToggleGroup>
                 <Toolbar.Button
@@ -310,16 +318,16 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
                   value="strikethrough"
                   aria-label="Strike through"
                 >
-                  <CopyIcon />
+                  <CopyIcon/>
                 </Toolbar.Button>
                 <Toolbar.Button
                   className="flex-shrink-0 flex-grow-0 basis-auto text-mauve11 w-8 h-8 px-[5px] rounded inline-flex text-[13px] leading-none items-center justify-center bg-white ml-0.5 outline-none hover:bg-violet-300 hover:text-violet-900 focus:relative focus:shadow-violet7 first:ml-0 data-[state=on]:bg-violet-500 data-[state=on]:text-violet-900"
                   value="strikethrough"
                   aria-label="Strike through"
                 >
-                  <Share1Icon />
+                  <Share1Icon/>
                 </Toolbar.Button>
-                <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]" />
+                <Toolbar.Separator className="w-[1px] bg-mauve6 mx-[10px]"/>
               </div>
               <div className="flex gap-2">
                 {colorList.map((color) => {
@@ -327,7 +335,7 @@ export const MarkerToolbar = React.memo((props: MarkerToolbarProps) => {
                     <span
                       className="w-5 h-5 rounded-full opacity-90 hover:rounded-sm hover:opacity-100 select-none"
                       key={color}
-                      style={{ backgroundColor: color }}
+                      style={{backgroundColor: color}}
                       onClick={() => {
                         onSelectColor(color);
                         setIsOpen(false);

@@ -13,7 +13,7 @@ export class Marker {
 
   constructor(root: HTMLElement, canvasContainer: HTMLDivElement) {
     this.root = root;
-    this.brush = new Brush(this.root, canvasContainer);
+    this.brush = new Brush(this.root, canvasContainer, { pixelRatio: 4});
     this.textMarker = new TextMarker(this.root);
     this.marks = [];
     this.observeResize();

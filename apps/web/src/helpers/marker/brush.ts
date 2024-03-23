@@ -1,5 +1,5 @@
 import Konva from "konva";
-import { RectPosition, TextMarkConfig } from "./types";
+import {RectPosition, TextMarkConfig} from "./types";
 
 const RECT_PREFIX = "rect-";
 const LINE_PREFIX = "line-";
@@ -22,40 +22,38 @@ export class Brush {
   constructor(root: HTMLElement, canvasContainer: HTMLElement, config?: any) {
     this.root = root;
     this.config = config;
-
     this.container = canvasContainer;
-    const { width, height } = this.getRootPosition();
+
+    const styles = getComputedStyle(this.container);
+    console.log(this.container);
+    console.log(styles)
+    const { width, height }= styles;
+
+    console.log('width', width)
+    console.log('height', height)
+
+    Konva.pixelRatio = 1;
     this.stage = new Konva.Stage({
       container: this.container,
-      width,
-      height,
+      width: parseInt(width, 10),
+      height: parseInt(height, 10),
     });
+
+    console.log(this.stage);
+
     this.layer = new Konva.Layer();
     if (this.config?.pixelRatio)
       this.layer.getCanvas().setPixelRatio(this.config.pixelRatio);
     this.stage.add(this.layer);
   }
 
-  private createContainer() {
-    const el = document.createElement("div");
-    el.className = "canvas-container";
-    el.style.position = "absolute";
-    el.style.top = "0";
-    el.style.left = "0";
-    el.style.right = "0";
-    el.style.bottom = "0";
-    el.style.pointerEvents = "none";
-    el.style.mixBlendMode = "multiply";
-    return el;
-  }
-
   renderRange(domRects: DOMRect[], id: string, config: TextMarkConfig) {
-    const { group, rectGroup, lineGroup, shapeGroup } = this.createGroup(
+    const {group, rectGroup, lineGroup, shapeGroup} = this.createGroup(
       id,
       config
     );
 
-    const { top, left } = this.getRootPosition();
+    const {top, left} = this.getRootPosition();
     const positions: RectPosition[] = [];
     domRects.forEach((i, index) => {
       const x = i.left - left;
@@ -77,59 +75,12 @@ export class Brush {
       rectGroup.add(this.createRect(position, config));
       lineGroup.add(this.createLine(position, config));
     });
-    this.groups.push({ id, group, positions });
+    this.groups.push({id, group, positions});
     this.layer.add(group);
   }
 
-  private createGroup(id: string, config: TextMarkConfig) {
-    const group = new Konva.Group({ id, x: 0, y: 0 });
-    const rectGroup = new Konva.Group({
-      id: RECT_PREFIX + id,
-      x: 0,
-      y: 0,
-      visible: true,
-    });
-    const lineGroup = new Konva.Group({
-      id: LINE_PREFIX + id,
-      x: 0,
-      y: 0,
-      visible: true,
-    });
-    const shapeConstructors = this.config?.shapeConstructors;
-    let shapeGroup: Konva.Group | null = null;
-    if (shapeConstructors && shapeConstructors.length > 0) {
-      shapeGroup = new Konva.Group({
-        id: SHAPE_PREFIX + id,
-        x: 0,
-        y: 0,
-      });
-      group.add(shapeGroup);
-    }
-    group.add(rectGroup);
-    group.add(lineGroup);
-    return { group, rectGroup, lineGroup, shapeGroup };
-  }
-
-  private createRect(position: RectPosition, config: TextMarkConfig) {
-    return new Konva.Rect({
-      ...position,
-      fill: config.rectFill,
-      ...config.konvaConfig,
-    });
-  }
-
-  private createLine(position: RectPosition, config: TextMarkConfig) {
-    const { x, y, width, height } = position;
-    return new Konva.Line({
-      points: [x, y + height, x + width, y + height],
-      stroke: config.lineStroke,
-      strokeWidth: config.strokeWidth,
-      ...config.konvaConfig,
-    });
-  }
-
   getGroupIdByPointer(x: number, y: number) {
-    const { top, left } = this.getRootPosition();
+    const {top, left} = this.getRootPosition();
     x = x - left;
     y = y - top;
 
@@ -153,7 +104,7 @@ export class Brush {
   }
 
   getAllGroupIdByPointer(x: number, y: number) {
-    const { top, left } = this.getRootPosition();
+    const {top, left} = this.getRootPosition();
     x = x - left;
     y = y - top;
     return this.groups
@@ -165,10 +116,6 @@ export class Brush {
         });
       })
       .map((i) => i.group.id());
-  }
-
-  private getRootPosition() {
-    return this.root.getBoundingClientRect();
   }
 
   deleteMark(id: string) {
@@ -194,7 +141,58 @@ export class Brush {
   }
 
   updateStageSize() {
-    const { width, height } = this.getRootPosition();
-    this.stage.setSize({ width, height });
+    const {width, height} = this.getRootPosition();
+    this.stage.setSize({width, height});
+  }
+
+  private createGroup(id: string, config: TextMarkConfig) {
+    const group = new Konva.Group({id, x: 0, y: 0});
+    const rectGroup = new Konva.Group({
+      id: RECT_PREFIX + id,
+      x: 0,
+      y: 0,
+      visible: true,
+    });
+    const lineGroup = new Konva.Group({
+      id: LINE_PREFIX + id,
+      x: 0,
+      y: 0,
+      visible: true,
+    });
+    const shapeConstructors = this.config?.shapeConstructors;
+    let shapeGroup: Konva.Group | null = null;
+    if (shapeConstructors && shapeConstructors.length > 0) {
+      shapeGroup = new Konva.Group({
+        id: SHAPE_PREFIX + id,
+        x: 0,
+        y: 0,
+      });
+      group.add(shapeGroup);
+    }
+    group.add(rectGroup);
+    group.add(lineGroup);
+    return {group, rectGroup, lineGroup, shapeGroup};
+  }
+
+  private createRect(position: RectPosition, config: TextMarkConfig) {
+    return new Konva.Rect({
+      ...position,
+      fill: config.rectFill,
+      ...config.konvaConfig,
+    });
+  }
+
+  private createLine(position: RectPosition, config: TextMarkConfig) {
+    const {x, y, width, height} = position;
+    return new Konva.Line({
+      points: [x, y + height, x + width, y + height],
+      stroke: config.lineStroke,
+      strokeWidth: config.strokeWidth,
+      ...config.konvaConfig,
+    });
+  }
+
+  private getRootPosition() {
+    return this.root.getBoundingClientRect();
   }
 }
