@@ -11,9 +11,9 @@ export class Marker {
 
   public marks: Mark[];
 
-  constructor(root: HTMLElement) {
+  constructor(root: HTMLElement, canvasContainer: HTMLDivElement) {
     this.root = root;
-    this.brush = new Brush(this.root);
+    this.brush = new Brush(this.root, canvasContainer);
     this.textMarker = new TextMarker(this.root);
     this.marks = [];
     this.observeResize();

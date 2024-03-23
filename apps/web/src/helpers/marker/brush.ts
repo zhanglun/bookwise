@@ -19,12 +19,11 @@ export class Brush {
     positions: RectPosition[];
   }> = [];
 
-  constructor(root: HTMLElement, config?: any) {
+  constructor(root: HTMLElement, canvasContainer: HTMLElement, config?: any) {
     this.root = root;
     this.config = config;
 
-    this.container = this.createContainer();
-    root.appendChild(this.container);
+    this.container = canvasContainer;
     const { width, height } = this.getRootPosition();
     this.stage = new Konva.Stage({
       container: this.container,

@@ -25,7 +25,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }));
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
-  const markerRef = useRef<{ [key: number]: Marker }>(Object.create({}));
+  const markerRef = useRef<{ [key: string]: Marker }>(Object.create({}));
   const [open, setOpen] = useState<boolean>(false);
   const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
 
@@ -157,7 +157,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   function handleRenditionSelect(cfiRange: EpubCFI, contents: Contents) {
     console.log("%c Line:94 🍩 cfiRange", "color:#6ec1c2", cfiRange);
     console.log("%c Line:94 🥤 contents", "color:#fca650", contents);
-    const { content, document, sectionIndex } = contents;
+    const { content, document, sectionIndex, window: contentWindow } = contents;
     console.log("%c Line:97 🍓 document", "color:#4fff4B", document);
     console.log("%c Line:97 🍪 content", "color:#ea7e5c", content);
     const currentSection = book?.spine.get(sectionIndex);
@@ -166,8 +166,63 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       "color:#2eafb0",
       currentSection
     );
-    // const marker = new Marker(content as HTMLElement);
-    console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
+
+    if (currentSection) {
+      const marker = markerRef.current[currentSection?.idref];
+      console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
+      const {
+        index: spineIndex,
+        href: spineName,
+      } = currentSection;
+
+      console.log("%c Line:181 🍯 sectionDocument.getSelection()", "color:#7f2b82", contentWindow.getSelection());
+
+      if (marker) {
+        store.updateInteractiveObject([
+          {
+            marker: marker,
+            selection: contentWindow.getSelection(),
+          },
+        ]);
+        const selection = contentWindow.getSelection();
+        let tempMark;
+        if (selection) {
+          tempMark = marker.textMarker.createRange(
+            selection,
+            { rectFill: "black", lineStroke: "red", strokeWidth: 3 },
+            {
+              spine_index: spineIndex,
+              spine_name: spineName,
+            }
+          );
+        }
+        console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);
+        // const id = marker.getMarkIdByPointer(
+        //   event.clientX,
+        //   event.clientY
+        // );
+
+        // if (id) {
+        //   const mark = pageForwardedRef.marker.getMark(id);
+        //   console.log("%c Line:206 🥚 mark", "color:#e41a6a", mark);
+        //   const virtualRange = pageForwardedRef.marker.getRangeFromMark(mark);
+
+        //   virtualRange &&
+        //     setVirtualRef({
+        //       getBoundingClientRect: () =>
+        //         virtualRange.getBoundingClientRect(),
+        //       getClientRects: () => virtualRange.getClientRects(),
+        //     });
+
+        //   setActivatedMark(mark);
+        //   setOpen(true);
+        // } else {
+          // setActivatedMark(null);
+          // setVirtualRef(null);
+          // setOpen(false);
+        // }
+      }
+    }
   }
 
   useEffect(() => {
@@ -212,16 +267,23 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       );
 
       const contents = rendition.getContents();
-      console.log("%c Line:211 🍯 contents", "color:#e41a6a", contents);
 
       [].forEach.call(contents, (c) => {
         const { sectionIndex, content } = c;
         console.log("%c Line:220 🍉 content", "color:#4fff4B", content);
+        const section = book?.spine.get(sectionIndex);
 
-        if (!markerRef.current[sectionIndex]) {
-          markerRef.current[sectionIndex] = new Marker(content);
+        if (section && section.idref && !markerRef.current[section.idref]) {
+          const canvas = (content as HTMLBodyElement).querySelector(
+            ".canvas-container"
+          );
+
+          markerRef.current[section.idref] = new Marker(
+            content,
+            canvas as HTMLDivElement
+          );
         }
-      })
+      });
 
       // console.log("%c Line:218 🍧 markerRef.current", "color:#465975", markerRef.current);
       // // TODO: reset marker
@@ -229,22 +291,21 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       // initMarkerAndNotes();
     });
 
-    // rendition?.hooks.content.register(function (contents: Contents) {
-    //   const body = contents.content as HTMLBodyElement;
-    //   const el = document.createElement("div");
-    //   el.className = "canvas-container";
-    //   el.style.position = "absolute";
-    //   el.style.top = "0";
-    //   el.style.left = "0";
-    //   el.style.right = "0";
-    //   el.style.bottom = "0";
-    //   el.style.pointerEvents = "none";
-    //   el.style.mixBlendMode = "multiply";
+    rendition?.hooks.content.register(function (contents: Contents) {
+      const body = contents.content as HTMLBodyElement;
+      const el = document.createElement("div");
+      el.className = "canvas-container";
+      el.style.position = "absolute";
+      el.style.top = "0";
+      el.style.left = "0";
+      el.style.right = "0";
+      el.style.bottom = "0";
+      el.style.pointerEvents = "none";
+      el.style.mixBlendMode = "multiply";
 
-    //   body.style.position = "relative";
-    //   body.appendChild(el);
-
-    // });
+      body.style.position = "relative";
+      body.appendChild(el);
+    });
 
     document.addEventListener("keyup", keyListener, false);
 
