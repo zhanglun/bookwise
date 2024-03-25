@@ -28,7 +28,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [interactiveWindow, setInteractiveWindow] = useState<Window>();
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
   const rootBoundary = useRef<Document>(Object.create({}));
-  const markerRef = useRef<{ [key: string]: Marker }>(Object.create({}));
+  const markerRef = useRef<Marker>(Object.create({}));
   const [open, setOpen] = useState<boolean>(false);
   const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
 
@@ -110,42 +110,37 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     let mark = activatedMark;
 
     if (interactiveSection && interactiveWindow) {
-      const { index: spineIndex, href: spineName, idref} = interactiveSection;
-      const marker = markerRef.current[idref]
-      const selection = interactiveWindow.getSelection();
-
-      console.log(selection)
-
-      if (mark) {
-        mark.style_config.rectFill = color;
-        marker.updateMark(mark);
-      } else {
-        mark = marker.getSelectionRange(selection, config, {
-          spine_index: parseInt(spineIndex, 10),
-          spine_name: spineName,
-        });
-
-        if (mark) marker.addMark(mark);
-      }
-
-      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
-
-      if (mark) {
-        request
-          .post("/notes", {
-            book_id: parseInt(bookId, 10),
-            spine_index: mark.spine_index,
-            spine_name: mark.spine_name,
-            type: mark.type,
-            title: mark.title,
-            content: mark.content,
-            position_metics: mark.position_metics,
-            style_config: mark.style_config,
-          })
-          .then((res) => {
-            console.log("%c Line:123 🌭 res", "color:#42b983", res);
-          });
-      }
+      // const { index: spineIndex, href: spineName, idref} = interactiveSection;
+      // const marker = markerRef.current[idref]
+      // const selection = interactiveWindow.getSelection();
+      // console.log(selection)
+      // if (mark) {
+      //   mark.style_config.rectFill = color;
+      //   marker.updateMark(mark);
+      // } else {
+      //   mark = marker.getSelectionRange(selection, config, {
+      //     spine_index: parseInt(spineIndex, 10),
+      //     spine_name: spineName,
+      //   });
+      //   if (mark) marker.addMark(mark);
+      // }
+      // console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+      // if (mark) {
+      //   request
+      //     .post("/notes", {
+      //       book_id: parseInt(bookId, 10),
+      //       spine_index: mark.spine_index,
+      //       spine_name: mark.spine_name,
+      //       type: mark.type,
+      //       title: mark.title,
+      //       content: mark.content,
+      //       position_metics: mark.position_metics,
+      //       style_config: mark.style_config,
+      //     })
+      //     .then((res) => {
+      //       console.log("%c Line:123 🌭 res", "color:#42b983", res);
+      //     });
+      // }
     }
 
     // window?.getSelection()?.removeAllRanges();
@@ -173,14 +168,15 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     setInteractiveWindow(contentWindow);
 
     if (currentSection) {
-      const marker = markerRef.current[currentSection?.idref];
+      const marker = markerRef.current;
       console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
-      const {
-        index: spineIndex,
-        href: spineName,
-      } = currentSection;
+      const { index: spineIndex, href: spineName } = currentSection;
 
-      console.log("%c Line:181 🍯 sectionDocument.getSelection()", "color:#7f2b82", contentWindow.getSelection());
+      console.log(
+        "%c Line:181 🍯 sectionDocument.getSelection()",
+        "color:#7f2b82",
+        contentWindow.getSelection()
+      );
 
       if (marker) {
         store.updateInteractiveObject([
@@ -204,11 +200,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           const virtualRange = marker.getRangeFromMark(tempMark);
 
           virtualRange &&
-          setVirtualRef({
-            getBoundingClientRect: () =>
-              virtualRange.getBoundingClientRect(),
-            getClientRects: () => virtualRange.getClientRects(),
-          });
+            setVirtualRef({
+              getBoundingClientRect: () => virtualRange.getBoundingClientRect(),
+              getClientRects: () => virtualRange.getClientRects(),
+            });
 
           console.log("%c Line:193 🍧 tempMark", "color:#7f2b82", tempMark);
         }
@@ -233,9 +228,9 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         //   setActivatedMark(mark);
         //   setOpen(true);
         // } else {
-          // setActivatedMark(null);
-          // setVirtualRef(null);
-          // setOpen(false);
+        // setActivatedMark(null);
+        // setVirtualRef(null);
+        // setOpen(false);
         // }
       }
     }
@@ -303,11 +298,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           el.style.pointerEvents = "none";
           el.style.mixBlendMode = "multiply";
 
-            el.style.width = content.parentNode.offsetWidth + 'px';
-            el.style.height = content.parentNode.offsetHeight + 'px';
+          el.style.width = content.parentNode.offsetWidth + "px";
+          el.style.height = content.parentNode.offsetHeight + "px";
 
-            body.style.position = "relative";
-            body.appendChild(el);
+          body.style.position = "relative";
+          body.appendChild(el);
 
           markerRef.current[section.idref] = new Marker(
             content,
@@ -350,6 +345,21 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     };
   }, [rendition]);
 
+  useEffect(() => {
+    const box = document.getElementById("canvasRoot") as HTMLElement;
+    const el = document.createElement("div");
+
+    el.className = "canvas-container";
+    el.style.position = "absolute";
+    el.style.top = "0";
+    el.style.left = "0";
+    el.style.pointerEvents = "none";
+    el.style.mixBlendMode = "multiply";
+
+    box.appendChild(el);
+    markerRef.current = new Marker(box, el);
+  }, []);
+
   return (
     <div className={"bg-gray-100"}>
       <div className={"fixed top-0 left-0 bottom-0"}>
@@ -359,7 +369,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           onItemClick={() => {}}
         /> */}
       </div>
-      <div className="w-[100vw] px-[60px]">
+      <div className="w-[100vw] px-[60px] relative" id="canvasRoot">
         <span id="prev" className="absolute top-1/2 right-[10px[] w-[40px]">
           <ChevronLeft></ChevronLeft>
         </span>
