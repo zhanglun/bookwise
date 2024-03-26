@@ -110,21 +110,23 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     let mark = activatedMark;
 
     if (interactiveSection && interactiveWindow) {
-      // const { index: spineIndex, href: spineName, idref} = interactiveSection;
-      // const marker = markerRef.current[idref]
-      // const selection = interactiveWindow.getSelection();
+      const { index: spineIndex, href: spineName } = interactiveSection;
+      const marker = markerRef.current;
+      const selection = interactiveWindow.getSelection();
       // console.log(selection)
-      // if (mark) {
-      //   mark.style_config.rectFill = color;
-      //   marker.updateMark(mark);
-      // } else {
-      //   mark = marker.getSelectionRange(selection, config, {
-      //     spine_index: parseInt(spineIndex, 10),
-      //     spine_name: spineName,
-      //   });
-      //   if (mark) marker.addMark(mark);
-      // }
-      // console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+      if (mark) {
+        mark.style_config.rectFill = color;
+        marker.updateMark(mark);
+      } else {
+        mark = marker.getSelectionRange(selection, config, {
+          spine_index: spineIndex,
+          spine_name: spineName,
+        });
+        if (mark) marker.addMark(mark);
+      }
+
+      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+
       // if (mark) {
       //   request
       //     .post("/notes", {
@@ -151,14 +153,15 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     console.log("%c Line:163 🍌 stroke", "color:#2eafb0", stroke);
   }
 
-  function getAbsoluteRectPosition(element: HTMLElement) {
+  function getAbsoluteRectPosition(range: Range) {
+    const ancestor = range.commonAncestorContainer;
     const iframes = document.getElementsByTagName("iframe");
     let iframe = null;
 
     for (let i = 0; i < iframes.length; i++) {
       const iframeDocument = iframes[i].contentWindow.document;
 
-      if (iframeDocument.contains(element)) {
+      if (iframeDocument.contains(ancestor)) {
         iframe = iframes[i];
       }
     }
@@ -171,10 +174,18 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       bottom: 0,
       left: 0,
     };
+
     if (iframe) {
-      const { x, y, top, right, bottom, left } =
-        element.getBoundingClientRect();
+      const { x, y, top, right, bottom, left } = range.getBoundingClientRect();
+      console.log(
+        "🚀 ~ getAbsoluteRectPosition ~ range.getBoundingClientRect():",
+        range.getBoundingClientRect()
+      );
       const framePos = iframe.getBoundingClientRect();
+      console.log(
+        "🚀 ~ getAbsoluteRectPosition ~ iframe.getBoundingClientRect():",
+        iframe.getBoundingClientRect()
+      );
 
       rect.x = x + framePos.x;
       rect.y = y + framePos.y;
@@ -183,6 +194,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       rect.left = left + framePos.left;
       rect.bottom = bottom + framePos.bottom;
     }
+
+    return rect;
   }
 
   function handleRenditionSelect(cfiRange: EpubCFI, contents: Contents) {
@@ -203,20 +216,9 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     if (currentSection) {
       const marker = markerRef.current;
-      console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
       const { index: spineIndex, href: spineName } = currentSection;
-      console.log(
-        "%c Line:174 🥕 currentSection",
-        "color:#7f2b82",
-        currentSection
-      );
-      marker.changeRoot(content as HTMLElement);
 
-      console.log(
-        "%c Line:181 🍯 sectionDocument.getSelection()",
-        "color:#7f2b82",
-        contentWindow.getSelection()
-      );
+      marker.changeRoot(content as HTMLElement);
 
       if (marker) {
         const selection = contentWindow.getSelection();
@@ -243,16 +245,21 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             virtualRange?.getBoundingClientRect()
           );
 
-          // getAbsoluteRectPosition(virtualRange?.commonAncestorContainer)
           console.log(
-            "%c Line:237 🍞 getAbsoluteRectPosition(virtualRange?.commonAncestorContainer)",
-            "color:#6ec1c2",
-            getAbsoluteRectPosition(virtualRange?.commonAncestorContainer)
+            "🚀 ~ handleRenditionSelect ~ virtualRange.getClientRects():",
+            virtualRange.getClientRects()
+          );
+
+          const rect = getAbsoluteRectPosition(virtualRange) as DOMRect;
+
+          console.log(
+            "🚀 ~ handleRenditionSelect ~ virtualRange.rect():",
+            rect
           );
 
           virtualRange &&
             setVirtualRef({
-              getBoundingClientRect: () => virtualRange.getBoundingClientRect(),
+              getBoundingClientRect: () => rect,
               getClientRects: () => virtualRange.getClientRects(),
             });
 
