@@ -11,12 +11,18 @@ export class Marker {
 
   public marks: Mark[];
 
-  constructor(root: HTMLElement, canvasContainer: HTMLDivElement) {
+  constructor(root: HTMLElement, canvasContainer: HTMLElement) {
     this.root = root;
     this.brush = new Brush(this.root, canvasContainer, { pixelRatio: 4});
     this.textMarker = new TextMarker(this.root);
     this.marks = [];
     this.observeResize();
+  }
+
+  changeRoot(root: HTMLElement) {
+    this.root = root;
+    this.brush.root = root;
+    this.textMarker.root = root;
   }
 
   getSelectionRange(selection: Selection | null, config: TextMarkConfig, extraInfo: ExtraInfo) {

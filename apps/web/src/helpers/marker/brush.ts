@@ -6,7 +6,7 @@ const LINE_PREFIX = "line-";
 const SHAPE_PREFIX = "shape-";
 
 export class Brush {
-  private root: HTMLElement;
+  public root: HTMLElement;
   private container: HTMLDivElement;
   private config: any;
 

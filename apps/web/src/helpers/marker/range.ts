@@ -9,7 +9,7 @@ import {
 import { MarkTypeEnum, TextMarkConfig } from "./types";
 
 export default class TextMarker {
-  private root: HTMLElement;
+  public root: HTMLElement;
 
   constructor(root: HTMLElement) {
     this.root = root;

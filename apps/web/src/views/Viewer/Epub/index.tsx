@@ -151,6 +151,40 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     console.log("%c Line:163 🍌 stroke", "color:#2eafb0", stroke);
   }
 
+  function getAbsoluteRectPosition(element: HTMLElement) {
+    const iframes = document.getElementsByTagName("iframe");
+    let iframe = null;
+
+    for (let i = 0; i < iframes.length; i++) {
+      const iframeDocument = iframes[i].contentWindow.document;
+
+      if (iframeDocument.contains(element)) {
+        iframe = iframes[i];
+      }
+    }
+
+    const rect = {
+      x: 0,
+      y: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0,
+    };
+    if (iframe) {
+      const { x, y, top, right, bottom, left } =
+        element.getBoundingClientRect();
+      const framePos = iframe.getBoundingClientRect();
+
+      rect.x = x + framePos.x;
+      rect.y = y + framePos.y;
+      rect.top = top + framePos.top;
+      rect.right = right + framePos.right;
+      rect.left = left + framePos.left;
+      rect.bottom = bottom + framePos.bottom;
+    }
+  }
+
   function handleRenditionSelect(cfiRange: EpubCFI, contents: Contents) {
     console.log("%c Line:94 🍩 cfiRange", "color:#6ec1c2", cfiRange);
     console.log("%c Line:94 🥤 contents", "color:#fca650", contents);
@@ -171,6 +205,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       const marker = markerRef.current;
       console.log("%c Line:111 🍋 marker", "color:#f5ce50", marker);
       const { index: spineIndex, href: spineName } = currentSection;
+      console.log(
+        "%c Line:174 🥕 currentSection",
+        "color:#7f2b82",
+        currentSection
+      );
+      marker.changeRoot(content as HTMLElement);
 
       console.log(
         "%c Line:181 🍯 sectionDocument.getSelection()",
@@ -179,12 +219,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       );
 
       if (marker) {
-        store.updateInteractiveObject([
-          {
-            marker: marker,
-            selection: contentWindow.getSelection(),
-          },
-        ]);
         const selection = contentWindow.getSelection();
         let tempMark;
         if (selection) {
@@ -198,6 +232,23 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           );
 
           const virtualRange = marker.getRangeFromMark(tempMark);
+          console.log(
+            "%c Line:197 🍌 virtualRange",
+            "color:#6ec1c2",
+            virtualRange
+          );
+          console.log(
+            "%c Line:199 🍇 virtualRange?.getBoundingClientRect()",
+            "color:#465975",
+            virtualRange?.getBoundingClientRect()
+          );
+
+          // getAbsoluteRectPosition(virtualRange?.commonAncestorContainer)
+          console.log(
+            "%c Line:237 🍞 getAbsoluteRectPosition(virtualRange?.commonAncestorContainer)",
+            "color:#6ec1c2",
+            getAbsoluteRectPosition(virtualRange?.commonAncestorContainer)
+          );
 
           virtualRange &&
             setVirtualRef({
@@ -283,57 +334,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         const { sectionIndex, content } = c;
         console.log("%c Line:220 🍉 content", "color:#4fff4B", content);
         const section = book?.spine.get(sectionIndex);
-
-        if (section && section.idref && !markerRef.current[section.idref]) {
-          // const canvas = (content as HTMLBodyElement).querySelector(
-          //   ".canvas-container"
-          // );
-          const body = content as HTMLBodyElement;
-          const el = document.createElement("div");
-
-          el.className = "canvas-container";
-          el.style.position = "absolute";
-          el.style.top = "0";
-          el.style.left = "0";
-          el.style.pointerEvents = "none";
-          el.style.mixBlendMode = "multiply";
-
-          el.style.width = content.parentNode.offsetWidth + "px";
-          el.style.height = content.parentNode.offsetHeight + "px";
-
-          body.style.position = "relative";
-          body.appendChild(el);
-
-          markerRef.current[section.idref] = new Marker(
-            content,
-            el as HTMLDivElement
-          );
-          rootBoundary.current = section.document;
-        }
       });
 
       // initMarkerAndNotes();
     });
 
-    rendition?.hooks.content.register(function (contents: Contents) {
-      // const body = contents.content as HTMLBodyElement;
-      // const el = document.createElement("div");
-      //
-      // el.className = "canvas-container";
-      // el.style.position = "absolute";
-      // el.style.top = "0";
-      // el.style.left = "0";
-      // el.style.pointerEvents = "none";
-      // el.style.mixBlendMode = "multiply";
-      //
-      //   console.log('contents.documentElement', getComputedStyle(contents.window.frameElement).width);
-      //   console.log('contents.documentElement.offsetWidth', contents.documentElement.offsetWidth);
-      //   el.style.width = contents.documentElement.offsetWidth + 'px';
-      //   el.style.height = contents.documentElement.offsetHeight + 'px';
-      //
-      //   body.style.position = "relative";
-      //   body.appendChild(el);
-    });
+    rendition?.hooks.content.register(function (contents: Contents) {});
 
     document.addEventListener("keyup", keyListener, false);
 
@@ -346,18 +352,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }, [rendition]);
 
   useEffect(() => {
-    const box = document.getElementById("canvasRoot") as HTMLElement;
-    const el = document.createElement("div");
+    const root = document.getElementById("canvasRoot") as HTMLElement;
+    const el = document.getElementById("canvas") as HTMLElement;
 
-    el.className = "canvas-container";
-    el.style.position = "absolute";
-    el.style.top = "0";
-    el.style.left = "0";
-    el.style.pointerEvents = "none";
-    el.style.mixBlendMode = "multiply";
-
-    box.appendChild(el);
-    markerRef.current = new Marker(box, el);
+    markerRef.current = new Marker(root, el);
   }, []);
 
   return (
@@ -377,6 +375,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         <span id="next" className="absolute top-1/2 right-[10px] w-[40px]">
           <ChevronRight></ChevronRight>
         </span>
+        <div
+          id="canvas"
+          className="absolute top-0 left-0 pointer-events-none mix-blend-multiply"
+        ></div>
       </div>
       <MarkerToolbar
         open={open}
