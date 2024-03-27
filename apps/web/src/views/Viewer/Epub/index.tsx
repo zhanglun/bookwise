@@ -43,10 +43,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         setBook(book);
 
         const rendition = book.renderTo("book-section", {
-          manager: "continuous",
-          flow: "paginated",
+          flow: "scrolled-doc",
           width: "100%",
-          height: "100%",
         });
 
         setRendition(rendition);
@@ -294,6 +292,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }
 
+  const [prevLabel, setPrevLabel] = useState("");
+  const [nextLabel, setNextLabel] = useState("");
   useEffect(() => {
     function nextPage() {
       rendition?.next();
@@ -325,28 +325,39 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       // markerRef.current = new Marker
     };
 
+    const injectKnovaInstance = () => {};
+
     rendition?.on("keyup", keyListener);
     rendition?.on("selected", handleRenditionSelect);
 
-    rendition?.on("rendered", () => {
-      console.log(
-        "%c Line:213 🥔 rendition.getContents()",
-        "color:#3f7cff",
-        rendition.getContents()
-      );
+    rendition?.on("rendered", (section: Section) => {
+      const nextSection = section.next();
+      const prevSection = section.prev();
 
-      const contents = rendition.getContents();
+      if (nextSection && nextSection.href) {
+        const nextNav = book?.navigation.get(nextSection.href);
+        setNextLabel(`${nextNav?.label || "Next"} »`);
+      } else {
+        setNextLabel("");
+      }
 
-      [].forEach.call(contents, (c) => {
-        const { sectionIndex, content } = c;
-        console.log("%c Line:220 🍉 content", "color:#4fff4B", content);
-        const section = book?.spine.get(sectionIndex);
-      });
+      if (prevSection && prevSection.href) {
+        const prevNav = book?.navigation.get(prevSection.href);
+        setPrevLabel(`« ${prevNav?.label || "Previous"}`);
+      } else {
+        setPrevLabel("");
+      }
 
-      // initMarkerAndNotes();
+      // Add CFI fragment to the history
+      //history.pushState({}, '', section.href);
+      window.location.hash = "#/" + section.href;
     });
 
-    rendition?.hooks.content.register(function (contents: Contents) {});
+    rendition?.hooks.render.register(function (contents: Contents) {
+      console.log("%c Line:355 🥓 contents", "color:#f5ce50", contents);
+      const html = contents.document;
+      console.log("%c Line:357 🍯 html", "color:#7f2b82", html);
+    });
 
     document.addEventListener("keyup", keyListener, false);
 
@@ -375,17 +386,21 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         /> */}
       </div>
       <div className="w-[100vw] px-[60px] relative" id="canvasRoot">
-        <span id="prev" className="absolute top-1/2 right-[10px[] w-[40px]">
-          <ChevronLeft></ChevronLeft>
-        </span>
-        <section className="w-full h-[100vh]" id="book-section"></section>
-        <span id="next" className="absolute top-1/2 right-[10px] w-[40px]">
-          <ChevronRight></ChevronRight>
-        </span>
-        <div
-          id="canvas"
-          className="absolute top-0 left-0 pointer-events-none mix-blend-multiply"
-        ></div>
+        <div className="max-w-[1028px] py-12 relative">
+          <section className="w-full h-full" id="book-section"></section>
+          <div
+            id="canvas"
+            className="absolute top-0 left-0 pointer-events-none mix-blend-multiply"
+          ></div>
+        </div>
+        <div className="flex items-center justify-between">
+          <span id="prev" className="">
+            {prevLabel}
+          </span>
+          <span id="next" className="">
+            {nextLabel}
+          </span>
+        </div>
       </div>
       <MarkerToolbar
         open={open}
