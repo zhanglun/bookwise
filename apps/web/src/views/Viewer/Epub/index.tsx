@@ -175,22 +175,30 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     if (iframe) {
       const { x, y, top, right, bottom, left } = range.getBoundingClientRect();
-      console.log(
-        "🚀 ~ getAbsoluteRectPosition ~ range.getBoundingClientRect():",
-        range.getBoundingClientRect()
-      );
-      const framePos = iframe.getBoundingClientRect();
-      console.log(
-        "🚀 ~ getAbsoluteRectPosition ~ iframe.getBoundingClientRect():",
-        iframe.getBoundingClientRect()
-      );
+      // console.log(
+      //   "🚀 ~ getAbsoluteRectPosition ~ range.getBoundingClientRect():",
+      //   range.getBoundingClientRect()
+      // );
+      // const framePos = iframe.getBoundingClientRect();
+      // console.log(
+      //   "🚀 ~ getAbsoluteRectPosition ~ iframe.getBoundingClientRect():",
+      //   iframe.getBoundingClientRect()
+      // );
 
-      rect.x = x + framePos.x;
-      rect.y = y + framePos.y;
-      rect.top = top + framePos.top;
-      rect.right = right + framePos.right;
-      rect.left = left + framePos.left;
-      rect.bottom = bottom + framePos.bottom;
+      // rect.x = x + framePos.x;
+      // rect.y = y + framePos.y;
+      // rect.top = top + framePos.top;
+      // rect.right = right + framePos.right;
+      // rect.left = left + framePos.left;
+      // rect.bottom = bottom + framePos.bottom;
+      return {
+        x,
+        y,
+        top,
+        right,
+        bottom,
+        left,
+      };
     }
 
     return rect;
@@ -361,6 +369,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     document.addEventListener("keyup", keyListener, false);
 
+    const hash = window.location.hash.slice(2);
+
+    rendition?.display(hash || undefined);
+
     return function () {
       rendition?.off("keyup", keyListener);
       rendition?.off("selected", handleRenditionSelect);
@@ -386,11 +398,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         /> */}
       </div>
       <div className="w-[100vw] px-[60px] relative" id="canvasRoot">
-        <div className="max-w-[1028px] py-12 relative">
-          <section className="w-full h-full" id="book-section"></section>
+        <div className="max-w-[1028px] relative">
+          <section className="w-full h-full py-10" id="book-section"></section>
           <div
             id="canvas"
-            className="absolute top-0 left-0 pointer-events-none mix-blend-multiply"
+            className="absolute top-10 left-0 right-0 bottom-10 pointer-events-none mix-blend-multiply"
           ></div>
         </div>
         <div className="flex items-center justify-between">

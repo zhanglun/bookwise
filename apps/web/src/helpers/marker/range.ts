@@ -90,9 +90,6 @@ export default class TextMarker {
   }
 
   private isValidTextNode(node: Node): node is Text {
-    console.log(this.root)
-    console.log(node)
-    console.log(node.parentNode);
     return this.root.contains(node) && node.nodeType === 3;
   }
 
