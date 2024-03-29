@@ -10,9 +10,11 @@ import { MarkTypeEnum, TextMarkConfig } from "./types";
 
 export default class TextMarker {
   public root: HTMLElement;
+  public window: Window;
 
-  constructor(root: HTMLElement) {
+  constructor(root: HTMLElement, win: Window) {
     this.root = root;
+    this.window = win;
   }
 
   getSelectionPosition(selection: Selection) {
@@ -28,8 +30,8 @@ export default class TextMarker {
     if (!this.isValidTextNode(start) || !this.isValidTextNode(end)) return null;
 
     return {
-      start: getCharRect(start, startOffset),
-      end: getCharRect(end, endOffset),
+      start: getCharRect(start, startOffset, this.window),
+      end: getCharRect(end, endOffset, this.window),
     };
   }
 
@@ -131,12 +133,12 @@ export default class TextMarker {
       return [];
 
     if (startNode === endNode) {
-      rects.push(...getTextNodeRects(startNode, start.offset, end.offset));
+      rects.push(...getTextNodeRects(startNode, start.offset, end.offset, this.window));
     } else {
       const textNodes = getTextNodesByDfs(startNode, endNode);
-      rects.push(...getTextNodeRects(startNode, start.offset));
+      rects.push(...getTextNodeRects(startNode, start.offset, undefined, this.window));
       textNodes.forEach((i) => {
-        const nodeRects = getTextNodeRects(i);
+        const nodeRects = getTextNodeRects(i, undefined, undefined, this.window);
         if (
           nodeRects.length === 1 &&
           (nodeRects[0].width === 0 || nodeRects[0].height === 0)
@@ -146,7 +148,7 @@ export default class TextMarker {
           rects.push(...nodeRects);
         }
       });
-      rects.push(...getTextNodeRects(endNode, 0, end.offset));
+      rects.push(...getTextNodeRects(endNode, 0, end.offset, this.window));
     }
 
     return rects;
@@ -168,7 +170,7 @@ export default class TextMarker {
     const startContainer = this.getNodeByPath(mark.position_metics.start.path);
     const endContainer = this.getNodeByPath(mark.position_metics.end.path);
 
-    const range = document.createRange();
+    const range = (this.window || window).document.createRange();
 
     startContainer && range.setStart(startContainer, mark.position_metics.start.offset);
     endContainer && range.setEnd(endContainer, mark.position_metics.end.offset);

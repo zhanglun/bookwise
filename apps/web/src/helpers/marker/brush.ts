@@ -7,6 +7,7 @@ const SHAPE_PREFIX = "shape-";
 
 export class Brush {
   public root: HTMLElement;
+  public window: Window;
   private container: HTMLDivElement;
   private config: any;
 
@@ -19,18 +20,14 @@ export class Brush {
     positions: RectPosition[];
   }> = [];
 
-  constructor(root: HTMLElement, canvasContainer: HTMLElement, config?: any) {
+  constructor(root: HTMLElement, canvasContainer: HTMLDivElement, win: Window, config?: any) {
     this.root = root;
+    this.window = win;
     this.config = config;
     this.container = canvasContainer;
 
     const styles = getComputedStyle(this.container);
-    console.log(this.container);
-    console.log(styles)
     const { width, height }= styles;
-
-    console.log('width', width)
-    console.log('height', height)
 
     Konva.pixelRatio = 1;
     this.stage = new Konva.Stage({
@@ -39,7 +36,6 @@ export class Brush {
       height: parseInt(height, 10),
     });
 
-    console.log(this.stage);
 
     this.layer = new Konva.Layer();
     if (this.config?.pixelRatio)
@@ -193,6 +189,7 @@ export class Brush {
   }
 
   private getRootPosition() {
+    console.log("%c Line:195 🌰 this.root", "color:#f5ce50", this.root);
     return this.root.getBoundingClientRect();
   }
 }

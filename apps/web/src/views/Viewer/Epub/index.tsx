@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import ePub, { Book, Contents, EpubCFI, Rendition } from "epubjs";
 import { request } from "@/helpers/request.ts";
 import { memo, useEffect, useRef, useState } from "react";
@@ -9,6 +10,7 @@ import { Mark, TextMark } from "@/helpers/marker/types";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Marker } from "@/helpers/marker";
 import Section from "epubjs/types/section";
+import { JSZipObject } from "jszip";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -17,8 +19,6 @@ export interface EpubViewerProps {
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [book, setBook] = useState<Book>();
   const [rendition, setRendition] = useState<Rendition>();
-  const [pageList, setPageList] = useState<PageProps[]>([]);
-  const pageRefs = useRef<{ [key: string]: PageCanvasRef }>({});
   const store = useBearStore((state) => ({
     interactiveObject: state.interactiveObject,
     updateInteractiveObject: state.updateInteractiveObject,
@@ -27,10 +27,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [interactiveSection, setInteractiveSection] = useState<Section>();
   const [interactiveWindow, setInteractiveWindow] = useState<Window>();
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
-  const rootBoundary = useRef<Document>(Object.create({}));
   const markerRef = useRef<Marker>(Object.create({}));
   const [open, setOpen] = useState<boolean>(false);
   const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
+  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
+  const [currentSection, setCurrentSection] = useState<Section>();
+  const [content, setContent] = useState("");
 
   function getEpubBlobs() {
     request
@@ -38,22 +40,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         responseType: "blob",
       })
       .then((res) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         const book = ePub(res.data);
+        // const book = ePub('https://s3.amazonaws.com/epubjs/books/moby-dick/OPS/package.opf');
+
         setBook(book);
-
-        const rendition = book.renderTo("book-section", {
-          flow: "scrolled-doc",
-          width: "100%",
-        });
-
-        setRendition(rendition);
-
-        const displayed = rendition.display();
-
-        displayed.then(function (renderer) {
-          console.log("%c Line:58 🌶 renderer", "color:#2eafb0", renderer);
-        });
       });
   }
 
@@ -104,14 +94,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       strokeWidth: 3,
     };
 
-    // const { marker, selection } = store.interactiveObject[0];
     let mark = activatedMark;
 
     if (interactiveSection && interactiveWindow) {
       const { index: spineIndex, href: spineName } = interactiveSection;
       const marker = markerRef.current;
       const selection = interactiveWindow.getSelection();
-      // console.log(selection)
       if (mark) {
         mark.style_config.rectFill = color;
         marker.updateMark(mark);
@@ -205,9 +193,13 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }
 
   function handleRenditionSelect(cfiRange: EpubCFI, contents: Contents) {
-    console.log("%c Line:94 🍩 cfiRange", "color:#6ec1c2", cfiRange);
-    console.log("%c Line:94 🥤 contents", "color:#fca650", contents);
-    const { content, document, sectionIndex, window: contentWindow } = contents;
+    const {
+      content,
+      document,
+      documentElement,
+      sectionIndex,
+      window: contentWindow,
+    } = contents;
     console.log("%c Line:97 🍓 document", "color:#4fff4B", document);
     console.log("%c Line:97 🍪 content", "color:#ea7e5c", content);
     const currentSection = book?.spine.get(sectionIndex);
@@ -224,7 +216,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       const marker = markerRef.current;
       const { index: spineIndex, href: spineName } = currentSection;
 
-      marker.changeRoot(content as HTMLElement);
+      marker.changeRoot(documentElement as HTMLElement, contentWindow);
 
       if (marker) {
         const selection = contentWindow.getSelection();
@@ -240,16 +232,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           );
 
           const virtualRange = marker.getRangeFromMark(tempMark);
-          console.log(
-            "%c Line:197 🍌 virtualRange",
-            "color:#6ec1c2",
-            virtualRange
-          );
-          console.log(
-            "%c Line:199 🍇 virtualRange?.getBoundingClientRect()",
-            "color:#465975",
-            virtualRange?.getBoundingClientRect()
-          );
 
           console.log(
             "🚀 ~ handleRenditionSelect ~ virtualRange.getClientRects():",
@@ -300,15 +282,33 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }
 
+  function display(item) {
+    const section = book?.spine.get(item);
+
+    if (section) {
+      setCurrentSection(section);
+      setCurrentSectionIndex(section.index);
+      section.load().then((res) => {
+        console.log(res);
+      })
+      console.log("%c Line:294 🍺 section.hooks", "color:#465975", section);
+    }
+
+    return section;
+  }
+
   const [prevLabel, setPrevLabel] = useState("");
   const [nextLabel, setNextLabel] = useState("");
+
   useEffect(() => {
     function nextPage() {
-      rendition?.next();
+      const displayed = display(currentSectionIndex + 1);
+      if (displayed) setCurrentSectionIndex(currentSectionIndex + 1);
     }
 
     function prevPage() {
-      rendition?.prev();
+      const displayed = display(currentSectionIndex - 1);
+      if (displayed) setCurrentSectionIndex(currentSectionIndex - 1);
     }
 
     const next = document.getElementById("next");
@@ -335,8 +335,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     const injectKnovaInstance = () => {};
 
-    rendition?.on("keyup", keyListener);
-    rendition?.on("selected", handleRenditionSelect);
+    // rendition?.on("selected", handleRenditionSelect);
 
     rendition?.on("rendered", (section: Section) => {
       const nextSection = section.next();
@@ -361,32 +360,32 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       window.location.hash = "#/" + section.href;
     });
 
-    rendition?.hooks.render.register(function (contents: Contents) {
-      console.log("%c Line:355 🥓 contents", "color:#f5ce50", contents);
-      const html = contents.document;
-      console.log("%c Line:357 🍯 html", "color:#7f2b82", html);
-    });
-
     document.addEventListener("keyup", keyListener, false);
 
-    const hash = window.location.hash.slice(2);
-
-    rendition?.display(hash || undefined);
+    // const hash = window.location.hash.slice(2);
 
     return function () {
-      rendition?.off("keyup", keyListener);
-      rendition?.off("selected", handleRenditionSelect);
-
       document.addEventListener("keyup", keyListener, false);
     };
-  }, [rendition]);
+  }, []);
+
+  // useEffect(() => {
+  //   const root = document.getElementById("canvasRoot") as HTMLElement;
+  //   const el = document.getElementById("canvas") as HTMLElement;
+
+  //   markerRef.current = new Marker(root, el);
+  // }, []);
 
   useEffect(() => {
-    const root = document.getElementById("canvasRoot") as HTMLElement;
-    const el = document.getElementById("canvas") as HTMLElement;
+    if (book) {
+      book.opened.then(function () {
+        display(currentSectionIndex);
+        setCurrentSection(book.spine.get(currentSectionIndex));
+      });
 
-    markerRef.current = new Marker(root, el);
-  }, []);
+      console.log(book)
+    }
+  }, [book]);
 
   return (
     <div className={"bg-gray-100"}>
@@ -399,7 +398,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       </div>
       <div className="w-[100vw] px-[60px] relative" id="canvasRoot">
         <div className="max-w-[1028px] relative">
-          <section className="w-full h-full py-10" id="book-section"></section>
+          <section className="w-full h-full py-10" id="book-section" dangerouslySetInnerHTML={{__html: content}}>
+          </section>
           <div
             id="canvas"
             className="absolute top-10 left-0 right-0 bottom-10 pointer-events-none mix-blend-multiply"

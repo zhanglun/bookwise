@@ -5,24 +5,30 @@ import { ExtraInfo, Mark, RectPosition, TextMarkConfig } from "./types";
 
 export class Marker {
   private root: HTMLElement;
+  public window: Window;
 
   public brush: Brush;
   public textMarker: TextMarker;
 
   public marks: Mark[];
 
-  constructor(root: HTMLElement, canvasContainer: HTMLElement) {
+  constructor(root: HTMLElement, canvasContainer: HTMLDivElement, win: Window) {
     this.root = root;
-    this.brush = new Brush(this.root, canvasContainer, { pixelRatio: 4});
-    this.textMarker = new TextMarker(this.root);
+    this.window = win || window;
+    this.brush = new Brush(this.root, canvasContainer, win, { pixelRatio: 4});
+    this.textMarker = new TextMarker(this.root, win);
     this.marks = [];
     this.observeResize();
   }
 
-  changeRoot(root: HTMLElement) {
+  changeRoot(root: HTMLElement, window: Window) {
     this.root = root;
     this.brush.root = root;
     this.textMarker.root = root;
+
+    this.window = window;
+    this.brush.window = window;
+    this.textMarker.window = window;
   }
 
   getSelectionRange(selection: Selection | null, config: TextMarkConfig, extraInfo: ExtraInfo) {
@@ -40,6 +46,7 @@ export class Marker {
 
   addMark(mark: Mark): boolean {
     const rects = this.textMarker.createRects(mark);
+    console.log("%c Line:43 🥐 rects", "color:#465975", rects);
 
     if (rects.length === 0) return false;
 
