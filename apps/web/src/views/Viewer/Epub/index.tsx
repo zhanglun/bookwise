@@ -20,7 +20,6 @@ export interface EpubViewerProps {
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [book, setBook] = useState<Book>();
-  const [rendition, setRendition] = useState<Rendition>();
   const store = useBearStore((state) => ({
     interactiveObject: state.interactiveObject,
     updateInteractiveObject: state.updateInteractiveObject,
@@ -104,19 +103,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       setCurrentSection(section);
       setCurrentSectionIndex(section.index);
 
-      const body = accessPageContent(files[section.href]).then((body) => {
+      accessPageContent(files[section.href]).then((body) => {
         if (body && body.innerHTML) {
-          const images = body.querySelectorAll("img, image");
-
-          // await convertImages(files, href, images);
-
-          // const $box = document.querySelector(`#${idref}-box`);
-          // const childNodes = Array.from(dom.body.childNodes);
-
-          // childNodes.forEach((node) => {
-          //   $box?.appendChild(node);
-          // });
-          const { urls, assets, replacementUrls } = book.resources;
+          // @ts-ignore
+          const { urls, replacementUrls } = book?.resources;
 
           console.log(urls);
 
@@ -169,31 +159,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     const injectKnovaInstance = () => {};
 
-    // rendition?.on("selected", handleRenditionSelect);
-
-    rendition?.on("rendered", (section: Section) => {
-      const nextSection = section.next();
-      const prevSection = section.prev();
-
-      if (nextSection && nextSection.href) {
-        const nextNav = book?.navigation.get(nextSection.href);
-        setNextLabel(`${nextNav?.label || "Next"} »`);
-      } else {
-        setNextLabel("");
-      }
-
-      if (prevSection && prevSection.href) {
-        const prevNav = book?.navigation.get(prevSection.href);
-        setPrevLabel(`« ${prevNav?.label || "Previous"}`);
-      } else {
-        setPrevLabel("");
-      }
-
-      // Add CFI fragment to the history
-      //history.pushState({}, '', section.href);
-      window.location.hash = "#/" + section.href;
-    });
-
     document.addEventListener("keyup", keyListener, false);
 
     // const hash = window.location.hash.slice(2);
@@ -209,6 +174,31 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   //   markerRef.current = new Marker(root, el);
   // }, []);
+
+  useEffect(() => {
+    // const nextSection = currentSection.next();
+    // console.log('currentSection', currentSection)
+    // console.log(nextSection)
+    // const prevSection = currentSection.prev();
+    //
+    // if (nextSection && nextSection.href) {
+    //   const nextNav = book?.navigation.get(nextSection.href);
+    //   setNextLabel(`${nextNav?.label || "Next"} »`);
+    // } else {
+    //   setNextLabel("");
+    // }
+    //
+    // if (prevSection && prevSection.href) {
+    //   const prevNav = book?.navigation.get(prevSection.href);
+    //   setPrevLabel(`« ${prevNav?.label || "Previous"}`);
+    // } else {
+    //   setPrevLabel("");
+    // }
+    //
+    // // Add CFI fragment to the history
+    // //history.pushState({}, '', section.href);
+    // window.location.hash = "#/" + currentSection.href;
+  }, []);
 
   useEffect(() => {
     if (book) {
