@@ -511,11 +511,23 @@ export const accessImage = async (file: JSZip.JSZipObject, type): Promise<Blob> 
   return new Blob([ unit8 ], { type });
 };
 
-export const accessPageContent = async (file: JSZip.JSZipObject) => {
+export const accessPageContent = async (file: JSZip.JSZipObject): Promise<HTMLElement|null> => {
   const xml = await accessFileContent(file, "text/html");
   const parser = new DOMParser();
   const content = parser.parseFromString(xml, "application/xhtml+xml");
   const body = content.querySelector("body");
 
   return Promise.resolve(body);
+}
+
+export function substitute(content: string, urls: string[], replacements: string[]) {
+  urls.forEach(function(url, i){
+    if (url && replacements[i]) {
+      // Account for special characters in the file name.
+      // See https://stackoverflow.com/a/6318729.
+      url = url.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      content = content.replace(new RegExp(url, "g"), replacements[i]);
+    }
+  });
+  return content;
 }
