@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import ePub, { Book, Contents, EpubCFI, Rendition } from "epubjs";
 import { request } from "@/helpers/request.ts";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
 import { PageCanvasRef, PageProps } from "@/views/Viewer/Epub/Canvas.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
@@ -96,44 +96,40 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     return URLCache[key]
   }
 
-  function display(item) {
+  const display = useCallback((item) => {
     const section = book?.spine.get(item);
 
     if (section) {
       setCurrentSection(section);
-      setCurrentSectionIndex(section.index);
 
-      accessPageContent(files[section.href]).then((body) => {
-        if (body && body.innerHTML) {
+      section.load(book.load.bind(book)).then((content) => {
+        if (content && content.innerHTML) {
           // @ts-ignore
           const { urls, replacementUrls } = book?.resources;
-
-          console.log(urls);
-
-          const str = substitute(body.innerHTML, urls, replacementUrls);
+          const str = substitute(content.innerHTML, urls, replacementUrls);
 
           setContent(str);
         }
-
       });
     }
 
     return section;
-  }
+  }, [book]);
 
   const [prevLabel, setPrevLabel] = useState("");
   const [nextLabel, setNextLabel] = useState("");
 
-  useEffect(() => {
-    function nextPage() {
-      const displayed = display(currentSectionIndex + 1);
-      if (displayed) setCurrentSectionIndex(currentSectionIndex + 1);
-    }
+  function nextPage() {
+    const displayed = display(currentSectionIndex + 1);
+    if (displayed) setCurrentSectionIndex(currentSectionIndex + 1);
+  }
 
-    function prevPage() {
-      const displayed = display(currentSectionIndex - 1);
-      if (displayed) setCurrentSectionIndex(currentSectionIndex - 1);
-    }
+  function prevPage() {
+    const displayed = display(currentSectionIndex - 1);
+    if (displayed) setCurrentSectionIndex(currentSectionIndex - 1);
+  }
+
+  useEffect(() => {
 
     const next = document.getElementById("next");
     const prev = document.getElementById("prev");
@@ -166,7 +162,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     return function () {
       document.addEventListener("keyup", keyListener, false);
     };
-  }, []);
+  }, [book]);
 
   // useEffect(() => {
   //   const root = document.getElementById("canvasRoot") as HTMLElement;
@@ -176,29 +172,36 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   // }, []);
 
   useEffect(() => {
-    // const nextSection = currentSection.next();
-    // console.log('currentSection', currentSection)
-    // console.log(nextSection)
-    // const prevSection = currentSection.prev();
-    //
-    // if (nextSection && nextSection.href) {
-    //   const nextNav = book?.navigation.get(nextSection.href);
-    //   setNextLabel(`${nextNav?.label || "Next"} »`);
-    // } else {
-    //   setNextLabel("");
-    // }
-    //
-    // if (prevSection && prevSection.href) {
-    //   const prevNav = book?.navigation.get(prevSection.href);
-    //   setPrevLabel(`« ${prevNav?.label || "Previous"}`);
-    // } else {
-    //   setPrevLabel("");
-    // }
-    //
-    // // Add CFI fragment to the history
-    // //history.pushState({}, '', section.href);
-    // window.location.hash = "#/" + currentSection.href;
-  }, []);
+    console.log('currentSection', currentSection);
+    if (currentSection) {
+      const prevSection = currentSection.prev();
+      const nextSection = currentSection.next();
+      
+      console.log(nextSection)
+
+
+      if (nextSection && nextSection.href) {
+        const nextNav = book?.navigation.get(nextSection.href);
+        console.log(book?.navigation)
+        console.log(nextSection.href)
+        console.log(nextNav)
+        setNextLabel(`${nextNav?.label || "Next"} »`);
+      } else {
+        setNextLabel("");
+      }
+
+      if (prevSection && prevSection.href) {
+        const prevNav = book?.navigation.get(prevSection.href);
+        setPrevLabel(`« ${prevNav?.label || "Previous"}`);
+      } else {
+        setPrevLabel("");
+      }
+
+      // Add CFI fragment to the history
+      //history.pushState({}, '', section.href);
+      window.location.hash = "#/" + currentSection.href;
+    }
+  }, [currentSectionIndex, currentSection]);
 
   useEffect(() => {
     if (book) {
