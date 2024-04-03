@@ -11,251 +11,250 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Marker } from "@/helpers/marker";
 import Section from "epubjs/types/section";
 import { JSZipObject } from "jszip";
-import {accessPageContent, substitute} from "@/helpers/epub";
+import { accessPageContent, substitute } from "@/helpers/epub";
 import Url from "epubjs/types/utils/url";
 
 export interface EpubViewerProps {
-  bookId: string;
+	bookId: string;
 }
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
-  const [book, setBook] = useState<Book>();
-  const store = useBearStore((state) => ({
-    interactiveObject: state.interactiveObject,
-    updateInteractiveObject: state.updateInteractiveObject,
-  }));
-  const [URLCache, setURLCache] = useState<{[key: string]: string}>({});
-  const [files, setFiles] = useState<{[key: string]: JSZipObject}>({});
-  const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
-  const markerRef = useRef<Marker>(Object.create({}));
-  const [open, setOpen] = useState<boolean>(false);
-  const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
-  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
-  const [currentSection, setCurrentSection] = useState<Section>();
-  const [content, setContent] = useState<string>("");
+	const [book, setBook] = useState<Book>();
+	const store = useBearStore((state) => ({
+		interactiveObject: state.interactiveObject,
+		updateInteractiveObject: state.updateInteractiveObject,
+	}));
+	const [URLCache, setURLCache] = useState<{ [key: string]: string }>({});
+	const [files, setFiles] = useState<{ [key: string]: JSZipObject }>({});
+	const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
+	const markerRef = useRef<Marker>(Object.create({}));
+	const [open, setOpen] = useState<boolean>(false);
+	const [notesMap, setNotesMap] = useState<{ [key: number]: Mark[] }>({});
+	const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
+	const [currentSection, setCurrentSection] = useState<Section>();
+	const [content, setContent] = useState<string>("");
 
-  function getEpubBlobs() {
-    request
-      .get(`books/${bookId}/blobs`, {
-        responseType: "blob",
-      })
-      .then((res) => {
-        const book = ePub(res.data);
+	function getEpubBlobs() {
+		request
+			.get(`books/${bookId}/blobs`, {
+				responseType: "blob",
+			})
+			.then((res) => {
+				const bookRes = ePub(res.data);
 
-        setBook(book);
-        
-        if (book.archived) {
-          setFiles(book.archive.zip.files);
-          setURLCache(book.archive.urlCache);
-        }
-      });
-  }
+				console.log("bookRes", bookRes);
 
-  function getBookAdditionalInfo() {
-    request.get(`books/${bookId}`).then((res) => {
-      console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
-    });
-  }
+				setBook(bookRes);
+			});
+	}
 
-  function getNotes() {
-    request
-      .get("/notes", {
-        params: {
-          filter: [`book_id:eq:${bookId}`, `content:like:要么`],
-        },
-      })
-      .then((res) => {
-        const { data: notes } = res;
+	function getBookAdditionalInfo() {
+		request.get(`books/${bookId}`).then((res) => {
+			console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
+		});
+	}
 
-        notes.forEach((note: Mark) => {
-          note.position_metics = JSON.parse(note.position_metics);
-          note.style_config = JSON.parse(note.style_config);
+	function getNotes() {
+		request
+			.get("/notes", {
+				params: {
+					filter: [`book_id:eq:${bookId}`, `content:like:要么`],
+				},
+			})
+			.then((res) => {
+				const { data: notes } = res;
 
-          notesMap[note.spine_index] = notesMap[note.spine_index] || [];
-          notesMap[note.spine_index].push(note);
-        });
+				notes.forEach((note: Mark) => {
+					note.position_metics = JSON.parse(note.position_metics);
+					note.style_config = JSON.parse(note.style_config);
 
-        console.log("%c Line:71 🍰 notesMap", "color:#b03734", notesMap);
+					notesMap[note.spine_index] = notesMap[note.spine_index] || [];
+					notesMap[note.spine_index].push(note);
+				});
 
-        setNotesMap({
-          ...notesMap,
-        });
-      });
-  }
+				console.log("%c Line:71 🍰 notesMap", "color:#b03734", notesMap);
 
-  useEffect(() => {
-    if (bookId) {
-      getNotes();
-      getEpubBlobs();
-      getBookAdditionalInfo();
-    }
-  }, [bookId]);
+				setNotesMap({
+					...notesMap,
+				});
+			});
+	}
 
+	const display = (item) => {
+		const section = book?.spine.get(item);
 
-  function replaceURL (key: string) {
-    return URLCache[key]
-  }
+		console.log("section in display", section);
 
-  const display = useCallback((item) => {
-    const section = book?.spine.get(item);
+		if (section) {
+			setCurrentSection(section);
 
-    if (section) {
-      setCurrentSection(section);
+			section.load(book.load.bind(book)).then((content) => {
+				if (content && content.innerHTML) {
+					// @ts-ignore
+					const { urls, replacementUrls } = book?.resources;
+					const str = substitute(content.innerHTML, urls, replacementUrls);
 
-      section.load(book.load.bind(book)).then((content) => {
-        if (content && content.innerHTML) {
-          // @ts-ignore
-          const { urls, replacementUrls } = book?.resources;
-          const str = substitute(content.innerHTML, urls, replacementUrls);
+					setContent(str);
+					setCurrentSectionIndex(item);
+				}
+			});
+		}
 
-          setContent(str);
-        }
-      });
-    }
+		return section;
+	};
 
-    return section;
-  }, [book]);
+	const [prevLabel, setPrevLabel] = useState("");
+	const [nextLabel, setNextLabel] = useState("");
 
-  const [prevLabel, setPrevLabel] = useState("");
-  const [nextLabel, setNextLabel] = useState("");
+	const nextPage = () => {
+		const displayed = display(currentSectionIndex + 1);
+	};
 
-  function nextPage() {
-    const displayed = display(currentSectionIndex + 1);
-    if (displayed) setCurrentSectionIndex(currentSectionIndex + 1);
-  }
+	const prevPage = () => {
+		const displayed = display(currentSectionIndex - 1);
+	};
 
-  function prevPage() {
-    const displayed = display(currentSectionIndex - 1);
-    if (displayed) setCurrentSectionIndex(currentSectionIndex - 1);
-  }
+	useEffect(() => {
+		const keyListener = function (e: any) {
+			// Left Key
+			if ((e.keyCode || e.which) === 37) {
+				prevPage();
+			}
 
-  useEffect(() => {
+			// Right Key
+			if ((e.keyCode || e.which) === 39) {
+				nextPage();
+			}
+		};
 
-    const next = document.getElementById("next");
-    const prev = document.getElementById("prev");
+		document.addEventListener("keyup", keyListener, false);
 
-    next?.addEventListener("click", nextPage, false);
-    prev?.addEventListener("click", prevPage, false);
+		// const hash = window.location.hash.slice(2);
 
-    const keyListener = function (e) {
-      // Left Key
-      if ((e.keyCode || e.which) == 37) {
-        prevPage();
-      }
+		return function () {
+			document.addEventListener("keyup", keyListener, false);
+		};
+	}, []);
 
-      // Right Key
-      if ((e.keyCode || e.which) == 39) {
-        nextPage();
-      }
-    };
+	// useEffect(() => {
+	//   const root = document.getElementById("canvasRoot") as HTMLElement;
+	//   const el = document.getElementById("canvas") as HTMLElement;
 
-    const initMarkerAndNotes = () => {
-      // markerRef.current = new Marker
-    };
+	//   markerRef.current = new Marker(root, el);
+	// }, []);
 
-    const injectKnovaInstance = () => {};
+	useEffect(() => {
+		if (bookId) {
+			getNotes();
+			getEpubBlobs();
+			getBookAdditionalInfo();
+		}
+	}, [bookId]);
 
-    document.addEventListener("keyup", keyListener, false);
+	useEffect(() => {
+		if (book) {
+			book.opened.then(function () {
+				display(currentSectionIndex);
+				setCurrentSection(book.spine.get(currentSectionIndex));
+			});
 
-    // const hash = window.location.hash.slice(2);
+			if (book.archived) {
+				setFiles(book.archive.zip.files);
+				setURLCache(book.archive.urlCache);
+			}
+		}
+	}, [book]);
 
-    return function () {
-      document.addEventListener("keyup", keyListener, false);
-    };
-  }, [book]);
+	function getNavItem(toc, href) {
+		for (let i = 0; i < toc.length; i++) {
+			const item = toc[i];
 
-  // useEffect(() => {
-  //   const root = document.getElementById("canvasRoot") as HTMLElement;
-  //   const el = document.getElementById("canvas") as HTMLElement;
+			if (item.href === href) {
+				return item;
+			}
 
-  //   markerRef.current = new Marker(root, el);
-  // }, []);
+			if (item.subitems && item.subitems.length > 0) {
+				return getNavItem(item.subitems, href);
+			}
+		}
+	}
 
-  useEffect(() => {
-    console.log('currentSection', currentSection);
-    if (currentSection) {
-      const prevSection = currentSection.prev();
-      const nextSection = currentSection.next();
-      
-      console.log(nextSection)
+	useEffect(() => {
+		console.log("currentSection ===>", currentSection);
 
+		if (currentSection) {
+			const prevSection = currentSection.prev();
+			const nextSection = currentSection.next();
 
-      if (nextSection && nextSection.href) {
-        const nextNav = book?.navigation.get(nextSection.href);
-        console.log(book?.navigation)
-        console.log(nextSection.href)
-        console.log(nextNav)
-        setNextLabel(`${nextNav?.label || "Next"} »`);
-      } else {
-        setNextLabel("");
-      }
+			console.log("nextSection ==>", nextSection);
 
-      if (prevSection && prevSection.href) {
-        const prevNav = book?.navigation.get(prevSection.href);
-        setPrevLabel(`« ${prevNav?.label || "Previous"}`);
-      } else {
-        setPrevLabel("");
-      }
+			if (nextSection && nextSection.href) {
+				const next = getNavItem(book?.navigation.toc, nextSection.href);
 
-      // Add CFI fragment to the history
-      //history.pushState({}, '', section.href);
-      window.location.hash = "#/" + currentSection.href;
-    }
-  }, [currentSectionIndex, currentSection]);
+				if (next?.label) {
+					setNextLabel(`${next.label} »`);
+				}
+			} else {
+				setNextLabel("");
+			}
 
-  useEffect(() => {
-    if (book) {
-      book.opened.then(function () {
-        display(currentSectionIndex);
-        setCurrentSection(book.spine.get(currentSectionIndex));
-      });
+			if (prevSection && prevSection.href) {
+				const prev = getNavItem(book?.navigation.toc, prevSection.href);
 
-      console.log(book)
-    }
-  }, [book]);
+				if (prev?.label) {
+					setPrevLabel(`« ${prev?.label}`);
+				}
+			} else {
+				setPrevLabel("");
+			}
 
-  function handleSelectColor() {
+			// Add CFI fragment to the history
+			//history.pushState({}, '', section.href);
+			window.location.hash = "#/" + currentSection.href;
+		}
+	}, [currentSection]);
 
-  }
+	function handleSelectColor() {}
 
-  function handleStrokeChange() {
-    
-  }
+	function handleStrokeChange() {}
 
-  return (
-    <div className={"bg-gray-100"}>
-      <div className={"fixed top-0 left-0 bottom-0"}>
-        {/* <Toc
+	return (
+		<div className={"bg-gray-100"}>
+			<div className={"fixed top-0 left-0 bottom-0"}>
+				{/* <Toc
           navigation={instance?.navigation}
           metadata={instance?.metadata}
           onItemClick={() => {}}
         /> */}
-      </div>
-      <div className="w-[100vw] px-[60px] relative" id="canvasRoot">
-        <div className="max-w-[1028px] relative">
-          <section className="w-full h-full py-10" id="book-section" dangerouslySetInnerHTML={{__html: content}}>
-          </section>
-          <div
-            id="canvas"
-            className="absolute top-10 left-0 right-0 bottom-10 pointer-events-none mix-blend-multiply"
-          ></div>
-        </div>
-        <div className="flex items-center justify-between">
-          <span id="prev" className="">
-            {prevLabel}
-          </span>
-          <span id="next" className="">
-            {nextLabel}
-          </span>
-        </div>
-      </div>
-      <MarkerToolbar
-       open={open}
-        onVirtualRefChange={() => {}}
-        virtualRef={virtualRef}
-        onStrokeChange={handleStrokeChange}
-        onSelectColor={handleSelectColor}
-      />
-    </div>
-  );
+			</div>
+			<div className="relative w-[100vw] px-[60px]" id="canvasRoot">
+				<div className="relative max-w-[1028px]">
+					<section
+						className="py-10 w-full h-full"
+						id="book-section"
+						dangerouslySetInnerHTML={{ __html: content }}
+					/>
+					<div
+						id="canvas"
+						className="absolute right-0 left-0 top-10 bottom-10 pointer-events-none mix-blend-multiply"
+					/>
+				</div>
+				<div className="flex justify-between items-center">
+					<span id="prev" className="" onClick={() => prevPage()}>
+						{prevLabel}
+					</span>
+					<span id="next" className="" onClick={() => nextPage()}>
+						{nextLabel}
+					</span>
+				</div>
+			</div>
+			<MarkerToolbar
+				open={open}
+				onVirtualRefChange={() => {}}
+				virtualRef={virtualRef}
+				onStrokeChange={handleStrokeChange}
+				onSelectColor={handleSelectColor}
+			/>
+		</div>
+	);
 });
