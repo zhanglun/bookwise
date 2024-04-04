@@ -12,7 +12,7 @@ export class Marker {
 
   public marks: Mark[];
 
-  constructor(root: HTMLElement, canvasContainer: HTMLDivElement, win: Window) {
+  constructor(root: HTMLElement, canvasContainer: HTMLDivElement, win?: Window) {
     this.root = root;
     this.window = win || window;
     this.brush = new Brush(this.root, canvasContainer, win, { pixelRatio: 4});

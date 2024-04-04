@@ -26,6 +26,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 	}));
 	const [URLCache, setURLCache] = useState<{ [key: string]: string }>({});
 	const [files, setFiles] = useState<{ [key: string]: JSZipObject }>({});
+  const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
 	const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
 	const markerRef = useRef<Marker>(Object.create({}));
 	const [open, setOpen] = useState<boolean>(false);
@@ -83,8 +84,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 	const display = (item) => {
 		const section = book?.spine.get(item);
 
-		console.log("section in display", section);
-
 		if (section) {
 			setCurrentSection(section);
 
@@ -136,12 +135,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 		};
 	}, []);
 
-	// useEffect(() => {
-	//   const root = document.getElementById("canvasRoot") as HTMLElement;
-	//   const el = document.getElementById("canvas") as HTMLElement;
+	useEffect(() => {
+		const root = document.getElementById("canvasRoot") as HTMLElement;
+		const el = document.getElementById("canvas") as HTMLElement;
 
-	//   markerRef.current = new Marker(root, el);
-	// }, []);
+		markerRef.current = new Marker(root, el);
+	}, []);
 
 	useEffect(() => {
 		if (bookId) {
@@ -214,9 +213,130 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 		}
 	}, [currentSection]);
 
-	function handleSelectColor() {}
+	function handleSelectColor(color: string) {
+		const config = {
+			rectFill: color,
+			strokeWidth: 3,
+		};
+
+
+		if (currentSection) {
+			const {
+				idref: pageId,
+				index: spineIndex,
+				href: spineName,
+			} = currentSection;
+
+		  let mark = activatedMark;
+
+			if (mark) {
+				mark.style_config.rectFill = color;
+				markerRef.current.updateMark(mark);
+			} else {
+				mark = markerRef.current.getSelectionRange(document.selection, config, {
+					spine_index: parseInt(spineIndex, 10),
+					spine_name: spineName,
+				});
+
+				if (mark) marker.addMark(mark);
+			}
+
+			console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+
+			if (mark) {
+				request
+					.post("/notes", {
+						book_id: parseInt(bookId, 10),
+						spine_index: mark.spine_index,
+						spine_name: mark.spine_name,
+						type: mark.type,
+						title: mark.title,
+						content: mark.content,
+						position_metics: mark.position_metics,
+						style_config: mark.style_config,
+					})
+					.then((res) => {
+						console.log("%c Line:123 🌭 res", "color:#42b983", res);
+					});
+			}
+		}
+
+		window?.getSelection()?.removeAllRanges();
+	}
 
 	function handleStrokeChange() {}
+
+	useEffect(() => {
+		function activeToolbar(event: any) {
+			console.log("activeToolbar currentSection", currentSection);
+
+			if (currentSection) {
+				const {
+					idref: pageId,
+					spineIndex,
+					spineHref: spineName,
+				} = currentSection;
+
+				const selection = window.getSelection();
+				let tempMark;
+
+				if (selection) {
+					tempMark = markerRef.current.textMarker.createRange(
+						selection,
+						{ rectFill: "black", lineStroke: "red", strokeWidth: 3 },
+						{
+							spine_index: spineIndex,
+							spine_name: spineName,
+						},
+					);
+					//
+					// setVirtualRef({
+					// 	getBoundingClientRect: () =>
+					// 		selection.getRangeAt(0).getBoundingClientRect(),
+					// 	getClientRects: () => selection.getRangeAt(0).getClientRects(),
+					// });
+					//
+					// setOpen(true);
+				} else {
+					const id = markerRef.current.getMarkIdByPointer(
+						event.clientX,
+						event.clientY,
+					);
+
+					if (id) {
+						const mark = markerRef.current.getMark(id);
+						console.log("%c Line:206 🥚 mark", "color:#e41a6a", mark);
+						const virtualRange =
+							markerRef.current.current.getRangeFromMark(mark);
+
+						virtualRange &&
+							setVirtualRef({
+								getBoundingClientRect: () =>
+									virtualRange.getBoundingClientRect(),
+								getClientRects: () => virtualRange.getClientRects(),
+							});
+
+            setActivatedMark(mark);
+						setOpen(true);
+					} else {
+            setActivatedMark(null);
+						setVirtualRef(null);
+						setOpen(false);
+					}
+				}
+			}
+		}
+
+		document
+			.getElementById("book-section")
+			?.addEventListener("mouseup", activeToolbar);
+
+		return () => {
+			document
+				.getElementById("book-section")
+				?.removeEventListener("mouseup", activeToolbar);
+		};
+	}, [currentSection]);
 
 	return (
 		<div className={"bg-gray-100"}>
