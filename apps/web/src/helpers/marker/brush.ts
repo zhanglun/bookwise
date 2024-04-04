@@ -80,8 +80,6 @@ export class Brush {
     x = x - left;
     y = y - top;
 
-    console.log("%c Line:138 🍊 this.groups", "color:#6ec1c2", this.groups);
-
     const target = this.groups.find((i) => {
       return i.positions.some((j) => {
         return (
@@ -89,8 +87,6 @@ export class Brush {
         );
       });
     });
-
-    console.log("%c Line:144 🥟 target", "color:#4fff4B", target);
 
     if (target) {
       return target.group.id();
@@ -101,8 +97,10 @@ export class Brush {
 
   getAllGroupIdByPointer(x: number, y: number) {
     const {top, left} = this.getRootPosition();
+
     x = x - left;
     y = y - top;
+
     return this.groups
       .filter((i) => {
         return i.positions.some((j) => {
@@ -189,7 +187,6 @@ export class Brush {
   }
 
   private getRootPosition() {
-    console.log("%c Line:195 🌰 this.root", "color:#f5ce50", this.root);
     return this.root.getBoundingClientRect();
   }
 }

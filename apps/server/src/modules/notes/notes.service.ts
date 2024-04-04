@@ -29,7 +29,9 @@ export class NotesService {
     console.log('🚀 ~ NotesService ~ findAll ~ filter:', filter);
     const order = getOrder(sort);
     const where = filter.map(getWhere).reduce((acu, cur) => {
-      acu = { ...cur };
+      console.log('cur', cur);
+      acu = { ...acu, ...cur };
+      console.log('acu', acu);
       return acu;
     }, {});
     console.log('🚀 ~ NotesService ~ findAll ~ where:', where);
