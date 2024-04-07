@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import ePub, { Book, Contents, EpubCFI, Rendition } from "epubjs";
+import ePub, { Book, Contents, EpubCFI, NavItem, Rendition } from "epubjs";
 import Section from "epubjs/types/section";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -353,14 +353,27 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 		}, 16);
 	}, [notesMap, currentSection]);
 
+	function handleTocItemClick(item: NavItem) {
+		const { href } = item;
+		const section = book.spine.get(href);
+
+		console.log("section", section);
+
+		setCurrentSection(section);
+		setCurrentSectionIndex(section.index);
+		display(section.index);
+	}
+
 	return (
-		<div className={"bg-gray-100 min-h-[100vh] grid grid-cols-[300px_1fr] gap-3"}>
+		<div
+			className={"bg-gray-100 min-h-[100vh] grid grid-cols-[300px_1fr] gap-3"}
+		>
 			<div className={"w-[300px]"}>
 				<div className="overflow-scroll fixed top-0 bottom-0 left-0">
 					<Toc
 						navigation={book?.navigation}
 						metadata={book?.packaging?.metadata}
-						onItemClick={() => {}}
+						onItemClick={handleTocItemClick}
 					/>
 				</div>
 			</div>

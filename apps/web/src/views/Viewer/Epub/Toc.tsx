@@ -16,8 +16,8 @@ export const Toc = (props: TocProps) => {
 	console.log("navigation", navigation);
 	console.log("metadata", metadata);
 
-	const handleItemClick = (href: string) => {
-		onItemClick(href);
+	const handleItemClick = (item: NavItem) => {
+		onItemClick(item);
 	};
 
 	const renderItems = (list: TocProps[], idx = 0) => {
@@ -35,7 +35,7 @@ export const Toc = (props: TocProps) => {
 							"hover:underline hover:text-accent-foreground overflow-hidden text-ellipsis whitespace-nowrap",
 							"pb-4",
 						)}
-						onClick={() => handleItemClick(href)}
+						onClick={() => handleItemClick(item)}
 					>
 						{label}
 					</div>
@@ -49,7 +49,6 @@ export const Toc = (props: TocProps) => {
 
 	return (
 		<div
-			id="catalog"
 			className={clsx("w-[296px] overflow-auto rounded-s-lg", className)}
 		>
 			<div className="grid grid-flow-col gap-1 items-center py-2 px-5 mt-3 grid-cols-[1fr]">
