@@ -1,3 +1,4 @@
+import { ScrollArea, Text } from "@radix-ui/themes";
 import clsx from "clsx";
 import { NavItem } from "epubjs";
 import Navigation from "epubjs/types/navigation";
@@ -12,9 +13,6 @@ export interface TocProps {
 
 export const Toc = (props: TocProps) => {
 	const { navigation = {}, metadata, onItemClick, className } = props;
-
-	console.log("navigation", navigation);
-	console.log("metadata", metadata);
 
 	const handleItemClick = (item: NavItem) => {
 		onItemClick(item);
@@ -37,7 +35,7 @@ export const Toc = (props: TocProps) => {
 						)}
 						onClick={() => handleItemClick(item)}
 					>
-						{label}
+						<Text truncate>{label}</Text>
 					</div>
 					{subitems && subitems.length > 0 && (
 						<div className="pl-4">{renderItems(subitems, idx + 1)}</div>
@@ -49,14 +47,25 @@ export const Toc = (props: TocProps) => {
 
 	return (
 		<div
-			className={clsx("w-[296px] overflow-auto rounded-s-lg", className)}
+			className={clsx(
+				"w-[290px] fixed top-3 bottom-3 left-3",
+				"rounded-lg bg-cell text-cell-foreground",
+				"grid grid-row-[36px_1fr]",
+				className,
+			)}
 		>
 			<div className="grid grid-flow-col gap-1 items-center py-2 px-5 mt-3 grid-cols-[1fr]">
 				<span className="overflow-hidden text-sm font-bold whitespace-nowrap text-ellipsis">
 					{metadata?.title}
 				</span>
 			</div>
-			<div className="py-2 px-5 h-full">{renderItems(navigation?.toc)}</div>
+			<ScrollArea
+				size="1"
+				type="always"
+				scrollbars="vertical"
+			>
+				<div className="w-[290px] px-3 py-3">{renderItems(navigation?.toc)}</div>
+			</ScrollArea>
 		</div>
 	);
 };

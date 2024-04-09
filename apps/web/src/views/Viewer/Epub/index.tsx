@@ -365,22 +365,18 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 	}
 
 	return (
-		<div
-			className={"bg-gray-100 min-h-[100vh] grid grid-cols-[300px_1fr] gap-3"}
-		>
-			<div className={"w-[300px]"}>
-				<div className="overflow-scroll fixed top-0 bottom-0 left-0">
-					<Toc
-						navigation={book?.navigation}
-						metadata={book?.packaging?.metadata}
-						onItemClick={handleTocItemClick}
-					/>
-				</div>
+		<div className={"bg-app min-h-[100vh] grid grid-cols-[300px_1fr] gap-3"}>
+			<div className={"w-[290px]"}>
+				<Toc
+					navigation={book?.navigation}
+					metadata={book?.packaging?.metadata}
+					onItemClick={handleTocItemClick}
+				/>
 			</div>
 			<div className="relative m-auto max-w-[1200px] px-[60px]" id="canvasRoot">
 				<div className="relative m-auto max-w-[980px]">
 					<section
-						className="py-10 w-full h-full"
+						className="py-10 w-full h-full prose prose-neutral"
 						id="book-section"
 						dangerouslySetInnerHTML={{ __html: content }}
 					/>
