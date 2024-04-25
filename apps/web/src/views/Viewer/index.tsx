@@ -3,5 +3,9 @@ import { EpubViewer } from "@/views/Viewer/Epub";
 
 export const Viewer = () => {
   const { uuid } = useParams();
-  return <div>{uuid && <EpubViewer bookId={uuid} />}</div>;
+  return (
+    <div className="text-foreground bg-app w-full h-full">
+      {uuid && <EpubViewer bookId={uuid} />}
+    </div>
+  );
 };

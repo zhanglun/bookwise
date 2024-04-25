@@ -126,20 +126,16 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
 	useEffect(() => {
 		const keyListener = function (e: any) {
-			// Left Key
 			if ((e.keyCode || e.which) === 37) {
 				prevPage();
 			}
 
-			// Right Key
 			if ((e.keyCode || e.which) === 39) {
 				nextPage();
 			}
 		};
 
 		document.addEventListener("keyup", keyListener, false);
-
-		// const hash = window.location.hash.slice(2);
 
 		return function () {
 			document.addEventListener("keyup", keyListener, false);
@@ -216,7 +212,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
 			// Add CFI fragment to the history
 			//history.pushState({}, '', section.href);
-			window.location.hash = "#/" + currentSection.href;
+			// window.location.hash = "#/" + currentSection.href;
 		}
 	}, [currentSection]);
 
@@ -369,7 +365,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 	}
 
 	return (
-		<div className={"bg-app min-h-[100vh] grid grid-cols-[300px_1fr] gap-3"}>
+		<div className={"min-h-[100vh] grid grid-cols-[300px_1fr] gap-2"}>
 			<div className={"w-[290px]"}>
 				<Toc
 					navigation={book?.navigation}
