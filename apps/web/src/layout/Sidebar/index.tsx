@@ -105,25 +105,25 @@ export const Sidebar = () => {
   };
 
   return (
-    <div className="grid h-full w-[320px] gap-3">
-      <div className="bg-cell text-cell-foreground rounded-md">
+    <div className="h-full w-[320px] flex flex-col gap-2 grid-in-left-sidebar">
+      <div className="bg-cell text-cell-foreground rounded-md px-2 py-3">
         <Switch onCheckedChange={toggleDarkMode} />
         <NavLink
           to={"/"}
-          className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12"
+          className="flex items-center gap-3 py-3 px-1 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
         >
           <HomeIcon size={22} />
           <span>Home</span>
         </NavLink>
         <NavLink
           to={"/search"}
-          className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12"
+          className="flex items-center gap-3 py-3 px-1 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
         >
           <SearchIcon size={22} />
           <span>Search</span>
         </NavLink>
       </div>
-      <div className="bg-cell text-cell-foreground rounded-md">
+      <div className="flex-1 flex bg-cell text-cell-foreground rounded-md">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12">
             <LibraryIcon />

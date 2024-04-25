@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { useNavigate } from "react-router-dom";
 import { BookResItem } from "@/interface/book.ts";
-import { Separator } from "@radix-ui/themes";
+import { Heading, Separator, Text } from "@radix-ui/themes";
 
 export const Home = () => {
   const [recentlyAdd, setRecentlyAdd] = useState([]);
@@ -38,10 +38,10 @@ export const Home = () => {
   useEffect(() => {}, []);
 
   return (
-    <div className="rounded-lg overflow-hidden bg-cell text-cell-foreground h-full grid grid-flow-row gap-3 overflow-y-auto px-4 sm:px-4">
-      <div className="px-3 pt-5 pb-2 text-xl font-bold">Recently reading</div>
+    <div className="rounded-lg overflow-hidden bg-cell text-cell-foreground h-full overflow-y-auto px-4 sm:px-4">
+      <div className="pt-5 pb-2 text-xl font-bold">Recently reading</div>
       <div className="">
-        <ol className="px-3 py-2 flex flex-row gap-4">
+        <ol className="py-2 flex flex-row gap-4">
           {recentlyReading.map((book: BookResItem) => {
             return (
               <li>
@@ -55,21 +55,27 @@ export const Home = () => {
           })}
         </ol>
       </div>
-      <Separator className="w-full"/>
-      <div className="px-3 pt-5 pb-2 text-xl font-bold ">Recently added</div>
-      <ol className="px-3 py-2 flex flex-row gap-4">
+      <Separator className="w-full" />
+      <div className="pt-5 pb-2 flex justify-between">
+        <Heading size="5">Recently added</Heading>
+        <Text
+          color="gray"
+          className="text-sm font-medium cursor-auto hover:underline hover:cursor-pointer"
+        >
+          Show all
+        </Text>
+      </div>
+      <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
         {recentlyAdd.map((book: BookResItem) => {
           return (
-            <li>
-              <Book
-                key={book.id}
-                data={book}
-                onClick={() => navigate(`/viewer/${book.id}`)}
-              />
-            </li>
+            <Book
+              key={book.id}
+              data={book}
+              onClick={() => navigate(`/viewer/${book.id}`)}
+            />
           );
         })}
-      </ol>
+      </div>
     </div>
   );
 };

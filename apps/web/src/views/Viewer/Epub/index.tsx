@@ -97,12 +97,14 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
 					// @ts-ignore
 					const { urls, replacementUrls } = book?.resources;
+          console.log("%c Line:100 🥓 replacementUrls", "color:#ffdd4d", replacementUrls);
+          console.log("%c Line:100 🍉 urls", "color:#e41a6a", urls);
 					const str = substitute(content.innerHTML, urls, replacementUrls);
 
 					// remove internal css styles
 					// str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
 
-					setContent(str);
+					setContent(content.innerHTML);
 					setCurrentSectionIndex(item);
 				}
 			});
@@ -343,6 +345,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 	}, [currentSection]);
 
 	useEffect(() => {
+    if (notesMap && currentSection) {
 		setTimeout(() => {
 			const { index } = currentSection;
 			const notes = notesMap[index];
@@ -351,17 +354,18 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
 			notes && notes.length && markerRef.current.renderRanges(notes);
 		}, 16);
+    }
 	}, [notesMap, currentSection]);
 
 	function handleTocItemClick(item: NavItem) {
 		const { href } = item;
-		const section = book.spine.get(href);
+		const section = book?.spine.get(href);
 
 		console.log("section", section);
 
 		setCurrentSection(section);
-		setCurrentSectionIndex(section.index);
-		display(section.index);
+		setCurrentSectionIndex(section?.index as number);
+		display(section?.index);
 	}
 
 	return (

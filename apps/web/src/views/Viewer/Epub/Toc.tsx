@@ -5,9 +5,9 @@ import Navigation from "epubjs/types/navigation";
 import { PackagingMetadataObject } from "epubjs/types/packaging";
 
 export interface TocProps {
-	navigation: Navigation;
-	metadata: PackagingMetadataObject;
-	onItemClick: (href: string) => void;
+	navigation?: Navigation;
+	metadata?: PackagingMetadataObject;
+	onItemClick: (href: NavItem) => void;
 	className?: string;
 }
 
