@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { parseEpub } from "@/helpers/epub";
 import { useBearStore } from "@/store";
-import { Switch } from "@radix-ui/themes";
 
 export const Sidebar = () => {
   const store = useBearStore((state) => ({
@@ -92,22 +91,9 @@ export const Sidebar = () => {
     }
   }, [files]);
 
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-
-  const toggleDarkMode = (checked: boolean) => {
-    setDarkMode(checked);
-
-    if (darkMode) {
-      document.body.classList.remove("dark");
-    } else {
-      document.body.classList.add("dark");
-    }
-  };
-
   return (
     <div className="h-full w-[320px] flex flex-col gap-2 grid-in-left-sidebar">
       <div className="bg-cell text-cell-foreground rounded-md px-2 py-3">
-        <Switch onCheckedChange={toggleDarkMode} />
         <NavLink
           to={"/"}
           className="flex items-center gap-3 py-3 px-1 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"

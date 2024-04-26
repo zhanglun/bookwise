@@ -15,18 +15,6 @@ const {
 
 console.error(mauve.mauve2)
 
-function generateScale(name) {
-  let scale = Array.from({ length: 12 }, (_, i) => {
-    let id = i + 1;
-    return [
-      [id, `var(--${name}${id})`],
-      [`a${id}`, `var(--${name}A${id})`],
-    ];
-  }).flat();
-
-  return Object.fromEntries(scale);
-}
-
 module.exports = {
   content: [
     "./src/**/*.{ts,tsx}",
@@ -53,6 +41,21 @@ module.exports = {
         cell: {
           DEFAULT: "var(--mauve-2)",
           foreground: "var(--mauve-12)",
+        },
+        accent: {
+          DEFAULT: "var(--accent-12))",
+          1: "var(--accent-1)",
+          2: "var(--accent-2)",
+          3: "var(--accent-3)",
+          4: "var(--accent-4)",
+          5: "var(--accent-5)",
+          6: "var(--accent-6)",
+          7: "var(--accent-7)",
+          8: "var(--accent-8)",
+          9: "var(--accent-9)",
+          10: "var(--accent-10)",
+          11: "var(--accent-11)",
+          12: "var(--accent-12)",
         }
       },
       gridTemplateAreas: {
