@@ -506,7 +506,7 @@ export const accessFileContent = async (
   return blob;
 };
 
-export const accessImage = async (file: JSZip.JSZipObject, type): Promise<Blob> => {
+export const accessImage = async (file: JSZip.JSZipObject, type: string): Promise<Blob> => {
   const unit8 = await file.async("uint8array");
   return new Blob([ unit8 ], { type });
 };
@@ -526,8 +526,9 @@ export function substitute(content: string, urls: string[], replacements: string
       // Account for special characters in the file name.
       // See https://stackoverflow.com/a/6318729.
       url = url.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      content = content.replace(new RegExp(url, "g"), replacements[i]);
+      content = content.replace(new RegExp(`[^"]*${url}`, "g"), replacements[i]);
     }
   });
+
   return content;
 }

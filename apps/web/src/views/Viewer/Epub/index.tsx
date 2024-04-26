@@ -97,6 +97,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
 					// @ts-ignore
 					const { urls, replacementUrls } = book?.resources;
+          console.log("%c Line:100 🍬 book?.resources", "color:#3f7cff", book?.resources);
+          console.log("%c Line:101 🍭 book", "color:#fca650", book);
           console.log("%c Line:100 🥓 replacementUrls", "color:#ffdd4d", replacementUrls);
           console.log("%c Line:100 🍉 urls", "color:#e41a6a", urls);
 					const str = substitute(content.innerHTML, urls, replacementUrls);
@@ -104,7 +106,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 					// remove internal css styles
 					// str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
 
-					setContent(content.innerHTML);
+					// setContent(content.innerHTML);
+          setContent(str);
 					setCurrentSectionIndex(item);
 				}
 			});
@@ -309,7 +312,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 						const mark = markerRef.current.getMark(id);
 						console.log("%c Line:206 🥚 mark", "color:#e41a6a", mark);
 						const virtualRange =
-							markerRef.current.current.getRangeFromMark(mark);
+							markerRef.current.getRangeFromMark(mark);
 
 						virtualRange &&
 							setVirtualRef({
