@@ -14,6 +14,7 @@ import { Marker } from "@/helpers/marker";
 import { substitute } from "@/helpers/epub";
 import { MenuBar } from "./MenuBar";
 import { ScrollArea } from "@radix-ui/themes";
+import { ContentRender } from "./ContentRender";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -102,9 +103,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
           // remove internal css styles
           // str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
+          str.replace(/calibre1/gi, "hahahahha");
 
           // setContent(content.innerHTML);
           setContent(str);
+          console.log("%c Line:109 🥛 str", "color:#2eafb0", str);
           setCurrentSectionIndex(item);
         }
       });
@@ -266,8 +269,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     window?.getSelection()?.removeAllRanges();
   }
 
-  function handleStrokeChange() {}
-
   useEffect(() => {
     function activeToolbar(event: any) {
       console.log("activeToolbar currentSection", currentSection);
@@ -386,11 +387,9 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
                 id="canvasRoot"
               >
                 <div className="relative m-auto max-w-[980px]">
-                  <section
-                    className="py-10 w-full h-full prose prose-neutral"
-                    id="book-section"
-                    dangerouslySetInnerHTML={{ __html: content }}
-                  />
+                  <section className="py-12 w-full h-full" id="book-section">
+                    <ContentRender contentString={content} />
+                  </section>
                   <div className="flex justify-between items-center">
                     <span id="prev" className="" onClick={() => prevPage()}>
                       {prevLabel}
