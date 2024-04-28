@@ -2,10 +2,8 @@
 import ePub, { Book, Contents, EpubCFI, NavItem, Rendition } from "epubjs";
 import Section from "epubjs/types/section";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { JSZipObject } from "jszip";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
-import { PageCanvasRef, PageProps } from "@/views/Viewer/Epub/Canvas.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
 import { request } from "@/helpers/request.ts";
@@ -22,6 +20,7 @@ export interface EpubViewerProps {
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [book, setBook] = useState<Book>();
+  const scrollAreaRef = useRef(null);
   const store = useBearStore((state) => ({
     interactiveObject: state.interactiveObject,
     updateInteractiveObject: state.updateInteractiveObject,
@@ -107,8 +106,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
           // setContent(content.innerHTML);
           setContent(str);
-          console.log("%c Line:109 🥛 str", "color:#2eafb0", str);
           setCurrentSectionIndex(item);
+          scrollAreaRef.current && scrollAreaRef.current.scrollTo(0, 0);
         }
       });
     }
@@ -381,7 +380,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
               <MenuBar />
             </div>
-            <ScrollArea size="1" type="hover" scrollbars="vertical">
+            <ScrollArea
+              size="1"
+              type="hover"
+              scrollbars="vertical"
+              ref={scrollAreaRef}
+            >
               <div
                 className="relative m-auto max-w-[1200px] px-[60px]"
                 id="canvasRoot"
