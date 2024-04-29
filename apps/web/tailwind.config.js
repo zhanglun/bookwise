@@ -1,4 +1,3 @@
-
 /** @type {import('tailwindcss').Config} */
 
 const {
@@ -11,14 +10,14 @@ const {
   gray,
   grayA,
   green,
+  indigo,
+  indigoDark,
 } = require("@radix-ui/colors");
 
-console.error(mauve.mauve2)
+console.error(mauve.mauve2);
 
 module.exports = {
-  content: [
-    "./src/**/*.{ts,tsx}",
-  ],
+  content: ["./src/**/*.{ts,tsx}"],
   theme: {
     colors: ({ colors }) => ({
       ...colors,
@@ -34,6 +33,8 @@ module.exports = {
         ...gray,
         ...grayA,
         ...green,
+        ...indigo,
+        ...indigoDark,
         app: {
           DEFAULT: "var(--page-background)",
           foreground: "var(--gray-12)",
@@ -56,17 +57,15 @@ module.exports = {
           10: "var(--accent-10)",
           11: "var(--accent-11)",
           12: "var(--accent-12)",
-        }
+        },
       },
       gridTemplateAreas: {
-        'layout': [
-          'left-sidebar main-view',
-        ],
+        layout: ["left-sidebar main-view"],
       },
     },
   },
   plugins: [
     // require("@tailwindcss/typography"),
-    require('@savvywombat/tailwindcss-grid-areas'),
-  ]
+    require("@savvywombat/tailwindcss-grid-areas"),
+  ],
 };

@@ -10,9 +10,9 @@ export const Viewer = () => {
     setDarkMode(checked);
 
     if (darkMode) {
-      document.body.classList.remove("dark");
+      document.documentElement.classList.remove("dark-theme");
     } else {
-      document.body.classList.add("dark");
+      document.documentElement.classList.add("dark-theme");
     }
   };
 

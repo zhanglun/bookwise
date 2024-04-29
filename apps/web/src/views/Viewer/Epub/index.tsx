@@ -376,7 +376,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             </div>
             {loading && (
               <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
-                <Spinner />
+                <Spinner size="3" />
               </div>
             )}
             <ScrollArea
