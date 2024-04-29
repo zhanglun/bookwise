@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import ePub, { Book, Contents, EpubCFI, NavItem, Rendition } from "epubjs";
+import ePub, { Book, NavItem } from "epubjs";
 import Section from "epubjs/types/section";
-import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { JSZipObject } from "jszip";
+import { memo, useEffect, useRef, useState } from "react";
 import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { useBearStore } from "@/store";
@@ -11,7 +10,7 @@ import { Mark, TextMark } from "@/helpers/marker/types";
 import { Marker } from "@/helpers/marker";
 import { substitute } from "@/helpers/epub";
 import { MenuBar } from "./MenuBar";
-import { ScrollArea } from "@radix-ui/themes";
+import { ScrollArea, Spinner } from "@radix-ui/themes";
 import { ContentRender } from "./ContentRender";
 
 export interface EpubViewerProps {
@@ -25,8 +24,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     interactiveObject: state.interactiveObject,
     updateInteractiveObject: state.updateInteractiveObject,
   }));
-  const [URLCache, setURLCache] = useState<{ [key: string]: string }>({});
-  const [files, setFiles] = useState<{ [key: string]: JSZipObject }>({});
+  const [loading, setLoading] = useState(true);
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
   const markerRef = useRef<Marker>(Object.create({}));
@@ -84,30 +82,31 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }
 
   const display = (item) => {
+    setLoading(true);
+
     const section = book?.spine.get(item);
 
     if (section) {
       setCurrentSection(section);
 
-      section.load(book.load.bind(book)).then((content) => {
+      section.load(book.load.bind(book)).then((content: HTMLElement) => {
         if (content && content.innerHTML) {
           const styles = content.querySelectorAll('[type="text/css"]');
 
           console.log("styles", styles);
 
-          styles.forEach((s: any) => s.remove());
+          styles.forEach((s: Element) => s.remove());
 
           const { urls, replacementUrls } = book?.resources;
           const str = substitute(content.innerHTML, urls, replacementUrls);
 
           // remove internal css styles
           // str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
-          str.replace(/calibre1/gi, "hahahahha");
 
-          // setContent(content.innerHTML);
           setContent(str);
           setCurrentSectionIndex(item);
           scrollAreaRef.current && scrollAreaRef.current.scrollTo(0, 0);
+          setLoading(false);
         }
       });
     }
@@ -165,11 +164,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         display(currentSectionIndex);
         setCurrentSection(book.spine.get(currentSectionIndex));
       });
-
-      if (book.archived) {
-        setFiles(book.archive.zip.files);
-        setURLCache(book.archive.urlCache);
-      }
     }
   }, [book]);
 
@@ -377,9 +371,14 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         />
         <div className="rounded-lg overflow-hidden bg-cell text-cell-foreground h-full">
           <div className="relative h-full">
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-10">
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
               <MenuBar />
             </div>
+            {loading && (
+              <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
+                <Spinner />
+              </div>
+            )}
             <ScrollArea
               size="1"
               type="hover"
@@ -391,7 +390,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
                 id="canvasRoot"
               >
                 <div className="relative m-auto max-w-[980px]">
-                  <section className="py-12 w-full h-full" id="book-section">
+                  <section className="py-16 w-full h-full" id="book-section">
                     <ContentRender contentString={content} />
                   </section>
                   <div className="flex justify-between items-center">
