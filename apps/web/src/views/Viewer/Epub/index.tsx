@@ -88,6 +88,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
     if (section) {
       setCurrentSection(section);
+      setContent("");
 
       section.load(book.load.bind(book)).then((content: HTMLElement) => {
         if (content && content.innerHTML) {
@@ -358,59 +359,54 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }
 
   return (
-    <>
-      <div
-        className={
-          "w-full h-full grid grid-cols-[300px_1fr] gap-2 overflow-hidden"
-        }
+    <div className="text-foreground bg-app grid w-full h-full grid-cols-[260px_1fr] grid-areas-view gap-2 p-2">
+      <Toc
+        navigation={book?.navigation}
+        metadata={book?.packaging?.metadata}
+        onItemClick={handleTocItemClick}
+        className="grid-in-left-toc"
+      />
+      <ScrollArea
+        size="1"
+        type="hover"
+        scrollbars="vertical"
+        ref={scrollAreaRef}
+        className="grid-in-content rounded-lg"
       >
-        <Toc
-          navigation={book?.navigation}
-          metadata={book?.packaging?.metadata}
-          onItemClick={handleTocItemClick}
-        />
-        <div className="rounded-lg overflow-hidden bg-cell text-cell-foreground h-full">
-          <div className="relative h-full">
-            <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
-              <MenuBar />
+        <div className="relative bg-cell text-cell-foreground h-full">
+          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
+            <MenuBar />
+          </div>
+          {loading && (
+            <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
+              <Spinner size="3" />
             </div>
-            {loading && (
-              <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
-                <Spinner size="3" />
+          )}
+
+          <div
+            className="relative m-auto max-w-[1200px] px-[60px]"
+            id="canvasRoot"
+          >
+            <div className="relative m-auto max-w-[980px]">
+              <section className="py-16 w-full h-full" id="book-section">
+                <ContentRender contentString={content} />
+              </section>
+              <div className="flex justify-between items-center">
+                <span id="prev" className="" onClick={() => prevPage()}>
+                  {prevLabel}
+                </span>
+                <span id="next" className="" onClick={() => nextPage()}>
+                  {nextLabel}
+                </span>
               </div>
-            )}
-            <ScrollArea
-              size="1"
-              type="hover"
-              scrollbars="vertical"
-              ref={scrollAreaRef}
-            >
-              <div
-                className="relative m-auto max-w-[1200px] px-[60px]"
-                id="canvasRoot"
-              >
-                <div className="relative m-auto max-w-[980px]">
-                  <section className="py-16 w-full h-full" id="book-section">
-                    <ContentRender contentString={content} />
-                  </section>
-                  <div className="flex justify-between items-center">
-                    <span id="prev" className="" onClick={() => prevPage()}>
-                      {prevLabel}
-                    </span>
-                    <span id="next" className="" onClick={() => nextPage()}>
-                      {nextLabel}
-                    </span>
-                  </div>
-                </div>
-                <div
-                  id="canvas"
-                  className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
-                />
-              </div>
-            </ScrollArea>
+            </div>
+            <div
+              id="canvas"
+              className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+            />
           </div>
         </div>
-      </div>
+      </ScrollArea>
       {/* <MarkerToolbar
         open={open}
         onVirtualRefChange={() => {}}
@@ -418,6 +414,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         onStrokeChange={handleStrokeChange}
         onSelectColor={handleSelectColor}
       /> */}
-    </>
+    </div>
   );
 });

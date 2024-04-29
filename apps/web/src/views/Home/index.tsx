@@ -38,7 +38,7 @@ export const Home = () => {
   useEffect(() => {}, []);
 
   return (
-    <div className="rounded-lg overflow-hidden bg-cell text-cell-foreground h-full overflow-y-auto px-4 sm:px-4">
+    <div className=" bg-cell h-full px-4 sm:px-4">
       <div className="pt-5 pb-2 text-xl font-bold">Recently reading</div>
       <div className="">
         <ol className="py-2 flex flex-row gap-4">

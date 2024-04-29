@@ -1,11 +1,11 @@
 import { Outlet } from "react-router-dom";
 import { Sidebar } from "./layout/Sidebar";
-import { Toaster } from "sonner";
 
 import "./App.css";
 import { useEffect } from "react";
 import { request } from "./helpers/request";
 import { useBearStore } from "./store";
+import { ScrollArea } from "@radix-ui/themes";
 
 function App() {
   const store = useBearStore((state) => ({
@@ -20,16 +20,13 @@ function App() {
   }, []);
 
   return (
-    <>
-      <Toaster />
-      <div className="text-foreground bg-app grid w-full h-full grid-cols-[auto_1fr] grid-areas-layout gap-2 p-2">
-        <Sidebar />
-        <div className="grid-in-main-view">
-          <Outlet />
-        </div>
-        {/* <div className="grid-in-right-sidebar"></div> */}
-      </div>
-    </>
+    <div className="text-foreground bg-app grid w-full h-full grid-cols-[auto_1fr] grid-areas-layout gap-2 p-2">
+      <Sidebar />
+      <ScrollArea className="grid-in-main-view rounded-lg">
+        <Outlet />
+      </ScrollArea>
+      {/* <div className="grid-in-right-sidebar"></div> */}
+    </div>
   );
 }
 

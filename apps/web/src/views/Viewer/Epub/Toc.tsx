@@ -32,7 +32,7 @@ export const Toc = (props: TocProps) => {
             )}
             onClick={() => handleItemClick(item)}
           >
-            <Text>{label}</Text>
+            <Text truncate>{label}</Text>
           </div>
           {subitems && subitems.length > 0 && (
             <div className="pl-4">{renderItems(subitems, idx + 1)}</div>
@@ -56,9 +56,9 @@ export const Toc = (props: TocProps) => {
           {metadata?.title}
         </span>
       </div>
-      <div className="flex-0 h-[calc(100vh-42px)]">
+      <div className="flex-0 w-full h-[calc(100vh-58px)]">
         <ScrollArea size="1" type="hover" scrollbars="vertical">
-          <div className="w-[290px] px-3 py-3">
+          <div className="w-[260px] px-3 py-3">
             {renderItems(navigation?.toc as NavItem[])}
           </div>
         </ScrollArea>

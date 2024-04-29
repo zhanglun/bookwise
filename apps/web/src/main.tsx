@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Toaster } from "sonner";
 
 import App from "./App.tsx";
 import { Home } from "./views/Home";
@@ -44,6 +45,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     panelBackground="translucent"
     accentColor="indigo"
   >
+    <Toaster />
     <RouterProvider router={router} />
   </Theme>
 );

@@ -17,13 +17,12 @@ export const Viewer = () => {
   };
 
   return (
-    <div className="text-foreground bg-app w-full h-full">
+    <>
       <Switch
         onCheckedChange={toggleDarkMode}
-        className="fixed right-1 top-1 z-10"
+        className="fixed right-1 top-1 z-50"
       />
-
       {uuid && <EpubViewer bookId={uuid} />}
-    </div>
+    </>
   );
 };
