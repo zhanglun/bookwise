@@ -18,7 +18,7 @@ export const MenuBar = () => {
 
   return (
     <Toolbar.Root
-      className="flex p-2 w-full min-w-max rounded-md bg-app shadow-[0_2px_10px] shadow-blackA4"
+      className="flex p-2 w-full min-w-max rounded-md bg-[var(--mauve-4)] shadow-md"
       aria-label="Formatting options"
     >
       <Toolbar.Button

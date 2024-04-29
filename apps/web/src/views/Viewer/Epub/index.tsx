@@ -2,9 +2,8 @@
 import ePub, { Book, NavItem } from "epubjs";
 import Section from "epubjs/types/section";
 import { memo, useEffect, useRef, useState } from "react";
-import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
+import { Toc, TocProps } from "@/views/Viewer/Epub/Toc.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
-import { useBearStore } from "@/store";
 import { request } from "@/helpers/request.ts";
 import { Mark, TextMark } from "@/helpers/marker/types";
 import { Marker } from "@/helpers/marker";
@@ -19,11 +18,7 @@ export interface EpubViewerProps {
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [book, setBook] = useState<Book>();
-  const scrollAreaRef = useRef(null);
-  const store = useBearStore((state) => ({
-    interactiveObject: state.interactiveObject,
-    updateInteractiveObject: state.updateInteractiveObject,
-  }));
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
   const [virtualRef, setVirtualRef] = useState<VirtualReference | null>(null);
@@ -81,24 +76,25 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       });
   }
 
-  const display = (item) => {
+  const display = (item: number) => {
     setLoading(true);
 
     const section = book?.spine.get(item);
 
-    if (section) {
+    if (section && book) {
       setCurrentSection(section);
       setContent("");
+      const p = section.load(book.load.bind(book));
 
-      section.load(book.load.bind(book)).then((content: HTMLElement) => {
+      // @ts-expect-error library typed error
+      p.then((content: HTMLElement) => {
         if (content && content.innerHTML) {
           const styles = content.querySelectorAll('[type="text/css"]');
 
-          console.log("styles", styles);
-
           styles.forEach((s: Element) => s.remove());
 
-          const { urls, replacementUrls } = book?.resources;
+          // @ts-expect-error library typed error
+          const { urls, replacementUrls } = book.resources;
           const str = substitute(content.innerHTML, urls, replacementUrls);
 
           // remove internal css styles
@@ -168,7 +164,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }, [book]);
 
-  function getNavItem(toc, href: string) {
+  function getNavItem(toc: NavItem[], href: string) {
     for (let i = 0; i < toc.length; i++) {
       const item = toc[i];
 
@@ -192,7 +188,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       console.log("nextSection ==>", nextSection);
 
       if (nextSection && nextSection.href) {
-        const next = getNavItem(book?.navigation.toc, nextSection.href);
+        const next = getNavItem(book?.navigation.toc || [], nextSection.href);
 
         setNextLabel(`${next?.label ? next.label : "Next"} »`);
       } else {
@@ -200,7 +196,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       }
 
       if (prevSection && prevSection.href) {
-        const prev = getNavItem(book?.navigation.toc, prevSection.href);
+        const prev = getNavItem(book?.navigation.toc || [], prevSection.href);
 
         setPrevLabel(`« ${prev?.label ? prev.label : "Prev"}`);
       } else {
@@ -371,40 +367,37 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         type="hover"
         scrollbars="vertical"
         ref={scrollAreaRef}
-        className="grid-in-content rounded-lg"
+        className="grid-in-content rounded-lg relative bg-cell text-cell-foreground h-full"
       >
-        <div className="relative bg-cell text-cell-foreground h-full">
-          <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
-            <MenuBar />
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
+          <MenuBar />
+        </div>
+        {loading && (
+          <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
+            <Spinner size="3" />
           </div>
-          {loading && (
-            <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
-              <Spinner size="3" />
+        )}
+        <div
+          className="relative m-auto max-w-[1200px] px-[60px]"
+          id="canvasRoot"
+        >
+          <div className="relative m-auto max-w-[980px]">
+            <section className="py-16 w-full h-full" id="book-section">
+              <ContentRender contentString={content} />
+            </section>
+            <div className="flex justify-between items-center">
+              <span id="prev" className="" onClick={() => prevPage()}>
+                {prevLabel}
+              </span>
+              <span id="next" className="" onClick={() => nextPage()}>
+                {nextLabel}
+              </span>
             </div>
-          )}
-
+          </div>
           <div
-            className="relative m-auto max-w-[1200px] px-[60px]"
-            id="canvasRoot"
-          >
-            <div className="relative m-auto max-w-[980px]">
-              <section className="py-16 w-full h-full" id="book-section">
-                <ContentRender contentString={content} />
-              </section>
-              <div className="flex justify-between items-center">
-                <span id="prev" className="" onClick={() => prevPage()}>
-                  {prevLabel}
-                </span>
-                <span id="next" className="" onClick={() => nextPage()}>
-                  {nextLabel}
-                </span>
-              </div>
-            </div>
-            <div
-              id="canvas"
-              className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
-            />
-          </div>
+            id="canvas"
+            className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+          />
         </div>
       </ScrollArea>
       {/* <MarkerToolbar
