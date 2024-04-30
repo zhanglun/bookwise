@@ -75,13 +75,6 @@ export class BooksService {
           read_progress_updated_at: 'desc',
         },
       },
-      where: {
-        additional_infos: {
-          read_progress: {
-            gt: 0,
-          },
-        },
-      },
       include: {
         authors: true,
         publisher: true,
