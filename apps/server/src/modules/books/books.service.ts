@@ -154,18 +154,41 @@ export class BooksService {
     book_id: number,
     updateAdditionalInfoDto: UpdateAdditionalInfoDto,
   ) {
+    const result = await this.prisma.book.update({
+      where: {
+        id: book_id,
+      },
+      data: {
+        additional_infos: {
+          update: {
+            data: {
+              ...updateAdditionalInfoDto,
+              read_progress_updated_at: new Date(),
+            },
+          },
+        },
+      },
+      include: {
+        additional_infos: true,
+      },
+    });
+
+    return result;
     // const book = await this.prisma.book.findUnique({ where: { id: book_id } });
+
     // if (!book) {
     //   return;
     // }
+
     // const record = await this.prisma.bookAdditionalInfo.findUnique({
     //   relationLoadStrategy: 'query',
     //   include: {
     //     book: {
-    //       bookId: book_id,
+    //       id: book_id,
     //     },
     //   },
     // });
+
     // if (!record) {
     //   return this.prisma.bookAdditionalInfo.create({
     //     data: {

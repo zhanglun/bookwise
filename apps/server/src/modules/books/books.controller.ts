@@ -106,11 +106,11 @@ export class BooksController {
 
   @Post('/:id/additional_infos')
   async updateBookAdditionalInfo(
-    @Param() param: { id: number },
+    @Param() param: { id: string },
     @Body() updateAdditionalInfoDto: UpdateAdditionalInfoDto,
   ) {
     return this.booksService.updateAdditionalInfo(
-      param.id,
+      parseInt(param.id, 10),
       updateAdditionalInfoDto,
     );
   }

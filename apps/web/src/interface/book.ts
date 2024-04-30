@@ -1,5 +1,13 @@
 import { Mark } from "@/helpers/marker/types";
 
+export interface AdditionalInfos {
+  book_id: number;
+  id: number;
+  read_progress: number;
+  read_progress_updated_at: string;
+  spine_index: string;
+}
+
 export interface BookResItem {
   id: string;
   title: string;
@@ -19,6 +27,7 @@ export interface BookResItem {
   updated_at: Date;
   authors: AuthorResItem[];
   publishers: PublisherResItem[];
+  additional_infos: AdditionalInfos;
 }
 
 export interface AuthorResItem {
@@ -34,6 +43,4 @@ export enum Format {
   Epub = "epub",
 }
 
-
-export interface NoteResItem extends Mark {
-}
+export interface NoteResItem extends Mark {}

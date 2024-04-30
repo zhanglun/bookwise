@@ -2,7 +2,7 @@
 import ePub, { Book, NavItem } from "epubjs";
 import Section from "epubjs/types/section";
 import { memo, useEffect, useRef, useState } from "react";
-import { Toc, TocProps } from "@/views/Viewer/Epub/Toc.tsx";
+import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { request } from "@/helpers/request.ts";
 import { Mark, TextMark } from "@/helpers/marker/types";
@@ -11,6 +11,7 @@ import { substitute } from "@/helpers/epub";
 import { MenuBar } from "./MenuBar";
 import { ScrollArea, Spinner } from "@radix-ui/themes";
 import { ContentRender } from "./ContentRender";
+import { BookResItem, NoteResItem } from "@/interface/book";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -29,23 +30,19 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [currentSection, setCurrentSection] = useState<Section>();
   const [content, setContent] = useState<string>("");
 
-  function getEpubBlobs() {
-    request
+  function getBookBlobs() {
+    return request
       .get(`books/${bookId}/blobs`, {
         responseType: "blob",
       })
       .then((res) => {
-        const bookRes = ePub(res.data);
-
-        console.log("bookRes", bookRes);
-
-        setBook(bookRes);
+        return ePub(res.data);
       });
   }
 
-  function getBookAdditionalInfo() {
-    request.get(`books/${bookId}`).then((res) => {
-      console.log("%c Line:65 🥐 res", "color:#33a5ff", res);
+  function getBookDetail() {
+    return request.get(`books/${bookId}`).then((res) => {
+      return res.data;
     });
   }
 
@@ -76,14 +73,15 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       });
   }
 
-  const display = (item: number) => {
+  const display = (index: number, book?: Book) => {
     setLoading(true);
 
-    const section = book?.spine.get(item);
+    const section = book?.spine.get(index);
 
     if (section && book) {
       setCurrentSection(section);
       setContent("");
+
       const p = section.load(book.load.bind(book));
 
       // @ts-expect-error library typed error
@@ -101,9 +99,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           // str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
 
           setContent(str);
-          setCurrentSectionIndex(item);
+          setCurrentSectionIndex(index);
           scrollAreaRef.current && scrollAreaRef.current.scrollTo(0, 0);
           setLoading(false);
+
+          updateReadProgress(index, 0);
         }
       });
     }
@@ -111,19 +111,35 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     return section;
   };
 
+  function updateReadProgress(spine_index: number, read_progress: number) {
+    const body = {
+      spine_index: spine_index.toString(),
+      read_progress,
+      read_progress_updated_at: new Date(),
+    };
+
+    request
+      .post(`/books/${bookId}/additional_infos`, {
+        ...body,
+      })
+      .then((res) => {
+        console.log("%c Line:126 🍎 res", "color:#fca650", res);
+      });
+  }
+
   const [prevLabel, setPrevLabel] = useState("");
   const [nextLabel, setNextLabel] = useState("");
 
   const nextPage = () => {
-    display(currentSectionIndex + 1);
+    display(currentSectionIndex + 1, book);
   };
 
   const prevPage = () => {
-    display(currentSectionIndex - 1);
+    display(currentSectionIndex - 1, book);
   };
 
   useEffect(() => {
-    const keyListener = function (e: any) {
+    const keyListener = function (e: KeyboardEvent) {
       if ((e.keyCode || e.which) === 37) {
         prevPage();
       }
@@ -142,27 +158,29 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   useEffect(() => {
     const root = document.getElementById("canvasRoot") as HTMLElement;
-    const el = document.getElementById("canvas") as HTMLElement;
+    const el = document.getElementById("canvas") as HTMLDivElement;
 
     markerRef.current = new Marker(root, el);
   }, []);
 
   useEffect(() => {
     if (bookId) {
-      getNotes();
-      getEpubBlobs();
-      getBookAdditionalInfo();
+      Promise.all([getNotes(), getBookBlobs(), getBookDetail()]).then(
+        ([_notes, bookRes, detail]: [NoteResItem[], Book, BookResItem]) => {
+          setBook(bookRes);
+          const { spine_index } = detail.additional_infos;
+          if (bookRes) {
+            bookRes.opened.then(function () {
+              display(parseInt(spine_index, 10), bookRes);
+              setCurrentSection(bookRes.spine.get(spine_index));
+            });
+          }
+        }
+      );
     }
   }, [bookId]);
 
-  useEffect(() => {
-    if (book) {
-      book.opened.then(function () {
-        display(currentSectionIndex);
-        setCurrentSection(book.spine.get(currentSectionIndex));
-      });
-    }
-  }, [book]);
+  useEffect(() => {}, [book]);
 
   function getNavItem(toc: NavItem[], href: string) {
     for (let i = 0; i < toc.length; i++) {
@@ -347,11 +365,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     const { href } = item;
     const section = book?.spine.get(href);
 
-    console.log("section", section);
-
-    setCurrentSection(section);
-    setCurrentSectionIndex(section?.index as number);
-    display(section?.index);
+    if (section) {
+      setCurrentSection(section);
+      setCurrentSectionIndex(section.index as number);
+      display(section.index, book);
+    }
   }
 
   return (
