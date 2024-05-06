@@ -1,9 +1,11 @@
-import { Badge } from "@radix-ui/themes";
+import { Badge, ScrollArea } from "@radix-ui/themes";
 import { useState } from "react";
+import { AuthorList } from "./AuthorList";
 
 const Category = {
   Author: "author",
   Publisher: "publisher",
+  Language: "language",
 } as const;
 
 type CategoryType = (typeof Category)[keyof typeof Category];
@@ -32,8 +34,11 @@ export const CategoryFilter = () => {
   }
 
   return (
-    <div>
-      <div className="flex gap-1">{renderBadges()}</div>
+    <div className="flex-1 min-h-0 overflow-hidden">
+      <div className="flex gap-1 px-3 pt-1 pb-2">{renderBadges()}</div>
+        <ScrollArea size="1" scrollbars="vertical" className=" min-w-0 max-w-full">
+          <AuthorList />
+        </ScrollArea>
     </div>
   );
 };
