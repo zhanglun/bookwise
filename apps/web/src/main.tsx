@@ -13,6 +13,7 @@ import { Theme } from "@radix-ui/themes";
 
 import "./test.ts";
 import "./index.css";
+import { RouteConfig } from "./config.ts";
 
 const router = createBrowserRouter([
   {
@@ -20,11 +21,11 @@ const router = createBrowserRouter([
     element: <App></App>,
     children: [
       {
-        path: "/",
+        path: RouteConfig.HOME,
         element: <Home />,
       },
       {
-        path: "/search",
+        path: RouteConfig.SEARCH,
         element: <Search />,
       },
       {

@@ -11,6 +11,8 @@ import {
 } from "@radix-ui/react-icons";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { CategoryFilter } from "./category/CategoryFilter";
+import { RouteConfig } from "@/config";
+import { AuthorList } from "./category/AuthorList";
 
 export const Sidebar = () => {
   const store = useBearStore((state) => ({
@@ -102,15 +104,15 @@ export const Sidebar = () => {
     <div className="h-full w-[320px] flex flex-col gap-2 grid-in-left-sidebar">
       <div className="bg-cell text-cell-foreground rounded-md px-3 py-2">
         <NavLink
-          to={"/"}
-          className="flex items-center gap-3 py-1 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
+          to={RouteConfig.HOME}
+          className="flex items-center gap-3 py-2 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
         >
           <HomeIcon width={20} height={20} />
           <span>Home</span>
         </NavLink>
         <NavLink
-          to={"/search"}
-          className="flex items-center gap-3 py-1 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
+          to={RouteConfig.SEARCH}
+          className="flex items-center gap-3 py-2 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
         >
           <MagnifyingGlassIcon width={20} height={20} />
           <span>Search</span>
@@ -141,7 +143,9 @@ export const Sidebar = () => {
         <div className="px-3 py-1">
           <CategoryFilter />
         </div>
-        <div></div>
+        <div>
+          <AuthorList />
+        </div>
       </div>
     </div>
   );
