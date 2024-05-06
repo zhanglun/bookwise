@@ -1,9 +1,16 @@
 import { NavLink } from "react-router-dom";
-import { HomeIcon, LibraryIcon, Plus, SearchIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { parseEpub } from "@/helpers/epub";
 import { useBearStore } from "@/store";
+import {
+  DashboardIcon,
+  HomeIcon,
+  MagnifyingGlassIcon,
+  PlusCircledIcon,
+} from "@radix-ui/react-icons";
+import { IconButton, Tooltip } from "@radix-ui/themes";
+import { CategoryFilter } from "./category/CategoryFilter";
 
 export const Sidebar = () => {
   const store = useBearStore((state) => ({
@@ -93,34 +100,48 @@ export const Sidebar = () => {
 
   return (
     <div className="h-full w-[320px] flex flex-col gap-2 grid-in-left-sidebar">
-      <div className="bg-cell text-cell-foreground rounded-md px-2 py-3">
+      <div className="bg-cell text-cell-foreground rounded-md px-3 py-2">
         <NavLink
           to={"/"}
-          className="flex items-center gap-3 py-3 px-1 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
+          className="flex items-center gap-3 py-1 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
         >
-          <HomeIcon size={22} />
+          <HomeIcon width={20} height={20} />
           <span>Home</span>
         </NavLink>
         <NavLink
           to={"/search"}
-          className="flex items-center gap-3 py-3 px-1 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
+          className="flex items-center gap-3 py-1 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]"
         >
-          <SearchIcon size={22} />
+          <MagnifyingGlassIcon width={20} height={20} />
           <span>Search</span>
         </NavLink>
       </div>
-      <div className="flex-1 flex bg-cell text-cell-foreground rounded-md">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 py-2 px-4 font-bold text-gray-11 hover:text-gray-12">
-            <LibraryIcon />
+      <div className="flex-1 flex flex-col bg-cell text-cell-foreground rounded-md">
+        <div className="flex items-center justify-between px-3 py-2">
+          <div className="flex items-center gap-3 py-1 px-2 font-bold text-gray-11 hover:text-gray-12">
+            <DashboardIcon width={20} height={20} />
             <span>Library</span>
           </div>
-          <div>
-            <div className="tooltip" data-tip="Add new book">
-              <Plus onClick={openFileDialog} />
-            </div>
+          <div className="px-1 flex items-center">
+            <Tooltip content="Add new book">
+              <IconButton
+                variant="ghost"
+                radius="full"
+                className="cursor-pointer"
+              >
+                <PlusCircledIcon
+                  onClick={openFileDialog}
+                  width={20}
+                  height={20}
+                />
+              </IconButton>
+            </Tooltip>
           </div>
         </div>
+        <div className="px-3 py-1">
+          <CategoryFilter />
+        </div>
+        <div></div>
       </div>
     </div>
   );
