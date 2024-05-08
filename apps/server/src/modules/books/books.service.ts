@@ -102,7 +102,7 @@ export class BooksService {
     if (where.author_id) {
       where.authors = {
         some: {
-          author_id: where.author_id,
+          id: where.author_id,
         },
       };
 
@@ -296,7 +296,6 @@ export class BooksService {
     const bookModel = { ...book };
 
     bookModel.path = bookPath;
-    bookModel.cover = cover[1];
     bookModel.format = ext;
 
     console.log(
@@ -346,11 +345,20 @@ export class BooksService {
     const bookPo = await this.prisma.book.create({
       data: {
         ...bookModel,
-        authors: { connect: { id: author.id } },
+        authors: {
+          connect: {
+            id: author.id,
+          },
+        },
         publisher: { connect: { id: publisher.id } },
         language: {
           connect: { id: language.id },
         },
+      },
+      include: {
+        authors: true,
+        publisher: true,
+        language: true,
       },
     });
 

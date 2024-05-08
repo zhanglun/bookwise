@@ -9,7 +9,19 @@ if (env.DEV) {
 }
 
 export const createInstance = (config: AxiosRequestConfig): AxiosInstance => {
-  return axios.create(config);
+  const instance = axios.create(config);
+
+  instance.interceptors.response.use(function (response) {
+    // Any status code that lie within the range of 2xx cause this function to trigger
+    // Do something with response data
+    return response;
+  }, function (error) {
+    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Do something with response error
+    return Promise.reject(error.response || error);
+  });
+
+  return instance;
 }
 
 export const get = (url: string, config?: AxiosRequestConfig) => {

@@ -51,7 +51,7 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
     panelBackground="translucent"
     accentColor="indigo"
   >
-    <Toaster />
+    <Toaster richColors={true} />
     <RouterProvider router={router} />
   </Theme>
 );
