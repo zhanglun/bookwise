@@ -1,6 +1,6 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, StreamableFile } from '@nestjs/common';
 import * as AdmZip from 'adm-zip';
 import * as MimeType from 'mime-types';
 import { SettingsService } from '../settings/settings.service';
@@ -8,7 +8,12 @@ import { AuthorsService } from 'src/modules/authors/authors.service';
 import { PublishersService } from 'src/modules/publishers/publishers.service';
 import { UpdateAdditionalInfoDto } from './dto/update-additional-info';
 import { PaginatedResource } from './dto/find-book.dto';
-import { Filtering, getOrder, getWhere, Sorting } from './books.decorator';
+import {
+  Filtering,
+  getOrder,
+  getWhere,
+  Sorting,
+} from '../../common/decorators';
 import { PrismaService } from 'src/prisma.service';
 import { Book, BookFormat } from '@prisma/client';
 
@@ -84,38 +89,48 @@ export class BooksService {
   }
   public async findAll(
     sort?: Sorting,
-    filter?: Filtering,
+    filter?: Filtering[],
   ): Promise<PaginatedResource<Partial<Book>>> {
-    const finder = getWhere(filter);
-
+    const where = filter.map(getWhere).reduce((acu, cur) => {
+      console.log('cur', cur);
+      acu = { ...acu, ...cur };
+      console.log('acu', acu);
+      return acu;
+    }, {} as any);
     const order = getOrder(sort);
-    console.log('%c Line:73 🌶 orer', 'color:#33a5ff', order);
 
-    console.log('%c Line:76 🌽 a', 'color:#2eafb0', finder);
+    if (where.author_id) {
+      where.authors = {
+        some: {
+          author_id: where.author_id,
+        },
+      };
 
-    const record = await this.prisma.book.findMany({
-      // where: finder,
-      // where: {
-      //   authors: {
-      //     none: {
-      //       author: {
-      //         name: 'ga',
-      //       },
-      //     },
-      //   },
-      // },
-      orderBy: order,
-      include: {
-        authors: true,
-        publisher: true,
-      },
-    });
+      delete where.author_id;
+    }
 
-    console.log(record);
+    console.log('%c Line:76 🌽 finder', 'color:#2eafb0', where);
+
+    const [record, total] = await Promise.all([
+      this.prisma.book.findMany({
+        where,
+        orderBy: order,
+        include: {
+          authors: true,
+          publisher: true,
+          additional_infos: true,
+        },
+      }),
+
+      this.prisma.book.count({
+        where,
+        orderBy: order,
+      }),
+    ]);
 
     return {
-      items: [],
-      total: 0,
+      items: record,
+      total: total,
     };
   }
 
@@ -217,16 +232,7 @@ export class BooksService {
       result.removedRow = 1;
 
       if (deleteResult && fs.existsSync(bookEntity.path)) {
-        let folderDir = bookEntity.path;
-
-        // folderDir.pop();
-
-        // console.log(
-        //   '🚀 ~ file: books.service.ts:288 ~ BooksService ~ deleteBook ~ folderDir:',
-        //   folderDir,
-        // );
-
-        // folderDir = folderDir.join(path.sep) as string;
+        const folderDir = bookEntity.path.split(path.sep).pop();
 
         if (fs.existsSync(folderDir)) {
           fs.rmSync(folderDir, { recursive: true, force: true });
@@ -378,6 +384,23 @@ export class BooksService {
         return fs.createReadStream(path);
       }
     }
+  }
+
+  /**
+   * get cover.jpg
+   * @param dir book dir
+   * @returns StreamableFile
+   */
+  public getCoverFigure(dir: string): StreamableFile {
+    const name = dir.split(path.sep);
+
+    name.pop();
+    name.push('cover.jpg');
+
+    const coverPath = name.join(path.sep).trim();
+    const file = fs.createReadStream(coverPath);
+
+    return new StreamableFile(file);
   }
 }
 // @Injectable()
@@ -568,23 +591,6 @@ export class BooksService {
 //     }
 
 //     return result;
-//   }
-
-//   /**
-//    * get cover.jpg
-//    * @param dir book dir
-//    * @returns StreamableFile
-//    */
-//   public getCoverFigure(dir: string): StreamableFile {
-//     const name = dir.split(path.sep);
-
-//     name.pop();
-//     name.push('cover.jpg');
-
-//     const coverPath = name.join(path.sep).trim();
-//     const file = fs.createReadStream(coverPath);
-
-//     return new StreamableFile(file);
 //   }
 
 // }

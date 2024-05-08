@@ -13,7 +13,7 @@ type CategoryType = (typeof Category)[keyof typeof Category];
 export const CategoryFilter = () => {
   const [current, setCurrent] = useState<CategoryType>(Category.Author);
 
-  function handleSelect(key: string, value: CategoryType) {
+  function handleSelect(_key: string, value: CategoryType) {
     setCurrent(value);
   }
 
@@ -36,7 +36,7 @@ export const CategoryFilter = () => {
   return (
     <div className="flex-1 min-h-0 overflow-hidden">
       <div className="flex gap-1 px-3 pt-1 pb-2">{renderBadges()}</div>
-        <ScrollArea size="1" scrollbars="vertical" className=" min-w-0 max-w-full">
+        <ScrollArea size="1" scrollbars="vertical" className="min-w-0 max-w-full">
           <AuthorList />
         </ScrollArea>
     </div>

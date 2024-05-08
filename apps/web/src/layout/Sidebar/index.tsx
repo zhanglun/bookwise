@@ -2,7 +2,6 @@ import { NavLink } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { parseEpub } from "@/helpers/epub";
-import { useBearStore } from "@/store";
 import {
   DashboardIcon,
   HomeIcon,
@@ -12,13 +11,9 @@ import {
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { CategoryFilter } from "./category/CategoryFilter";
 import { RouteConfig } from "@/config";
-import { AuthorList } from "./category/AuthorList";
 import clsx from "clsx";
 
 export const Sidebar = () => {
-  const store = useBearStore((state) => ({
-    settings: state.settings,
-  }));
   const [files, setFiles] = useState<File[]>([]);
 
   const openFileDialog = (): void => {
@@ -92,10 +87,6 @@ export const Sidebar = () => {
 
       for (const file of files) {
         console.log("%c Line:83 🍤 file", "color:#465975", file);
-        // formData.append("files", file);
-        // formData.append("books", await parseEpub(file));
-        // console.log("%c Line:72 🍢 formData", "color:#ea7e5c", formData);
-        // console.log("🚀 ~ file: Toc.tsx:16 ~ useEffect ~ file:", file);
         fns.push(parseFileAndSaveIt(file));
       }
     }

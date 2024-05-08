@@ -27,6 +27,7 @@ export class NotesService {
 
   async findAll(sort?: Sorting, filter?: any) {
     console.log('🚀 ~ NotesService ~ findAll ~ filter:', filter);
+
     const order = getOrder(sort);
     const where = filter.map(getWhere).reduce((acu, cur) => {
       console.log('cur', cur);
@@ -34,10 +35,12 @@ export class NotesService {
       console.log('acu', acu);
       return acu;
     }, {});
+
     console.log('🚀 ~ NotesService ~ findAll ~ where:', where);
+
     const record = await this.prisma.note.findMany({
+      where,
       orderBy: order,
-      where: where,
       include: {
         book: {
           select: {

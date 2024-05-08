@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import App from "./App.tsx";
 import { Home } from "./views/Home";
 import { Library } from "./views/Library";
+import { Filter } from "./views/Filter";
 import { Search } from "./views/Search/index.tsx";
 
 import { Viewer } from "@/views/Viewer";
@@ -27,6 +28,10 @@ const router = createBrowserRouter([
       {
         path: RouteConfig.SEARCH,
         element: <Search />,
+      },
+      {
+        path: RouteConfig.FILTER,
+        element: <Filter />,
       },
       {
         path: "/library",

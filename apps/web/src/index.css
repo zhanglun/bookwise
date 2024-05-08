@@ -1,8 +1,11 @@
-@import '@radix-ui/themes/styles.css';
+@import "@radix-ui/themes/styles.css";
 @import "./styles/index.css";
-
 
 #root {
   width: 100vw;
   height: 100vh;
+}
+
+.rt-ScrollAreaViewport > * {
+  max-width: 100%;
 }

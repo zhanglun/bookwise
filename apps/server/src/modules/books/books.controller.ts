@@ -24,7 +24,7 @@ import {
   FilteringParams,
   Sorting,
   SortingParams,
-} from './books.decorator';
+} from '../../common/decorators';
 import { Book } from '@prisma/client';
 import { Message } from 'src/common/messages';
 
@@ -43,17 +43,8 @@ export class BooksController {
   // getBookCover(@Query() query: { path: string }): StreamableFile {
   //   return this.booksService.getCoverFigure(query.path);
   // }
-  @Get('/recently-add')
-  queryRecentlyAdd(): Promise<Book[]> {
-    return this.booksService.queryRecentlyAdd();
-  }
 
-  @Get('/recently-reading')
-  queryRecentlyReading(): Promise<Book[]> {
-    return this.booksService.queryRecentlyReading();
-  }
-
-  @Get()
+  @Get('/')
   findAll(
     @SortingParams([
       'title',
@@ -73,7 +64,7 @@ export class BooksController {
       'format',
       'language_id',
     ])
-    filter?: Filtering,
+    filter?: Filtering[],
   ): Promise<PaginatedResource<Partial<Book>>> {
     this.logger.log(
       `REST request to get books:, ${JSON.stringify(sort)}, ${JSON.stringify(
@@ -81,6 +72,16 @@ export class BooksController {
       )}`,
     );
     return this.booksService.findAll(sort, filter);
+  }
+
+  @Get('/recently-add')
+  queryRecentlyAdd(): Promise<Book[]> {
+    return this.booksService.queryRecentlyAdd();
+  }
+
+  @Get('/recently-reading')
+  queryRecentlyReading(): Promise<Book[]> {
+    return this.booksService.queryRecentlyReading();
   }
 
   @Get('/:id')
