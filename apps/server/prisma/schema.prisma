@@ -24,14 +24,15 @@ enum BookFormat {
 model Book {
   id                       Int                        @id @default(autoincrement())
   title                    String                     @unique
-  subject                  String
-  description              String
-  contributor              String
-  source                   String
+  subject                  String                     @default("")
+  description              String                     @default("")
+  contributor              String                     @default("")
+  source                   String                     @default("")
+  rights                   String                     @default("")
   format                   BookFormat
-  page_count               Int
-  isbn                     String
-  path                     String
+  page_count               Int                        @default(0)
+  isbn                     String                     @default("")
+  path                     String                     @default("")
   publish_at               DateTime
   created_at               DateTime                   @default(now())
   updated_at               DateTime                   @updatedAt()
@@ -71,8 +72,8 @@ model BookAdditionalInfo {
 }
 
 model Author {
-  id    Int                      @id @default(autoincrement())
-  name  String                   @unique
+  id    Int    @id @default(autoincrement())
+  name  String @unique
   // books AuthorBookRelationship[]
   books Book[]
 

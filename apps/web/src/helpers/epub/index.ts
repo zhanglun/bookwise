@@ -1,3 +1,4 @@
+import { FileFormat } from "@/interface/book";
 import JSZip from "jszip";
 
 /**
@@ -8,7 +9,11 @@ import JSZip from "jszip";
  * @returns {element[]} elements
  * @memberof Core
  */
-export function qsp(el: Element | Document, sel: string, props: { [key: string]: string }) {
+export function qsp(
+  el: Element | Document,
+  sel: string,
+  props: { [key: string]: string }
+) {
   let q, filtered;
 
   if (typeof el.querySelector != "undefined") {
@@ -26,7 +31,6 @@ export function qsp(el: Element | Document, sel: string, props: { [key: string]:
 
     filtered = Array.prototype.slice.call(q, 0).filter(function (el) {
       for (const prop in props) {
-
         if (el.getAttribute(prop) === props[prop]) {
           return true;
         }
@@ -50,12 +54,12 @@ export interface BookNavItem {
 }
 
 export interface SpineItem {
-  id: string,
-  idref: string,
-  properties: Array<string>,
-  index: number,
-  url: string,
-  href: string,
+  id: string;
+  idref: string;
+  properties: Array<string>;
+  index: number;
+  url: string;
+  href: string;
 }
 
 export interface BookContainer {
@@ -72,22 +76,22 @@ export interface EpubBaseObject {
 }
 
 export interface PackagingMetadataObject {
-  title: string,
-  creator: string,
-  subject: string,
-  contributor: string,
-  description: string,
-  publish_at: string,
-  publisher: string,
-  identifier: string,
-  language: string,
-  rights: string,
-  modified_date: string,
-  layout: string,
-  orientation: string,
-  flow: string,
-  viewport: string,
-  spread: string
+  title: string;
+  creator: string;
+  subject: string;
+  contributor: string;
+  description: string;
+  publish_at: string;
+  publisher: string;
+  identifier: string;
+  language: string;
+  rights: string;
+  modified_date: string;
+  layout: string;
+  orientation: string;
+  flow: string;
+  viewport: string;
+  spread: string;
 }
 
 export interface PackagingObject {
@@ -100,8 +104,7 @@ export interface PackagingObject {
   metadata: PackagingMetadataObject;
 }
 
-export interface EpubObject extends EpubBaseObject, PackagingObject {
-}
+export interface EpubObject extends EpubBaseObject, PackagingObject {}
 
 export const parseContainerXML = async (
   data: JSZip.JSZipObject | null
@@ -116,7 +119,7 @@ export const parseContainerXML = async (
   }
 
   const res = await data?.async("uint8array");
-  const t = await new Blob([ res ], { type: "opf" }).text();
+  const t = await new Blob([res], { type: "opf" }).text();
   const parser = new DOMParser();
   const doc = parser.parseFromString(t, "application/xml");
 
@@ -247,7 +250,7 @@ export const parsePackage = async (
   }
 
   const res = await data?.async("uint8array");
-  const t = await new Blob([ res ], { type: "opf" }).text();
+  const t = await new Blob([res], { type: "opf" }).text();
   const parser = new DOMParser();
   const packageDocument = parser.parseFromString(t, "application/xml");
 
@@ -318,7 +321,7 @@ export const findNcxPath = (manifestNode: Element, spineNode: Element) => {
 
     if (tocId) {
       // node = manifestNode.querySelector("item[id='" + tocId + "']");
-      node = manifestNode.querySelector(`#${ tocId }`);
+      node = manifestNode.querySelector(`#${tocId}`);
     }
   }
 
@@ -331,7 +334,11 @@ export const findNavPath = (manifestNode: Element) => {
   return node ? node.getAttribute("href") : false;
 };
 
-export const parseSpine = (spineNode: Element, manifest: BookManifest, basePath: string): SpineItem[] => {
+export const parseSpine = (
+  spineNode: Element,
+  manifest: BookManifest,
+  basePath: string
+): SpineItem[] => {
   const spine: SpineItem[] = [];
 
   const selected = spineNode.querySelectorAll("itemref");
@@ -380,7 +387,7 @@ export const parseNcx = async (
   }
 
   const res = await data?.async("uint8array");
-  const t = await new Blob([ res ], { type: "xml" }).text();
+  const t = await new Blob([res], { type: "xml" }).text();
   const parser = new DOMParser();
   const doc = parser.parseFromString(t, "application/xml");
 
@@ -469,9 +476,7 @@ export const findCoverPath = (packageDocument: HTMLElement | Document) => {
   }
 };
 
-export const parseEpub = async (
-  bookBlob: Blob
-): Promise<EpubObject> => {
+export const parseEpub = async (bookBlob: Blob): Promise<EpubObject> => {
   // unzip
   const zip = new JSZip();
   const result = await zip.loadAsync(bookBlob);
@@ -501,34 +506,66 @@ export const accessFileContent = async (
   type?: string
 ) => {
   const unit8 = await file.async("uint8array");
-  const blob = await new Blob([ unit8 ], { type: type || "text" }).text();
+  const blob = await new Blob([unit8], { type: type || "text" }).text();
 
   return blob;
 };
 
-export const accessImage = async (file: JSZip.JSZipObject, type: string): Promise<Blob> => {
+export const accessImage = async (
+  file: JSZip.JSZipObject,
+  type: string
+): Promise<Blob> => {
   const unit8 = await file.async("uint8array");
-  return new Blob([ unit8 ], { type });
+  return new Blob([unit8], { type });
 };
 
-export const accessPageContent = async (file: JSZip.JSZipObject): Promise<HTMLElement|null> => {
+export const accessPageContent = async (
+  file: JSZip.JSZipObject
+): Promise<HTMLElement | null> => {
   const xml = await accessFileContent(file, "text/html");
   const parser = new DOMParser();
   const content = parser.parseFromString(xml, "application/xhtml+xml");
   const body = content.querySelector("body");
 
   return Promise.resolve(body);
-}
+};
 
-export function substitute(content: string, urls: string[], replacements: string[]) {
-  urls.forEach(function(url, i){
+export function substitute(
+  content: string,
+  urls: string[],
+  replacements: string[]
+) {
+  urls.forEach(function (url, i) {
     if (url && replacements[i]) {
       // Account for special characters in the file name.
       // See https://stackoverflow.com/a/6318729.
       url = url.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      content = content.replace(new RegExp(`[^"]*${url}`, "g"), replacements[i]);
+      content = content.replace(
+        new RegExp(`[^"]*${url}`, "g"),
+        replacements[i]
+      );
     }
   });
 
   return content;
+}
+
+export function getFileFormatType(
+  file: File
+): (typeof FileFormat)[keyof typeof FileFormat] {
+  const mimeType = file.type;
+  const formatTypes: {
+    [type: string]: (typeof FileFormat)[keyof typeof FileFormat];
+  } = {
+    "application/pdf": FileFormat.PDF,
+    "application/epub+zip": FileFormat.PDF,
+  };
+
+  for (const key in formatTypes) {
+    if (mimeType.startsWith(key)) {
+      return formatTypes[key];
+    }
+  }
+
+  return FileFormat.UNKNOWN;
 }

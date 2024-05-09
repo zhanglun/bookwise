@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { IconButton, Tooltip } from "@radix-ui/themes";
-import { parseEpub } from "@/helpers/epub";
+import { getFileFormatType, parseEpub } from "@/helpers/epub";
 import { toast } from "sonner";
 import { request } from "@/helpers/request";
+import { BookRequestItem } from "@/interface/book";
 
 // import { request } from "@/helpers/request";
 
-async function createFilesMeta(file: File) {
+async function createFilesMeta(file: File): Promise<[BookRequestItem, string]> {
   const bookInstance = await parseEpub(file);
   const { metadata, coverPath } = bookInstance;
-  console.log("%c Line:16 🍷 metadata", "color:#4fff4B", metadata);
 
   return [
     {
@@ -19,8 +18,9 @@ async function createFilesMeta(file: File) {
       description: metadata.description,
       contributor: metadata.contributor,
       source: "",
+      rights: "",
       language: metadata.language,
-      format: "",
+      format: getFileFormatType(file),
       page_count: 0,
       isbn: "",
       authors: metadata.creator,
@@ -32,8 +32,6 @@ async function createFilesMeta(file: File) {
 }
 
 export const Uploader = () => {
-  const [files, setFiles] = useState<File[]>([]);
-
   const openFileDialog = (): void => {
     const input = document.createElement("input");
 
@@ -50,7 +48,6 @@ export const Uploader = () => {
           "🚀 ~ file: useBook.ts:9 ~ input.addEventListener ~ files:",
           files
         );
-        setFiles(files);
 
         for (const file of files) {
           console.log("%c Line:83 🍤 file", "color:#465975", file);
