@@ -14,21 +14,21 @@ export const Book = (props: BookProps) => {
 
   return (
     <div
-      className="w-full border border-border rounded-lg isolation bg-white transition-all duration-[0.5s] hover:scale-[1.02] hover:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] group"
+      className="w-full border border-[var(--gray-5)] rounded-lg isolation bg-[var(--gray-2)] transition-all duration-[0.5s] hover:bg[var(--gray-3)]hover:scale-[1.02] hover:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] group"
       onMouseEnter={() => onHover && onHover(data)}
     >
       <div className="h-[308px] flex flex-col">
         <div className="w-full h-[202px] shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
           <Cover book={data} onClick={() => onClick && onClick(data)} />
         </div>
-        <div className="flex-1 p-3 flex flex-col gap-1 border-t border-border">
+        <div className="flex-1 p-3 flex flex-col gap-1 border-t border-[var(--gray-5)]">
           <div className="leading-5">
             <span className="text-xs">{data.format}</span>
           </div>
           <h1 className="text-sm font-bold line-clamp-2 leading-5 flex-1 balance">
             {data.title}
           </h1>
-          <div className="leading-5 flex flex-row items-center text-xs leading text-muted-foreground">
+          <div className="leading-5 flex flex-row items-center text-xs leading text-[var(--gray-11)]">
             <span className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
               {authors.map((author) => {
                 return <span>{author.name}</span>;

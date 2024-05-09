@@ -12,6 +12,11 @@ import { MenuBar } from "./MenuBar";
 import { ScrollArea, Spinner } from "@radix-ui/themes";
 import { ContentRender } from "./ContentRender";
 import { BookResItem, NoteResItem } from "@/interface/book";
+import {
+  ArrowLeftIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from "@radix-ui/react-icons";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -395,28 +400,29 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             <Spinner size="3" />
           </div>
         )}
-        <div
-          className="relative m-auto max-w-[1200px] px-[60px]"
-          id="canvasRoot"
-        >
-          <div className="relative m-auto max-w-[980px]">
+        <div className="relative m-auto max-w-[1200px]" id="canvasRoot">
+          <div className="relative m-auto max-w-[980px] px-[60px]">
             <section className="py-16 w-full h-full" id="book-section">
               <ContentRender contentString={content} />
             </section>
-            <div className="flex justify-between items-center">
-              <span id="prev" className="" onClick={() => prevPage()}>
-                {prevLabel}
-              </span>
-              <span id="next" className="" onClick={() => nextPage()}>
-                {nextLabel}
-              </span>
-            </div>
+            <div
+              id="canvas"
+              className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+            />
           </div>
-          <div
-            id="canvas"
-            className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
-          />
         </div>
+        <span
+          className="absolute left-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
+          onClick={() => prevPage()}
+        >
+          <ChevronLeftIcon width={22} height={22} />
+        </span>
+        <span
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
+          onClick={() => nextPage()}
+        >
+          <ChevronRightIcon width={22} height={22} />
+        </span>
       </ScrollArea>
       {/* <MarkerToolbar
         open={open}

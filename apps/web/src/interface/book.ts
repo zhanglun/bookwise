@@ -9,7 +9,7 @@ export interface AdditionalInfos {
 }
 
 export interface BookResItem {
-  id: string;
+  id: number;
   title: string;
   subject: string;
   description: string;
@@ -17,7 +17,7 @@ export interface BookResItem {
   source: string;
   rights: string;
   language_id: string;
-  format: Format;
+  format: typeof FileFormat[keyof typeof FileFormat];
   page_size: number;
   isbn: string;
   path: string;
@@ -52,7 +52,7 @@ export interface BokUploadRequestItem {
 }
 
 export interface AuthorResItem {
-  id: string;
+  id: number;
   name: string;
 }
 export interface PublisherResItem {

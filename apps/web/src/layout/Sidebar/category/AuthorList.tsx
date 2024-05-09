@@ -3,7 +3,12 @@ import { request } from "@/helpers/request";
 import { AuthorResItem } from "@/interface/book";
 import { Avatar, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
-import { createSearchParams, useLocation, useNavigate } from "react-router-dom";
+import {
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { CategoryEnum } from ".";
 import clsx from "clsx";
 
@@ -46,8 +51,9 @@ export const AuthorItem = ({ author, className }: AuthorItemProps) => {
 
 export const AuthorList = () => {
   const [authors, setAuthors] = useState<AuthorResItem[]>([]);
-  const [currentAuthor, setCurrentAuthor] = useState<string>();
+  const [currentAuthor, setCurrentAuthor] = useState<number>();
   const { state } = useLocation();
+  const [searchParams] = useSearchParams();
 
   console.log("%c Line:13 🍻 state", "color:#fca650", state);
 
@@ -58,11 +64,10 @@ export const AuthorList = () => {
   }, []);
 
   useEffect(() => {
-    if (state?.author) {
-      console.log("%c Line:46 🍺 state.author", "color:#fca650", state.author);
-      setCurrentAuthor(state.author.id);
+    if (searchParams.get("author_id")) {
+      setCurrentAuthor(parseInt(searchParams.get("author.id") as string, 10));
     }
-  }, [state]);
+  }, [searchParams]);
 
   return (
     <div className="px-2 pt-3 flex flex-col gap-2">

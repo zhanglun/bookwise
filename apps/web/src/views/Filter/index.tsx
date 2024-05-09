@@ -1,11 +1,10 @@
 import { request } from "@/helpers/request";
 import { Heading, Text } from "@radix-ui/themes";
-import { useEffect, useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 export const Filter = () => {
-  const location = useLocation();
-  const query = useMemo(() => new URLSearchParams(location.search), []);
+  const [searchParams] = useSearchParams();
 
   function getFilterList(params: any) {
     request
@@ -18,19 +17,18 @@ export const Filter = () => {
   }
 
   useEffect(() => {
-    // const category = query.get("category") || undefined;
-    const author_id = query.get("author_id") || undefined;
-    console.log("%c Line:10 🍻 location", "color:#42b983", query);
+    const author_id = searchParams.get("author_id") || undefined;
+    console.log("%c Line:10 🍻 location", "color:#42b983", searchParams);
 
     getFilterList({
       filter: [`author_id:eq:${author_id}`],
     });
-  }, [query]);
+  }, [searchParams]);
 
   return (
     <div>
       <Heading size="5">Filter</Heading>
-      <Text>{query}</Text>
+      <Text>{searchParams}</Text>
     </div>
   );
 };
