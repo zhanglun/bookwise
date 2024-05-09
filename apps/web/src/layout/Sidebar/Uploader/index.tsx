@@ -5,8 +5,6 @@ import { toast } from "sonner";
 import { request } from "@/helpers/request";
 import { BookRequestItem } from "@/interface/book";
 
-// import { request } from "@/helpers/request";
-
 async function createFilesMeta(file: File): Promise<[BookRequestItem, string]> {
   const bookInstance = await parseEpub(file);
   const { metadata, coverPath } = bookInstance;

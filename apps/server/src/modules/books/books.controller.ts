@@ -38,11 +38,11 @@ export class BooksController {
   private readonly logger = new Logger(BooksController.name);
   constructor(private booksService: BooksService) {}
 
-  // @Get('cover')
-  // @Header('Content-Type', 'image/jpg')
-  // getBookCover(@Query() query: { path: string }): StreamableFile {
-  //   return this.booksService.getCoverFigure(query.path);
-  // }
+  @Get('cover')
+  @Header('Content-Type', 'image/jpg')
+  getBookCover(@Query() query: { path: string }): StreamableFile {
+    return this.booksService.getCoverFigure(query.path);
+  }
 
   @Get('/')
   findAll(
