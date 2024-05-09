@@ -4,6 +4,7 @@ import { request } from "@/helpers/request";
 import { useNavigate } from "react-router-dom";
 import { BookResItem } from "@/interface/book.ts";
 import { Heading, Separator, Text } from "@radix-ui/themes";
+import { BookContextMenu } from "@/components/BookContextMenu";
 
 export const Home = () => {
   const [recentlyAdd, setRecentlyAdd] = useState([]);
@@ -51,11 +52,13 @@ export const Home = () => {
       <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
         {recentlyReading.map((book: BookResItem) => {
           return (
-            <Book
-              key={book.id}
-              data={book}
-              onClick={() => navigate(`/viewer/${book.id}`)}
-            />
+            <BookContextMenu>
+              <Book
+                key={book.id}
+                data={book}
+                onClick={() => navigate(`/viewer/${book.id}`)}
+              />
+            </BookContextMenu>
           );
         })}
       </div>
