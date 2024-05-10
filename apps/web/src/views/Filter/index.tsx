@@ -1,4 +1,5 @@
 import { Book } from "@/components/Book";
+import { BookList } from "@/components/Book/List";
 import { request } from "@/helpers/request";
 import { useBook } from "@/hooks/book";
 import { AuthorResItem, BookResItem } from "@/interface/book";
@@ -59,17 +60,7 @@ export const Filter = () => {
           <div className="pt-6 pb-2">
             <Heading size="7">{author?.name}</Heading>
           </div>
-          <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
-            {books.map((book: BookResItem) => {
-              return (
-                <Book
-                  key={book.id}
-                  data={book}
-                  onClick={() => navigateToRead(book.id)}
-                />
-              );
-            })}
-          </div>
+          <BookList data={books} loading={loading} />
         </>
       )}
     </div>

@@ -8,9 +8,9 @@ export const BookContextMenu = ({ children }: BookContextMenuProps) => {
   return (
     <ContextMenu.Root>
       <ContextMenu.Trigger>
-        <>
-          {children}
-        </>
+        <div>
+        {children}
+        </div>
       </ContextMenu.Trigger>
       <ContextMenu.Content>
         <ContextMenu.Item shortcut="⌘ E">Edit</ContextMenu.Item>

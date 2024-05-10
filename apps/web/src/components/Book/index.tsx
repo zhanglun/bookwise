@@ -25,7 +25,7 @@ export const Book = (props: BookProps) => {
           <div className="leading-5">
             <span className="text-xs">{data.format}</span>
           </div>
-          <h1 className="text-sm font-bold line-clamp-2 leading-5 flex-1 balance">
+          <h1 className="text-sm font-bold line-clamp-2 h-[40px] leading-5 flex-0 balance">
             {data.title}
           </h1>
           <div className="leading-5 flex flex-row items-center text-xs leading text-[var(--gray-11)]">
