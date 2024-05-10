@@ -1,15 +1,17 @@
 import { Book } from "@/components/Book";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
-import { useNavigate } from "react-router-dom";
 import { BookResItem } from "@/interface/book.ts";
-import { Heading, Separator, Text } from "@radix-ui/themes";
+import { Heading, Separator, Spinner, Text } from "@radix-ui/themes";
 import { BookContextMenu } from "@/components/BookContextMenu";
+import { useBook } from "@/hooks/book";
 
 export const Home = () => {
   const [recentlyAdd, setRecentlyAdd] = useState([]);
   const [recentlyReading, setRecentlyReading] = useState([]);
-  const navigate = useNavigate();
+  const [readingLoading, setReadingLoading] = useState(true);
+  const [addLoading, setAddLoading] = useState(true);
+  const { navigateToRead } = useBook();
 
   useEffect(() => {
     request
@@ -22,6 +24,7 @@ export const Home = () => {
         const items = res.data;
 
         setRecentlyAdd(items);
+        setReadingLoading(false);
       });
     request
       .get("/books/recently-reading", {
@@ -33,6 +36,7 @@ export const Home = () => {
         const items = res.data;
 
         setRecentlyReading(items);
+        setAddLoading(false);
       });
   }, []);
 
@@ -50,13 +54,14 @@ export const Home = () => {
         </Text>
       </div>
       <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
+        <Spinner loading={readingLoading} />
         {recentlyReading.map((book: BookResItem) => {
           return (
             <BookContextMenu>
               <Book
                 key={book.id}
                 data={book}
-                onClick={() => navigate(`/viewer/${book.id}`)}
+                onClick={() => navigateToRead(book.id)}
               />
             </BookContextMenu>
           );
@@ -73,12 +78,13 @@ export const Home = () => {
         </Text>
       </div>
       <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
+        <Spinner loading={addLoading} />
         {recentlyAdd.map((book: BookResItem) => {
           return (
             <Book
               key={book.id}
               data={book}
-              onClick={() => navigate(`/viewer/${book.id}`)}
+              onClick={() => navigateToRead(book.id)}
             />
           );
         })}
