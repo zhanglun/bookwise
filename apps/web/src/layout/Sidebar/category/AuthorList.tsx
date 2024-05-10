@@ -5,7 +5,6 @@ import { Avatar, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import {
   createSearchParams,
-  useLocation,
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
@@ -21,16 +20,11 @@ export const AuthorItem = ({ author, className }: AuthorItemProps) => {
   const navigate = useNavigate();
 
   function navigateToFilterPage() {
-    // navigate(RouteConfig.FILTER, {
-    //   state: {
-    //     category: CategoryEnum.Author,
-    //     author: author,
-    //   },
-    // });
+        console.log("%c Line:28 🍬 author", "color:#7f2b82", author);
     navigate(
       `${RouteConfig.FILTER}?${createSearchParams({
         category: CategoryEnum.Author,
-        author_id: author.id,
+        author_id: author.id + "",
       })}`
     );
   }
@@ -38,7 +32,7 @@ export const AuthorItem = ({ author, className }: AuthorItemProps) => {
   return (
     <div
       className={clsx(
-        "flex items-center gap-2 p-1 text-sm cursor-pointer",
+        "flex items-center gap-2 p-2 rounded-md text-sm cursor-pointer",
         className
       )}
       onClick={navigateToFilterPage}
@@ -52,10 +46,7 @@ export const AuthorItem = ({ author, className }: AuthorItemProps) => {
 export const AuthorList = () => {
   const [authors, setAuthors] = useState<AuthorResItem[]>([]);
   const [currentAuthor, setCurrentAuthor] = useState<number>();
-  const { state } = useLocation();
   const [searchParams] = useSearchParams();
-
-  console.log("%c Line:13 🍻 state", "color:#fca650", state);
 
   useEffect(() => {
     request.get("/authors").then(({ data }) => {
@@ -65,18 +56,18 @@ export const AuthorList = () => {
 
   useEffect(() => {
     if (searchParams.get("author_id")) {
-      setCurrentAuthor(parseInt(searchParams.get("author.id") as string, 10));
+      setCurrentAuthor(parseInt(searchParams.get("author_id") as string, 10));
     }
   }, [searchParams]);
 
   return (
-    <div className="px-2 pt-3 flex flex-col gap-2">
+    <div className="px-2 pt-3 flex flex-col">
       {authors.map((item) => {
         return (
           <AuthorItem
             author={item}
             className={clsx({
-              "bg-accent-6": currentAuthor === item.id,
+              "bg-accent-6": currentAuthor == item.id,
             })}
           />
         );

@@ -11,7 +11,7 @@ export const Cover = (props: CoverProps) => {
   const { onClick, book } = props;
 
   const getBookCover = (): string => {
-    return `${axios.defaults.baseURL}/books/cover?path=${book.path}`
+    return `${axios.defaults.baseURL}/books/cover?path=${encodeURIComponent(book.path)}`
   }
 
   return book.path ? (

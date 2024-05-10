@@ -132,9 +132,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       });
   }
 
-  const [prevLabel, setPrevLabel] = useState("");
-  const [nextLabel, setNextLabel] = useState("");
-
   const nextPage = () => {
     display(currentSectionIndex + 1, book);
   };
@@ -176,7 +173,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           const { spine_index } = detail.additional_infos;
           if (bookRes) {
             bookRes.opened.then(function () {
-              display(parseInt(spine_index, 10), bookRes);
+              display(parseInt(spine_index || "0", 10), bookRes);
               setCurrentSection(bookRes.spine.get(spine_index));
             });
           }
@@ -187,50 +184,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   useEffect(() => {}, [book]);
 
-  function getNavItem(toc: NavItem[], href: string) {
-    for (let i = 0; i < toc.length; i++) {
-      const item = toc[i];
-
-      if (item.href === href) {
-        return item;
-      }
-
-      if (item.subitems && item.subitems.length > 0) {
-        return getNavItem(item.subitems, href);
-      }
-    }
-  }
-
-  useEffect(() => {
-    console.log("currentSection ===>", currentSection);
-
-    if (currentSection) {
-      const prevSection = currentSection.prev();
-      const nextSection = currentSection.next();
-
-      console.log("nextSection ==>", nextSection);
-
-      if (nextSection && nextSection.href) {
-        const next = getNavItem(book?.navigation.toc || [], nextSection.href);
-
-        setNextLabel(`${next?.label ? next.label : "Next"} »`);
-      } else {
-        setNextLabel("");
-      }
-
-      if (prevSection && prevSection.href) {
-        const prev = getNavItem(book?.navigation.toc || [], prevSection.href);
-
-        setPrevLabel(`« ${prev?.label ? prev.label : "Prev"}`);
-      } else {
-        setPrevLabel("");
-      }
-
-      // Add CFI fragment to the history
-      //history.pushState({}, '', section.href);
-      // window.location.hash = "#/" + currentSection.href;
-    }
-  }, [currentSection]);
 
   function handleSelectColor(color: string) {
     const config = {
