@@ -2,19 +2,20 @@ import { Book } from "@/components/Book";
 import { request } from "@/helpers/request";
 import { useBook } from "@/hooks/book";
 import { AuthorResItem, BookResItem } from "@/interface/book";
-import { Heading, Text } from "@radix-ui/themes";
+import { Heading, Spinner, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export const Filter = () => {
   const [searchParams] = useSearchParams();
   const { navigateToRead } = useBook();
+  const [loading, setLoading] = useState(true);
   const [author, setAuthor] = useState<AuthorResItem>();
   const [books, setBooks] = useState<BookResItem[]>([]);
   const [total, setTotal] = useState(0);
 
   function getFilterList(params: any) {
-    request
+    return request
       .get("/books", {
         params,
       })
@@ -23,12 +24,15 @@ export const Filter = () => {
 
         setTotal(total);
         setBooks(items);
+
+        return Promise.resolve();
       });
   }
 
   function getAuthorDetail(author_id: string) {
-    request.get(`/authors/${author_id}`).then(({ data }) => {
+    return request.get(`/authors/${author_id}`).then(({ data }) => {
       setAuthor(data);
+      return Promise.resolve();
     });
   }
 
@@ -36,29 +40,41 @@ export const Filter = () => {
     const author_id = searchParams.get("author_id") || undefined;
     if (author_id) {
       console.log("%c Line:10 🍻 location", "color:#42b983", searchParams);
+      setLoading(true);
 
-      getFilterList({
-        filter: [`author_id:eq:${author_id}`],
+      Promise.all([
+        getFilterList({
+          filter: [`author_id:eq:${author_id}`],
+        }),
+        getAuthorDetail(author_id),
+      ]).then(() => {
+        setLoading(false);
       });
-
-      getAuthorDetail(author_id);
+      setBooks([]);
     }
   }, [searchParams]);
 
   return (
     <div className=" bg-cell h-full px-4 sm:px-4">
-      <Heading size="5">{author?.name}</Heading>
-      <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
-        {books.map((book: BookResItem) => {
-          return (
-            <Book
-              key={book.id}
-              data={book}
-              onClick={() => navigateToRead(book.id)}
-            />
-          );
-        })}
-      </div>
+      <Spinner loading={loading} />
+      {!loading && (
+        <>
+          <div className="pt-6 pb-2">
+            <Heading size="7">{author?.name}</Heading>
+          </div>
+          <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
+            {books.map((book: BookResItem) => {
+              return (
+                <Book
+                  key={book.id}
+                  data={book}
+                  onClick={() => navigateToRead(book.id)}
+                />
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 };

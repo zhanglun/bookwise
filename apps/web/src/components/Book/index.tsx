@@ -17,7 +17,7 @@ export const Book = (props: BookProps) => {
       className="w-full border border-[var(--gray-5)] cursor-pointer rounded-lg isolation bg-[var(--gray-2)] transition-all duration-[0.3s] hover:bg[var(--gray-3)] hover:scale-[1.03] hover:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] group"
       onMouseEnter={() => onHover && onHover(data)}
     >
-      <div className="h-[308px] flex flex-col">
+      <div className="flex flex-col">
         <div className="w-full h-[202px] shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
           <Cover book={data} onClick={() => onClick && onClick(data)} />
         </div>

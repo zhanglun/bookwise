@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { BookResItem } from "@/interface/book.ts";
 import { Heading, Separator, Spinner, Text } from "@radix-ui/themes";
-import { BookContextMenu } from "@/components/BookContextMenu";
 import { useBook } from "@/hooks/book";
+import { BookList } from "@/components/Book/List";
 
 export const Home = () => {
   const [recentlyAdd, setRecentlyAdd] = useState([]);
@@ -53,21 +53,8 @@ export const Home = () => {
           Show all
         </Text>
       </div>
-      <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
-        <Spinner loading={readingLoading} />
-        {recentlyReading.map((book: BookResItem) => {
-          return (
-            <BookContextMenu>
-              <Book
-                key={book.id}
-                data={book}
-                onClick={() => navigateToRead(book.id)}
-              />
-            </BookContextMenu>
-          );
-        })}
-      </div>
-      <Separator className="w-full" />
+      <BookList data={recentlyReading} loading={readingLoading} />
+      <Separator className="w-full my-6" />
       <div className="pt-5 pb-2 flex justify-between">
         <Heading size="5">Recently added</Heading>
         <Text
@@ -77,18 +64,7 @@ export const Home = () => {
           Show all
         </Text>
       </div>
-      <div className="py-2 grid gap-3 grid-cols-4 grid-rows-1">
-        <Spinner loading={addLoading} />
-        {recentlyAdd.map((book: BookResItem) => {
-          return (
-            <Book
-              key={book.id}
-              data={book}
-              onClick={() => navigateToRead(book.id)}
-            />
-          );
-        })}
-      </div>
+      <BookList data={recentlyAdd} loading={addLoading} />
     </div>
   );
 };
