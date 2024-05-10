@@ -2,7 +2,7 @@ import { Book } from "@/components/Book";
 import { request } from "@/helpers/request";
 import { useBook } from "@/hooks/book";
 import { AuthorResItem, BookResItem } from "@/interface/book";
-import { Heading, Spinner, Text } from "@radix-ui/themes";
+import { Heading, Spinner } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -12,17 +12,15 @@ export const Filter = () => {
   const [loading, setLoading] = useState(true);
   const [author, setAuthor] = useState<AuthorResItem>();
   const [books, setBooks] = useState<BookResItem[]>([]);
-  const [total, setTotal] = useState(0);
 
-  function getFilterList(params: any) {
+  function getFilterList(params = {}) {
     return request
       .get("/books", {
         params,
       })
       .then(({ data }) => {
-        const { total, items } = data;
+        const { items } = data;
 
-        setTotal(total);
         setBooks(items);
 
         return Promise.resolve();
@@ -39,7 +37,6 @@ export const Filter = () => {
   useEffect(() => {
     const author_id = searchParams.get("author_id") || undefined;
     if (author_id) {
-      console.log("%c Line:10 🍻 location", "color:#42b983", searchParams);
       setLoading(true);
 
       Promise.all([

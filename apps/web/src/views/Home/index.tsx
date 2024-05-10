@@ -1,9 +1,6 @@
-import { Book } from "@/components/Book";
 import { useEffect, useState } from "react";
 import { request } from "@/helpers/request";
-import { BookResItem } from "@/interface/book.ts";
-import { Heading, Separator, Spinner, Text } from "@radix-ui/themes";
-import { useBook } from "@/hooks/book";
+import { Heading, Separator, Text } from "@radix-ui/themes";
 import { BookList } from "@/components/Book/List";
 
 export const Home = () => {
@@ -11,7 +8,6 @@ export const Home = () => {
   const [recentlyReading, setRecentlyReading] = useState([]);
   const [readingLoading, setReadingLoading] = useState(true);
   const [addLoading, setAddLoading] = useState(true);
-  const { navigateToRead } = useBook();
 
   useEffect(() => {
     request
