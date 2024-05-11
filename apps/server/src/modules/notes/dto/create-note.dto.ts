@@ -21,6 +21,6 @@ export class CreateNoteDto {
   type: PrismaNoteType;
   title: string;
   content?: string;
-  position_metics: NotePositionMetics;
+  position_metrics: NotePositionMetics;
   style_config: NoteStyleConfig;
 }

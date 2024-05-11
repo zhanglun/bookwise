@@ -8,14 +8,15 @@ CREATE TYPE "NoteType" AS ENUM ('TEXT', 'RECT');
 CREATE TABLE "Book" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
-    "subject" TEXT NOT NULL,
-    "description" TEXT NOT NULL,
-    "contributor" TEXT NOT NULL,
-    "source" TEXT NOT NULL,
+    "subject" TEXT NOT NULL DEFAULT '',
+    "description" TEXT NOT NULL DEFAULT '',
+    "contributor" TEXT NOT NULL DEFAULT '',
+    "source" TEXT NOT NULL DEFAULT '',
+    "rights" TEXT NOT NULL DEFAULT '',
     "format" "BookFormat" NOT NULL,
-    "page_count" INTEGER NOT NULL,
-    "isbn" TEXT NOT NULL,
-    "path" TEXT NOT NULL,
+    "page_count" INTEGER NOT NULL DEFAULT 0,
+    "isbn" TEXT NOT NULL DEFAULT '',
+    "path" TEXT NOT NULL DEFAULT '',
     "publish_at" TIMESTAMP(3) NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
@@ -63,16 +64,6 @@ CREATE TABLE "Author" (
 );
 
 -- CreateTable
-CREATE TABLE "AuthorBookRelationship" (
-    "author_id" INTEGER NOT NULL,
-    "book_id" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "AuthorBookRelationship_pkey" PRIMARY KEY ("author_id","book_id")
-);
-
--- CreateTable
 CREATE TABLE "Publisher" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
@@ -91,7 +82,7 @@ CREATE TABLE "Note" (
     "type" "NoteType" NOT NULL,
     "title" TEXT NOT NULL DEFAULT '',
     "content" TEXT NOT NULL DEFAULT '',
-    "position_metics" JSONB NOT NULL,
+    "position_metrics" JSONB NOT NULL,
     "style_config" JSONB NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -101,6 +92,12 @@ CREATE TABLE "Note" (
 
 -- CreateTable
 CREATE TABLE "_BookToPublisher" (
+    "A" INTEGER NOT NULL,
+    "B" INTEGER NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_AuthorToBook" (
     "A" INTEGER NOT NULL,
     "B" INTEGER NOT NULL
 );
@@ -126,6 +123,12 @@ CREATE UNIQUE INDEX "_BookToPublisher_AB_unique" ON "_BookToPublisher"("A", "B")
 -- CreateIndex
 CREATE INDEX "_BookToPublisher_B_index" ON "_BookToPublisher"("B");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "_AuthorToBook_AB_unique" ON "_AuthorToBook"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_AuthorToBook_B_index" ON "_AuthorToBook"("B");
+
 -- AddForeignKey
 ALTER TABLE "Book" ADD CONSTRAINT "Book_language_id_fkey" FOREIGN KEY ("language_id") REFERENCES "Language"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
@@ -139,12 +142,6 @@ ALTER TABLE "LanguageBookRelationship" ADD CONSTRAINT "LanguageBookRelationship_
 ALTER TABLE "BookAdditionalInfo" ADD CONSTRAINT "BookAdditionalInfo_book_id_fkey" FOREIGN KEY ("book_id") REFERENCES "Book"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "AuthorBookRelationship" ADD CONSTRAINT "AuthorBookRelationship_author_id_fkey" FOREIGN KEY ("author_id") REFERENCES "Author"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "AuthorBookRelationship" ADD CONSTRAINT "AuthorBookRelationship_book_id_fkey" FOREIGN KEY ("book_id") REFERENCES "Book"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Note" ADD CONSTRAINT "Note_book_id_fkey" FOREIGN KEY ("book_id") REFERENCES "Book"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
@@ -152,3 +149,9 @@ ALTER TABLE "_BookToPublisher" ADD CONSTRAINT "_BookToPublisher_A_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "_BookToPublisher" ADD CONSTRAINT "_BookToPublisher_B_fkey" FOREIGN KEY ("B") REFERENCES "Publisher"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AuthorToBook" ADD CONSTRAINT "_AuthorToBook_A_fkey" FOREIGN KEY ("A") REFERENCES "Author"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_AuthorToBook" ADD CONSTRAINT "_AuthorToBook_B_fkey" FOREIGN KEY ("B") REFERENCES "Book"("id") ON DELETE CASCADE ON UPDATE CASCADE;

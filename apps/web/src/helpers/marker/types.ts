@@ -36,7 +36,7 @@ export interface Mark {
   spine_name: string;
   title?: string;
   content?: string;
-  position_metics: TextMark;
+  position_metrics: TextMark;
   style_config: TextMarkConfig;
 }
 

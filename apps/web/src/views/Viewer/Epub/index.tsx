@@ -63,7 +63,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         const { data: notes } = res;
 
         notes.forEach((note: Mark) => {
-          note.position_metics = JSON.parse(note.position_metics);
+          note.position_metrics = JSON.parse(note.position_metrics);
           note.style_config = JSON.parse(note.style_config);
 
           notesMap[note.spine_index] = notesMap[note.spine_index] || [];
@@ -223,7 +223,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             type: mark.type,
             title: mark.title,
             content: mark.content,
-            position_metics: mark.position_metics,
+            position_metrics: mark.position_metrics,
             style_config: mark.style_config,
           })
           .then((res) => {

@@ -9,12 +9,12 @@ export class NotesService {
   constructor(private prisma: PrismaService) {}
 
   create(createNoteDto: CreateNoteDto) {
-    const { book_id, position_metics, style_config, ...note } = createNoteDto;
+    const { book_id, position_metrics, style_config, ...note } = createNoteDto;
 
     return this.prisma.note.create({
       data: {
         ...note,
-        position_metics: JSON.stringify(position_metics),
+        position_metrics: JSON.stringify(position_metrics),
         style_config: JSON.stringify(style_config),
         book: {
           connect: {

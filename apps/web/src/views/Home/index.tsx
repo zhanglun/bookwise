@@ -1,39 +1,19 @@
-import { useEffect, useState } from "react";
-import { request } from "@/helpers/request";
+import { useEffect } from "react";
 import { Heading, Separator, Text } from "@radix-ui/themes";
 import { BookList } from "@/components/Book/List";
+import { useBearStore } from "@/store";
 
 export const Home = () => {
-  const [recentlyAdd, setRecentlyAdd] = useState([]);
-  const [recentlyReading, setRecentlyReading] = useState([]);
-  const [readingLoading, setReadingLoading] = useState(true);
-  const [addLoading, setAddLoading] = useState(true);
+  const store = useBearStore((state) => ({
+    loadingRecentlyReading: state.loadingRecentlyReading,
+    recentlyReadingList: state.recentlyReadingList,
+    loadingRecentlyAdd: state.loadingRecentlyAdd,
+    recentlyAddList: state.recentlyAddList,
+    initBookSliceData: state.initBookSliceData,
+  }));
 
   useEffect(() => {
-    request
-      .get("/books/recently-add", {
-        params: {
-          sort: "created_at:desc",
-        },
-      })
-      .then((res) => {
-        const items = res.data;
-
-        setRecentlyAdd(items);
-        setReadingLoading(false);
-      });
-    request
-      .get("/books/recently-reading", {
-        data: {
-          sort: "created_at:desc",
-        },
-      })
-      .then((res) => {
-        const items = res.data;
-
-        setRecentlyReading(items);
-        setAddLoading(false);
-      });
+    store.initBookSliceData();
   }, []);
 
   useEffect(() => {}, []);
@@ -49,7 +29,7 @@ export const Home = () => {
           Show all
         </Text>
       </div>
-      <BookList data={recentlyReading} loading={readingLoading} />
+      <BookList data={store.recentlyReadingList} loading={store.loadingRecentlyReading} />
       <Separator className="w-full my-6" />
       <div className="pt-5 pb-2 flex justify-between">
         <Heading size="5">Recently added</Heading>
@@ -60,7 +40,7 @@ export const Home = () => {
           Show all
         </Text>
       </div>
-      <BookList data={recentlyAdd} loading={addLoading} />
+      <BookList data={store.recentlyAddList} loading={store.loadingRecentlyAdd} />
     </div>
   );
 };

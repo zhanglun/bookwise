@@ -71,7 +71,7 @@ export default class TextMarker {
       type: MarkTypeEnum.TEXT,
       content: selection.toString(),
       ...extraInfo,
-      position_metics: {
+      position_metrics: {
         start: {
           path: sPath,
           offset: startOffset,
@@ -120,7 +120,7 @@ export default class TextMarker {
 
   createRects(mark: Mark) {
     const rects: DOMRect[] = [];
-    const { start, end } = mark.position_metics;
+    const { start, end } = mark.position_metrics;
     const startNode = this.getNodeByPath(start.path);
     const endNode = this.getNodeByPath(end.path);
 
@@ -167,13 +167,13 @@ export default class TextMarker {
   }
 
   getRangeFromMark(mark: Mark) {
-    const startContainer = this.getNodeByPath(mark.position_metics.start.path);
-    const endContainer = this.getNodeByPath(mark.position_metics.end.path);
+    const startContainer = this.getNodeByPath(mark.position_metrics.start.path);
+    const endContainer = this.getNodeByPath(mark.position_metrics.end.path);
 
     const range = (this.window || window).document.createRange();
 
-    startContainer && range.setStart(startContainer, mark.position_metics.start.offset);
-    endContainer && range.setEnd(endContainer, mark.position_metics.end.offset);
+    startContainer && range.setStart(startContainer, mark.position_metrics.start.offset);
+    endContainer && range.setEnd(endContainer, mark.position_metrics.end.offset);
 
     return range;
   }
