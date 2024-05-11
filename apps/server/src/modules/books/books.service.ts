@@ -108,6 +108,15 @@ export class BooksService {
 
       delete where.author_id;
     }
+    if (where.publisher_id) {
+      where.publisher = {
+        some: {
+          id: where.publisher_id,
+        },
+      };
+
+      delete where.publisher_id;
+    }
 
     console.log('%c Line:76 🌽 finder', 'color:#2eafb0', where);
 

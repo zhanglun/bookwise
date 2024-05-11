@@ -56,8 +56,11 @@ export interface AuthorResItem {
   name: string;
 }
 export interface PublisherResItem {
-  id: string;
+  id: number;
   name: string;
+  _count: {
+    books: number,
+  }
 }
 
 export const FileFormat = {

@@ -2,16 +2,16 @@ import { Book } from "@/components/Book";
 import { BookList } from "@/components/Book/List";
 import { request } from "@/helpers/request";
 import { useBook } from "@/hooks/book";
-import { AuthorResItem, BookResItem } from "@/interface/book";
+import { AuthorResItem, BookResItem, PublisherResItem } from "@/interface/book";
 import { Heading, Spinner } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export const Filter = () => {
   const [searchParams] = useSearchParams();
-  const { navigateToRead } = useBook();
   const [loading, setLoading] = useState(true);
   const [author, setAuthor] = useState<AuthorResItem>();
+  const [publisher, setPublisher] = useState<PublisherResItem>();
   const [books, setBooks] = useState<BookResItem[]>([]);
 
   function getFilterList(params = {}) {
@@ -35,21 +35,46 @@ export const Filter = () => {
     });
   }
 
+  function getPublisherDetail(publisher_id: string) {
+    return request.get(`/publishers/${publisher_id}`).then(({ data }) => {
+      setPublisher(data);
+      return Promise.resolve();
+    });
+  }
+
   useEffect(() => {
     const author_id = searchParams.get("author_id") || undefined;
+    const publisher_id = searchParams.get("publisher_id") || undefined;
+
+    const fns = [];
+
     if (author_id) {
       setLoading(true);
+      setBooks([]);
 
-      Promise.all([
+      fns.push(
         getFilterList({
           filter: [`author_id:eq:${author_id}`],
         }),
-        getAuthorDetail(author_id),
-      ]).then(() => {
-        setLoading(false);
-      });
-      setBooks([]);
+        getAuthorDetail(author_id)
+      );
     }
+
+    if (publisher_id) {
+      setLoading(true);
+      setBooks([]);
+
+      fns.push(
+        getFilterList({
+          filter: [`publisher_id:eq:${publisher_id}`],
+        }),
+        getPublisherDetail(publisher_id)
+      );
+    }
+
+    Promise.all(fns).then(() => {
+      setLoading(false);
+    });
   }, [searchParams]);
 
   return (

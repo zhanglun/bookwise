@@ -66,11 +66,6 @@ export class BooksController {
     ])
     filter?: Filtering[],
   ): Promise<PaginatedResource<Partial<Book>>> {
-    this.logger.log(
-      `REST request to get books:, ${JSON.stringify(sort)}, ${JSON.stringify(
-        filter,
-      )}`,
-    );
     return this.booksService.findAll(sort, filter);
   }
 

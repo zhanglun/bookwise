@@ -1,26 +1,45 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
 import { UpdatePublisherDto } from './dto/update-publisher.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Publisher, Prisma } from '@prisma/client';
+import { Publisher } from '@prisma/client';
 import { PrismaService } from '../../prisma.service';
 
 @Injectable()
 export class PublishersService {
   constructor(private prisma: PrismaService) {}
 
-  async author(id: number): Promise<Publisher | null> {
-    return this.prisma.author.findUnique({
+  async publisher(id: number): Promise<Publisher | null> {
+    return this.prisma.publisher.findUnique({
       where: { id },
     });
   }
 
-  async publishers(): Promise<Publisher[]> {
-    return this.prisma.author.findMany();
+  public async findAll(): Promise<{
+    total: number;
+    items: Publisher[];
+  }> {
+    const fn = [
+      this.prisma.publisher.findMany({
+        include: {
+          _count: {
+            select: {
+              books: true,
+            },
+          },
+        },
+      }),
+      this.prisma.publisher.count(),
+    ];
+    const [record, total] = await Promise.all(fn);
+
+    return {
+      items: record as Publisher[],
+      total: total as number,
+    };
   }
 
   async createPublisher(data: CreatePublisherDto): Promise<Publisher> {
-    return this.prisma.author.create({
+    return this.prisma.publisher.create({
       data,
     });
   }
@@ -29,14 +48,14 @@ export class PublishersService {
     id: number,
     data: UpdatePublisherDto,
   ): Promise<Publisher> {
-    return this.prisma.author.update({
+    return this.prisma.publisher.update({
       data,
       where: { id },
     });
   }
 
   async deletePublisher(id: number): Promise<Publisher> {
-    return this.prisma.author.delete({
+    return this.prisma.publisher.delete({
       where: { id },
     });
   }

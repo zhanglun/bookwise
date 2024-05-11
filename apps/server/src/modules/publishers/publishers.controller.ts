@@ -10,6 +10,8 @@ import {
 import { PublishersService } from './publishers.service';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
 import { UpdatePublisherDto } from './dto/update-publisher.dto';
+import { PaginatedResource } from '../books/dto/find-book.dto';
+import { Publisher } from '@prisma/client';
 
 @Controller('publishers')
 export class PublishersController {
@@ -21,13 +23,13 @@ export class PublishersController {
   }
 
   @Get()
-  findAll() {
-    return this.publishersService.publishers();
+  findAll(): Promise<PaginatedResource<Partial<Publisher>>> {
+    return this.publishersService.findAll();
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.publishersService.author(+id);
+    return this.publishersService.publisher(+id);
   }
 
   @Patch(':id')

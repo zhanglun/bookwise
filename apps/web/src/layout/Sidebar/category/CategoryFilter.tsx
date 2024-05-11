@@ -1,6 +1,7 @@
 import { Badge, ScrollArea } from "@radix-ui/themes";
 import { useState } from "react";
 import { AuthorList } from "./AuthorList";
+import { PublisherList } from "@/layout/Sidebar/category/PublisherList";
 
 const Category = {
   Author: "author",
@@ -37,7 +38,8 @@ export const CategoryFilter = () => {
     <div className="flex-1 min-h-0 overflow-hidden">
       <div className="flex gap-1 px-3 pt-1 pb-2">{renderBadges()}</div>
         <ScrollArea size="1" scrollbars="vertical" className="min-w-0 max-w-full">
-          <AuthorList />
+          { current === Category.Author && <AuthorList />}
+          { current === Category.Publisher && <PublisherList />}
         </ScrollArea>
     </div>
   );
