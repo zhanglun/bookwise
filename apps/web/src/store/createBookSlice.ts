@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { BookResItem } from "@/interface/book";
+import { BookRequestItem, BookResItem } from "@/interface/book";
 import { request } from "@/helpers/request";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
@@ -17,6 +17,11 @@ export interface BookSlice {
   updateRecentlyReadingList: (book: BookResItem) => void;
 
   initBookSliceData: () => void;
+
+  currentEditingBook: BookResItem | null;
+  setCurrentEditingBook: (book: BookResItem) => void;
+  isEditing: boolean;
+  updateIsEditing: (status: boolean) => void;
 }
 
 export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
@@ -83,6 +88,19 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
             loadingRecentlyReading: false,
           }));
         });
+    },
+
+    currentEditingBook: null,
+    setCurrentEditingBook: (book: BookResItem | null) => {
+      set(() => ({
+        currentEditingBook: book
+      }));
+    },
+    isEditing: false,
+    updateIsEditing: (status: boolean) => {
+      set(() => ({
+        isEditing: status,
+      }));
     },
   };
 };

@@ -18,7 +18,7 @@ export const BookList = (props: BookListProps) => {
       <Spinner loading={loading} />
       {data.map((book) => {
         return (
-          <BookContextMenu>
+          <BookContextMenu book={book}>
             <Book
               key={book.id}
               data={book}
