@@ -16,7 +16,12 @@ const options: HTMLReactParserOptions = {
 
       if (node.name === "p") {
         return (
-          <Text as="p" size="3" my="5">
+          <Text
+            as="p"
+            size="3"
+            my="5"
+            style={{ textIndent: "2rem", letterSpacing: "0.5px" }}
+          >
             {domToReact(node.children as DOMNode[], options)}
           </Text>
         );
