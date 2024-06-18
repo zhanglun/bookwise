@@ -29,7 +29,9 @@ export function getAbsoluteUrl(basePath: string, relativePath: string) {
     }
   });
 
-  const absolutePath = basePathParts.join("/");
+  console.log("%c Line:33 🌽 basePathParts", "color:#6ec1c2", basePathParts);
+
+  const absolutePath = basePathParts.filter(_ => _).join("/");
+
   return absolutePath;
 }
-

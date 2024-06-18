@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-annotation.dto';
 import { PrismaService } from 'src/prisma.service';
-import { Filtering, Sorting, getOrder, getWhere } from './notes.decorator';
+import { Sorting, getOrder, getWhere } from './notes.decorator';
 
 @Injectable()
 export class NotesService {

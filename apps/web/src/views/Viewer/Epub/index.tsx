@@ -17,6 +17,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@radix-ui/react-icons";
+import { getAbsoluteUrl } from "@/helpers/book";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -78,7 +79,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       });
   }
 
-  const display = (index: number, book?: Book) => {
+  const display = (index: number, book?: Book, anchorId?: string) => {
     setLoading(true);
 
     const section = book?.spine.get(index);
@@ -105,10 +106,22 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
           setContent(str);
           setCurrentSectionIndex(index);
-          scrollAreaRef.current && scrollAreaRef.current.scrollTo(0, 0);
-          setLoading(false);
 
-          updateReadProgress(index, 0);
+          setTimeout(() => {
+            if (anchorId) {
+              const target = document.getElementById(anchorId);
+
+              target?.scrollIntoView();
+            } else {
+              scrollAreaRef.current && scrollAreaRef.current.scrollTo(0, 0);
+            }
+
+            setLoading(false);
+
+            const progress = scrollAreaRef?.current?.scrollTop || 0;
+
+            updateReadProgress(index, progress);
+          });
         }
       });
     }
@@ -183,7 +196,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }, [bookId]);
 
   useEffect(() => {}, [book]);
-
 
   function handleSelectColor(color: string) {
     const config = {
@@ -330,6 +342,80 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }
 
+  function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
+    console.log("%c Line:333 🍑 e", "color:#f5ce50", e);
+    let elem = null;
+    const i = e.nativeEvent.composedPath();
+    console.log("%c Line:336 🍢 i", "color:#2eafb0", i);
+
+    for (let a = 0; a <= i.length - 1; a++) {
+      const s = i[a] as HTMLElement;
+
+      if ("A" === s.tagName) {
+        elem = s;
+        break;
+      }
+    }
+
+    console.log("%c Line:348 🍢 elem", "color:#e41a6a", elem);
+
+    if (elem && elem.getAttribute("href")) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const href = elem.getAttribute("href") || "";
+
+      if (
+        href &&
+        (href.indexOf("http://") >= 0 ||
+          href.indexOf("https://") >= 0 ||
+          href.indexOf("www.") >= 0)
+      ) {
+        window.open(href);
+      } else if (currentSection) {
+        const realHref = getAbsoluteUrl(currentSection?.url, href);
+        const [hrefId, anchorId] = realHref.split("#");
+
+        const section = book?.spine.get(hrefId);
+
+        if (section) {
+          setCurrentSection(section);
+          setCurrentSectionIndex(section.index as number);
+          display(section.index, book, anchorId);
+        }
+      }
+    }
+    // if (elem && (e.preventDefault(),
+    //     $(r).attr("href"))) {
+    //   t.stopPropagation();
+    //   var o = $(r).attr("href")
+    //       , g = o.indexOf("http://")
+    //       , A = o.indexOf("https://")
+    //       , c = o.indexOf("www.");
+    //   if (console.log($(r).attr("data-nr-type")),
+    //       $(r).attr("data-nr-type")) {
+    //     var l = $(r).attr("data-nr-type");
+    //     "webpage" === l && window.WebAppApi.showNRWebPage(o),
+    //     "video" === l && window.WebAppApi.showNRVideoPlayer(o),
+    //     "audio" === l && window.WebAppApi.showNRAudioPlayer(o),
+    //     "quiz" === l && window.WebAppApi.showNRQuizPage(o)
+    //   } else if (g >= 0 || A >= 0 || c >= 0)
+    //     window.WebAppApi.openPageInBrowser(o);
+    //   else {
+    //     console.log("内部链接", o);
+    //     var I = $(r).parents(".nr_spine_section").attr("spinehref")
+    //         , h = C.getAbsoluteUrl(I, o);
+    //     0 === o.indexOf("#") && (h = I + o),
+    //         window.WebAppApi.showContentLoader(),
+    //         e.jumpToPositionByHref(h, function() {
+    //           window.WebAppApi.hideContentLoader(),
+    //               window.WebAppApi.onPaginationChanged()
+    //         })
+    //   }
+    //   return !1
+    // }
+  }
+
   return (
     <div className="text-foreground bg-app grid w-full h-full grid-cols-[260px_1fr] grid-areas-view gap-2 p-2">
       <Toc
@@ -355,7 +441,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         )}
         <div className="relative m-auto max-w-[1200px]" id="canvasRoot">
           <div className="relative m-auto max-w-[980px] px-[60px]">
-            <section className="py-16 w-full h-full" id="book-section">
+            <section
+              className="py-16 w-full h-full"
+              id="book-section"
+              onClick={handleUserClickEvent}
+            >
               <ContentRender contentString={content} />
             </section>
             <div

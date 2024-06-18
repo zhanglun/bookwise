@@ -4,7 +4,6 @@ import React, {
   useRef,
   useImperativeHandle,
   forwardRef,
-  useLayoutEffect,
 } from "react";
 import { EpubObject, accessImage, accessPageContent } from "@/helpers/epub";
 import { getAbsoluteUrl } from "@/helpers/book";
