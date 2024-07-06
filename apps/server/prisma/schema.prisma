@@ -10,15 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-enum BookFormat {
-  EPUB
-  MOBI
-  PDF
-  TEXT
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model Book {
@@ -29,7 +22,7 @@ model Book {
   contributor              String                     @default("")
   source                   String                     @default("")
   rights                   String                     @default("")
-  format                   BookFormat
+  format                   String
   page_count               Int                        @default(0)
   isbn                     String                     @default("")
   path                     String                     @default("")
@@ -100,22 +93,17 @@ model Publisher {
   updatedAt DateTime @updatedAt
 }
 
-enum NoteType {
-  TEXT
-  RECT
-}
-
 model Note {
-  id              Int      @id @default(autoincrement())
-  book            Book     @relation(fields: [book_id], references: [id])
-  book_id         Int
-  spine_index     Int      @default(0)
-  spine_name      String   @default("")
-  type            NoteType
-  title           String   @default("")
-  content         String   @default("")
-  position_metrics Json
-  style_config    Json
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id               Int      @id @default(autoincrement())
+  book             Book     @relation(fields: [book_id], references: [id])
+  book_id          Int
+  spine_index      Int      @default(0)
+  spine_name       String   @default("")
+  type             String
+  title            String   @default("")
+  content          String   @default("")
+  position_metrics String
+  style_config     String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 }

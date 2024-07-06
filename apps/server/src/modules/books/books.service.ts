@@ -15,7 +15,7 @@ import {
   Sorting,
 } from '../../common/decorators';
 import { PrismaService } from 'src/prisma.service';
-import { Book, BookFormat } from '@prisma/client';
+import { Book } from '@prisma/client';
 
 interface EpubIdentifier {
   scheme: string;
@@ -277,7 +277,7 @@ export class BooksService {
   ): Promise<any> {
     const libPath = this.settingsService.getLibraryPath();
     const { mimetype, buffer } = file;
-    const ext = BookFormat[MimeType.extension(mimetype).toUpperCase()];
+    const ext = MimeType.extension(mimetype).toUpperCase();
 
     if (mimetype !== 'application/epub+zip') {
       return;

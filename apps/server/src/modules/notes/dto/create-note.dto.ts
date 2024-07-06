@@ -1,5 +1,3 @@
-import type { NoteType as PrismaNoteType } from '@prisma/client';
-
 export interface NotePositionNode {
   path: number[];
   offset: number;
@@ -18,7 +16,7 @@ export interface NoteStyleConfig {
 
 export class CreateNoteDto {
   book_id: number;
-  type: PrismaNoteType;
+  type: string;
   title: string;
   content?: string;
   position_metrics: NotePositionMetics;

@@ -36,7 +36,7 @@ export class NotesService {
       return acu;
     }, {});
 
-    console.log('🚀 ~ NotesService ~ findAll ~ where:', where);
+    // console.log('🚀 ~ NotesService ~ findAll ~ where:', where);
 
     const record = await this.prisma.note.findMany({
       where,
