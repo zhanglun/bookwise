@@ -8,8 +8,13 @@ import { CategoryFilter } from "./category/CategoryFilter";
 import { RouteConfig } from "@/config";
 import clsx from "clsx";
 import { Uploader } from "./Uploader";
+import { BookResItem } from "@/interface/book";
+import { useBearStore } from "@/store";
 
 export const Sidebar = () => {
+  const store = useBearStore((state) => ({
+    addBooks: state.addBooks,
+  }));
   function createRouteClassName(isActive: boolean) {
     return clsx(
       "flex items-center gap-3 py-2 px-2 font-bold text-[var(--gray-11)] hover:text-[var(--gray-12)]",
@@ -17,6 +22,10 @@ export const Sidebar = () => {
         "text-[var(--gray-12)]": isActive,
       }
     );
+  }
+
+  function handleUploadSuccessCallback(book: BookResItem) {
+    store.addBooks([book]);
   }
 
   return (
@@ -44,7 +53,7 @@ export const Sidebar = () => {
             <span>Library</span>
           </div>
           <div className="px-1 flex items-center">
-            <Uploader />
+            <Uploader onSuccess={handleUploadSuccessCallback} />
           </div>
         </div>
         <CategoryFilter />

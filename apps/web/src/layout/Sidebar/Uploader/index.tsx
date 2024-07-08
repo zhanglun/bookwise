@@ -3,7 +3,7 @@ import { IconButton, Tooltip } from "@radix-ui/themes";
 import { getFileFormatType, parseEpub } from "@/helpers/epub";
 import { toast } from "sonner";
 import { request } from "@/helpers/request";
-import { BookRequestItem } from "@/interface/book";
+import { BookRequestItem, BookResItem } from "@/interface/book";
 
 async function createFilesMeta(file: File): Promise<[BookRequestItem, string]> {
   const bookInstance = await parseEpub(file);
@@ -29,7 +29,12 @@ async function createFilesMeta(file: File): Promise<[BookRequestItem, string]> {
   ];
 }
 
-export const Uploader = () => {
+
+export interface UploaderProps {
+  onSuccess: (book: BookResItem) => void
+}
+
+export const Uploader = (props: UploaderProps) => {
   const openFileDialog = (): void => {
     const input = document.createElement("input");
 
@@ -65,6 +70,7 @@ export const Uploader = () => {
               loading: `Uploading ${book.title}`,
               success: ({ data }) => {
                 console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
+                props.onSuccess(data);
                 return ` Upload ${book.title} successful`;
               },
               error: ({ data }) => {

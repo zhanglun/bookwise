@@ -1,5 +1,5 @@
 import { StateCreator } from "zustand";
-import { BookRequestItem, BookResItem } from "@/interface/book";
+import { BookResItem } from "@/interface/book";
 import { request } from "@/helpers/request";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
