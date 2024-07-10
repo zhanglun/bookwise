@@ -17,7 +17,7 @@ export interface LanguageItemProps
 }
 
 export const LanguageItem = ({ language, className }: LanguageItemProps) => {
-  const { code } = language;
+  const { code, _count } = language;
   const navigate = useNavigate();
 
   function navigateToFilterPage() {
@@ -39,7 +39,10 @@ export const LanguageItem = ({ language, className }: LanguageItemProps) => {
       onClick={navigateToFilterPage}
     >
       <Avatar size="2" fallback={code.slice(0, 1).toUpperCase()}></Avatar>
-      <Text truncate={true}>{code}</Text>
+      <Text truncate={true} className="flex-1">
+        {code}
+      </Text>
+      <span>{_count.books}</span>
     </div>
   );
 };

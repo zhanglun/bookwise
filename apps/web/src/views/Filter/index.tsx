@@ -45,6 +45,7 @@ export const Filter = () => {
   useEffect(() => {
     const author_id = searchParams.get("author_id") || undefined;
     const publisher_id = searchParams.get("publisher_id") || undefined;
+    const language_id = searchParams.get("language_id") || undefined;
 
     const fns = [];
 
@@ -69,6 +70,17 @@ export const Filter = () => {
           filter: [`publisher_id:eq:${publisher_id}`],
         }),
         getPublisherDetail(publisher_id)
+      );
+    }
+
+    if (language_id) {
+      setLoading(true);
+      setBooks([]);
+
+      fns.push(
+        getFilterList({
+          filter: [`language_id:eq:${language_id}`],
+        })
       );
     }
 
