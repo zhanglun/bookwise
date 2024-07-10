@@ -63,6 +63,14 @@ export interface PublisherResItem {
   }
 }
 
+export interface LanguageResItem {
+  id: number;
+  code: string;
+  _count: {
+    books: number,
+  }
+}
+
 export const FileFormat = {
   EPUB: "EPUB",
   PDF: "PDF",

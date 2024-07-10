@@ -41,7 +41,7 @@ model Book {
 model Language {
   id                       Int                        @id @default(autoincrement())
   code                     String                     @unique
-  Book                     Book[]
+  books                     Book[]
   LanguageBookRelationship LanguageBookRelationship[]
 }
 

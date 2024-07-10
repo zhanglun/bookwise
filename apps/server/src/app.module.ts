@@ -9,6 +9,7 @@ import configuration from './config/configuration';
 import { AuthorsModule } from './modules/authors/authors.module';
 import { PublishersModule } from './modules/publishers/publishers.module';
 import { NotesModule } from './modules/notes/notes.module';
+import { LangsModule } from './modules/langs/langs.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { NotesModule } from './modules/notes/notes.module';
     AuthorsModule,
     PublishersModule,
     NotesModule,
+    LangsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,6 +2,7 @@ import { Badge, ScrollArea } from "@radix-ui/themes";
 import { useState } from "react";
 import { AuthorList } from "./AuthorList";
 import { PublisherList } from "@/layout/Sidebar/category/PublisherList";
+import { LanguageList } from "@/layout/Sidebar/category/LanguageList";
 
 const Category = {
   Author: "author",
@@ -40,6 +41,7 @@ export const CategoryFilter = () => {
         <ScrollArea size="1" scrollbars="vertical" className="min-w-0 max-w-full">
           { current === Category.Author && <AuthorList />}
           { current === Category.Publisher && <PublisherList />}
+          { current === Category.Language && <LanguageList />}
         </ScrollArea>
     </div>
   );
