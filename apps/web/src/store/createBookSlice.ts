@@ -39,7 +39,7 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
       set((state) => {
         return {
           books: [...books, ...state.books],
-          recentlyReadingList: [...books, ...state.recentlyReadingList],
+          recentlyAddList: [...books, ...state.recentlyAddList],
         };
       });
     },
