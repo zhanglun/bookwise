@@ -20,7 +20,7 @@ export const AuthorItem = ({ author, className }: AuthorItemProps) => {
   const navigate = useNavigate();
 
   function navigateToFilterPage() {
-        console.log("%c Line:28 🍬 author", "color:#7f2b82", author);
+    console.log("%c Line:28 🍬 author", "color:#7f2b82", author);
     navigate(
       `${RouteConfig.FILTER}?${createSearchParams({
         category: CategoryEnum.Author,

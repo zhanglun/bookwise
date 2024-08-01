@@ -12,11 +12,7 @@ import { MenuBar } from "./MenuBar";
 import { ScrollArea, Spinner } from "@radix-ui/themes";
 import { ContentRender } from "./ContentRender";
 import { BookResItem, NoteResItem } from "@/interface/book";
-import {
-  ArrowLeftIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@radix-ui/react-icons";
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { getAbsoluteUrl } from "@/helpers/book";
 
 export interface EpubViewerProps {
@@ -180,8 +176,20 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   useEffect(() => {
     if (bookId) {
-      Promise.all([getNotes(), getBookBlobs(), getBookDetail()]).then(
-        ([_notes, bookRes, detail]: [NoteResItem[], Book, BookResItem]) => {
+      Promise.all([
+        // getNotes(),
+        getBookBlobs(),
+        getBookDetail(),
+      ]).then(
+        ([
+          // _notes,
+          bookRes,
+          detail,
+        ]: [
+          // NoteResItem[],
+          Book,
+          BookResItem
+        ]) => {
           setBook(bookRes);
           const { spine_index } = detail.additional_infos;
           if (bookRes) {
@@ -343,10 +351,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }
 
   function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
-    console.log("%c Line:333 🍑 e", "color:#f5ce50", e);
     let elem = null;
     const i = e.nativeEvent.composedPath();
-    console.log("%c Line:336 🍢 i", "color:#2eafb0", i);
+
+    console.log("🚀 ~ handleUserClickEvent ~ i:", i);
 
     for (let a = 0; a <= i.length - 1; a++) {
       const s = i[a] as HTMLElement;
@@ -356,8 +364,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         break;
       }
     }
-
-    console.log("%c Line:348 🍢 elem", "color:#e41a6a", elem);
 
     if (elem && elem.getAttribute("href")) {
       e.preventDefault();
@@ -425,6 +431,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         className="grid-in-left-toc"
       />
       <ScrollArea
+        id="canvasRoot"
         size="1"
         type="hover"
         scrollbars="vertical"
@@ -439,7 +446,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             <Spinner size="3" />
           </div>
         )}
-        <div className="relative m-auto max-w-[1200px]" id="canvasRoot">
+        <div className="relative m-auto max-w-[1200px]">
           <div className="relative m-auto max-w-[980px] px-[60px]">
             <section
               className="py-16 w-full h-full"
@@ -448,10 +455,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
             >
               <ContentRender contentString={content} />
             </section>
-            <div
-              id="canvas"
-              className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
-            />
           </div>
         </div>
         <span
@@ -466,6 +469,10 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         >
           <ChevronRightIcon width={22} height={22} />
         </span>
+        <div
+          id="canvas"
+          className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+        />
       </ScrollArea>
       {/* <MarkerToolbar
         open={open}

@@ -3,13 +3,14 @@ import HTMLReactParser, {
   domToReact,
   HTMLReactParserOptions,
   DOMNode,
+  attributesToProps,
 } from "html-react-parser";
 import { useEffect, useState } from "react";
 
 // 自定义转换函数，用于替换标签
 const options: HTMLReactParserOptions = {
   replace: (node: DOMNode) => {
-    if (node.type === "tag") {
+     if (node.type === "tag") {
       if (node.name === "body") {
         return <div>{domToReact(node.children as DOMNode[], options)}</div>;
       }
@@ -28,21 +29,21 @@ const options: HTMLReactParserOptions = {
       }
       if (node.name === "h1") {
         return (
-          <Heading {...node.attribs} size="8" mb="6">
+          <Heading {...attributesToProps(node.attribs)} size="8" mb="6">
             {domToReact(node.children as DOMNode[], options)}
           </Heading>
         );
       }
       if (node.name === "h2") {
         return (
-          <Heading {...node.attribs} size="7" mb="5">
+          <Heading {...attributesToProps(node.attribs)} size="7" mb="5">
             {domToReact(node.children as DOMNode[], options)}
           </Heading>
         );
       }
       if (node.name === "h3") {
         return (
-          <Heading {...node.attribs} size="6" mb="4">
+          <Heading {...attributesToProps(node.attribs)} size="6" mb="4">
             {domToReact(node.children as DOMNode[], options)}
           </Heading>
         );
@@ -50,7 +51,7 @@ const options: HTMLReactParserOptions = {
 
       if (node.name === "a") {
         return (
-          <Link {...node.attribs}>
+          <Link {...attributesToProps(node.attribs)}>
             {domToReact(node.children as DOMNode[], options)}
           </Link>
         );
@@ -65,13 +66,14 @@ export interface ContentRenderProps {
 }
 
 export const ContentRender = (props: ContentRenderProps) => {
+  const { contentString } = props;
   const [parsedComponent, setParsedComponent] = useState<
     string | JSX.Element | JSX.Element[]
   >("");
   useEffect(() => {
-    const parsed = HTMLReactParser(props.contentString, options);
+    const parsed = HTMLReactParser(contentString, options);
 
     setParsedComponent(parsed);
-  }, [props.contentString]);
+  }, [contentString]);
   return <>{parsedComponent}</>;
 };
