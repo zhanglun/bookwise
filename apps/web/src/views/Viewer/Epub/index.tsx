@@ -98,7 +98,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           const str = substitute(content.innerHTML, urls, replacementUrls);
 
           // remove internal css styles
-          // str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
+          str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
 
           setContent(str);
           setCurrentSectionIndex(index);

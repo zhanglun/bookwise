@@ -535,19 +535,33 @@ export function substitute(
   urls: string[],
   replacements: string[]
 ) {
-  urls.forEach(function (url, i) {
+  console.time("substitute");
+  const urlMap = new Map<string, string>();
+  const regexUrls: string[] = [];
+
+  urls.forEach((url, i) => {
     if (url && replacements[i]) {
-      // Account for special characters in the file name.
-      // See https://stackoverflow.com/a/6318729.
-      url = url.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      content = content.replace(
-        new RegExp(`[^"]*${url}`, "g"),
-        replacements[i]
-      );
+      const escapedUrl = url.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+      urlMap.set(url, replacements[i]);
+      regexUrls.push(escapedUrl);
     }
   });
 
-  return content;
+  console.log("🚀 ~ urls.forEach ~ urlMap:", urlMap)
+
+  const regex = new RegExp(`([^"]*?)?(${regexUrls.join("|")})`, "g");
+  let result = content.replace(regex, (match, prefix, url) => {
+    console.log("🚀 ~ result ~ match:", match)
+    console.log("🚀 ~ result ~ url:", url)
+    console.log("🚀 ~ result ~ prefix:", prefix)
+    const replacement = urlMap.get(url);
+    console.log("🚀 ~ result ~ replacement:", replacement)
+    return replacement;
+  });
+
+  console.timeEnd("substitute");
+
+  return result;
 }
 
 export function getFileFormatType(
