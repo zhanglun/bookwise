@@ -10,6 +10,8 @@ import { useEffect, useState } from "react";
 // 自定义转换函数，用于替换标签
 const options: HTMLReactParserOptions = {
   replace: (node: DOMNode) => {
+     return node;
+
      if (node.type === "tag") {
       if (node.name === "body") {
         return <div>{domToReact(node.children as DOMNode[], options)}</div>;
@@ -22,6 +24,7 @@ const options: HTMLReactParserOptions = {
             size="3"
             my="5"
             style={{ textIndent: "2rem", letterSpacing: "0.5px" }}
+            {...attributesToProps(node.attribs)}
           >
             {domToReact(node.children as DOMNode[], options)}
           </Text>

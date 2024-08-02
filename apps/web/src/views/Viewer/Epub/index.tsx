@@ -89,16 +89,13 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       // @ts-expect-error library typed error
       p.then((content: HTMLElement) => {
         if (content && content.innerHTML) {
-          const styles = content.querySelectorAll('[type="text/css"]');
+          // const styles = content.querySelectorAll('[type="text/css"]');
 
-          styles.forEach((s: Element) => s.remove());
+          // styles.forEach((s: Element) => s.remove());
 
           // @ts-expect-error library typed error
           const { urls, replacementUrls } = book.resources;
           const str = substitute(content.innerHTML, urls, replacementUrls);
-
-          // remove internal css styles
-          str.replace(/<link[^>]*type="text\/css"[^>]*>/ig, '')
 
           setContent(str);
           setCurrentSectionIndex(index);
@@ -379,9 +376,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       ) {
         window.open(href);
       } else if (currentSection) {
-        const realHref = getAbsoluteUrl(currentSection?.url, href);
+        const realHref = getAbsoluteUrl(currentSection?.href, href);
         const [hrefId, anchorId] = realHref.split("#");
-
         const section = book?.spine.get(hrefId);
 
         if (section) {

@@ -28,7 +28,7 @@ export const Toc = (props: TocProps) => {
             data-href={href}
             className={clsx(
               "hover:underline hover:text-[var(--accent-11)] overflow-hidden text-ellipsis whitespace-nowrap",
-              "pb-3"
+              "pb-2"
             )}
             onClick={() => handleItemClick(item)}
           >
