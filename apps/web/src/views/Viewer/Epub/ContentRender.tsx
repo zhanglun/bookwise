@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 // 自定义转换函数，用于替换标签
 const options: HTMLReactParserOptions = {
   replace: (node: DOMNode) => {
-     return node;
+    //  return node;
 
      if (node.type === "tag") {
       if (node.name === "body") {
@@ -30,27 +30,27 @@ const options: HTMLReactParserOptions = {
           </Text>
         );
       }
-      if (node.name === "h1") {
-        return (
-          <Heading {...attributesToProps(node.attribs)} size="8" mb="6">
-            {domToReact(node.children as DOMNode[], options)}
-          </Heading>
-        );
-      }
-      if (node.name === "h2") {
-        return (
-          <Heading {...attributesToProps(node.attribs)} size="7" mb="5">
-            {domToReact(node.children as DOMNode[], options)}
-          </Heading>
-        );
-      }
-      if (node.name === "h3") {
-        return (
-          <Heading {...attributesToProps(node.attribs)} size="6" mb="4">
-            {domToReact(node.children as DOMNode[], options)}
-          </Heading>
-        );
-      }
+      // if (node.name === "h1") {
+      //   return (
+      //     <Heading {...attributesToProps(node.attribs)} size="8" mb="6">
+      //       {domToReact(node.children as DOMNode[], options)}
+      //     </Heading>
+      //   );
+      // }
+      // if (node.name === "h2") {
+      //   return (
+      //     <Heading {...attributesToProps(node.attribs)} size="7" mb="5">
+      //       {domToReact(node.children as DOMNode[], options)}
+      //     </Heading>
+      //   );
+      // }
+      // if (node.name === "h3") {
+      //   return (
+      //     <Heading {...attributesToProps(node.attribs)} size="6" mb="4">
+      //       {domToReact(node.children as DOMNode[], options)}
+      //     </Heading>
+      //   );
+      // }
 
       if (node.name === "a") {
         return (
