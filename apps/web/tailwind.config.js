@@ -17,6 +17,7 @@ const {
 console.error(mauve.mauve2);
 
 module.exports = {
+  darkMode: "class",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
     colors: ({ colors }) => ({
@@ -40,7 +41,7 @@ module.exports = {
           foreground: "var(--gray-12)",
         },
         cell: {
-          DEFAULT: "var(--mauve-2)",
+          DEFAULT: "var(--cell-background)",
           foreground: "var(--mauve-12)",
         },
         accent: {

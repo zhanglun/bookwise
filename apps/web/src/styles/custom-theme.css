@@ -12,10 +12,16 @@
 @import "@radix-ui/colors/indigo.css";
 @import "@radix-ui/colors/indigo-dark.css";
 
-/* :root {
-  --page-background: #fff;
+:root {
+  --page-background: var(--gray-2);
+  --cell-background: #fff;
 }
 
-.dark {
+
+:is(.dark,.dark-theme) {
+  body {
+    background-color: red;
+  }
   --page-background: #0b0b0b;
-} */
+  --cell-background: var(--gray-2);
+}

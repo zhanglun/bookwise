@@ -22,7 +22,7 @@ const options: HTMLReactParserOptions = {
           <Text
             as="p"
             size="3"
-            my="5"
+            my="4"
             style={{ textIndent: "2rem", letterSpacing: "0.5px" }}
             {...attributesToProps(node.attribs)}
           >
