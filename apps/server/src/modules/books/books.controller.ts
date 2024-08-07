@@ -105,6 +105,11 @@ export class BooksController {
     @Param() param: { id: string },
     @Body() updateAdditionalInfoDto: UpdateAdditionalInfoDto,
   ) {
+    console.log(
+      '🚀 ~ BooksController ~ updateAdditionalInfoDto:',
+      updateAdditionalInfoDto,
+    );
+
     return this.booksService.updateAdditionalInfo(
       parseInt(param.id, 10),
       updateAdditionalInfoDto,

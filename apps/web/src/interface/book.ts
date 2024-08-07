@@ -26,7 +26,7 @@ export interface BookResItem {
   updated_at: Date;
   authors: AuthorResItem[];
   publishers: PublisherResItem[];
-  additional_infos: AdditionalInfos;
+  additional_infos: AdditionalInfos | null;
 }
 
 export interface BookRequestItem {

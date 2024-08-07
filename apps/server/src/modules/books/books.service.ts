@@ -171,18 +171,36 @@ export class BooksService {
     book_id: number,
     updateAdditionalInfoDto: UpdateAdditionalInfoDto,
   ) {
+    const infos = await this.prisma.bookAdditionalInfo.findUnique({
+      where: {
+        book_id,
+      },
+    });
+
     const result = await this.prisma.book.update({
       where: {
         id: book_id,
       },
       data: {
         additional_infos: {
-          update: {
-            data: {
-              ...updateAdditionalInfoDto,
-              read_progress_updated_at: new Date(),
-            },
-          },
+          ...(infos
+            ? {
+                update: {
+                  where: {
+                    book_id,
+                  },
+                  data: {
+                    ...updateAdditionalInfoDto,
+                    read_progress_updated_at: new Date(),
+                  },
+                },
+              }
+            : {
+                create: {
+                  ...updateAdditionalInfoDto,
+                  read_progress_updated_at: new Date(),
+                },
+              }),
         },
       },
       include: {

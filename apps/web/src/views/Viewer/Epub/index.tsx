@@ -188,9 +188,14 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           BookResItem
         ]) => {
           setBook(bookRes);
-          const { spine_index } = detail.additional_infos;
           if (bookRes) {
             bookRes.opened.then(function () {
+              let spine_index = "0";
+
+              if (detail.additional_infos) {
+                spine_index = detail.additional_infos.spine_index;
+              }
+
               display(parseInt(spine_index || "0", 10), bookRes);
               setCurrentSection(bookRes.spine.get(spine_index));
             });
