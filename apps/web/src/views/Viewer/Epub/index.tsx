@@ -14,6 +14,7 @@ import { ContentRender } from "./ContentRender";
 import { BookResItem, NoteResItem } from "@/interface/book";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { getAbsoluteUrl } from "@/helpers/book";
+import { TopBar } from "./TopBar";
 
 export interface EpubViewerProps {
   bookId: string;
@@ -21,6 +22,7 @@ export interface EpubViewerProps {
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [book, setBook] = useState<Book>();
+  const [bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [activatedMark, setActivatedMark] = useState<Mark | null>(null);
@@ -188,6 +190,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
           BookResItem
         ]) => {
           setBook(bookRes);
+          setBookDetail(detail);
+
           if (bookRes) {
             bookRes.opened.then(function () {
               let spine_index = "0";
@@ -425,9 +429,11 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   return (
     <div className="text-foreground bg-app grid w-full h-full grid-cols-[260px_1fr] grid-areas-view gap-2 p-2">
+      <TopBar />
       <Toc
         navigation={book?.navigation}
         metadata={book?.packaging?.metadata}
+        book={bookDetail}
         onItemClick={handleTocItemClick}
         className="grid-in-left-toc"
       />
@@ -439,9 +445,6 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         ref={scrollAreaRef}
         className="grid-in-content rounded-lg relative bg-cell text-cell-foreground h-full"
       >
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-50">
-          <MenuBar />
-        </div>
         {loading && (
           <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
             <Spinner size="3" />

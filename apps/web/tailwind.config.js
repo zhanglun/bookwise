@@ -62,7 +62,7 @@ module.exports = {
       },
       gridTemplateAreas: {
         layout: ["left-sidebar main-view"],
-        view: ['left-toc content']
+        view: ['top-bar top-bar', 'left-toc content']
       },
     },
   },

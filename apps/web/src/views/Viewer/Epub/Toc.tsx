@@ -1,3 +1,5 @@
+import { Cover } from "@/components/Book/Cover";
+import { BookResItem } from "@/interface/book";
 import { ScrollArea, Text } from "@radix-ui/themes";
 import clsx from "clsx";
 import { NavItem } from "epubjs";
@@ -7,12 +9,14 @@ import { PackagingMetadataObject } from "epubjs/types/packaging";
 export interface TocProps {
   navigation?: Navigation;
   metadata?: PackagingMetadataObject;
+  book: BookResItem;
   onItemClick: (href: NavItem) => void;
   className?: string;
 }
 
 export const Toc = (props: TocProps) => {
-  const { navigation, metadata, onItemClick, className } = props;
+  const { navigation, metadata, book, onItemClick, className } = props;
+  console.log("🚀 ~ Toc ~ metadata:", metadata)
 
   const handleItemClick = (item: NavItem) => {
     onItemClick(item);
@@ -51,12 +55,15 @@ export const Toc = (props: TocProps) => {
         className
       )}
     >
-      <div className="h-[42px] grid grid-flow-col gap-1 items-center py-2 px-3 grid-cols-[1fr]">
+      <div className="w-full h-[240px] pt-2 shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
+        <Cover book={book}/>
+      </div>
+      {/* <div className="h-[42px] grid grid-flow-col gap-1 items-center py-2 px-3 grid-cols-[1fr]">
         <span className="overflow-hidden text-sm font-bold whitespace-nowrap text-ellipsis">
           {metadata?.title}
         </span>
-      </div>
-      <div className="flex-0 w-full h-[calc(100vh-58px)]">
+      </div> */}
+      <div className="flex-0 w-full h-[calc(100vh-240px)]">
         <ScrollArea size="1" type="hover" scrollbars="vertical">
           <div className="w-[260px] px-3 py-3">
             {renderItems(navigation?.toc as NavItem[])}
