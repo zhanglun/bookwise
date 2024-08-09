@@ -18,7 +18,7 @@ export const Book = (props: BookProps) => {
       onMouseEnter={() => onHover && onHover(data)}
     >
       <div className="flex flex-col">
-        <div className="w-full h-[202px] shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
+        <div className="w-full h-[202px] py-[8%] shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
           <Cover book={data} onClick={() => onClick && onClick(data)} />
         </div>
         <div className="flex-1 p-3 flex flex-col gap-1 border-t border-[var(--gray-5)]">

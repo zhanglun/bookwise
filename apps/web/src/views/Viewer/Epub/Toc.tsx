@@ -49,21 +49,19 @@ export const Toc = (props: TocProps) => {
   return (
     <div
       className={clsx(
-        "w-full h-full",
-        "rounded-lg bg-cell text-cell-foreground",
+        "h-full",
+        // "rounded-lg bg-cell text-cell-foreground",
         "flex flex-col",
         className
       )}
     >
-      <div className="w-full h-[240px] pt-2 shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
-        <Cover book={book}/>
-      </div>
-      {/* <div className="h-[42px] grid grid-flow-col gap-1 items-center py-2 px-3 grid-cols-[1fr]">
-        <span className="overflow-hidden text-sm font-bold whitespace-nowrap text-ellipsis">
+      <div className="h-[70px] py-2 px-3 shrink-0 grow-0 flex gap-2 relative border-b border-gray-7">
+        <Cover book={book} className="shrink-0 grow-0"/>
+        <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
           {metadata?.title}
         </span>
-      </div> */}
-      <div className="flex-0 w-full h-[calc(100vh-240px)]">
+      </div>
+      <div className="flex-0 w-full h-[calc(100vh-116px)]">
         <ScrollArea size="1" type="hover" scrollbars="vertical">
           <div className="w-[260px] px-3 py-3">
             {renderItems(navigation?.toc as NavItem[])}

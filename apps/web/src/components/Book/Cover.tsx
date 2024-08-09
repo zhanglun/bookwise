@@ -18,7 +18,7 @@ export const Cover = (props: CoverProps) => {
   return book?.path ? (
     <div
       className={clsx(
-        "h-[90%] relative rounded-sm",
+        "h-[100%] relative rounded-sm",
         "shadow-[0px_0px_0px_1.11765px_rgba(0,0,0,0.03),0px_16.7647px_21.2353px_-14.5294px_rgba(0,0,0,0.2),0px_4.2439px_20.3859px_rgba(0,0,0,0.0715329),0px_1.26352px_1.41217px_rgba(0,0,0,0.0484671)]",
         "before:content-[' '] before:absolute before:z-50 before:top-0 before:left-0 before:right-0 before:bottom-0",
         "before:bg-[linear-gradient(360deg,_rgba(0,_0,_0,_0.05)_0%,_rgba(255,_255,_255,_0.15)_100%)]",

@@ -428,56 +428,63 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }
 
   return (
-    <div className="text-foreground bg-app grid w-full h-full grid-cols-[260px_1fr] grid-areas-view gap-2 p-2">
-      <TopBar />
-      <Toc
-        navigation={book?.navigation}
-        metadata={book?.packaging?.metadata}
-        book={bookDetail}
-        onItemClick={handleTocItemClick}
-        className="grid-in-left-toc"
-      />
-      <ScrollArea
-        id="canvasRoot"
-        size="1"
-        type="hover"
-        scrollbars="vertical"
-        ref={scrollAreaRef}
-        className="grid-in-content rounded-lg relative bg-cell text-cell-foreground h-full"
-      >
-        {loading && (
-          <div className="absolute z-40 top-0 right-0 bottom-0 left-0 bg-cell flex items-center justify-center">
-            <Spinner size="3" />
-          </div>
-        )}
-        <div className="relative m-auto max-w-[1200px]">
-          <div className="relative m-auto max-w-[980px] px-[60px]">
-            <section
-              className="py-16 w-full h-full"
-              id="book-section"
-              onClick={handleUserClickEvent}
-            >
-              <ContentRender contentString={content} />
-            </section>
-          </div>
-        </div>
-        <span
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
-          onClick={() => prevPage()}
-        >
-          <ChevronLeftIcon width={22} height={22} />
-        </span>
-        <span
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
-          onClick={() => nextPage()}
-        >
-          <ChevronRightIcon width={22} height={22} />
-        </span>
-        <div
-          id="canvas"
-          className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+    <div className="text-foreground bg-app grid w-full h-full grid-areas-view gap-2 grid-cols-[260px_1fr] grid-rows-[38px_auto]">
+      <div className="grid-in-top-bar bg-red-300">
+        <TopBar />
+      </div>
+      <div className="grid-in-left-toc pl-2">
+        <Toc
+          navigation={book?.navigation}
+          metadata={book?.packaging?.metadata}
+          book={bookDetail}
+          onItemClick={handleTocItemClick}
         />
-      </ScrollArea>
+      </div>
+      <div className="grid-in-content pr-2">
+        <div className="bg-red-200 rounded-lg">
+          <ScrollArea
+            id="canvasRoot"
+            size="1"
+            type="hover"
+            scrollbars="vertical"
+            ref={scrollAreaRef}
+            className="h-[calc(100vh-54px)] px-6 relative"
+          >
+            {loading && (
+              <div className="absolute z-40 top-6 right-6 bottom-6 left-6 bg-cell flex items-center justify-center rounded-lg">
+                <Spinner size="3" />
+              </div>
+            )}
+            <div className="relative m-auto max-w-[1200px] bg-cell text-cell-foreground my-6 mb-30 rounded-lg">
+              <div className="relative m-auto max-w-[980px] px-[60px] pb-20 mb-20">
+                <section
+                  className="py-16 w-full h-full"
+                  id="book-section"
+                  onClick={handleUserClickEvent}
+                >
+                  <ContentRender contentString={content} />
+                </section>
+              </div>
+            </div>
+            <span
+              className="absolute left-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
+              onClick={() => prevPage()}
+            >
+              <ChevronLeftIcon width={22} height={22} />
+            </span>
+            <span
+              className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
+              onClick={() => nextPage()}
+            >
+              <ChevronRightIcon width={22} height={22} />
+            </span>
+            <div
+              id="canvas"
+              className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+            />
+          </ScrollArea>
+        </div>
+      </div>
       {/* <MarkerToolbar
         open={open}
         onVirtualRefChange={() => {}}

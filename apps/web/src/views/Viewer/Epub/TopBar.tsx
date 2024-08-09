@@ -7,7 +7,7 @@ import {
 
 export const TopBar = () => {
   return (
-    <div className="gird-in-top-bar h-[48px]">
+    <div className="">
       <div className="flex flex-row gap-3">
         <PanelLeftClose size={18} />
         <PanelLeftOpen size={18} />
