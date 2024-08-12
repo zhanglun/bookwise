@@ -441,7 +441,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
         />
       </div>
       <div className="grid-in-content pr-2">
-        <div className="bg-red-200 rounded-lg">
+        <div className="bg-cell rounded-lg">
           <ScrollArea
             id="canvasRoot"
             size="1"
