@@ -93,7 +93,7 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
     currentEditingBook: null,
     setCurrentEditingBook: (book: BookResItem | null) => {
       set(() => ({
-        currentEditingBook: book
+        currentEditingBook: book,
       }));
     },
     isEditing: false,
