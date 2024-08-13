@@ -1,5 +1,3 @@
-import { Cover } from "@/components/Book/Cover";
-import { BookResItem } from "@/interface/book";
 import { ScrollArea, Text } from "@radix-ui/themes";
 import clsx from "clsx";
 import { NavItem } from "epubjs";
@@ -9,13 +7,12 @@ import { PackagingMetadataObject } from "epubjs/types/packaging";
 export interface TocProps {
   navigation?: Navigation;
   metadata?: PackagingMetadataObject;
-  book: BookResItem;
   onItemClick: (href: NavItem) => void;
   className?: string;
 }
 
 export const Toc = (props: TocProps) => {
-  const { navigation, metadata, book, onItemClick, className } = props;
+  const { navigation, metadata, onItemClick, className } = props;
   console.log("🚀 ~ Toc ~ metadata:", metadata)
 
   const handleItemClick = (item: NavItem) => {
@@ -50,17 +47,10 @@ export const Toc = (props: TocProps) => {
     <div
       className={clsx(
         "h-full",
-        // "rounded-lg bg-cell text-cell-foreground",
         "flex flex-col",
         className
       )}
     >
-      <div className="h-[70px] py-2 px-3 shrink-0 grow-0 flex gap-2 relative border-b border-gray-7">
-        <Cover book={book} className="shrink-0 grow-0"/>
-        <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-          {metadata?.title}
-        </span>
-      </div>
       <div className="flex-0 w-full h-[calc(100vh-116px)]">
         <ScrollArea size="1" type="hover" scrollbars="vertical">
           <div className="w-[260px] px-3 py-3">

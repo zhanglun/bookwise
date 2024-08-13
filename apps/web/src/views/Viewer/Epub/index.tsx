@@ -430,14 +430,9 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   return (
     <ViewerLayout
-      toc={
-        <Toc
-          navigation={book?.navigation}
-          metadata={book?.packaging?.metadata}
-          book={bookDetail}
-          onItemClick={handleTocItemClick}
-        />
-      }
+      book={bookDetail}
+      navigation={book?.navigation}
+      metadata={book?.packaging?.metadata}
       area={
         <ScrollArea
           id="canvasRoot"
