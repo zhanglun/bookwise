@@ -28,7 +28,7 @@ export const ViewerLayout = ({
   return (
     <div
       className={clsx("text-foreground bg-app w-full h-full p-2 grid gap-2", {
-        "grid-areas-view  grid-cols-[280px_1fr] grid-rows-[34px_auto]":
+        "grid-areas-view  grid-cols-[auto_1fr] grid-rows-[34px_auto]":
           store.leftSidebarExpanded,
         "grid-areas-hide-left-sidebar-view grid-rows-[34px_auto]":
           !store.leftSidebarExpanded,
@@ -38,7 +38,7 @@ export const ViewerLayout = ({
         <TopBar />
       </div>
       {store.leftSidebarExpanded && (
-        <div className="grid-in-left-toc">
+        <div className="grid-in-left-toc overflow-hidden">
           <ViewerSidebar
             book={book}
             navigation={navigation}

@@ -16,12 +16,16 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { getAbsoluteUrl } from "@/helpers/book";
 import { TopBar } from "./TopBar";
 import { ViewerLayout } from "../Layout";
+import {useBearStore} from "@/store";
 
 export interface EpubViewerProps {
   bookId: string;
 }
 
 export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
+  const store = useBearStore((state) => ({
+    currentTocItem: state.currentTocItem
+  }))
   const [book, setBook] = useState<Book>();
   const [bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -346,8 +350,12 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     }
   }, [notesMap, currentSection]);
 
-  function handleTocItemClick(item: NavItem) {
-    const { href } = item;
+  useEffect(() => {
+    if (!store.currentTocItem) {
+      return
+    }
+
+    const { href } = store.currentTocItem;
     const section = book?.spine.get(href);
 
     if (section) {
@@ -355,7 +363,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       setCurrentSectionIndex(section.index as number);
       display(section.index, book);
     }
-  }
+  }, [store.currentTocItem])
 
   function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
     let elem = null;

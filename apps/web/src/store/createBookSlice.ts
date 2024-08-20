@@ -1,6 +1,7 @@
-import { StateCreator } from "zustand";
-import { BookResItem } from "@/interface/book";
-import { request } from "@/helpers/request";
+import {StateCreator} from "zustand";
+import {BookResItem} from "@/interface/book";
+import {request} from "@/helpers/request";
+import {NavItem} from "epubjs";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
   return list.findIndex((item) => item.id === book.id);
@@ -22,6 +23,9 @@ export interface BookSlice {
   setCurrentEditingBook: (book: BookResItem) => void;
   isEditing: boolean;
   updateIsEditing: (status: boolean) => void;
+
+  handleTocClick: (item: NavItem) => void;
+  currentTocItem: NavItem | null;
 }
 
 export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
@@ -49,9 +53,9 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
       const idx = findIndex(book, list);
 
       if (idx <= 0) {
-        set(() => ({ recentlyReadingList: [book, ...list] }));
+        set(() => ({recentlyReadingList: [book, ...list]}));
       } else {
-        set(() => ({ recentlyReadingList: [book, ...list.splice(idx, 1)] }));
+        set(() => ({recentlyReadingList: [book, ...list.splice(idx, 1)]}));
       }
     },
 
@@ -72,7 +76,7 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         .then((res) => {
           const items = res.data;
 
-          set(() => ({ recentlyAddList: items, loadingRecentlyAdd: false }));
+          set(() => ({recentlyAddList: items, loadingRecentlyAdd: false}));
         });
       request
         .get("/books/recently-reading", {
@@ -102,5 +106,13 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         isEditing: status,
       }));
     },
+
+    currentTocItem: null,
+    handleTocClick(item: NavItem) {
+      console.log("item", item);
+      set(() => ({
+        currentTocItem: item
+      }))
+    }
   };
 };

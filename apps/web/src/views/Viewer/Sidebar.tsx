@@ -1,5 +1,5 @@
 import { BookResItem } from "@/interface/book";
-import { SegmentedControl, Tabs } from "@radix-ui/themes";
+import { SegmentedControl } from "@radix-ui/themes";
 import { Toc } from "./Epub/Toc";
 import { Cover } from "@/components/Book/Cover";
 import Navigation from "epubjs/types/navigation";
@@ -23,7 +23,7 @@ export const ViewerSidebar = (props: ViewerSidebarProps) => {
   const [segmented, setSegmented] = useState("toc");
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col w-[240px]">
       <div className="h-[70px] py-2 px-3 shrink-0 grow-0 flex gap-2 relative border-b border-gray-7">
         <Cover book={book} className="shrink-0 grow-0" />
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
@@ -36,6 +36,7 @@ export const ViewerSidebar = (props: ViewerSidebarProps) => {
         onValueChange={(v) => {
           setSegmented(v);
         }}
+        className="my-2 shrink-0 grow-0"
       >
         <SegmentedControl.Item value="toc">
           <TableOfContents size={18} />

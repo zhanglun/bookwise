@@ -1,8 +1,9 @@
-import { ScrollArea, Text } from "@radix-ui/themes";
+import {ScrollArea, Text} from "@radix-ui/themes";
 import clsx from "clsx";
-import { NavItem } from "epubjs";
+import {NavItem} from "epubjs";
 import Navigation from "epubjs/types/navigation";
-import { PackagingMetadataObject } from "epubjs/types/packaging";
+import {PackagingMetadataObject} from "epubjs/types/packaging";
+import {useBearStore} from "@/store";
 
 export interface TocProps {
   navigation?: Navigation;
@@ -12,16 +13,18 @@ export interface TocProps {
 }
 
 export const Toc = (props: TocProps) => {
-  const { navigation, metadata, onItemClick, className } = props;
-  console.log("🚀 ~ Toc ~ metadata:", metadata)
+  const {navigation, metadata, className} = props;
+  const store = useBearStore((state) => ({
+    handleTocClick: state.handleTocClick
+  }))
 
   const handleItemClick = (item: NavItem) => {
-    onItemClick(item);
+    store.handleTocClick(item)
   };
 
   const renderItems = (list: NavItem[], idx = 0) => {
     return (list || []).map((item) => {
-      const { label, href, subitems } = item;
+      const {label, href, subitems} = item;
 
       return (
         <div className={clsx("text-sm cursor-default")} key={href}>
@@ -44,20 +47,12 @@ export const Toc = (props: TocProps) => {
   };
 
   return (
-    <div
-      className={clsx(
-        "h-full",
-        "flex flex-col",
-        className
-      )}
-    >
-      <div className="flex-0 w-full h-[calc(100vh-116px)]">
-        <ScrollArea size="1" type="hover" scrollbars="vertical">
-          <div className="w-[260px] px-3 py-3">
-            {renderItems(navigation?.toc as NavItem[])}
-          </div>
-        </ScrollArea>
+    // <div className="grow overflow-hidden">
+    <ScrollArea size="1" type="hover" scrollbars="vertical">
+      <div className="px-2 py-2">
+        {renderItems(navigation?.toc as NavItem[])}
       </div>
-    </div>
+    </ScrollArea>
+    // </div>
   );
 };
