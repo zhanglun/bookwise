@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+
+@layer components {
+  .tab {
+    @apply flex-1 flex gap-1;
+  }
+
+  .tab-item {
+    @apply flex items-center justify-center px-[10px] text-sm bg-gray4 bg-opacity-50 text-[var(--gray-12)] cursor-pointer rounded-lg hover:bg-opacity-80 transition-all;
+  }
+
+  .tab-item--active {
+    @apply bg-gray5 bg-opacity-90 hover:bg-gray5 hover:bg-opacity-90;
+  }
+}

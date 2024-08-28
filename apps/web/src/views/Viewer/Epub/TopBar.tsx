@@ -6,6 +6,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import { ViewTab } from "../Tab";
 
 export const TopBar = () => {
   const store = useBearStore((state) => ({
@@ -14,7 +15,7 @@ export const TopBar = () => {
   }));
 
   return (
-    <div className="h-full">
+    <div className="h-full flex">
       <div className="h-full flex flex-row items-center gap-3 px-3">
         <IconButton
           variant="ghost"
@@ -29,6 +30,8 @@ export const TopBar = () => {
         <ArrowLeft size={20} />
         <ArrowRight size={20} />
       </div>
+
+      <ViewTab />
     </div>
   );
 };
