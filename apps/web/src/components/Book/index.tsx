@@ -6,13 +6,14 @@ export interface BookProps {
   onCoverClick?: (book: BookResItem) => void;
   onClick?: (book: BookResItem) => void;
   onHover?: (book: BookResItem) => void;
+  full?: boolean;
 }
 
 export const Book = (props: BookProps) => {
-  const { data, onClick, onHover } = props;
+  const { data, full, onClick, onHover } = props;
   const { authors } = data;
 
-  return (
+  return full ? (
     <div
       className="w-full border border-[var(--gray-5)] cursor-pointer rounded-lg isolation bg-[var(--gray-2)] transition-all duration-[0.3s] hover:bg[var(--gray-3)] hover:scale-[1.03] hover:shadow-[0px_0px_0px_1px_rgba(60,64,67,0.00),0px_1.5px_4px_rgba(60,64,67,0.03),0px_3px_10px_rgba(60,64,67,0.1)] group"
       onMouseEnter={() => onHover && onHover(data)}
@@ -38,5 +39,7 @@ export const Book = (props: BookProps) => {
         </div>
       </div>
     </div>
+  ) : (
+    <Cover book={data} onClick={() => onClick && onClick(data)} />
   );
 };
