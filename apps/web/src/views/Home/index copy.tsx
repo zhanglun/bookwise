@@ -20,7 +20,7 @@ export const Home = () => {
   useEffect(() => {}, []);
 
   return (
-    <div className="h-full px-4 sm:px-4">
+    <div className="bg-cell h-full px-4 sm:px-4">
       <div className="pt-5 pb-2 flex justify-between">
         <Heading size="5">Recently reading</Heading>
         <Text

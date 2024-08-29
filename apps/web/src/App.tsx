@@ -5,16 +5,23 @@ import { Sidebar } from "./layout/Sidebar";
 import { ModeSwitch } from "./components/ModeSwitch";
 
 import "./App.css";
+import { TopBar } from "./views/Viewer/Epub/TopBar";
 
 function App() {
   return (
-    <div className="text-foreground bg-app grid w-full h-full grid-cols-[auto_1fr] grid-areas-layout gap-2 p-2">
+    <div className="text-foreground bg-app w-full h-full p-2 grid gap-2 grid-areas-layout grid-cols-[auto_1fr] grid-rows-[34px_auto]">
       <ModeSwitch />
-      <Sidebar />
-      <ScrollArea className="grid-in-main-view rounded-lg">
-        <Outlet />
-      </ScrollArea>
-      {/* <div className="grid-in-right-sidebar"></div> */}
+      <div className="grid-in-top-bar">
+        <TopBar />
+      </div>
+      <div className="grid-in-left-sidebar overflow-hidden">
+        <Sidebar />
+      </div>
+      <div className="grid-in-main-view overflow-hidden">
+        <ScrollArea className="rounded-lg">
+          <Outlet />
+        </ScrollArea>
+      </div>
     </div>
   );
 }

@@ -87,11 +87,12 @@ export class BooksService {
       },
     });
   }
+
   public async findAll(
     sort?: Sorting,
     filter?: Filtering[],
   ): Promise<PaginatedResource<Partial<Book>>> {
-    const where = filter.map(getWhere).reduce((acu, cur) => {
+    const where = (filter || []).map(getWhere).reduce((acu, cur) => {
       console.log('cur', cur);
       acu = { ...acu, ...cur };
       console.log('acu', acu);

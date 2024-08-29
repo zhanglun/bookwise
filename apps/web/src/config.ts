@@ -3,5 +3,8 @@ export enum RouteConfig {
   SEARCH = "/search",
   FILTER = "/filter",
   LIBRARY = "/library",
-  EDITOR="/editor/:id"
+  EDITOR="/editor/:id",
+  ALL = "/all",
+  READING = "/reading",
+  FINISHED = "/finished",
 }
