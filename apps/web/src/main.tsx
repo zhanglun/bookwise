@@ -15,6 +15,7 @@ import { Theme } from "@radix-ui/themes";
 import "./test.ts";
 import "./index.css";
 import { RouteConfig } from "./config.ts";
+import { Reading } from "./views/Reading/index.tsx";
 
 const router = createBrowserRouter([
   {
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
       },
       {
         path: RouteConfig.READING,
-        element: <All />,
+        element: <Reading />,
       },
       {
         path: RouteConfig.FINISHED,

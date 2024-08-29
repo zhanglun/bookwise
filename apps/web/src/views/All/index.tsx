@@ -1,7 +1,8 @@
 import { BookList } from "@/components/Book/List";
+import { LayoutToolbar } from "@/components/LayoutToolbar";
 import { request } from "@/helpers/request";
 import { BookResItem } from "@/interface/book";
-import { Heading, Spinner } from "@radix-ui/themes";
+import { Heading } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 
 export const All = () => {
@@ -31,16 +32,12 @@ export const All = () => {
   }, []);
 
   return (
-    <div className=" bg-cell h-full px-4 sm:px-4">
-      <Spinner loading={loading} />
-      {!loading && (
-        <>
-          <div className="pt-6 pb-2">
-            <Heading size="7">All</Heading>
-          </div>
-          <BookList data={books} loading={loading} />
-        </>
-      )}
+    <div className="h-full px-4 sm:px-4">
+      <div className="pt-5 pb-2 flex justify-between">
+        <Heading size="5">All</Heading>
+        <LayoutToolbar />
+      </div>
+      <BookList data={books} loading={loading} />
     </div>
   );
 };

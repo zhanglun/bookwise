@@ -17,6 +17,7 @@ export interface BookSlice {
   addBooks: (books: BookResItem[]) => void;
   updateRecentlyReadingList: (book: BookResItem) => void;
 
+  getRecentReadingList: () => void;
   initBookSliceData: () => void;
 
   currentEditingBook: BookResItem | null;
@@ -59,6 +60,27 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
       }
     },
 
+    getRecentReadingList() {
+      set(() => ({
+        loadingRecentlyReading: true,
+      }));
+
+      request
+        .get("/books/recently-reading", {
+          data: {
+            sort: "created_at:desc",
+          },
+        })
+        .then((res) => {
+          const items = res.data;
+
+          set(() => ({
+            recentlyReadingList: items,
+            loadingRecentlyReading: false,
+          }));
+        });
+    },
+
     initBookSliceData() {
       set(() => ({
         loadingRecentlyReading: true,
@@ -78,20 +100,8 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
 
           set(() => ({recentlyAddList: items, loadingRecentlyAdd: false}));
         });
-      request
-        .get("/books/recently-reading", {
-          data: {
-            sort: "created_at:desc",
-          },
-        })
-        .then((res) => {
-          const items = res.data;
 
-          set(() => ({
-            recentlyReadingList: items,
-            loadingRecentlyReading: false,
-          }));
-        });
+        get().getRecentReadingList();
     },
 
     currentEditingBook: null,

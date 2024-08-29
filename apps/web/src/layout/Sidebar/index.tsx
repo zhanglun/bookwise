@@ -32,25 +32,23 @@ export const Sidebar = () => {
 
   return (
     <div className="h-full w-[240px] flex flex-col grid-in-left-sidebar min-h-0">
-      <div className="rounded-md px-3 py-2">
-        <NavLink
-          to={RouteConfig.HOME}
-          className={({ isActive }) => createRouteClassName(isActive)}
-        >
-          <HomeIcon width={18} height={16} />
-          <span>Home</span>
-        </NavLink>
-        <NavLink
-          to={RouteConfig.SEARCH}
-          className={({ isActive }) => createRouteClassName(isActive)}
-        >
-          <MagnifyingGlassIcon width={18} height={16} />
-          <span>Search</span>
-        </NavLink>
-      </div>
+      <NavLink
+        to={RouteConfig.HOME}
+        className={({ isActive }) => createRouteClassName(isActive)}
+      >
+        <HomeIcon width={18} height={16} />
+        <span>Home</span>
+      </NavLink>
+      {/* <NavLink
+        to={RouteConfig.SEARCH}
+        className={({ isActive }) => createRouteClassName(isActive)}
+      >
+        <MagnifyingGlassIcon width={18} height={16} />
+        <span>Search</span>
+      </NavLink> */}
       <div className="flex-1 flex flex-col rounded-md min-h-0">
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex items-center gap-3 py-1 px-2 font-bold text-gray-11 hover:text-gray-12">
+        <div className="flex items-center justify-between px-2 py-2">
+          <div className="flex items-center gap-3 py-1 font-bold text-gray-11 hover:text-gray-12">
             <DashboardIcon width={18} height={16} />
             <span>Library</span>
           </div>
@@ -58,29 +56,27 @@ export const Sidebar = () => {
             <Uploader onSuccess={handleUploadSuccessCallback} />
           </div>
         </div>
-        <div className="rounded-md px-3 py-2">
-          <NavLink
-            to={RouteConfig.ALL}
-            className={({ isActive }) => createRouteClassName(isActive)}
-          >
-            <BookIcon width={18} height={16} />
-            <span>All Books</span>
-          </NavLink>
-          <NavLink
-            to={RouteConfig.READING}
-            className={({ isActive }) => createRouteClassName(isActive)}
-          >
-            <BookOpenIcon width={18} height={16} />
-            <span>Reading</span>
-          </NavLink>
-          <NavLink
-            to={RouteConfig.FINISHED}
-            className={({ isActive }) => createRouteClassName(isActive)}
-          >
-            <CheckCircledIcon width={18} height={16} />
-            <span>Finished</span>
-          </NavLink>
-        </div>
+        <NavLink
+          to={RouteConfig.ALL}
+          className={({ isActive }) => createRouteClassName(isActive)}
+        >
+          <BookIcon width={18} height={16} />
+          <span>All Books</span>
+        </NavLink>
+        <NavLink
+          to={RouteConfig.READING}
+          className={({ isActive }) => createRouteClassName(isActive)}
+        >
+          <BookOpenIcon width={18} height={16} />
+          <span>Reading</span>
+        </NavLink>
+        <NavLink
+          to={RouteConfig.FINISHED}
+          className={({ isActive }) => createRouteClassName(isActive)}
+        >
+          <CheckCircledIcon width={18} height={16} />
+          <span>Finished</span>
+        </NavLink>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ export interface TocProps {
 }
 
 export const Toc = (props: TocProps) => {
-  const {navigation, metadata, className} = props;
+  const {navigation } = props;
   const store = useBearStore((state) => ({
     handleTocClick: state.handleTocClick
   }))

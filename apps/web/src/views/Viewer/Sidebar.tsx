@@ -25,13 +25,14 @@ export const ViewerSidebar = (props: ViewerSidebarProps) => {
   return (
     <div className="h-full flex flex-col w-[240px]">
       <div className="h-[70px] py-2 px-3 shrink-0 grow-0 flex gap-2 relative border-b border-gray-7">
-        <Cover book={book} className="shrink-0 grow-0" />
+        <Cover book={book} className="w-[48px]" />
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
           {metadata?.title}
         </span>
       </div>
       <SegmentedControl.Root
         defaultValue={segmented}
+        size="1"
         radius="large"
         onValueChange={(v) => {
           setSegmented(v);
@@ -39,16 +40,16 @@ export const ViewerSidebar = (props: ViewerSidebarProps) => {
         className="my-2 shrink-0 grow-0"
       >
         <SegmentedControl.Item value="toc">
-          <TableOfContents size={18} />
+          <TableOfContents size={14} />
         </SegmentedControl.Item>
         <SegmentedControl.Item value="bookmark">
-          <BookmarkIcon size={16} />
+          <BookmarkIcon size={14} />
         </SegmentedControl.Item>
         <SegmentedControl.Item value="notes">
-          <NotebookPen size={15} />
+          <NotebookPen size={12} />
         </SegmentedControl.Item>
         <SegmentedControl.Item value="hightligher">
-          <HighlighterIcon size={15} />
+          <HighlighterIcon size={13} />
         </SegmentedControl.Item>
       </SegmentedControl.Root>
       {segmented === "toc" && (
