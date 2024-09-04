@@ -18,11 +18,11 @@ export const BookList = (props: BookListProps) => {
       <Spinner loading={loading} />
       {data.map((book) => {
         return (
-          <BookContextMenu book={book}>
+          <BookContextMenu book={book} key={book.id}>
             <Book
               key={book.id}
               data={book}
-              onClick={() => navigateToRead(book.id)}
+              onClick={() => navigateToRead(book)}
             />
           </BookContextMenu>
         );

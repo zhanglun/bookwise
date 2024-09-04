@@ -34,6 +34,8 @@
     "@types/lodash-es": "^4.17.9",
     "autoprefixer": "^10.4.14",
     "cmdk": "^0.2.0",
+    "dexie": "^4.0.8",
+    "dexie-react-hooks": "^1.1.7",
     "epubjs": "^0.3.93",
     "framer-motion": "^10.15.1",
     "html-react-parser": "^5.0.10",

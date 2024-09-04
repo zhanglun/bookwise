@@ -15,7 +15,7 @@ export const TopBar = () => {
   }));
 
   return (
-    <div className="h-full flex">
+    <div className="h-[34px] flex">
       <div className="h-full flex flex-row items-center gap-3 px-3">
         <IconButton
           variant="ghost"
