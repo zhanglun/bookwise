@@ -11,7 +11,7 @@ export interface BookListProps {
 
 export const BookList = (props: BookListProps) => {
   const { data, loading } = props;
-  const { navigateToRead } = useBook();
+  const { openBook } = useBook();
 
   return (
     <div className="py-2 grid items-end gap-x-4 gap-y-12 grid-cols-[repeat(auto-fill,minmax(144px,1fr))] grid-rows-1">
@@ -22,7 +22,7 @@ export const BookList = (props: BookListProps) => {
             <Book
               key={book.id}
               data={book}
-              onClick={() => navigateToRead(book)}
+              onClick={() => openBook(book)}
             />
           </BookContextMenu>
         );

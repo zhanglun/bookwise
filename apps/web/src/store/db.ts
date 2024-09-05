@@ -4,6 +4,7 @@ interface BookCached {
   id: number;
   book_id: number;
   title: string;
+  isActive: number;
 }
 
 const db = new Dexie('BookWiseDatabase') as Dexie & {
@@ -15,7 +16,7 @@ const db = new Dexie('BookWiseDatabase') as Dexie & {
 
 // Schema declaration:
 db.version(1).stores({
-  bookCached: '++id, &book_id, title' // primary key "id" (for the runtime!)
+  bookCached: '++id, &book_id, title, isActive' // 添加 isActive 到 schema
 });
 
 export type { BookCached };
