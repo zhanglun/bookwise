@@ -1,5 +1,3 @@
-import clsx from "clsx";
-import { TopBar } from "./Epub/TopBar";
 import { ViewerSidebar } from "./Sidebar";
 import { useBearStore } from "@/store";
 import { BookResItem } from "@/interface/book";
@@ -26,19 +24,9 @@ export const ViewerLayout = ({
   }));
 
   return (
-    <div
-      className={clsx("text-foreground bg-app w-full h-full p-2 grid gap-2", {
-        "grid-areas-view  grid-cols-[auto_1fr] grid-rows-[34px_auto]":
-          store.leftSidebarExpanded,
-        "grid-areas-hide-left-sidebar-view grid-rows-[34px_auto]":
-          !store.leftSidebarExpanded,
-      })}
-    >
-      <div className="grid-in-top-bar">
-        <TopBar />
-      </div>
+    <>
       {store.leftSidebarExpanded && (
-        <div className="grid-in-left-toc overflow-hidden">
+        <div className="grid-in-left-sidebar overflow-hidden">
           <ViewerSidebar
             book={book}
             navigation={navigation}
@@ -46,9 +34,9 @@ export const ViewerLayout = ({
           />
         </div>
       )}
-      <div className="grid-in-content">
+      <div className="grid-in-main-view">
         <div className="bg-cell rounded-lg">{area}</div>
       </div>
-    </div>
+    </>
   );
 };

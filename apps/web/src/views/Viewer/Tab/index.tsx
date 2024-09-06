@@ -1,3 +1,4 @@
+import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -8,7 +9,7 @@ import { db } from "@/store/db";
 import "./index.css";
 import { RouteConfig } from "@/config";
 
-export const ViewTab = () => {
+export const ViewTab = React.memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
   const bookCached = useLiveQuery(async () => {
@@ -43,4 +44,4 @@ export const ViewTab = () => {
       })}
     </div>
   );
-};
+});

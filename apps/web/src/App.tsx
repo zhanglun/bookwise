@@ -1,7 +1,4 @@
-import { ScrollArea } from "@radix-ui/themes";
 import { Outlet } from "react-router-dom";
-
-import { Sidebar } from "./layout/Sidebar";
 import { ModeSwitch } from "./components/ModeSwitch";
 
 import "./App.css";
@@ -14,14 +11,7 @@ function App() {
       <div className="grid-in-top-bar">
         <TopBar />
       </div>
-      <div className="grid-in-left-sidebar overflow-hidden">
-        <Sidebar />
-      </div>
-      <div className="grid-in-main-view overflow-hidden">
-        <ScrollArea className="rounded-lg">
-          <Outlet />
-        </ScrollArea>
-      </div>
+      <Outlet />
     </div>
   );
 }

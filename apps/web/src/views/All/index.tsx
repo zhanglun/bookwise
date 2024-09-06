@@ -33,7 +33,7 @@ export const All = () => {
 
   return (
     <div className="h-full px-4 sm:px-4">
-      <div className="pt-5 pb-2 flex justify-between">
+      <div className="py-2 flex justify-between">
         <Heading size="5">All</Heading>
         <LayoutToolbar />
       </div>

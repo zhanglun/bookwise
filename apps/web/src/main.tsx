@@ -12,10 +12,10 @@ import { Viewer } from "@/views/Viewer";
 
 import { Theme } from "@radix-ui/themes";
 
-import "./test.ts";
-import "./index.css";
 import { RouteConfig } from "./config.ts";
 import { Reading } from "./views/Reading/index.tsx";
+import { MainLayout } from "./layout/MainLayout.tsx";
+import "./index.css";
 
 const router = createBrowserRouter([
   {
@@ -23,34 +23,39 @@ const router = createBrowserRouter([
     element: <App></App>,
     children: [
       {
-        path: RouteConfig.HOME,
-        element: <Home />,
+        element: <MainLayout />,
+        children: [
+          {
+            index: true,
+            element: <Home />,
+          },
+          {
+            path: RouteConfig.SEARCH,
+            element: <Search />,
+          },
+          {
+            path: RouteConfig.ALL,
+            element: <All />,
+          },
+          {
+            path: RouteConfig.READING,
+            element: <Reading />,
+          },
+          {
+            path: RouteConfig.FINISHED,
+            element: <All />,
+          },
+          {
+            path: RouteConfig.EDITOR,
+            element: <Editor />,
+          },
+        ],
       },
       {
-        path: RouteConfig.SEARCH,
-        element: <Search />,
-      },
-      {
-        path: RouteConfig.ALL,
-        element: <All />,
-      },
-      {
-        path: RouteConfig.READING,
-        element: <Reading />,
-      },
-      {
-        path: RouteConfig.FINISHED,
-        element: <All />,
-      },
-      {
-        path: RouteConfig.EDITOR,
-        element: <Editor />,
+        path: "/viewer/:uuid",
+        element: <Viewer />,
       },
     ],
-  },
-  {
-    path: "/viewer/:uuid",
-    element: <Viewer />,
   },
 ]);
 

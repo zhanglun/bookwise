@@ -21,7 +21,7 @@ export const Home = () => {
 
   return (
     <div className="bg-cell h-full px-4 sm:px-4">
-      <div className="pt-5 pb-2 flex justify-between">
+      <div className="py-2 flex justify-between">
         <Heading size="5">Recently reading</Heading>
         <Text
           color="gray"
@@ -32,7 +32,7 @@ export const Home = () => {
       </div>
       <BookList data={store.recentlyReadingList} loading={store.loadingRecentlyReading} />
       <Separator className="w-full my-6" />
-      <div className="pt-5 pb-2 flex justify-between">
+      <div className="py-2 flex justify-between">
         <Heading size="5">Recently added</Heading>
         <Text
           color="gray"

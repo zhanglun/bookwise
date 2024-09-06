@@ -1,5 +1,5 @@
 import { useBearStore } from "@/store";
-import { IconButton } from "@radix-ui/themes";
+import { IconButton, ScrollArea } from "@radix-ui/themes";
 import {
   ArrowLeft,
   ArrowRight,
@@ -15,8 +15,8 @@ export const TopBar = () => {
   }));
 
   return (
-    <div className="h-[34px] flex">
-      <div className="h-full flex flex-row items-center gap-3 px-3">
+    <div className="h-[42px] grid grid-cols-[auto_1fr]">
+      <div className="h-[32px] flex flex-row items-center gap-3 px-3">
         <IconButton
           variant="ghost"
           color="gray"
@@ -31,7 +31,9 @@ export const TopBar = () => {
         <ArrowRight size={20} />
       </div>
 
-      <ViewTab />
+      <ScrollArea style={{ flex: 1, height: '100%' }}>
+        <ViewTab />
+      </ScrollArea>
     </div>
   );
 };

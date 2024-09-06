@@ -31,7 +31,7 @@ export const Sidebar = () => {
   }
 
   return (
-    <div className="h-full w-[240px] pt-5 flex flex-col grid-in-left-sidebar min-h-0">
+    <div className="h-full w-[240px] flex flex-col grid-in-left-sidebar min-h-0">
       <NavLink
         to={RouteConfig.HOME}
         className={({ isActive }) => createRouteClassName(isActive)}
