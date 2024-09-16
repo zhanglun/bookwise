@@ -11,6 +11,8 @@
     "build:server": "pnpm -F @bookwise/server build"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.2.7",
+    "@electric-sql/pglite-repl": "^0.2.7",
     "@nestjs/common": "^9.0.0",
     "@nestjs/core": "^9.0.0",
     "@nestjs/platform-express": "^9.0.0",
