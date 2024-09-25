@@ -4,7 +4,7 @@ import clsx from "clsx";
 import { useLiveQuery } from "dexie-react-hooks";
 import { FileIcon, HomeIcon } from "@radix-ui/react-icons";
 import { useBook } from "@/hooks/book";
-import { db } from "@/store/db";
+// import { db } from "@/store/db";
 
 import "./index.css";
 import { RouteConfig } from "@/config";
@@ -13,7 +13,8 @@ export const ViewTab = React.memo(() => {
   const location = useLocation();
   const navigate = useNavigate();
   const bookCached = useLiveQuery(async () => {
-    return await db.bookCached.toArray();
+    return []
+    // return await db.bookCached.toArray();
   });
 
   const { activateBook } = useBook();

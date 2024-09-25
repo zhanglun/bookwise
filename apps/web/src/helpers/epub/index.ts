@@ -547,15 +547,15 @@ export function substitute(
     }
   });
 
-  console.log("🚀 ~ urls.forEach ~ urlMap:", urlMap)
+  console.log("🚀 ~ urls.forEach ~ urlMap:", urlMap);
 
   const regex = new RegExp(`([^"]*?)?(${regexUrls.join("|")})`, "g");
   let result = content.replace(regex, (match, prefix, url) => {
-    console.log("🚀 ~ result ~ match:", match)
-    console.log("🚀 ~ result ~ url:", url)
-    console.log("🚀 ~ result ~ prefix:", prefix)
+    console.log("🚀 ~ result ~ match:", match);
+    console.log("🚀 ~ result ~ url:", url);
+    console.log("🚀 ~ result ~ prefix:", prefix);
     const replacement = urlMap.get(url);
-    console.log("🚀 ~ result ~ replacement:", replacement)
+    console.log("🚀 ~ result ~ replacement:", replacement);
     return replacement;
   });
 
@@ -572,7 +572,7 @@ export function getFileFormatType(
     [type: string]: (typeof FileFormat)[keyof typeof FileFormat];
   } = {
     "application/pdf": FileFormat.PDF,
-    "application/epub+zip": FileFormat.PDF,
+    "application/epub+zip": FileFormat.EPUB,
   };
 
   for (const key in formatTypes) {

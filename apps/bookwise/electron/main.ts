@@ -40,10 +40,12 @@ function createWindow() {
 
   try {
     if (VITE_DEV_SERVER_URL) {
-      win.loadURL(VITE_DEV_SERVER_URL);
+      win.loadURL(`http://localhost:5173`);
+      // win.loadURL(VITE_DEV_SERVER_URL);
     } else {
       // win.loadFile('dist/index.html')
-      win.loadFile(path.join(process.env.DIST as string, "index.html"));
+      // win.loadFile(path.join(process.env.DIST as string, "index.html"));
+      win.loadURL(`http://localhost:5173`);
     }
 
     if (app.isPackaged) {

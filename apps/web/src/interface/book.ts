@@ -11,13 +11,14 @@ export interface AdditionalInfos {
 export interface BookResItem {
   id: number;
   title: string;
+  identifier: string;
   subject: string;
   description: string;
   contributor: string;
   source: string;
   rights: string;
   language_id: string;
-  format: typeof FileFormat[keyof typeof FileFormat];
+  format: (typeof FileFormat)[keyof typeof FileFormat];
   page_size: number;
   isbn: string;
   path: string;
@@ -31,13 +32,14 @@ export interface BookResItem {
 
 export interface BookRequestItem {
   title: string;
+  identifier: string;
   subject: string;
   description: string;
   contributor: string;
   source: string;
   rights: string;
   language: string;
-  format: typeof FileFormat[keyof typeof FileFormat];
+  format: (typeof FileFormat)[keyof typeof FileFormat];
   page_count: number;
   isbn: string;
   authors: string | string[];
@@ -59,22 +61,23 @@ export interface PublisherResItem {
   id: number;
   name: string;
   _count: {
-    books: number,
-  }
+    books: number;
+  };
 }
 
 export interface LanguageResItem {
   id: number;
   code: string;
   _count: {
-    books: number,
-  }
+    books: number;
+  };
 }
 
 export const FileFormat = {
   EPUB: "EPUB",
   PDF: "PDF",
   MOBI: "MOBI",
+  TEXT: "TEXT",
   UNKNOWN: "UNKNOWN",
 } as const;
 

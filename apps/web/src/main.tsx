@@ -16,6 +16,7 @@ import { RouteConfig } from "./config.ts";
 import { Reading } from "./views/Reading/index.tsx";
 import { MainLayout } from "./layout/MainLayout.tsx";
 import "./index.css";
+import { PGLiteRepl } from "./views/PGLiteRepl.tsx";
 
 const router = createBrowserRouter([
   {
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
       },
     ],
   },
+  {
+    path: '/repl',
+    element: <PGLiteRepl />
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

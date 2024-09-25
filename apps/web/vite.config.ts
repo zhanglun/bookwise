@@ -11,4 +11,7 @@ export default defineConfig({
       "@ui": path.resolve(__dirname, './src/components/ui')
     },
   },
+  optimizeDeps: {
+    exclude: ['@electric-sql/pglite']
+  }
 })
