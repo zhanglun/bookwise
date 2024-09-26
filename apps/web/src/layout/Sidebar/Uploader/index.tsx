@@ -7,6 +7,7 @@ import { BookRequestItem, BookResItem } from "@/interface/book";
 import { Book } from "epubjs";
 import { PackagingMetadataObject } from "epubjs/types/packaging";
 import { dal } from "@/dal";
+import { FileLockIcon } from "lucide-react";
 
 async function formatMetadata(file: File): Promise<[BookRequestItem, string]> {
   const book = new Book(file as unknown as string);
@@ -61,7 +62,11 @@ export const Uploader = (props: UploaderProps) => {
           );
 
           for (const file of files) {
-            console.log("%c Line:83 🍤 file", "color:#465975", file);
+            console.log(
+              "%c Line:83 🍤 file",
+              "color:#465975",
+              file.getAbsoutePath()
+            );
 
             const [metadata, cover] = await formatMetadata(file);
 
@@ -159,10 +164,34 @@ export const Uploader = (props: UploaderProps) => {
   //   }
   // }, [files]);
 
+  function handleTest() {
+    dal.uploadFile({
+      file: "/Users/zhanglun/Downloads/ibooks/非暴力沟通.epub",
+      metadata: {
+        title: "非暴力沟通",
+        subject: "",
+        description: "",
+        contributor: "",
+        identifier: "2016103809",
+        source: "",
+        rights: "",
+        language: "zh",
+        format: "EPUB",
+        page_count: 0,
+        isbn: "",
+        authors: "马歇尔•卢森堡",
+        publisher: "华夏出版社",
+        publish_at: new Date("2016-01-01T00:00:00.000Z"),
+      },
+      cover: "/OEBPS/Images/cover00099.jpeg",
+    });
+  }
+
   return (
     <Tooltip content="Add new book">
       <IconButton variant="ghost" radius="full" className="cursor-pointer">
         <PlusCircledIcon onClick={openFileDialog} width={20} height={20} />
+        <FileLockIcon onClick={handleTest} />
       </IconButton>
     </Tooltip>
   );

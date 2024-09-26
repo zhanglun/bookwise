@@ -1,7 +1,9 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
+import fs from "node:fs/promises";
 import { fork } from "child_process";
 import { EventHandler } from "./events";
+import { testFile } from "./test";
 
 // The built directory structure
 //
@@ -73,8 +75,13 @@ app.on("window-all-closed", () => {
 });
 
 app.whenReady().then(() => {
-  new EventHandler();
+  // new EventHandler();
   createWindow();
+
+  ipcMain.on("UPLOAD_FILE", (e, data) => {
+    console.log("🚀 ~ file: main.ts:81 ~ data:", data);
+    testFile(data);
+  });
 });
 
 app.on("before-quit", () => {

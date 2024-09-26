@@ -1,5 +1,5 @@
 import { IpcMainEvent, ipcMain, ipcRenderer } from "electron";
-import {} from "electron";
+import fs from "node:fs/promises";
 
 export type Channels = {
   UPLOAD_FILE: string;
