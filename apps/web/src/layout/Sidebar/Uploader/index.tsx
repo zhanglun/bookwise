@@ -61,23 +61,25 @@ export const Uploader = (props: UploaderProps) => {
             files
           );
 
-          for (const file of files) {
-            console.log(
-              "%c Line:83 🍤 file",
-              "color:#465975",
-              file.getAbsoutePath()
-            );
-
-            const [metadata, cover] = await formatMetadata(file);
-
-            console.log("dal", dal);
-
+          // for (const file of files) {
+          const file = files[0];
+          const [metadata, cover] = await formatMetadata(file);
+          const reader = new FileReader();
+          reader.onload = () => {
             dal.uploadFile({
-              file: file.path,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              lastModified: file.lastModified,
+              buffer: reader.result,
               metadata,
               cover,
             });
-          }
+          };
+          reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+
+          console.log("dal", dal);
+          // }
         } catch (err) {
           console.log("🚀 ~ err:", err);
         }
