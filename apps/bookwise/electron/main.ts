@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import path from "node:path";
 import { fork } from "child_process";
+import { EventHandler } from "./events";
 
 // The built directory structure
 //
@@ -23,7 +24,7 @@ let ps: any;
 // 🚧 Use ['ENV_NAME'] avoid vite:define plugin - Vite@2.x
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
-console.log('process.env', process.env);
+console.log("process.env", process.env);
 
 function createWindow() {
   win = new BrowserWindow({
@@ -72,6 +73,7 @@ app.on("window-all-closed", () => {
 });
 
 app.whenReady().then(() => {
+  new EventHandler();
   createWindow();
 });
 

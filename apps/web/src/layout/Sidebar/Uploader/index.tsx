@@ -6,6 +6,7 @@ import { request } from "@/helpers/request";
 import { BookRequestItem, BookResItem } from "@/interface/book";
 import { Book } from "epubjs";
 import { PackagingMetadataObject } from "epubjs/types/packaging";
+import { dal } from "@/dal";
 
 async function formatMetadata(file: File): Promise<[BookRequestItem, string]> {
   const book = new Book(file as unknown as string);
@@ -50,49 +51,59 @@ export const Uploader = (props: UploaderProps) => {
     input.addEventListener(
       "change",
       async (e) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const files = e.target.files;
-        console.log(
-          "🚀 ~ file: useBook.ts:9 ~ input.addEventListener ~ files:",
-          files
-        );
+        try {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          const files = e.target.files;
+          console.log(
+            "🚀 ~ file: useBook.ts:9 ~ input.addEventListener ~ files:",
+            files
+          );
 
-        for (const file of files) {
-          console.log("%c Line:83 🍤 file", "color:#465975", file);
-          const [metadata, coverPath] = await formatMetadata(file);
-          // const bookInstance = await parseEpub(file);
-          // const { metadata, coverPath } = bookInstance;
+          for (const file of files) {
+            console.log("%c Line:83 🍤 file", "color:#465975", file);
 
-          console.log("🚀 ~  metadata, coverPath:", metadata, coverPath);
+            const [metadata, cover] = await formatMetadata(file);
 
-          // console.log("%c Line:55 🌭 book", "color:#6ec1c2", book);
+            console.log("dal", dal);
 
-          // const formData = new FormData();
-          // formData.append("files", file, book.title);
-          // formData.append("book", JSON.stringify(book));
-          // formData.append("cover", coverPath);
-
-          // toast.promise(
-          //   request.post("/books/upload/files", formData, {
-          //     headers: { "Content-Type": "multipart/form-data" },
-          //   }),
-          //   {
-          //     loading: `Uploading ${book.title}`,
-          //     success: ({ data }) => {
-          //       console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
-          //       props.onSuccess(data);
-          //       return ` Upload ${book.title} successful`;
-          //     },
-          //     error: ({ data }) => {
-          //       return `Upload Error, ${data.message}`;
-          //     },
-          //   }
-          // );
+            dal.uploadFile({
+              file: file.path,
+              metadata,
+              cover,
+            });
+          }
+        } catch (err) {
+          console.log("🚀 ~ err:", err);
         }
+
+        // console.log("%c Line:55 🌭 book", "color:#6ec1c2", book);
+
+        // const formData = new FormData();
+        // formData.append("files", file, book.title);
+        // formData.append("book", JSON.stringify(book));
+        // formData.append("cover", coverPath);
+
+        // toast.promise(
+        //   request.post("/books/upload/files", formData, {
+        //     headers: { "Content-Type": "multipart/form-data" },
+        //   }),
+        //   {
+        //     loading: `Uploading ${book.title}`,
+        //     success: ({ data }) => {
+        //       console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
+        //       props.onSuccess(data);
+        //       return ` Upload ${book.title} successful`;
+        //     },
+        //     error: ({ data }) => {
+        //       return `Upload Error, ${data.message}`;
+        //     },
+        //   }
+        // );
       },
       false
     );
+    console.log("🚀 ~ dal:", dal);
 
     input.click();
   };

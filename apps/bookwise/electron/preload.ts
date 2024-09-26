@@ -1,31 +1,34 @@
-import { contextBridge, ipcRenderer } from 'electron';
+import { contextBridge, ipcRenderer } from "electron";
+import { api } from "./api";
 
-function domReady(condition: DocumentReadyState[] = [ 'complete', 'interactive' ]) {
-  return new Promise(resolve => {
+function domReady(
+  condition: DocumentReadyState[] = ["complete", "interactive"]
+) {
+  return new Promise((resolve) => {
     if (condition.includes(document.readyState)) {
-      resolve(true)
+      resolve(true);
     } else {
-      document.addEventListener('readystatechange', () => {
+      document.addEventListener("readystatechange", () => {
         if (condition.includes(document.readyState)) {
-          resolve(true)
+          resolve(true);
         }
-      })
+      });
     }
-  })
+  });
 }
 
 const safeDOM = {
   append(parent: HTMLElement, child: HTMLElement) {
-    if (!Array.from(parent.children).find(e => e === child)) {
-      parent.appendChild(child)
+    if (!Array.from(parent.children).find((e) => e === child)) {
+      parent.appendChild(child);
     }
   },
   remove(parent: HTMLElement, child: HTMLElement) {
-    if (Array.from(parent.children).find(e => e === child)) {
-      parent.removeChild(child)
+    if (Array.from(parent.children).find((e) => e === child)) {
+      parent.removeChild(child);
     }
   },
-}
+};
 
 /**
  * https://tobiasahlin.com/spinkit
@@ -34,7 +37,7 @@ const safeDOM = {
  * https://matejkustec.github.io/SpinThatShit
  */
 function useLoading() {
-  const className = `loaders-css__square-spin`
+  const className = `loaders-css__square-spin`;
   const styleContent = `
 @keyframes square-spin {
   25% { transform: perspective(100px) rotateX(180deg) rotateY(0); }
@@ -42,7 +45,7 @@ function useLoading() {
   75% { transform: perspective(100px) rotateX(0) rotateY(180deg); }
   100% { transform: perspective(100px) rotateX(0) rotateY(0); }
 }
-.${ className } > div {
+.${className} > div {
   animation-fill-mode: both;
   width: 50px;
   height: 50px;
@@ -61,39 +64,36 @@ function useLoading() {
   background: #282c34;
   z-index: 9;
 }
-    `
-  const oStyle = document.createElement('style')
-  const oDiv = document.createElement('div')
+    `;
+  const oStyle = document.createElement("style");
+  const oDiv = document.createElement("div");
 
-  oStyle.id = 'app-loading-style'
-  oStyle.innerHTML = styleContent
-  oDiv.className = 'app-loading-wrap'
-  oDiv.innerHTML = `<div class="${ className }"><div></div></div>`
+  oStyle.id = "app-loading-style";
+  oStyle.innerHTML = styleContent;
+  oDiv.className = "app-loading-wrap";
+  oDiv.innerHTML = `<div class="${className}"><div></div></div>`;
 
   return {
     appendLoading() {
-      safeDOM.append(document.head, oStyle)
-      safeDOM.append(document.body, oDiv)
+      safeDOM.append(document.head, oStyle);
+      safeDOM.append(document.body, oDiv);
     },
     removeLoading() {
-      safeDOM.remove(document.head, oStyle)
-      safeDOM.remove(document.body, oDiv)
+      safeDOM.remove(document.head, oStyle);
+      safeDOM.remove(document.body, oDiv);
     },
-  }
+  };
 }
 
 // ----------------------------------------------------------------------
 
-const { appendLoading, removeLoading } = useLoading()
-domReady().then(appendLoading)
+const { appendLoading, removeLoading } = useLoading();
+domReady().then(appendLoading);
 
-window.onmessage = ev => {
-  ev.data.payload === 'removeLoading' && removeLoading()
-}
+window.onmessage = (ev) => {
+  ev.data.payload === "removeLoading" && removeLoading();
+};
 
-setTimeout(removeLoading, 4999)
+setTimeout(removeLoading, 4999);
 
-contextBridge.exposeInMainWorld('electronAPI', {
-  onUpdateCounter: (callback) => ipcRenderer.on('update-counter', callback),
-  onUpdateServerStatus: (callback) => ipcRenderer.on('update-server-status', callback)
-})
+contextBridge.exposeInMainWorld("electronAPI", api);
