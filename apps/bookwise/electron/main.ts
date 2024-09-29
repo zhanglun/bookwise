@@ -41,6 +41,9 @@ function createWindow() {
     win?.webContents.send("main-process-message", new Date().toLocaleString());
   });
 
+  win.webContents.openDevTools();
+  win.maximize();
+
   try {
     if (VITE_DEV_SERVER_URL) {
       win.loadURL(`http://localhost:5173`);
@@ -68,6 +71,8 @@ function createWindow() {
       win && win.webContents.send("update-server-status", JSON.stringify(err));
     }, 3000);
   }
+
+  return win;
 }
 
 app.on("window-all-closed", () => {
@@ -76,11 +81,11 @@ app.on("window-all-closed", () => {
 
 app.whenReady().then(() => {
   // new EventHandler();
-  createWindow();
+  const win = createWindow();
 
-  ipcMain.on("UPLOAD_FILE", (e, data) => {
-    console.log("🚀 ~ file: main.ts:81 ~ data:", data);
-    testFile(data);
+  ipcMain.on("UPLOAD_FILE", async (e, data) => {
+    const newData = await testFile(data);
+    win.webContents.send("UPLOAD_FILE_SUCCESS", newData);
   });
 });
 

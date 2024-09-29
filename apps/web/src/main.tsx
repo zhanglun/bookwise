@@ -1,22 +1,25 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Theme } from "@radix-ui/themes";
 import { Toaster } from "sonner";
 
-import App from "./App.tsx";
-import { Home } from "./views/Home";
+import { Home } from "@/views/Home";
 import { All } from "@/views/All/index.tsx";
 import { Editor } from "@/views/Editor";
 import { Search } from "@/views/Search";
-
 import { Viewer } from "@/views/Viewer";
 
-import { Theme } from "@radix-ui/themes";
-
-import { RouteConfig } from "./config.ts";
-import { Reading } from "./views/Reading/index.tsx";
+import { Reading } from "@/views/Reading/index.tsx";
+import { PGLiteRepl } from "@/views/PGLiteRepl.tsx";
 import { MainLayout } from "./layout/MainLayout.tsx";
+import { RouteConfig } from "./config.ts";
+import App from "./App.tsx";
+
+import { initListeners } from "./listener.ts";
+
 import "./index.css";
-import { PGLiteRepl } from "./views/PGLiteRepl.tsx";
+
+initListeners();
 
 const router = createBrowserRouter([
   {
@@ -59,9 +62,9 @@ const router = createBrowserRouter([
     ],
   },
   {
-    path: '/repl',
-    element: <PGLiteRepl />
-  }
+    path: "/repl",
+    element: <PGLiteRepl />,
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

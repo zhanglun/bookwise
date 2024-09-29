@@ -46,4 +46,7 @@ export async function testFile(data) {
   // fs.fs.readFile(data.file).then((buf) => {
   //   console.log("🚀 ~ file: main.ts:83 ~ buf:", buf);
   // });
+  return {
+    model: bookModel,
+  };
 }

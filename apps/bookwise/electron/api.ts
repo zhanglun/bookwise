@@ -6,4 +6,5 @@ export const api = {
   onUpdateServerStatus: (callback) =>
     ipcRenderer.on("update-server-status", callback),
   uploadFile: (args) => ipcRendererSend("UPLOAD_FILE", args),
+  onUploadFile: (callback) => ipcRenderer.on("UPLOAD_FILE_SUCCESS", callback),
 };

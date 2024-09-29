@@ -28,7 +28,7 @@ export const books = pgTable("books", {
   source: varchar("source", { length: 256 }).default(""),
   format: bookFormatEnum("format"),
   page_count: integer("page_count"),
-  isbn: varchar("contributor", { length: 20 }),
+  isbn: varchar("isbn", { length: 20 }),
   path: varchar("source", { length: 256 }),
   publish_at: timestamp("publish_at", { withTimezone: true }),
   created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
