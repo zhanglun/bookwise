@@ -1,8 +1,15 @@
-import { IpcMainEvent, ipcMain, ipcRenderer } from "electron";
+import {
+  BrowserWindow,
+  IpcMainEvent,
+  IpcRendererEvent,
+  ipcMain,
+  ipcRenderer,
+} from "electron";
 import fs from "node:fs/promises";
 
 export type Channels = {
   UPLOAD_FILE: string;
+  ON_UPLOAD_FILE_SUCCESS: string;
   LOAD_COVER: Blob;
 };
 
@@ -24,20 +31,17 @@ export function ipcRendererSend<ChannelName extends keyof Channels>(
   ipcRenderer.send(channel, args);
 }
 
-export class EventHandler {
-  constructor() {
-    this.initialize();
-  }
+export function ipcRendererOn<ChannelName extends keyof Channels>(
+  channel: ChannelName,
+  callback: (event: IpcRendererEvent, ...args: any[]) => void
+) {
+  ipcRenderer.on(channel, callback);
+}
 
-  initialize() {
-    this.registerListeners();
-  }
-
-  registerListeners() {
-    ipcMainOn("UPLOAD_FILE", this.uploadFile);
-  }
-
-  uploadFile(event: IpcMainEvent, body: any) {
-    console.log("🚀 ~ uploadFile ~ body:", body);
-  }
+export function webContentsSend<ChannelName extends keyof Channels>(
+  channel: ChannelName,
+  args: unknown[]
+) {
+  console.log("🚀 ~ args:", args);
+  ipcRenderer.send(channel, args);
 }

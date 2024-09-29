@@ -29,7 +29,7 @@ export const books = pgTable("books", {
   format: bookFormatEnum("format"),
   page_count: integer("page_count"),
   isbn: varchar("isbn", { length: 20 }),
-  path: varchar("source", { length: 256 }),
+  path: varchar("path", { length: 256 }),
   publish_at: timestamp("publish_at", { withTimezone: true }),
   created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).$onUpdate(

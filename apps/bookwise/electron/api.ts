@@ -1,10 +1,19 @@
-import { ipcRenderer } from "electron";
-import { ipcRendererSend } from "./events";
+import { ipcRenderer, IpcRendererEvent } from "electron";
+import { ipcRendererSend, ipcRendererOn } from "./events";
+
+export type onCallback = (event: IpcRendererEvent, ...args: any[]) => void;
 
 export const api = {
-  onUpdateCounter: (callback) => ipcRenderer.on("update-counter", callback),
-  onUpdateServerStatus: (callback) =>
+  onUpdateCounter: (callback: onCallback) =>
+    ipcRenderer.on("update-counter", callback),
+  onUpdateServerStatus: (callback: onCallback) =>
     ipcRenderer.on("update-server-status", callback),
+  onUploadFileSuccess: (callback: onCallback) =>
+    ipcRendererOn("ON_UPLOAD_FILE_SUCCESS", callback),
+
   uploadFile: (args) => ipcRendererSend("UPLOAD_FILE", args),
-  onUploadFile: (callback) => ipcRenderer.on("UPLOAD_FILE_SUCCESS", callback),
+};
+
+export type API = {
+  [K in keyof typeof api]: (typeof api)[K];
 };

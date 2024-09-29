@@ -1,4 +1,4 @@
-import { API } from "./electron/api";
+import { API } from "../bookwise/electron/api";
 export {};
 
 declare global {

@@ -1,8 +1,6 @@
 import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
-import fs from "node:fs/promises";
 import { fork } from "child_process";
-import { EventHandler } from "./events";
 import { testFile } from "./test";
 
 // The built directory structure
@@ -14,6 +12,7 @@ import { testFile } from "./test";
 // │ │ ├── main.js
 // │ │ └── preload.js
 // │
+
 process.env.DIST = path.join(__dirname, "../dist");
 process.env.DIST_SERVER = path.join(__dirname, "../dist-server");
 process.env.PUBLIC = app.isPackaged
@@ -27,6 +26,8 @@ let ps: any;
 const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 
 console.log("process.env", process.env);
+
+// initMigrate();
 
 function createWindow() {
   win = new BrowserWindow({
@@ -80,7 +81,6 @@ app.on("window-all-closed", () => {
 });
 
 app.whenReady().then(() => {
-  // new EventHandler();
   const win = createWindow();
 
   ipcMain.on("UPLOAD_FILE", async (e, data) => {

@@ -18,6 +18,7 @@ import App from "./App.tsx";
 import { initListeners } from "./listener.ts";
 
 import "./index.css";
+import { migrate } from "./db/migrate.ts";
 
 initListeners();
 
@@ -67,13 +68,15 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <Theme
-    className="w-full h-full"
-    panelBackground="translucent"
-    accentColor="indigo"
-  >
-    <Toaster richColors={true} />
-    <RouterProvider router={router} />
-  </Theme>
-);
+migrate().then(() => {
+  ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+    <Theme
+      className="w-full h-full"
+      panelBackground="translucent"
+      accentColor="indigo"
+    >
+      <Toaster richColors={true} />
+      <RouterProvider router={router} />
+    </Theme>
+  );
+});

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Switch } from "@radix-ui/themes";
+import { NavLink } from "react-router-dom";
 
 export const ModeSwitch = () => {
   const [darkMode, setDarkMode] = useState<boolean>(false);
@@ -14,9 +15,9 @@ export const ModeSwitch = () => {
   };
 
   return (
-    <Switch
-      onCheckedChange={toggleDarkMode}
-      className="fixed right-1 top-1 z-50"
-    />
+    <div className="fixed right-1 top-1 z-50">
+      <NavLink to={"/repl"}>repl</NavLink>
+      <Switch onCheckedChange={toggleDarkMode} />
+    </div>
   );
 };

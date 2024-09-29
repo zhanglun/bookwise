@@ -1,6 +1,6 @@
 {
-  "id": "ff9b15bc-7643-4ae8-b354-93fb7dca12b8",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "323072c2-2e9d-4278-b25c-363d043f205a",
+  "prevId": "ff9b15bc-7643-4ae8-b354-93fb7dca12b8",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -187,7 +187,8 @@
           "name": "source",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "''"
         },
         "format": {
           "name": "format",
@@ -205,6 +206,12 @@
         "isbn": {
           "name": "isbn",
           "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
         },

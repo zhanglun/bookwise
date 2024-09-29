@@ -1,10 +1,7 @@
 import { drizzle } from "drizzle-orm/pglite";
-import * as schema from "./schema";
 import { PGlite } from "@electric-sql/pglite";
 
 const client = new PGlite("idb://BookWiseDatabase");
-const drizzleDB = drizzle(client, {
-  schema,
-});
+const drizzleDB = drizzle(client);
 
-export { drizzleDB, schema, client as pgDB };
+export { drizzleDB, client as pgDB };
