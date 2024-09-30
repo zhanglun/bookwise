@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "scripts": {
     "dev:web": "pnpm -F @bookwise/web dev",
-    "dev:bookwise": "pnpm -F @bookwise/electron dev",
-    "build:bookwise": "pnpm -F @bookwise/electron build",
+    "dev:bookwise": "pnpm -F @bookwise/desktop dev",
+    "build:bookwise": "pnpm -F @bookwise/desktop build",
     "dev:server": "pnpm -F @bookwise/server start:dev",
     "debug:server": "pnpm -F @bookwise/server start:debug",
     "build:server": "pnpm -F @bookwise/server build"
