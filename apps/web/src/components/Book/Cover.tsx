@@ -10,11 +10,18 @@ export interface CoverProps {
 
 export const Cover = (props: CoverProps) => {
   const { onClick, book, className } = props;
+  console.log(
+    "🚀 ~ file: Cover.tsx:13 ~ Cover ~ book:",
+    `${book.title}/cover.jpg`
+  );
 
-  const getBookCover = (): string => {
-    return `${axios.defaults.baseURL}/books/cover?path=${encodeURIComponent(
-      book.path
-    )}`;
+  // const getBookCover = (): string => {
+  //   return `${axios.defaults.baseURL}/books/cover?path=${encodeURIComponent(
+  //     book.path
+  //   )}`;
+  // };
+  const getBookCover = () => {
+    return `bookwise://${encodeURIComponent(book.title)}/cover.jpg`;
   };
 
   return book?.path ? (

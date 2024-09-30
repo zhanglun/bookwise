@@ -1,5 +1,6 @@
-import { app, BrowserWindow, ipcMain } from "electron";
+import { app, BrowserWindow, ipcMain, protocol, net } from "electron";
 import path from "node:path";
+import fs from "node:fs";
 import { fork } from "child_process";
 import { testFile } from "./test";
 import { createWindow, getWindowWebContents } from "./windowManager";
@@ -29,6 +30,12 @@ const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
 console.log("process.env", process.env);
 
 // initMigrate();
+
+function registerProtocols() {
+  protocol.registerSchemesAsPrivileged([
+    { scheme: "bookwise", privileges: { standard: true } },
+  ]);
+}
 
 function createMainWindow() {
   win = createWindow("main-window", {
@@ -77,12 +84,31 @@ function createMainWindow() {
   return win;
 }
 
+registerProtocols();
+
 app.on("window-all-closed", () => {
   win = null;
 });
 
 app.whenReady().then(() => {
   createMainWindow();
+
+  protocol.handle("bookwise", async (request, callback) => {
+    const url = request.url.replace("bookwise:///", "");
+    console.log("🚀 ~ file: main.ts:98 ~ protocol.handle ~ url:", url);
+    const filePath = path.join(app.getPath("documents"), url); //  获取文件路径，注意路径的正确性
+    console.log(
+      "🚀 ~ file: main.ts:99 ~ protocol.handle ~ filePath:",
+      filePath
+    );
+
+    try {
+      const response = await net.fetch(filePath);
+      callback(response);
+    } catch (error) {
+      callback(error);
+    }
+  });
 
   ipcMain.on("UPLOAD_FILE", async (e, data) => {
     const newData = await testFile(data);
