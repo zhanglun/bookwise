@@ -43,17 +43,6 @@ export async function testFile(data) {
 
   coverBuf && fs.writeFileSync(path.join(dest, "cover.jpg"), coverBuf);
 
-  // fs.fs.readFile(data.file).then((buf) => {
-  //   console.log("🚀 ~ file: main.ts:83 ~ buf:", buf);
-  // });
-  // db.select("books")
-  //   .insert(bookModel)
-  //   .then((result) => {
-  //     console.log("🚀 ~ file: test.ts:51 ~ db.select ~ result:", result);
-  //   })
-  //   .catch((err) => {
-  //     console.log("🚀 ~ file: test.ts:55 ~ testFile ~ err:", err);
-  //   });
   return {
     model: bookModel,
   };

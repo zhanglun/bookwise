@@ -1,4 +1,4 @@
-import { BookRequestItem } from "@/interface/book";
+import { BookRequestItem, BookResItem } from "@/interface/book";
 
 export interface UploadFileBody {
   file: string;
@@ -6,6 +6,13 @@ export interface UploadFileBody {
   cover: string;
 }
 
+export type QueryBookFilter = {
+  id?: number;
+  title?: string;
+  author?: string;
+  publishedAt?: Date | { gt?: Date; lt?: Date; gte?: Date; lte?: Date };
+};
 export interface DataSource {
   uploadFile: (body: UploadFileBody) => Promise<void>;
+  getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
 }

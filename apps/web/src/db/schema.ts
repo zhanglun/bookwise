@@ -72,7 +72,7 @@ export const languages = pgTable("languages", {
 
 export const bookRelations = relations(books, ({ many, one }) => ({
   bookAuthors: many(bookAuthors),
-  pubookPublishersblishers: many(bookPublishers),
+  bookPublishers: many(bookPublishers),
   language: one(languages),
 }));
 

@@ -1,7 +1,8 @@
-import {StateCreator} from "zustand";
-import {BookResItem} from "@/interface/book";
-import {request} from "@/helpers/request";
-import {NavItem} from "epubjs";
+import { StateCreator } from "zustand";
+import { BookResItem } from "@/interface/book";
+import { request } from "@/helpers/request";
+import { NavItem } from "epubjs";
+import { dal } from "@/dal";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
   return list.findIndex((item) => item.id === book.id);
@@ -54,9 +55,9 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
       const idx = findIndex(book, list);
 
       if (idx <= 0) {
-        set(() => ({recentlyReadingList: [book, ...list]}));
+        set(() => ({ recentlyReadingList: [book, ...list] }));
       } else {
-        set(() => ({recentlyReadingList: [book, ...list.splice(idx, 1)]}));
+        set(() => ({ recentlyReadingList: [book, ...list.splice(idx, 1)] }));
       }
     },
 
@@ -65,20 +66,16 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         loadingRecentlyReading: true,
       }));
 
-      request
-        .get("/books/recently-reading", {
-          data: {
-            sort: "created_at:desc",
-          },
-        })
-        .then((res) => {
-          const items = res.data;
-
-          set(() => ({
-            recentlyReadingList: items,
-            loadingRecentlyReading: false,
-          }));
-        });
+      dal.getBooks().then((books) => {
+        console.log(
+          "🚀 ~ file: createBookSlice.ts:106 ~ dal.getAllBooks ~ books:",
+          books
+        );
+        set(() => ({
+          recentlyReadingList: books,
+          loadingRecentlyReading: false,
+        }));
+      });
     },
 
     initBookSliceData() {
@@ -89,19 +86,15 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         recentlyAddList: [],
       }));
 
-      request
-        .get("/books/recently-add", {
-          params: {
-            sort: "created_at:desc",
-          },
-        })
-        .then((res) => {
-          const items = res.data;
+      dal.getBooks().then((books) => {
+        console.log(
+          "🚀 ~ file: createBookSlice.ts:106 ~ dal.getAllBooks ~ books:",
+          books
+        );
+        set(() => ({ recentlyAddList: books, loadingRecentlyAdd: false }));
+      });
 
-          set(() => ({recentlyAddList: items, loadingRecentlyAdd: false}));
-        });
-
-        get().getRecentReadingList();
+      get().getRecentReadingList();
     },
 
     currentEditingBook: null,
@@ -121,8 +114,8 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
     handleTocClick(item: NavItem) {
       console.log("item", item);
       set(() => ({
-        currentTocItem: item
-      }))
-    }
+        currentTocItem: item,
+      }));
+    },
   };
 };

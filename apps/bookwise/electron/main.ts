@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "node:path";
 import { fork } from "child_process";
 import { testFile } from "./test";
+import { createWindow, getWindowWebContents } from "./windowManager";
 
 // The built directory structure
 //
@@ -29,8 +30,8 @@ console.log("process.env", process.env);
 
 // initMigrate();
 
-function createWindow() {
-  win = new BrowserWindow({
+function createMainWindow() {
+  win = createWindow("main-window", {
     icon: path.join(process.env.PUBLIC as string, "electron-vite.svg"),
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -81,11 +82,12 @@ app.on("window-all-closed", () => {
 });
 
 app.whenReady().then(() => {
-  const win = createWindow();
+  createMainWindow();
 
   ipcMain.on("UPLOAD_FILE", async (e, data) => {
     const newData = await testFile(data);
-    win.webContents.send("UPLOAD_FILE_SUCCESS", newData);
+    console.log("🚀 ~ file: main.ts:89 ~ ipcMain.on ~ newData:", newData);
+    getWindowWebContents("main-window").send("ON_UPLOAD_FILE_SUCCESS", newData);
   });
 });
 

@@ -1,13 +1,82 @@
 import { drizzleDB } from "./db";
-import { books } from "./db/schema";
+import {
+  authors,
+  bookAuthors,
+  bookPublishers,
+  books,
+  publishers,
+} from "./db/schema";
 
 export function initListeners() {
   window.addEventListener("DOMContentLoaded", () => {
-    window.electronAPI.onUploadFileSuccess(async (_event, args) => {
-      const book = await drizzleDB.insert(books).values({ ...args.model });
+    console.log(
+      "🚀 ~ file: listener.ts:6 ~ window.addEventListener ~ DOMContentLoaded:"
+    );
+
+    window.electronAPI.onUploadFileSuccess(async (event, args) => {
+      const record = await drizzleDB.select().from(books);
+
       console.log(
-        "🚀 ~ file: listener.ts:19 ~ window.electronAPI.onUploadFile ~ book:",
-        book
+        "🚀 ~ file: listener.ts:13 ~ window.electronAPI.onUploadFile ~ record:",
+        record
+      );
+
+      const { model } = args;
+      try {
+        await drizzleDB.transaction(async (tx) => {
+          const [newBook] = await tx
+            .insert(books)
+            .values({ ...model })
+            .returning();
+
+          if (!newBook) {
+            console.error("插入书籍失败");
+            return null;
+          }
+
+          console.log(
+            "🚀 ~ file: listener.ts:33 ~ awaitdrizzleDB.transaction ~ newBook:",
+            newBook
+          );
+
+          const [author] = await tx
+            .insert(authors)
+            .values({
+              name: model.authors,
+            })
+            .onConflictDoNothing()
+            .returning();
+          const [publisher] = await tx
+            .insert(publishers)
+            .values({
+              name: model.publisher,
+            })
+            .onConflictDoNothing()
+            .returning();
+
+          if (newBook && author && publisher) {
+            await tx.insert(bookAuthors).values({
+              book_id: newBook.id,
+              author_id: author.id,
+            });
+            await tx.insert(bookPublishers).values({
+              book_id: newBook.id,
+              publisher_id: publisher.id,
+            });
+          }
+
+          return newBook;
+        });
+      } catch (error) {
+        console.error("保存书籍出错:", error);
+        throw error;
+      }
+    });
+
+    window.electronAPI.onUpdateServerStatus((event, args) => {
+      console.log(
+        "🚀 ~ file: listener.ts:26 ~ window.electronAPI.onUpdateServerStatus ~ args:",
+        args
       );
     });
   });

@@ -2,7 +2,7 @@
 
 import { ApiDataSource } from "./api";
 import { PGLiteDataSource } from "./pglite";
-import { DataSource, UploadFileBody } from "./type";
+import { DataSource, UploadFileBody, QueryBookFilter } from "./type";
 
 let instance: DataAccessLayer;
 
@@ -18,6 +18,10 @@ export class DataAccessLayer {
 
   async uploadFile(body: UploadFileBody) {
     return this.dataSource.uploadFile(body);
+  }
+
+  async getBooks(filter: QueryBookFilter) {
+    return this.dataSource.getBooks(filter);
   }
 }
 
