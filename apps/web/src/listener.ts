@@ -63,9 +63,9 @@ export function initListeners() {
               book_id: newBook.id,
               publisher_id: publisher.id,
             });
+          } else {
+            tx.rollback();
           }
-
-          return newBook;
         });
       } catch (error) {
         console.error("保存书籍出错:", error);
