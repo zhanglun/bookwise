@@ -21,7 +21,7 @@ export const Cover = (props: CoverProps) => {
   //   )}`;
   // };
   const getBookCover = () => {
-    return `bookwise://${encodeURIComponent(book.title)}/cover.jpg`;
+    return `bookwise://${book.title}/cover.jpg`;
   };
 
   return book?.path ? (

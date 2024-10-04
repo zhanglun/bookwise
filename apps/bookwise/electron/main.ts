@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain, protocol, net } from "electron";
 import path from "node:path";
-import fs from "node:fs";
+import url from "node:url";
 import { fork } from "child_process";
 import { testFile } from "./test";
 import { createWindow, getWindowWebContents } from "./windowManager";
@@ -33,7 +33,15 @@ console.log("process.env", process.env);
 
 function registerProtocols() {
   protocol.registerSchemesAsPrivileged([
-    { scheme: "bookwise", privileges: { standard: true } },
+    {
+      scheme: "bookwise",
+      privileges: {
+        secure: true,
+        supportFetchAPI: true,
+        bypassCSP: true,
+        corsEnabled: true
+      }
+    },
   ]);
 }
 
@@ -93,21 +101,11 @@ app.on("window-all-closed", () => {
 app.whenReady().then(() => {
   createMainWindow();
 
-  protocol.handle("bookwise", async (request, callback) => {
-    const url = request.url.replace("bookwise:///", "");
-    console.log("🚀 ~ file: main.ts:98 ~ protocol.handle ~ url:", url);
-    const filePath = path.join(app.getPath("documents"), url); //  获取文件路径，注意路径的正确性
-    console.log(
-      "🚀 ~ file: main.ts:99 ~ protocol.handle ~ filePath:",
-      filePath
-    );
+  protocol.handle("bookwise", async (request) => {
+    const pathname = decodeURI(request.url.replace("bookwise://", ""));
+    const filePath = url.pathToFileURL(path.join(app.getPath("documents"), "Bookwise Library 2", pathname)); //  获取文件路径，注意路径的正确性
 
-    try {
-      const response = await net.fetch(filePath);
-      callback(response);
-    } catch (error) {
-      callback(error);
-    }
+    return net.fetch(decodeURI(filePath.href), { bypassCustomProtocolHandlers: true });
   });
 
   ipcMain.on("UPLOAD_FILE", async (e, data) => {
