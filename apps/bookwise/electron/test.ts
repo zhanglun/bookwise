@@ -23,7 +23,12 @@ function parseCover(
 
 export async function testFile(data) {
   const { name, metadata, cover, buffer } = data;
-  console.log("🚀 ~ file: test.ts:7 ~ buffer:", buffer);
+  const libPath = path.join(app.getPath("documents"), 'BookWise Library 2')
+
+  if (!fs.existsSync(libPath)) {
+    fs.mkdirSync(libPath);
+  }
+
   const dest = path.join(
     app.getPath("documents"),
     "BookWise Library 2",
