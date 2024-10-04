@@ -1,7 +1,5 @@
 import { Outlet } from "react-router-dom";
 import { ModeSwitch } from "./components/ModeSwitch";
-
-import "./App.css";
 import { TopBar } from "./views/Viewer/Epub/TopBar";
 
 function App() {
