@@ -1,6 +1,5 @@
 import { clsx } from "clsx";
 import { BookResItem } from "@/interface/book";
-import axios from "axios";
 
 export interface CoverProps {
   book: BookResItem;
@@ -10,16 +9,6 @@ export interface CoverProps {
 
 export const Cover = (props: CoverProps) => {
   const { onClick, book, className } = props;
-  console.log(
-    "🚀 ~ file: Cover.tsx:13 ~ Cover ~ book:",
-    `${book.title}/cover.jpg`
-  );
-
-  // const getBookCover = (): string => {
-  //   return `${axios.defaults.baseURL}/books/cover?path=${encodeURIComponent(
-  //     book.path
-  //   )}`;
-  // };
   const getBookCover = () => {
     return `bookwise://${book.title}/cover.jpg`;
   };
