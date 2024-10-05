@@ -15,6 +15,20 @@
       "when": 1727602951238,
       "tag": "0001_concerned_ozymandias",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1728106149248,
+      "tag": "0002_military_maddog",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1728112921462,
+      "tag": "0003_material_thunderbolt",
+      "breakpoints": true
     }
   ]
 }

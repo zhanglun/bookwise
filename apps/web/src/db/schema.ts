@@ -80,3 +80,8 @@ export const bookPublishers = pgTable("book_publishers", {
   book_id: integer("book_id").references(() => books.id),
   publisher_id: integer("publisher_id").references(() => publishers.id),
 });
+
+export const bookCaches = pgTable("book_caches", {
+  book_id: integer("book_id").references(() => books.id),
+  is_active: integer("is_active").default(0),
+})
