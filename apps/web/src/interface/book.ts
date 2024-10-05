@@ -8,6 +8,11 @@ export interface AdditionalInfos {
   spine_index: string;
 }
 
+export interface BookCacheItem {
+  book_id: number;
+  is_active: number;
+}
+
 export interface BookResItem {
   id: number;
   title: string;
@@ -81,4 +86,4 @@ export const FileFormat = {
   UNKNOWN: "UNKNOWN",
 } as const;
 
-export interface NoteResItem extends Mark {}
+export interface NoteResItem extends Mark { }

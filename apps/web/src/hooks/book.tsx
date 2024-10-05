@@ -1,35 +1,46 @@
+import { drizzleDB } from "@/db";
+import { bookCaches, books } from "@/db/schema";
 import { BookResItem } from "@/interface/book";
-import { prismaClient } from "@/store/db";
+import { useBearStore } from "@/store";
+import { eq, ne } from "drizzle-orm";
 import { useNavigate } from "react-router-dom";
 
 export const useBook = () => {
+  const store = useBearStore((state) => ({
+    bookCaches: state.bookCaches,
+    updateBookCache: state.updateBookCache,
+  }));
   const navigate = useNavigate();
 
   async function openBook(bookRes: BookResItem) {
-    // await db.bookCached.where({ isActive: 1 }).modify({ isActive: 0 });
-    // const book = await db.bookCached.get({ book_id: bookRes.id });
+    navigate(`/viewer/${bookRes.id}`);
 
-    // if (book) {
-    //   await db.bookCached.update(bookRes.id, { isActive: 1 });
-    //   navigate(`/viewer/${book.id}`);
-    // } else {
-    //   await db.bookCached.add({
-    //     book_id: bookRes.id,
-    //     title: bookRes.title,
-    //     isActive: 1,
-    //   });
-    // }
-    // navigate(`/viewer/${bookRes.id}`);
+    const [book] = await drizzleDB
+      .select()
+      .from(bookCaches)
+      .where(eq(bookCaches.book_id, bookRes.id));
+
+    if (!book) {
+      const a = await drizzleDB.insert(bookCaches).values({
+        book_id: bookRes.id,
+        is_active: 1,
+      });
+      console.log("🚀 ~ file: book.tsx:30 ~ a ~ a:", a);
+    }
+
+    await activateBook(bookRes.id);
   }
 
   async function activateBook(bookId: number) {
-    // await db.bookCached.where({ isActive: 1 }).modify({ isActive: 0 });
-    // const book = await db.bookCached.get({ book_id: bookId });
+    await drizzleDB
+      .update(bookCaches)
+      .set({ is_active: 0 })
+      .where(ne(bookCaches.book_id, bookId));
 
-    // if (book) {
-    //   await db.bookCached.update(bookId, { isActive: 1 });
-    //   navigate(`/viewer/${bookId}`);
-    // }
+    await drizzleDB
+      .update(bookCaches)
+      .set({ is_active: 1 })
+      .where(eq(bookCaches.book_id, bookId));
   }
 
   return {

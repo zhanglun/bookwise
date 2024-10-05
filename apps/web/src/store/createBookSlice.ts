@@ -1,8 +1,8 @@
 import { StateCreator } from "zustand";
-import { BookResItem } from "@/interface/book";
-import { request } from "@/helpers/request";
+import { BookCacheItem, BookResItem } from "@/interface/book";
 import { NavItem } from "epubjs";
 import { dal } from "@/dal";
+import { pgDB } from "@/db";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
   return list.findIndex((item) => item.id === book.id);
@@ -28,6 +28,9 @@ export interface BookSlice {
 
   handleTocClick: (item: NavItem) => void;
   currentTocItem: NavItem | null;
+
+  bookCaches: BookCacheItem[];
+  updateBookCache: (c: BookCacheItem[]) => void;
 }
 
 export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
@@ -40,6 +43,7 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
     recentlyAddList: [],
     loadingRecentlyReading: true,
     recentlyReadingList: [],
+    bookCaches: [],
 
     addBooks: (books: BookResItem[]) => {
       set((state) => {
@@ -66,7 +70,7 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         loadingRecentlyReading: true,
       }));
 
-      dal.getBooks().then((books) => {
+      dal.getRecentReading({}).then((books) => {
         console.log(
           "🚀 ~ file: createBookSlice.ts:106 ~ dal.getAllBooks ~ books:",
           books
@@ -86,7 +90,7 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         recentlyAddList: [],
       }));
 
-      dal.getBooks().then((books) => {
+      dal.getRecentAdding({}).then((books) => {
         console.log(
           "🚀 ~ file: createBookSlice.ts:106 ~ dal.getAllBooks ~ books:",
           books
@@ -117,5 +121,17 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
         currentTocItem: item,
       }));
     },
+
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Updates the book cache. This is called when the user opens or closes a book.
+     * @param bookCaches The new book cache
+     */
+    /******  f4a13280-54b7-484d-967f-2f6973dd204e  *******/
+    updateBookCache: (bookCaches: BookCacheItem[]) => {
+      set(() => ({
+        bookCaches,
+      }));
+    }
   };
 };

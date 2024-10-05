@@ -1,6 +1,6 @@
 import { BookList } from "@/components/Book/List";
 import { LayoutToolbar } from "@/components/LayoutToolbar";
-import { request } from "@/helpers/request";
+import { dal } from "@/dal";
 import { BookResItem } from "@/interface/book";
 import { Heading } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
@@ -9,17 +9,13 @@ export const All = () => {
   const [loading, setLoading] = useState(true);
   const [books, setBooks] = useState<BookResItem[]>([]);
 
-  function getFilterList(params = {}) {
+  function getFilterList() {
     setLoading(true);
-    return request
-      .get("/books", {
-        params,
-      })
-      .then(({ data }) => {
-        const { items } = data;
 
-        setBooks(items);
-
+    return dal
+      .getBooks({})
+      .then((books) => {
+        setBooks(books);
         return Promise.resolve();
       })
       .finally(() => {
