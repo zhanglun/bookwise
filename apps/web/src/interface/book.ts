@@ -1,7 +1,7 @@
 import { Mark } from "@/helpers/marker/types";
 
 export interface AdditionalInfos {
-  book_id: number;
+  book_uuid: string;
   id: number;
   read_progress: number;
   read_progress_updated_at: string;
@@ -9,13 +9,13 @@ export interface AdditionalInfos {
 }
 
 export interface BookCacheItem {
-  book_id: number;
+  book_uuid: string;
   book_title: string;
   is_active: number;
 }
 
 export interface BookResItem {
-  id: number;
+  uuid: string;
   title: string;
   identifier: string;
   subject: string;
@@ -60,11 +60,11 @@ export interface BokUploadRequestItem {
 }
 
 export interface AuthorResItem {
-  id: number;
+  uuid: string;
   name: string;
 }
 export interface PublisherResItem {
-  id: number;
+  uuid: string;
   name: string;
   _count: {
     books: number;

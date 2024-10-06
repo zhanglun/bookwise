@@ -7,7 +7,7 @@ import { bookCaches, books } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
-  return list.findIndex((item) => item.id === book.id);
+  return list.findIndex((item) => item.uuid === book.uuid);
 }
 
 export interface BookSlice {
@@ -146,10 +146,10 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
     /******  83d7ab28-a476-409a-a8a8-ec78789c7b40  *******/
     getBookCachesRefresh: async () => {
       const caches = await drizzleDB.select({
-        book_id: bookCaches.book_id,
+        book_uuid: bookCaches.book_uuid,
         is_active: bookCaches.is_active,
         book_title: books.title
-      }).from(bookCaches).leftJoin(books, eq(bookCaches.book_id, books.id));
+      }).from(bookCaches).leftJoin(books, eq(bookCaches.book_uuid, books.uuid));
 
       set(() => ({
         bookCaches: caches as BookCacheItem[],

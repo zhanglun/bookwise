@@ -1,5 +1,4 @@
 import {
-  BrowserWindow,
   IpcMainEvent,
   IpcRendererEvent,
   ipcMain,
@@ -10,6 +9,8 @@ export type Channels = {
   UPLOAD_FILE: string;
   ON_UPLOAD_FILE_SUCCESS: string;
   LOAD_COVER: Blob;
+  READ_LOCAL_FILE: Blob;
+  ON_READ_LOCAL_FILE_SUCCESS: string;
 };
 
 export function ipcMainOn<ChannelName extends keyof Channels>(

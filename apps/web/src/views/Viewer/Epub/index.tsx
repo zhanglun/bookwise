@@ -1,31 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import ePub, { Book, NavItem } from "epubjs";
+import ePub, { Book } from "epubjs";
 import Section from "epubjs/types/section";
 import { memo, useEffect, useRef, useState } from "react";
-import { Toc } from "@/views/Viewer/Epub/Toc.tsx";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { request } from "@/helpers/request.ts";
 import { Mark, TextMark } from "@/helpers/marker/types";
 import { Marker } from "@/helpers/marker";
 import { substitute } from "@/helpers/epub";
-import { MenuBar } from "./MenuBar";
 import { ScrollArea, Spinner } from "@radix-ui/themes";
 import { ContentRender } from "./ContentRender";
-import { BookResItem, NoteResItem } from "@/interface/book";
+import { BookResItem } from "@/interface/book";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { getAbsoluteUrl } from "@/helpers/book";
-import { TopBar } from "./TopBar";
 import { ViewerLayout } from "../Layout";
-import {useBearStore} from "@/store";
+import { useBearStore } from "@/store";
+import { dal } from "@/dal";
 
 export interface EpubViewerProps {
-  bookId: string;
+  bookUuid: string;
 }
 
-export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
+export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
   const store = useBearStore((state) => ({
-    currentTocItem: state.currentTocItem
-  }))
+    currentTocItem: state.currentTocItem,
+  }));
   const [book, setBook] = useState<Book>();
   const [bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -39,19 +37,35 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   const [currentSection, setCurrentSection] = useState<Section>();
   const [content, setContent] = useState<string>("");
 
-  function getBookBlobs() {
-    return request
-      .get(`books/${bookId}/blobs`, {
-        responseType: "blob",
-      })
-      .then((res) => {
-        return ePub(res.data);
-      });
+  function onReadLocalFileSuccess() {
+    window.electronAPI.onUploadFileSuccess((_event: unknown, blob: Blob) => {
+      const book = ePub(blob as unknown as ArrayBuffer);
+      console.log(
+        "🚀 ~ file: index.tsx:44 ~ window.electronAPI.onUploadFileSuccess ~ blob:",
+        blob
+      );
+      setBook(book);
+
+      if (book) {
+        book.opened.then(function () {
+          const spine_index = "0";
+
+          // if (detail.additional_infos) {
+          //   spine_index = detail.additional_infos.spine_index;
+          // }
+
+          display(parseInt(spine_index || "0", 10), book);
+          setCurrentSection(book.spine.get(spine_index));
+        });
+      }
+    });
   }
 
   function getBookDetail() {
-    return request.get(`books/${bookId}`).then((res) => {
-      return res.data;
+    return dal.getBookByUuid(bookUuid).then((data) => {
+      setBookDetail(data);
+
+      return data;
     });
   }
 
@@ -59,8 +73,8 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     request
       .get("/notes", {
         params: {
-          // filter: [`book_id:eq:${bookId}`, `content:like:要么`],
-          filter: [`book_id:eq:${bookId}`],
+          // filter: [`book_id:eq:${bookUuid}`, `content:like:要么`],
+          filter: [`book_id:eq:${bookUuid}`],
         },
       })
       .then((res) => {
@@ -137,7 +151,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
     };
 
     request
-      .post(`/books/${bookId}/additional_infos`, {
+      .post(`/books/${bookUuid}/additional_infos`, {
         ...body,
       })
       .then((res) => {
@@ -179,42 +193,34 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
   }, []);
 
   useEffect(() => {
-    if (bookId) {
+    if (bookUuid) {
+      console.log("🚀 ~ file: index.tsx:195 ~ useEffect ~ bookUuid:", bookUuid);
       Promise.all([
         // getNotes(),
-        getBookBlobs(),
         getBookDetail(),
       ]).then(
-        ([
-          // _notes,
-          bookRes,
-          detail,
-        ]: [
+        ([detail]: [
           // NoteResItem[],
-          Book,
           BookResItem
         ]) => {
-          setBook(bookRes);
-          setBookDetail(detail);
-
-          if (bookRes) {
-            bookRes.opened.then(function () {
-              let spine_index = "0";
-
-              if (detail.additional_infos) {
-                spine_index = detail.additional_infos.spine_index;
-              }
-
-              display(parseInt(spine_index || "0", 10), bookRes);
-              setCurrentSection(bookRes.spine.get(spine_index));
-            });
-          }
+          const { path } = detail;
+          console.log("🚀 ~ file: index.tsx:205 ~ useEffect ~ detail:", detail);
+          window.electronAPI.readLocalFile(path);
         }
       );
     }
-  }, [bookId]);
+  }, [bookUuid]);
 
-  useEffect(() => {}, [book]);
+  useEffect(() => {
+    window.addEventListener("ON_READ_LOCAL_FILE_SUCCESS", () => {
+      onReadLocalFileSuccess;
+    });
+
+    return window.removeEventListener(
+      "ON_READ_LOCAL_FILE_SUCCESS",
+      onReadLocalFileSuccess
+    );
+  }, [book]);
 
   function handleSelectColor(color: string) {
     const config = {
@@ -248,7 +254,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       if (mark) {
         request
           .post("/notes", {
-            book_id: parseInt(bookId, 10),
+            book_id: parseInt(bookUuid, 10),
             spine_index: mark.spine_index,
             spine_name: mark.spine_name,
             type: mark.type,
@@ -352,7 +358,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
 
   useEffect(() => {
     if (!store.currentTocItem) {
-      return
+      return;
     }
 
     const { href } = store.currentTocItem;
@@ -363,7 +369,7 @@ export const EpubViewer = memo(({ bookId }: EpubViewerProps) => {
       setCurrentSectionIndex(section.index as number);
       display(section.index, book);
     }
-  }, [store.currentTocItem])
+  }, [store.currentTocItem]);
 
   function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
     let elem = null;

@@ -15,4 +15,5 @@ export type QueryBookFilter = {
 export interface DataSource {
   uploadFile: (body: UploadFileBody) => Promise<void>;
   getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
+  getBookByUuid: (uuid: string) => Promise<BookResItem>;
 }

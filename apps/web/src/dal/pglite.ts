@@ -50,4 +50,13 @@ export class PGLiteDataSource implements DataSource {
 
     return records;
   }
+
+  async getBookByUuid(uuid: string): Promise<BookResItem> {
+    const record = await drizzleDB
+      .select()
+      .from(books)
+      .where(eq(books.uuid, uuid));
+
+    return record[0];
+  }
 }

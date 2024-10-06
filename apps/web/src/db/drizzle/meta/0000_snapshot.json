@@ -1,5 +1,5 @@
 {
-  "id": "ff9b15bc-7643-4ae8-b354-93fb7dca12b8",
+  "id": "9b0d1821-6fca-4d3a-aa6e-4e56dfebb89f",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -8,11 +8,12 @@
       "name": "authors",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -44,43 +45,80 @@
       "name": "book_authors",
       "schema": "",
       "columns": {
-        "book_id": {
-          "name": "book_id",
-          "type": "integer",
+        "book_uuid": {
+          "name": "book_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
-        "author_id": {
-          "name": "author_id",
-          "type": "integer",
+        "author_uuid": {
+          "name": "author_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "book_authors_book_id_books_id_fk": {
-          "name": "book_authors_book_id_books_id_fk",
+        "book_authors_book_uuid_books_uuid_fk": {
+          "name": "book_authors_book_uuid_books_uuid_fk",
           "tableFrom": "book_authors",
           "tableTo": "books",
           "columnsFrom": [
-            "book_id"
+            "book_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "book_authors_author_id_authors_id_fk": {
-          "name": "book_authors_author_id_authors_id_fk",
+        "book_authors_author_uuid_authors_uuid_fk": {
+          "name": "book_authors_author_uuid_authors_uuid_fk",
           "tableFrom": "book_authors",
           "tableTo": "authors",
           "columnsFrom": [
-            "author_id"
+            "author_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.book_caches": {
+      "name": "book_caches",
+      "schema": "",
+      "columns": {
+        "book_uuid": {
+          "name": "book_uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "book_caches_book_uuid_books_uuid_fk": {
+          "name": "book_caches_book_uuid_books_uuid_fk",
+          "tableFrom": "book_caches",
+          "tableTo": "books",
+          "columnsFrom": [
+            "book_uuid"
+          ],
+          "columnsTo": [
+            "uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -93,43 +131,43 @@
       "name": "book_publishers",
       "schema": "",
       "columns": {
-        "book_id": {
-          "name": "book_id",
-          "type": "integer",
+        "book_uuid": {
+          "name": "book_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         },
-        "publisher_id": {
-          "name": "publisher_id",
-          "type": "integer",
+        "publisher_uuid": {
+          "name": "publisher_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "book_publishers_book_id_books_id_fk": {
-          "name": "book_publishers_book_id_books_id_fk",
+        "book_publishers_book_uuid_books_uuid_fk": {
+          "name": "book_publishers_book_uuid_books_uuid_fk",
           "tableFrom": "book_publishers",
           "tableTo": "books",
           "columnsFrom": [
-            "book_id"
+            "book_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "book_publishers_publisher_id_publishers_id_fk": {
-          "name": "book_publishers_publisher_id_publishers_id_fk",
+        "book_publishers_publisher_uuid_publishers_uuid_fk": {
+          "name": "book_publishers_publisher_uuid_publishers_uuid_fk",
           "tableFrom": "book_publishers",
           "tableTo": "publishers",
           "columnsFrom": [
-            "publisher_id"
+            "publisher_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -142,11 +180,12 @@
       "name": "books",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "title": {
           "name": "title",
@@ -187,7 +226,8 @@
           "name": "source",
           "type": "varchar(256)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": false,
+          "default": "''"
         },
         "format": {
           "name": "format",
@@ -205,6 +245,12 @@
         "isbn": {
           "name": "isbn",
           "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "path": {
+          "name": "path",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": false
         },
@@ -227,24 +273,24 @@
           "primaryKey": false,
           "notNull": false
         },
-        "language_id": {
-          "name": "language_id",
-          "type": "integer",
+        "language_uuid": {
+          "name": "language_uuid",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "books_language_id_languages_id_fk": {
-          "name": "books_language_id_languages_id_fk",
+        "books_language_uuid_languages_uuid_fk": {
+          "name": "books_language_uuid_languages_uuid_fk",
           "tableFrom": "books",
           "tableTo": "languages",
           "columnsFrom": [
-            "language_id"
+            "language_uuid"
           ],
           "columnsTo": [
-            "id"
+            "uuid"
           ],
           "onDelete": "no action",
           "onUpdate": "no action"
@@ -265,11 +311,12 @@
       "name": "languages",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
@@ -293,11 +340,12 @@
       "name": "publishers",
       "schema": "",
       "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",

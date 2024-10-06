@@ -3,10 +3,10 @@ import {
   integer,
   pgEnum,
   pgTable,
-  serial,
   text,
   varchar,
   timestamp,
+  uuid,
 } from "drizzle-orm/pg-core";
 
 // declaring enum in database
@@ -19,7 +19,7 @@ export const bookFormatEnum = pgEnum("format", [
 ]);
 
 export const books = pgTable("books", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid").defaultRandom().notNull().primaryKey(),
   title: varchar("title", { length: 256 }).unique().default(""),
   identifier: varchar("identifier", { length: 256 }).default(""),
   subject: varchar("subject", { length: 256 }).default(""),
@@ -35,13 +35,13 @@ export const books = pgTable("books", {
   updated_at: timestamp("updated_at", { withTimezone: true }).$onUpdate(
     () => new Date()
   ),
-  language_id: integer("language_id").references(() => languages.id),
+  language_uuid: uuid("language_uuid").references(() => languages.uuid),
   // additional_infos         BookAdditionalInfo?
   // notes                    Note[]
 });
 
 export const authors = pgTable("authors", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid").defaultRandom().notNull().primaryKey(),
   name: varchar("name").default(""),
   created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updated_at: timestamp("updated_at", { withTimezone: true }).$onUpdate(
@@ -50,12 +50,12 @@ export const authors = pgTable("authors", {
 });
 
 export const bookAuthors = pgTable("book_authors", {
-  book_id: integer("book_id").references(() => books.id),
-  author_id: integer("author_id").references(() => authors.id),
+  book_uuid: uuid("book_uuid").references(() => books.uuid),
+  author_uuid: uuid("author_uuid").references(() => authors.uuid),
 });
 
 export const publishers = pgTable("publishers", {
-  id: serial("id").primaryKey(),
+  uuid: uuid("uuid").defaultRandom().notNull().primaryKey(),
   name: varchar("name").default(""),
   address: varchar("address", { length: 255 }),
   created_at: timestamp("created_at", { withTimezone: true }).defaultNow(),
@@ -65,7 +65,7 @@ export const publishers = pgTable("publishers", {
 });
 
 export const languages = pgTable("languages", {
-  id: integer("id").primaryKey(),
+  uuid: uuid("uuid").defaultRandom().notNull().primaryKey(),
   name: varchar("name", { length: 50 }),
   code: varchar("code", { length: 10 }),
 });
@@ -77,11 +77,11 @@ export const bookRelations = relations(books, ({ many, one }) => ({
 }));
 
 export const bookPublishers = pgTable("book_publishers", {
-  book_id: integer("book_id").references(() => books.id),
-  publisher_id: integer("publisher_id").references(() => publishers.id),
+  book_uuid: uuid("book_uuid").references(() => books.uuid),
+  publisher_uuid: uuid("publisher_uuid").references(() => publishers.uuid),
 });
 
 export const bookCaches = pgTable("book_caches", {
-  book_id: integer("book_id").references(() => books.id),
+  book_uuid: uuid("book_uuid").references(() => books.uuid),
   is_active: integer("is_active").default(0),
 })

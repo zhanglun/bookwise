@@ -32,6 +32,11 @@ export class DataAccessLayer {
   async getBooks(filter: QueryBookFilter) {
     return this.dataSource.getBooks(filter);
   }
+
+  async getBookByUuid(uuid: string) {
+    return this.dataSource.getBookByUuid(uuid);
+  }
+
 }
 
 // usage
