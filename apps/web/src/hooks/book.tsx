@@ -1,34 +1,28 @@
 import { drizzleDB } from "@/db";
-import { bookCaches, books } from "@/db/schema";
-import { BookResItem } from "@/interface/book";
-import { useBearStore } from "@/store";
+import { bookCaches } from "@/db/schema";
 import { eq, ne } from "drizzle-orm";
 import { useNavigate } from "react-router-dom";
 
 export const useBook = () => {
-  const store = useBearStore((state) => ({
-    bookCaches: state.bookCaches,
-    updateBookCache: state.updateBookCache,
-  }));
   const navigate = useNavigate();
 
-  async function openBook(bookRes: BookResItem) {
-    navigate(`/viewer/${bookRes.id}`);
+  async function openBook(book_id: number) {
+    navigate(`/viewer/${book_id}`);
 
     const [book] = await drizzleDB
       .select()
       .from(bookCaches)
-      .where(eq(bookCaches.book_id, bookRes.id));
+      .where(eq(bookCaches.book_id, book_id));
 
     if (!book) {
       const a = await drizzleDB.insert(bookCaches).values({
-        book_id: bookRes.id,
+        book_id,
         is_active: 1,
       });
       console.log("🚀 ~ file: book.tsx:30 ~ a ~ a:", a);
     }
 
-    await activateBook(bookRes.id);
+    await activateBook(book_id);
   }
 
   async function activateBook(bookId: number) {

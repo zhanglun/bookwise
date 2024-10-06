@@ -10,6 +10,7 @@ export interface AdditionalInfos {
 
 export interface BookCacheItem {
   book_id: number;
+  book_title: string;
   is_active: number;
 }
 

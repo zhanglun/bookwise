@@ -4,11 +4,11 @@ import clsx from "clsx";
 import { FileIcon, HomeIcon } from "@radix-ui/react-icons";
 import { useBook } from "@/hooks/book";
 import { RouteConfig } from "@/config";
-
-import "./index.css";
-import { useBearStore } from "@/store";
 import { pgDB } from "@/db";
 import { BookCacheItem } from "@/interface/book";
+
+import "./index.css";
+import { XIcon } from "lucide-react";
 
 export const ViewTab = React.memo(() => {
   const [bookCaches, setBookCache] = useState<BookCacheItem[]>([]);
@@ -24,11 +24,11 @@ export const ViewTab = React.memo(() => {
   useEffect(() => {
     pgDB
       .query(
-        "select B.id AS book_id, B.title, C.is_active from book_cache AS C left join books AS B on C.book_id = B.id"
+        "select B.id AS book_id, B.title as book_title, C.is_active from book_caches AS C left join books AS B on C.book_id = B.id"
       )
       .then((res) => {
         const { rows } = res;
-        setBookCache(rows as BookCacheItem[]);
+        setBookCache((rows as BookCacheItem[]).filter((item) => item.book_id));
       });
   }, []);
 
@@ -47,8 +47,13 @@ export const ViewTab = React.memo(() => {
             key={item.book_id}
             onClick={() => openBook(item.book_id)}
           >
-            <FileIcon />
-            <span>{item.title}</span>
+            <FileIcon className="shrink-0" />
+            <span className="text-ellipsis overflow-hidden whitespace-nowrap">
+              {item.book_title}
+            </span>
+            <span className="p-[2px] cursor-pointer rounded-full hover:bg-[var(--black-a3)]">
+              <XIcon size={14} className="" />
+            </span>
           </div>
         );
       })}

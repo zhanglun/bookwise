@@ -7,7 +7,7 @@
   }
 
   .tab-item {
-    @apply flex shrink-0 grow-0 gap-1 items-center px-[10px] text-sm bg-[var(--black-a1)] text-[var(--black-a8)] hover:text-[var(--black-a10)] cursor-pointer rounded-lg transition-all hover:bg-[var(--black-a2)] whitespace-nowrap text-ellipsis overflow-hidden max-w-[300px] min-w-[110px];
+    @apply relative flex shrink-0 grow-0 gap-1 items-center px-[10px] text-sm bg-[var(--black-a1)] text-[var(--black-a8)] hover:text-[var(--black-a10)] cursor-pointer rounded-lg transition-all hover:bg-[var(--black-a2)] whitespace-nowrap text-ellipsis overflow-hidden max-w-[300px] min-w-[110px];
   }
 
   .tab-item--active {
