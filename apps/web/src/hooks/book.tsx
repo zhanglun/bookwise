@@ -1,13 +1,34 @@
 import { drizzleDB } from "@/db";
 import { bookCaches } from "@/db/schema";
+import { useBearStore } from "@/store";
 import { eq, ne } from "drizzle-orm";
 import { useNavigate } from "react-router-dom";
 
 export const useBook = () => {
   const navigate = useNavigate();
+  const store = useBearStore((state) => ({
+    bookCaches: state.bookCaches,
+    updateBookCaches: state.updateBookCaches,
+    getBookCachesRefresh: state.getBookCachesRefresh,
+  }));
 
-  async function openBook(book_id: number) {
+  async function openBook(book_id: number, book_title: string) {
     navigate(`/viewer/${book_id}`);
+
+    const idx = store.bookCaches.findIndex((item) => item.book_id === book_id);
+
+    if (idx > -1) {
+      store.bookCaches[idx].is_active = 1;
+      return;
+    } else {
+      store.bookCaches.push({
+        book_id,
+        book_title,
+        is_active: 1,
+      });
+    }
+
+    store.updateBookCaches([...store.bookCaches]);
 
     const [book] = await drizzleDB
       .select()

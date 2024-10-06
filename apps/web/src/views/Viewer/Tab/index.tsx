@@ -1,16 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import { Cross2Icon, FileIcon, HomeIcon } from "@radix-ui/react-icons";
 import { useBook } from "@/hooks/book";
 import { RouteConfig } from "@/config";
-import { pgDB } from "@/db";
-import { BookCacheItem } from "@/interface/book";
 
 import "./index.css";
+import { useBearStore } from "@/store";
 
 export const ViewTab = React.memo(() => {
-  const [bookCaches, setBookCache] = useState<BookCacheItem[]>([]);
+  const store = useBearStore((state) => ({
+    bookCaches: state.bookCaches,
+    updateBookCaches: state.updateBookCaches,
+    getBookCachesRefresh: state.getBookCachesRefresh,
+  }));
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,15 +24,16 @@ export const ViewTab = React.memo(() => {
   };
 
   useEffect(() => {
-    pgDB
-      .query(
-        "select B.id AS book_id, B.title as book_title, C.is_active from book_caches AS C left join books AS B on C.book_id = B.id"
-      )
-      .then((res) => {
-        const { rows } = res;
-        console.log("🚀 ~ file: index.tsx:30 ~ .then ~ rows:", rows);
-        setBookCache((rows as BookCacheItem[]).filter((item) => item.book_id));
-      });
+    // pgDB
+    //   .query(
+    //     "select B.id AS book_id, B.title as book_title, C.is_active from book_caches AS C left join books AS B on C.book_id = B.id"
+    //   )
+    //   .then((res) => {
+    //     const { rows } = res;
+    //     console.log("🚀 ~ file: index.tsx:30 ~ .then ~ rows:", rows);
+    //     setBookCache((rows as BookCacheItem[]).filter((item) => item.book_id));
+    //   });
+    store.getBookCachesRefresh();
   }, []);
 
   return (
@@ -38,14 +42,14 @@ export const ViewTab = React.memo(() => {
         <HomeIcon />
         <span>Home</span>
       </div>
-      {bookCaches?.map((item) => {
+      {store.bookCaches?.map((item) => {
         const isActive = location.pathname.includes(item.book_id.toString());
 
         return (
           <div
             className={clsx("tab-item", isActive && "tab-item--active")}
             key={item.book_id}
-            onClick={() => openBook(item.book_id)}
+            onClick={() => openBook(item.book_id, item.book_title)}
           >
             <FileIcon className="shrink-0" />
             <span className="text-ellipsis overflow-hidden whitespace-nowrap">

@@ -22,7 +22,7 @@ export const BookList = (props: BookListProps) => {
             <Book
               key={book.id}
               data={book}
-              onClick={() => openBook(book)}
+              onClick={() => openBook(book.id, book.title)}
             />
           </BookContextMenu>
         );

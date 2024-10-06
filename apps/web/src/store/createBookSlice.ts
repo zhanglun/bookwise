@@ -2,7 +2,9 @@ import { StateCreator } from "zustand";
 import { BookCacheItem, BookResItem } from "@/interface/book";
 import { NavItem } from "epubjs";
 import { dal } from "@/dal";
-import { pgDB } from "@/db";
+import { drizzleDB } from "@/db";
+import { bookCaches, books } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
   return list.findIndex((item) => item.id === book.id);
@@ -30,7 +32,8 @@ export interface BookSlice {
   currentTocItem: NavItem | null;
 
   bookCaches: BookCacheItem[];
-  updateBookCache: (c: BookCacheItem[]) => void;
+  getBookCachesRefresh: () => Promise<BookCacheItem[]>;
+  updateBookCaches: (c: BookCacheItem[]) => void;
 }
 
 export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
@@ -128,10 +131,31 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
      * @param bookCaches The new book cache
      */
     /******  f4a13280-54b7-484d-967f-2f6973dd204e  *******/
-    updateBookCache: (bookCaches: BookCacheItem[]) => {
+    updateBookCaches: (bookCaches: BookCacheItem[]) => {
       set(() => ({
         bookCaches,
       }));
+    },
+
+    /*************  ✨ Codeium Command ⭐  *************/
+    /**
+     * Refreshes the book cache list from the database and updates the store.
+     * This is called when the user opens the book list.
+     * @returns The book cache list
+     */
+    /******  83d7ab28-a476-409a-a8a8-ec78789c7b40  *******/
+    getBookCachesRefresh: async () => {
+      const caches = await drizzleDB.select({
+        book_id: bookCaches.book_id,
+        is_active: bookCaches.is_active,
+        book_title: books.title
+      }).from(bookCaches).leftJoin(books, eq(bookCaches.book_id, books.id));
+
+      set(() => ({
+        bookCaches: caches as BookCacheItem[],
+      }))
+
+      return caches as BookCacheItem[]
     }
   };
 };
