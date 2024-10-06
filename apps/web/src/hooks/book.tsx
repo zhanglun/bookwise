@@ -37,8 +37,24 @@ export const useBook = () => {
       .where(eq(bookCaches.book_id, bookId));
   }
 
+  /*************  ✨ Codeium Command ⭐  *************/
+  /**
+   * Remove a book from the cache.
+   * @param bookId The book ID to remove.
+   */
+  /******  8954fcfa-0373-46d3-b505-ca6eca3c44a2  *******/
+
+  async function removeBookCache(bookId: number) {
+    console.log("🚀 ~ file: book.tsx:48 ~ removeBookCache ~ bookId:", bookId);
+    const res = await drizzleDB
+      .delete(bookCaches)
+      .where(eq(bookCaches.book_id, bookId));
+    console.log("🚀 ~ file: book.tsx:50 ~ removeBookCache ~ res:", res);
+  }
+
   return {
     openBook,
     activateBook,
+    removeBookCache,
   };
 };

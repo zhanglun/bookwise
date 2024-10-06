@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import clsx from "clsx";
-import { FileIcon, HomeIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, FileIcon, HomeIcon } from "@radix-ui/react-icons";
 import { useBook } from "@/hooks/book";
 import { RouteConfig } from "@/config";
 import { pgDB } from "@/db";
 import { BookCacheItem } from "@/interface/book";
 
 import "./index.css";
-import { XIcon } from "lucide-react";
 
 export const ViewTab = React.memo(() => {
   const [bookCaches, setBookCache] = useState<BookCacheItem[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { openBook } = useBook();
+  const { openBook, removeBookCache } = useBook();
 
   const goToHome = () => {
     navigate(RouteConfig.HOME);
@@ -28,6 +27,7 @@ export const ViewTab = React.memo(() => {
       )
       .then((res) => {
         const { rows } = res;
+        console.log("🚀 ~ file: index.tsx:30 ~ .then ~ rows:", rows);
         setBookCache((rows as BookCacheItem[]).filter((item) => item.book_id));
       });
   }, []);
@@ -51,8 +51,14 @@ export const ViewTab = React.memo(() => {
             <span className="text-ellipsis overflow-hidden whitespace-nowrap">
               {item.book_title}
             </span>
-            <span className="p-[2px] cursor-pointer rounded-full hover:bg-[var(--black-a3)]">
-              <XIcon size={14} className="" />
+            <span
+              className="p-[2px] cursor-pointer rounded-full hover:bg-[var(--black-a3)]"
+              onClick={(e: React.MouseEvent) => {
+                e.stopPropagation();
+                removeBookCache(item.book_id);
+              }}
+            >
+              <Cross2Icon className="" />
             </span>
           </div>
         );
