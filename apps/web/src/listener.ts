@@ -56,12 +56,12 @@ export function initListeners() {
 
           if (newBook && author && publisher) {
             await tx.insert(bookAuthors).values({
-              book_id: newBook.id,
-              author_id: author.id,
+              book_uuid: newBook.uuid,
+              author_uuid: author.uuid,
             });
             await tx.insert(bookPublishers).values({
-              book_id: newBook.id,
-              publisher_id: publisher.id,
+              book_uuid: newBook.uuid,
+              publisher_uuid: publisher.uuid,
             });
           } else {
             tx.rollback();
