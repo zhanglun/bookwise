@@ -15,12 +15,12 @@ export const api = {
     ipcRenderer.on("ON_UPLOAD_FILE_SUCCESS", callback);
   },
 
-  readLocalFile: (args: unknown[]) => ipcRendererSend("READ_LOCAL_FILE", args),
+  readLocalFile: (args: { path: string }) =>
+    ipcRendererSend("READ_LOCAL_FILE", args),
 
   onReadLocalFileSuccess: (callback: onCallback) => {
-    ipcRendererOn("ON_READ_LOCAL_FILE_SUCCESS", callback);
+    ipcRenderer.on("ON_READ_LOCAL_FILE_SUCCESS", callback);
   },
-
 };
 
 export type API = {

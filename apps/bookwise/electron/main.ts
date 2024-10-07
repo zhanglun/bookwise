@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, protocol, net } from "electron";
 import path from "node:path";
 import url from "node:url";
 import { fork } from "child_process";
-import { testFile } from "./test";
+import { uploadFile, loadBookBlob } from "./test";
 import { createWindow, getWindowWebContents } from "./windowManager";
 
 // The built directory structure
@@ -39,8 +39,8 @@ function registerProtocols() {
         secure: true,
         supportFetchAPI: true,
         bypassCSP: true,
-        corsEnabled: true
-      }
+        corsEnabled: true,
+      },
     },
   ]);
 }
@@ -103,15 +103,26 @@ app.whenReady().then(() => {
 
   protocol.handle("bookwise", async (request) => {
     const pathname = decodeURI(request.url.replace("bookwise://", ""));
-    const filePath = url.pathToFileURL(path.join(app.getPath("documents"), "Bookwise Library 2", pathname)); //  获取文件路径，注意路径的正确性
+    const filePath = url.pathToFileURL(
+      path.join(app.getPath("documents"), "Bookwise Library 2", pathname)
+    ); //  获取文件路径，注意路径的正确性
 
-    return net.fetch(decodeURI(filePath.href), { bypassCustomProtocolHandlers: true });
+    return net.fetch(decodeURI(filePath.href), {
+      bypassCustomProtocolHandlers: true,
+    });
   });
 
   ipcMain.on("UPLOAD_FILE", async (e, data) => {
-    const newData = await testFile(data);
+    const newData = await uploadFile(data);
     console.log("🚀 ~ file: main.ts:89 ~ ipcMain.on ~ newData:", newData);
     getWindowWebContents("main-window").send("ON_UPLOAD_FILE_SUCCESS", newData);
+  });
+  ipcMain.on("READ_LOCAL_FILE", async (e, data) => {
+    const book = await loadBookBlob(data.path);
+    getWindowWebContents("main-window").send(
+      "ON_READ_LOCAL_FILE_SUCCESS",
+      book
+    );
   });
 });
 

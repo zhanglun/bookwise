@@ -1,9 +1,4 @@
-import {
-  IpcMainEvent,
-  IpcRendererEvent,
-  ipcMain,
-  ipcRenderer,
-} from "electron";
+import { IpcMainEvent, IpcRendererEvent, ipcMain, ipcRenderer } from "electron";
 
 export type Channels = {
   UPLOAD_FILE: string;
@@ -29,14 +24,14 @@ export function ipcMainOn<ChannelName extends keyof Channels>(
 
 export function ipcRendererSend<ChannelName extends keyof Channels>(
   channel: ChannelName,
-  args: unknown[]
+  ...args: unknown[]
 ) {
   console.log(
     "🚀 ~ file: events.ts:32 ~ ipcRenderer.send(channel, args):",
     channel,
     args
   );
-  ipcRenderer.send(channel, args);
+  ipcRenderer.send(channel, ...args);
 }
 
 export function ipcRendererOn<ChannelName extends keyof Channels>(

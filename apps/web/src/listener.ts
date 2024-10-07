@@ -1,4 +1,5 @@
 import { drizzleDB } from "./db";
+import ePub, { Book } from "epubjs";
 import {
   authors,
   bookAuthors,
@@ -6,12 +7,27 @@ import {
   books,
   publishers,
 } from "./db/schema";
+import { useBearStore } from "./store";
 
 export function initListeners() {
+  const store = useBearStore.getState();
+
   window.addEventListener("DOMContentLoaded", () => {
     console.log(
       "🚀 ~ file: listener.ts:6 ~ window.addEventListener ~ DOMContentLoaded:"
     );
+
+    window.electronAPI.onReadLocalFileSuccess(async (_e, args) => {
+      console.log(
+        "🚀 ~ file: listener.ts:17 ~ window.electronAPI.onReadLocalFileSuccess ~ args:",
+        args
+      );
+      const book = ePub(args);
+      console.log(
+        "🚀 ~ file: listener.ts:26 ~ window.electronAPI.onReadLocalFileSuccess ~ book:",
+        book
+      );
+    });
 
     window.electronAPI.onUploadFileSuccess(async (event, args) => {
       const record = await drizzleDB.select().from(books);

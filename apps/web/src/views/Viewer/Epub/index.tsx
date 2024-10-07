@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import ePub, { Book } from "epubjs";
 import Section from "epubjs/types/section";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
 import { request } from "@/helpers/request.ts";
 import { Mark, TextMark } from "@/helpers/marker/types";
@@ -36,30 +36,6 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
   const [currentSection, setCurrentSection] = useState<Section>();
   const [content, setContent] = useState<string>("");
-
-  function onReadLocalFileSuccess() {
-    window.electronAPI.onUploadFileSuccess((_event: unknown, blob: Blob) => {
-      const book = ePub(blob as unknown as ArrayBuffer);
-      console.log(
-        "🚀 ~ file: index.tsx:44 ~ window.electronAPI.onUploadFileSuccess ~ blob:",
-        blob
-      );
-      setBook(book);
-
-      if (book) {
-        book.opened.then(function () {
-          const spine_index = "0";
-
-          // if (detail.additional_infos) {
-          //   spine_index = detail.additional_infos.spine_index;
-          // }
-
-          display(parseInt(spine_index || "0", 10), book);
-          setCurrentSection(book.spine.get(spine_index));
-        });
-      }
-    });
-  }
 
   function getBookDetail() {
     return dal.getBookByUuid(bookUuid).then((data) => {
@@ -143,6 +119,36 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
     return section;
   };
 
+  const onReadLocalFileSuccess = useCallback(() => {
+    console.log(
+      "🚀 ~ file: index.tsx:41 ~ onReadLocalFileSuccess ~ onReadLocalFileSuccess:",
+      onReadLocalFileSuccess
+    );
+    // window.electronAPI.onReadLocalFileSuccess(
+    //   async (_event: unknown, blob: Blob) => {
+    //     const book = ePub(blob as unknown as ArrayBuffer);
+    //     console.log(
+    //       "🚀 ~ file: index.tsx:44 ~ window.electronAPI.onReadLocalFileSuccess ~ blob:",
+    //       blob
+    //     );
+    //     setBook(book);
+
+    //     if (book) {
+    //       book.opened.then(function () {
+    //         const spine_index = "0";
+
+    //         // if (detail.additional_infos) {
+    //         //   spine_index = detail.additional_infos.spine_index;
+    //         // }
+
+    //         display(parseInt(spine_index || "0", 10), book);
+    //         setCurrentSection(book.spine.get(spine_index));
+    //       });
+    //     }
+    //   }
+    // );
+  }, []);
+
   function updateReadProgress(spine_index: number, read_progress: number) {
     const body = {
       spine_index: spine_index.toString(),
@@ -205,22 +211,11 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
         ]) => {
           const { path } = detail;
           console.log("🚀 ~ file: index.tsx:205 ~ useEffect ~ detail:", detail);
-          window.electronAPI.readLocalFile(path);
+          window.electronAPI.readLocalFile({ path });
         }
       );
     }
   }, [bookUuid]);
-
-  useEffect(() => {
-    window.addEventListener("ON_READ_LOCAL_FILE_SUCCESS", () => {
-      onReadLocalFileSuccess;
-    });
-
-    return window.removeEventListener(
-      "ON_READ_LOCAL_FILE_SUCCESS",
-      onReadLocalFileSuccess
-    );
-  }, [book]);
 
   function handleSelectColor(color: string) {
     const config = {

@@ -21,9 +21,9 @@ function parseCover(
   return [a, a?.toString("base64")];
 }
 
-export async function testFile(data) {
+export async function uploadFile(data) {
   const { name, metadata, cover, buffer } = data;
-  const libPath = path.join(app.getPath("documents"), 'BookWise Library 2')
+  const libPath = path.join(app.getPath("documents"), "BookWise Library 2");
 
   if (!fs.existsSync(libPath)) {
     fs.mkdirSync(libPath);
@@ -42,13 +42,19 @@ export async function testFile(data) {
 
   fs.writeFileSync(fileDest, Buffer.from(buffer));
   const bookModel = { ...metadata, path: fileDest };
-  console.log("🚀3333 ~ file: test.ts:42 ~ testFile ~ bookModel:", bookModel);
+  console.log("🚀3333 ~ file: test.ts:42 ~ uploadFile ~ bookModel:", bookModel);
   const [coverBuf] = parseCover(cover, Buffer.from(buffer));
-  console.log("🚀3333 ~ file: test.ts:42 ~ testFile ~ coverBuf:", coverBuf);
+  console.log("🚀3333 ~ file: test.ts:42 ~ uploadFile ~ coverBuf:", coverBuf);
 
   coverBuf && fs.writeFileSync(path.join(dest, "cover.jpg"), coverBuf);
 
   return {
     model: bookModel,
   };
+}
+
+export async function loadBookBlob(path: string): Promise<Buffer> {
+  const fileBuffer = fs.readFileSync(path);
+  console.log("🚀 ~ file: test.ts:58 ~ loadBookBlob ~ fileBuffer:", fileBuffer);
+  return fileBuffer;
 }
