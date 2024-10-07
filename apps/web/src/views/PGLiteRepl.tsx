@@ -7,7 +7,7 @@ export const PGLiteRepl = () => {
 
   return (
     <>
-      <div className="fixed right-0 top-0">
+      <div className="fixed right-0 top-0 z-10">
         <NavLink to={"/"}>Home</NavLink>
       </div>
       <Repl pg={pg} />
