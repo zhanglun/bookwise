@@ -119,34 +119,36 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
     return section;
   };
 
-  const onReadLocalFileSuccess = useCallback(() => {
-    console.log(
-      "🚀 ~ file: index.tsx:41 ~ onReadLocalFileSuccess ~ onReadLocalFileSuccess:",
-      onReadLocalFileSuccess
-    );
-    // window.electronAPI.onReadLocalFileSuccess(
-    //   async (_event: unknown, blob: Blob) => {
-    //     const book = ePub(blob as unknown as ArrayBuffer);
-    //     console.log(
-    //       "🚀 ~ file: index.tsx:44 ~ window.electronAPI.onReadLocalFileSuccess ~ blob:",
-    //       blob
-    //     );
-    //     setBook(book);
+  const onReadLocalFileSuccess = useCallback(
+    async (
+      _e: unknown,
+      { type, buffer }: { ext: string; type: string; buffer: Buffer }
+    ) => {
+      const blob = new Blob([buffer], { type });
+      const book = ePub(blob as unknown as ArrayBuffer);
+      console.log("🚀 ~ file: index.tsx:125 ~ book:", book);
 
-    //     if (book) {
-    //       book.opened.then(function () {
-    //         const spine_index = "0";
+      setBook(book);
 
-    //         // if (detail.additional_infos) {
-    //         //   spine_index = detail.additional_infos.spine_index;
-    //         // }
+      if (book) {
+        book.opened.then(function () {
+          console.log("book.open");
+          const spine_index = "0";
 
-    //         display(parseInt(spine_index || "0", 10), book);
-    //         setCurrentSection(book.spine.get(spine_index));
-    //       });
-    //     }
-    //   }
-    // );
+          // if (detail.additional_infos) {
+          //   spine_index = detail.additional_infos.spine_index;
+          // }
+
+          display(parseInt(spine_index || "0", 10), book);
+          setCurrentSection(book.spine.get(spine_index));
+        });
+      }
+    },
+    [display, setCurrentSection]
+  );
+
+  useEffect(() => {
+    window.electronAPI.onReadLocalFileSuccess(onReadLocalFileSuccess);
   }, []);
 
   function updateReadProgress(spine_index: number, read_progress: number) {

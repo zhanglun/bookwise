@@ -1,6 +1,8 @@
 import { app } from "electron";
 import path from "node:path";
 import fs from "node:fs";
+import { fileTypeFromBuffer } from "file-type";
+import type { FileTypeResult } from "file-type";
 import AdmZip from "adm-zip";
 
 function parseCover(
@@ -53,8 +55,13 @@ export async function uploadFile(data) {
   };
 }
 
-export async function loadBookBlob(path: string): Promise<Buffer> {
+export async function loadBookBlob(
+  path: string
+): Promise<FileTypeResult & { buffer: Buffer }> {
   const fileBuffer = fs.readFileSync(path);
-  console.log("🚀 ~ file: test.ts:58 ~ loadBookBlob ~ fileBuffer:", fileBuffer);
-  return fileBuffer;
+  const fileMime = await fileTypeFromBuffer(fileBuffer);
+
+  return { ...fileMime, buffer: fileBuffer } as FileTypeResult & {
+    buffer: Buffer;
+  };
 }

@@ -55,6 +55,7 @@
     "date-fns": "^2.30.0",
     "drizzle-orm": "^0.33.0",
     "epubjs": "^0.3.93",
+    "file-type": "^19.5.0",
     "framer-motion": "^10.15.1",
     "html-react-parser": "^5.0.10",
     "konva": "^9.2.2",
