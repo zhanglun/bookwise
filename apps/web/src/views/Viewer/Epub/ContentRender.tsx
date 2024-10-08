@@ -82,44 +82,51 @@ export const ContentRender = (props: ContentRenderProps) => {
     const body = dom.body;
 
     // 提取样式
-    const styleElements = head.querySelectorAll('style, link[rel="stylesheet"]');
-    let stylesText = '';
-    styleElements.forEach(style => {
-      if (style.tagName === 'STYLE') {
+    const styleElements = head.querySelectorAll(
+      'style, link[rel="stylesheet"]'
+    );
+    let stylesText = "";
+    styleElements.forEach((style) => {
+      if (style.tagName === "STYLE") {
         stylesText += style.textContent;
-      } else if (style.tagName === 'LINK') {
-        stylesText += `@import url("${style.getAttribute('href')}");`;
+      } else if (style.tagName === "LINK") {
+        stylesText += `@import url("${style.getAttribute("href")}");`;
       }
     });
 
     return { stylesText, bodyContent: body.innerHTML };
   }, []);
 
-  const renderContent = useCallback((shadowRoot: ShadowRoot, stylesText: string, bodyContent: string) => {
-    // 清除旧内容
-    while (shadowRoot.firstChild) {
-      shadowRoot.removeChild(shadowRoot.firstChild);
-    }
+  const renderContent = useCallback(
+    (shadowRoot: ShadowRoot, stylesText: string, bodyContent: string) => {
+      // 清除旧内容
+      while (shadowRoot.firstChild) {
+        shadowRoot.removeChild(shadowRoot.firstChild);
+      }
 
-    // 创建新的内容容器
-    const contentContainer = document.createElement('div');
-    shadowRoot.appendChild(contentContainer);
+      // 创建新的内容容器
+      const contentContainer = document.createElement("div");
+      shadowRoot.appendChild(contentContainer);
 
-    // 渲染新内容
-    ReactDOM.render(
-      <Theme>
-        <style>{stylesText}</style>
-        {HTMLReactParser(bodyContent, options)}
-      </Theme>,
-      contentContainer
-    );
-  }, []);
+      // 渲染新内容
+      ReactDOM.render(
+        <Theme>
+          <style>{stylesText}</style>
+          {HTMLReactParser(bodyContent, options)}
+        </Theme>,
+        contentContainer
+      );
+    },
+    []
+  );
 
   useEffect(() => {
     if (!shadowContainerRef.current) return;
 
     if (!shadowRootRef.current) {
-      shadowRootRef.current = shadowContainerRef.current.attachShadow({ mode: 'open' });
+      shadowRootRef.current = shadowContainerRef.current.attachShadow({
+        mode: "open",
+      });
     }
 
     const { stylesText, bodyContent } = parseContent(contentString);

@@ -31,6 +31,11 @@
     margin: 1rem 0 !important;
     line-height: 1.7 !important;
   }
+
+  .book-section img {
+    height: auto !important;
+    max-width: fit-content !important;
+  }
 }
 
 body {
@@ -97,7 +102,7 @@ body.bg3,
 } */
 
 ::-webkit-scrollbar-thumb {
-  background-color: #C1C1C1;
+  background-color: #c1c1c1;
   border: 4px solid transparent;
   border-radius: 8px;
   background-clip: padding-box;
