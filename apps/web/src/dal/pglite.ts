@@ -1,8 +1,14 @@
 import { and, eq, gt, gte, like, lt, lte, or } from "drizzle-orm";
 import { drizzleDB } from "@/db";
 import { DataSource, QueryBookFilter, UploadFileBody } from "./type";
-import { books } from "@/db/schema";
-import { BookResItem } from "@/interface/book";
+import {
+  books,
+  authors,
+  publishers,
+  bookAuthors,
+  bookPublishers,
+} from "@/db/schema";
+import { BookRequestItem, BookResItem } from "@/interface/book";
 
 export class PGLiteDataSource implements DataSource {
   async uploadFile(body: UploadFileBody) {
@@ -58,5 +64,51 @@ export class PGLiteDataSource implements DataSource {
       .where(eq(books.uuid, uuid));
 
     return record[0];
+  }
+
+  async saveBookAndRelations(model: BookRequestItem): Promise<BookResItem> {
+    const res = await drizzleDB.transaction(async (tx) => {
+      const [newBook] = await tx
+        .insert(books)
+        .values({ ...model })
+        .returning();
+
+      if (!newBook) {
+        throw new Error("插入书籍失败");
+      }
+
+      const [author] = await tx
+        .insert(authors)
+        .values({
+          name: model.authors as string,
+        })
+        .onConflictDoNothing()
+        .returning();
+      const [publisher] = await tx
+        .insert(publishers)
+        .values({
+          name: model.publisher as string,
+        })
+        .onConflictDoNothing()
+        .returning();
+
+      if (newBook && author && publisher) {
+        await tx.insert(bookAuthors).values({
+          book_uuid: newBook.uuid,
+          author_uuid: author.uuid,
+        });
+        await tx.insert(bookPublishers).values({
+          book_uuid: newBook.uuid,
+          publisher_uuid: publisher.uuid,
+        });
+      } else {
+        tx.rollback();
+        throw new Error("插入作者或出版社失败");
+      }
+
+      return newBook;
+    });
+
+    return res as unknown as BookResItem;
   }
 }

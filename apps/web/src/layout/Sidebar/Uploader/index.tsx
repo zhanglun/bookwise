@@ -79,34 +79,33 @@ export const Uploader = (props: UploaderProps) => {
           reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
 
           console.log("dal", dal);
+          window.electronAPI.onUploadFileSuccess(async (_e: any, args) => {
+            console.log(
+              "🚀 ~ file: index.tsx:83 ~ window.electronAPI.onUploadFileSuccess ~ args:",
+              args
+            );
+            const { model } = args;
+            toast.promise(dal.saveBookAndRelations(model), {
+              loading: `Uploading ${model.title}`,
+              success: (data) => {
+                console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
+                props.onSuccess(data);
+                return ` Upload ${model.title} successful`;
+              },
+              error: (error) => {
+                return `Upload Error, ${error?.message}`;
+              },
+            });
+            const books = await dal.getBooks({});
+            console.log(
+              "🚀 ~ file: index.tsx:86 ~ window.electronAPI.onUploadFileSuccess ~ books:",
+              books
+            );
+          });
           // }
         } catch (err) {
           console.log("🚀 ~ err:", err);
         }
-
-        // console.log("%c Line:55 🌭 book", "color:#6ec1c2", book);
-
-        // const formData = new FormData();
-        // formData.append("files", file, book.title);
-        // formData.append("book", JSON.stringify(book));
-        // formData.append("cover", coverPath);
-
-        // toast.promise(
-        //   request.post("/books/upload/files", formData, {
-        //     headers: { "Content-Type": "multipart/form-data" },
-        //   }),
-        //   {
-        //     loading: `Uploading ${book.title}`,
-        //     success: ({ data }) => {
-        //       console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
-        //       props.onSuccess(data);
-        //       return ` Upload ${book.title} successful`;
-        //     },
-        //     error: ({ data }) => {
-        //       return `Upload Error, ${data.message}`;
-        //     },
-        //   }
-        // );
       },
       false
     );

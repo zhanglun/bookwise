@@ -1,5 +1,6 @@
 // data-access-layer.ts
 
+import { BookRequestItem } from "@/interface/book";
 import { ApiDataSource } from "./api";
 import { PGLiteDataSource } from "./pglite";
 import { DataSource, UploadFileBody, QueryBookFilter } from "./type";
@@ -7,7 +8,7 @@ import { DataSource, UploadFileBody, QueryBookFilter } from "./type";
 let instance: DataAccessLayer;
 
 export class DataAccessLayer {
-  constructor(private dataSource: DataSource) { }
+  constructor(private dataSource: DataSource) {}
 
   static getInstance(dataSource: DataSource) {
     if (!instance) {
@@ -28,7 +29,6 @@ export class DataAccessLayer {
     return this.dataSource.getBooks(filter);
   }
 
-
   async getBooks(filter: QueryBookFilter) {
     return this.dataSource.getBooks(filter);
   }
@@ -37,6 +37,9 @@ export class DataAccessLayer {
     return this.dataSource.getBookByUuid(uuid);
   }
 
+  async saveBookAndRelations(model: BookRequestItem) {
+    return this.dataSource.saveBookAndRelations(model);
+  }
 }
 
 // usage

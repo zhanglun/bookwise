@@ -9,7 +9,7 @@ export const api = {
   onUpdateServerStatus: (callback: onCallback) =>
     ipcRenderer.on("update-server-status", callback),
 
-  uploadFile: (args: unknown[]) => ipcRendererSend("UPLOAD_FILE", args),
+  uploadFile: (args: any) => ipcRendererSend("UPLOAD_FILE", args),
   onUploadFileSuccess: (callback: onCallback) => {
     console.log("🚀 ~ file: api.ts:12 ~ onUploadFileSuccess:");
     ipcRenderer.on("ON_UPLOAD_FILE_SUCCESS", callback);

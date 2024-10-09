@@ -6,21 +6,13 @@ import { Heading } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 
 export const All = () => {
-  const [loading, setLoading] = useState(true);
   const [books, setBooks] = useState<BookResItem[]>([]);
 
   function getFilterList() {
-    setLoading(true);
-
-    return dal
-      .getBooks({})
-      .then((books) => {
-        setBooks(books);
-        return Promise.resolve();
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    return dal.getBooks({}).then((books) => {
+      setBooks(books);
+      return Promise.resolve();
+    });
   }
 
   useEffect(() => {
@@ -33,7 +25,7 @@ export const All = () => {
         <Heading size="5">All</Heading>
         <LayoutToolbar />
       </div>
-      <BookList data={books} loading={loading} />
+      <BookList data={books} />
     </div>
   );
 };
