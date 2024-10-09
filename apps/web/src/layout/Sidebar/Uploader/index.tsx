@@ -1,21 +1,16 @@
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { IconButton, Tooltip } from "@radix-ui/themes";
-import { getFileFormatType, parseEpub } from "@/helpers/epub";
+import { getFileFormatType } from "@/helpers/epub";
 import { toast } from "sonner";
-import { request } from "@/helpers/request";
 import { BookRequestItem, BookResItem } from "@/interface/book";
 import { Book } from "epubjs";
-import { PackagingMetadataObject } from "epubjs/types/packaging";
 import { dal } from "@/dal";
-import { FileLockIcon } from "lucide-react";
 
 async function formatMetadata(file: File): Promise<[BookRequestItem, string]> {
   const book = new Book(file as unknown as string);
-  const opened = await book.opened;
+  const opened = (await book.opened) as Book & { cover: string };
   const { cover, packaging } = opened;
   const { metadata } = packaging;
-
-  console.log("🚀 ~  cover, packaging:", cover, packaging);
 
   return [
     {
