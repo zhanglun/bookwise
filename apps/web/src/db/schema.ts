@@ -20,7 +20,7 @@ export const bookFormatEnum = pgEnum("format", [
 
 export const books = pgTable("books", {
   uuid: uuid("uuid").defaultRandom().notNull().primaryKey(),
-  title: varchar("title", { length: 256 }).unique().default(""),
+  title: varchar("title", { length: 256 }).default(""),
   identifier: varchar("identifier", { length: 256 }).default(""),
   subject: varchar("subject", { length: 256 }).default(""),
   description: text("description").default(""),
@@ -84,4 +84,4 @@ export const bookPublishers = pgTable("book_publishers", {
 export const bookCaches = pgTable("book_caches", {
   book_uuid: uuid("book_uuid").references(() => books.uuid),
   is_active: integer("is_active").default(0),
-})
+});
