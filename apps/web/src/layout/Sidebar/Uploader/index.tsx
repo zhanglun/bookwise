@@ -73,7 +73,7 @@ export const Uploader = (props: UploaderProps) => {
           };
           reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
 
-          console.log("dal", dal);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           window.electronAPI.onUploadFileSuccess(async (_e: any, args) => {
             console.log(
               "🚀 ~ file: index.tsx:83 ~ window.electronAPI.onUploadFileSuccess ~ args:",

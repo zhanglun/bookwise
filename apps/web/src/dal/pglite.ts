@@ -8,7 +8,7 @@ import {
   bookAuthors,
   bookPublishers,
 } from "@/db/schema";
-import { BookRequestItem, BookResItem } from "@/interface/book";
+import { AuthorResItem, BookRequestItem, BookResItem } from "@/interface/book";
 
 export class PGLiteDataSource implements DataSource {
   async uploadFile(body: UploadFileBody) {
@@ -54,7 +54,7 @@ export class PGLiteDataSource implements DataSource {
     // }
     const records = await drizzleDB.select().from(books);
 
-    return records;
+    return records as unknown as BookResItem[];
   }
 
   async getBookByUuid(uuid: string): Promise<BookResItem> {
@@ -63,7 +63,7 @@ export class PGLiteDataSource implements DataSource {
       .from(books)
       .where(eq(books.uuid, uuid));
 
-    return record[0];
+    return record[0] as unknown as BookResItem;
   }
 
   async saveBookAndRelations(model: BookRequestItem): Promise<BookResItem> {
@@ -110,5 +110,11 @@ export class PGLiteDataSource implements DataSource {
     });
 
     return res as unknown as BookResItem;
+  }
+
+  async getAuthors(): Promise<AuthorResItem[]> {
+    const records = await drizzleDB.select().from(authors);
+
+    return records as unknown as AuthorResItem[];
   }
 }

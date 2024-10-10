@@ -3,7 +3,6 @@ import {
   CheckCircledIcon,
   DashboardIcon,
   HomeIcon,
-  MagnifyingGlassIcon,
 } from "@radix-ui/react-icons";
 import { RouteConfig } from "@/config";
 import clsx from "clsx";
