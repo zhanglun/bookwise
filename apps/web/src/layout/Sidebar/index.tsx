@@ -18,9 +18,9 @@ export const Sidebar = () => {
   }));
   function createRouteClassName(isActive: boolean) {
     return clsx(
-      "flex items-center gap-2 px-3 h-8 text-sm text-[var(--gray-11)] hover:text-[var(--black-12)] hover:bg-[var(--black-a2)] rounded-lg",
+      "flex items-center my-[2px] gap-2 px-3 h-8 text-sm text-[var(--gray-11)] hover:text-[var(--accent-12)] hover:bg-[var(--accent-a2)] rounded-lg transition-[all .3s ease] transition-bg-[all.3s ease]",
       {
-        "text-[var(--gray-12)] bg-[var(--gray-a3)] hover:bg-[var(--gray-3)!important]":
+        "text-[var(--gray-12)] bg-[var(--accent-a8)] hover:bg-[var(--accent-a8)!important]":
           isActive,
       }
     );
@@ -39,13 +39,6 @@ export const Sidebar = () => {
         <HomeIcon width={18} height={16} />
         <span>Home</span>
       </NavLink>
-      {/* <NavLink
-        to={RouteConfig.SEARCH}
-        className={({ isActive }) => createRouteClassName(isActive)}
-      >
-        <MagnifyingGlassIcon width={18} height={16} />
-        <span>Search</span>
-      </NavLink> */}
       <div className="flex-1 flex flex-col rounded-md min-h-0">
         <div className="flex items-center justify-between px-2 py-2">
           <div className="flex items-center gap-3 py-1 font-bold text-gray-11 hover:text-gray-12">
