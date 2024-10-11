@@ -11,10 +11,10 @@ export interface UploadFileBody {
 }
 
 export type QueryBookFilter = {
-  id?: number;
+  uuid?: string;
   title?: string;
   author?: string;
-  publishedAt?: Date | { gt?: Date; lt?: Date; gte?: Date; lte?: Date };
+  publish_at?: Date & { gt?: Date; lt?: Date; gte?: Date; lte?: Date };
 };
 export interface DataSource {
   uploadFile: (body: UploadFileBody) => Promise<void>;

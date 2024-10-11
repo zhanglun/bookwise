@@ -1,4 +1,15 @@
-import { and, eq, gt, gte, like, lt, lte, or } from "drizzle-orm";
+import {
+  and,
+  BinaryOperator,
+  eq,
+  gt,
+  gte,
+  like,
+  lt,
+  lte,
+  or,
+  SQL,
+} from "drizzle-orm";
 import { drizzleDB } from "@/db";
 import { DataSource, QueryBookFilter, UploadFileBody } from "./type";
 import {
@@ -21,38 +32,43 @@ export class PGLiteDataSource implements DataSource {
       "🚀 ~ file: pglite.ts:14 ~ PGLiteDataSource ~ getBooks ~ filter:",
       filter
     );
-    // let whereClause = undefined;
+    let whereClause = undefined;
 
-    // const conditions: any[] = []; // Array to hold individual conditions
+    const conditions: SQL<unknown>[] = []; // Array to hold individual conditions
 
-    // if (filter.id) {
-    //   conditions.push(eq(books.id, filter.id));
-    // }
+    if (filter.uuid) {
+      conditions.push(eq(books.uuid, filter.uuid));
+    }
 
-    // if (filter.title) {
-    //   conditions.push(like(books.title, `%${filter.title}%`)); // Case-insensitive LIKE
-    // }
+    if (filter.title) {
+      conditions.push(like(books.title, `%${filter.title}%`)); // Case-insensitive LIKE
+    }
 
     // if (filter.author) {
     //   conditions.push(like(books.author, `%${filter.author}%`));
     // }
 
-    // if (filter.publishedAt) {
-    //   if (typeof filter.publishedAt === "object") {
-    //     const dateFilter = filter.publishedAt;
-    //     if (dateFilter.gt)
-    //       conditions.push(gt(books.publishedAt, dateFilter.gt));
-    //     if (dateFilter.lt)
-    //       conditions.push(lt(books.publishedAt, dateFilter.lt));
-    //     if (dateFilter.gte)
-    //       conditions.push(gte(books.publishedAt, dateFilter.gte));
-    //     if (dateFilter.lte)
-    //       conditions.push(lte(books.publishedAt, dateFilter.lte));
-    //   } else {
-    //     conditions.push(eq(books.publishedAt, filter.publishedAt));
-    //   }
-    // }
-    const records = await drizzleDB.select().from(books);
+    if (filter.publish_at) {
+      if (typeof filter.publish_at === "object") {
+        const dateFilter = filter.publish_at;
+        if (dateFilter.gt) conditions.push(gt(books.publish_at, dateFilter.gt));
+        if (dateFilter.lt) conditions.push(lt(books.publish_at, dateFilter.lt));
+        if (dateFilter.gte)
+          conditions.push(gte(books.publish_at, dateFilter.gte));
+        if (dateFilter.lte)
+          conditions.push(lte(books.publish_at, dateFilter.lte));
+      } else {
+        conditions.push(eq(books.publish_at, filter.publish_at));
+      }
+    }
+    console.log(
+      "🚀 ~ file: pglite.ts:63 ~ PGLiteDataSource ~ getBooks ~ conditions:",
+      conditions
+    );
+    const records = await drizzleDB
+      .select()
+      .from(books)
+      .where(and(...conditions));
 
     return records as unknown as BookResItem[];
   }

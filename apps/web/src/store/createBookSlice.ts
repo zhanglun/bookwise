@@ -5,6 +5,7 @@ import { dal } from "@/dal";
 import { drizzleDB } from "@/db";
 import { bookCaches, books } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { QueryBookFilter } from "@/dal/type";
 
 function findIndex(book: BookResItem, list: BookResItem[]): number {
   return list.findIndex((item) => item.uuid === book.uuid);
@@ -19,6 +20,8 @@ export interface BookSlice {
 
   addBooks: (books: BookResItem[]) => void;
   updateRecentlyReadingList: (book: BookResItem) => void;
+
+  getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
 
   getRecentReadingList: () => void;
   initBookSliceData: () => void;
@@ -54,6 +57,18 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
           books: [...books, ...state.books],
           recentlyAddList: [...books, ...state.recentlyAddList],
         };
+      });
+    },
+
+    getBooks: (filter: QueryBookFilter) => {
+      return dal.getBooks(filter).then((books) => {
+        console.log(
+          "🚀 ~ file: createBookSlice.ts:63 ~ dal.getBooks ~ books:",
+          books
+        );
+        set(() => ({ books }));
+
+        return books;
       });
     },
 
@@ -145,17 +160,20 @@ export const createBookSlice: StateCreator<BookSlice, [], [], BookSlice> = (
      */
     /******  83d7ab28-a476-409a-a8a8-ec78789c7b40  *******/
     getBookCachesRefresh: async () => {
-      const caches = await drizzleDB.select({
-        book_uuid: bookCaches.book_uuid,
-        is_active: bookCaches.is_active,
-        book_title: books.title
-      }).from(bookCaches).leftJoin(books, eq(bookCaches.book_uuid, books.uuid));
+      const caches = await drizzleDB
+        .select({
+          book_uuid: bookCaches.book_uuid,
+          is_active: bookCaches.is_active,
+          book_title: books.title,
+        })
+        .from(bookCaches)
+        .leftJoin(books, eq(bookCaches.book_uuid, books.uuid));
 
       set(() => ({
         bookCaches: caches as BookCacheItem[],
-      }))
+      }));
 
-      return caches as BookCacheItem[]
-    }
+      return caches as BookCacheItem[];
+    },
   };
 };

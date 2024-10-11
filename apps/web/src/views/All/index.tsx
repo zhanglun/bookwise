@@ -1,22 +1,17 @@
 import { BookList } from "@/components/Book/List";
 import { LayoutToolbar } from "@/components/LayoutToolbar";
-import { dal } from "@/dal";
-import { BookResItem } from "@/interface/book";
+import { useBearStore } from "@/store";
 import { Heading } from "@radix-ui/themes";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 export const All = () => {
-  const [books, setBooks] = useState<BookResItem[]>([]);
-
-  function getFilterList() {
-    return dal.getBooks({}).then((books) => {
-      setBooks(books);
-      return Promise.resolve();
-    });
-  }
+  const store = useBearStore((state) => ({
+    books: state.books,
+    getBooks: state.getBooks,
+  }));
 
   useEffect(() => {
-    getFilterList();
+    store.getBooks({});
   }, []);
 
   return (
@@ -25,7 +20,7 @@ export const All = () => {
         <Heading size="5">All</Heading>
       </div>
       <LayoutToolbar />
-      <BookList data={books} />
+      <BookList data={store.books} />
     </div>
   );
 };
