@@ -12,6 +12,10 @@ export const Cover = (props: CoverProps) => {
   const getBookCover = () => {
     return `bookwise://${book.title}/cover.jpg`;
   };
+  console.log(
+    "🚀 ~ file: Cover.tsx:15 ~ getBookCover ~ ${book.title}/cover.jpg:",
+    `${book.title}/cover.jpg`
+  );
 
   return book?.path ? (
     <div

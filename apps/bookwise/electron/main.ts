@@ -102,10 +102,16 @@ app.whenReady().then(() => {
   createMainWindow();
 
   protocol.handle("bookwise", async (request) => {
-    const pathname = decodeURI(request.url.replace("bookwise://", ""));
+    const pathname = request.url.replace("bookwise://", "");
     const filePath = url.pathToFileURL(
       path.join(app.getPath("documents"), "Bookwise Library 2", pathname)
     ); //  获取文件路径，注意路径的正确性
+
+    console.log("========>");
+    console.log(filePath);
+    console.log(filePath.href);
+    console.log(decodeURI(filePath.href));
+    console.log("<=======");
 
     return net.fetch(decodeURI(filePath.href), {
       bypassCustomProtocolHandlers: true,
