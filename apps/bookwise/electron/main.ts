@@ -113,14 +113,14 @@ app.whenReady().then(() => {
   });
 
   ipcMain.on("UPLOAD_FILE", async (e, data) => {
-    console.log("🚀 ~ file: main.ts:116 ~ ipcMain.on ~ data:", data);
-    data.forEach(async (item) => {
+    for (const item of data) {
       const newData = await uploadFile(item);
+
       getWindowWebContents("main-window").send(
         "ON_UPLOAD_FILE_SUCCESS",
         newData
       );
-    });
+    }
   });
   ipcMain.on("READ_LOCAL_FILE", async (e, data) => {
     const book = await loadBookBlob(data.path);

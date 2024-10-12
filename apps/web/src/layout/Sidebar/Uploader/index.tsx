@@ -6,6 +6,7 @@ import { BookRequestItem, BookResItem } from "@/interface/book";
 import { Book } from "epubjs";
 import { dal } from "@/dal";
 import { UploadFileBody } from "@/dal/type";
+import { useEffect } from "react";
 
 async function formatMetadata(file: File): Promise<[BookRequestItem, string]> {
   const book = new Book(file as unknown as string);
@@ -92,24 +93,6 @@ export const Uploader = (props: UploaderProps) => {
           dal.uploadFile(body);
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          window.electronAPI.onUploadFileSuccess(async (_e: any, body) => {
-            console.log(
-              "🚀 ~ file: index.tsx:83 ~ window.electronAPI.onUploadFileSuccess ~ body:",
-              body
-            );
-            const { model } = body;
-            toast.promise(dal.saveBookAndRelations(model), {
-              loading: `Uploading ${model.title}`,
-              success: (data) => {
-                console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
-                props.onSuccess(data);
-                return ` Upload ${model.title} successful`;
-              },
-              error: (error) => {
-                return `Upload Error, ${error?.message}`;
-              },
-            });
-          });
         } catch (err) {
           console.log("🚀 ~ err:", err);
         }
@@ -120,6 +103,26 @@ export const Uploader = (props: UploaderProps) => {
 
     input.click();
   };
+  useEffect(() => {
+    window.electronAPI.onUploadFileSuccess(async (_e: any, body) => {
+      console.log(
+        "🚀 ~ file: index.tsx:83 ~ window.electronAPI.onUploadFileSuccess ~ body:",
+        body
+      );
+      const { model } = body;
+      toast.promise(dal.saveBookAndRelations(model), {
+        loading: `Uploading ${model.title}`,
+        success: (data) => {
+          console.log("%c Line:68 🍖 data", "color:#2eafb0", data);
+          props.onSuccess(data);
+          return ` Upload ${model.title} successful`;
+        },
+        error: (error) => {
+          return `Upload Error, ${error?.message}`;
+        },
+      });
+    });
+  }, []);
 
   // useEffect(() => {
   //   if (files.length) {
