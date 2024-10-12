@@ -17,7 +17,7 @@ export class DataAccessLayer {
     return instance;
   }
 
-  async uploadFile(body: UploadFileBody) {
+  async uploadFile(body: UploadFileBody[]) {
     return this.dataSource.uploadFile(body);
   }
 

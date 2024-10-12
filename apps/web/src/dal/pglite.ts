@@ -1,15 +1,4 @@
-import {
-  and,
-  BinaryOperator,
-  eq,
-  gt,
-  gte,
-  like,
-  lt,
-  lte,
-  or,
-  SQL,
-} from "drizzle-orm";
+import { and, eq, gt, gte, like, lt, lte, or, SQL } from "drizzle-orm";
 import { drizzleDB } from "@/db";
 import { DataSource, QueryBookFilter, UploadFileBody } from "./type";
 import {
@@ -22,9 +11,8 @@ import {
 import { AuthorResItem, BookRequestItem, BookResItem } from "@/interface/book";
 
 export class PGLiteDataSource implements DataSource {
-  async uploadFile(body: UploadFileBody) {
-    console.log("🚀 ~ PGLiteDataSource ~ uploadFile ~ body:", body);
-    await window.electronAPI?.uploadFile(body);
+  async uploadFile(files: UploadFileBody[]) {
+    window.electronAPI?.uploadFile(files);
   }
 
   async getBooks(filter: QueryBookFilter): Promise<BookResItem[]> {
@@ -32,7 +20,6 @@ export class PGLiteDataSource implements DataSource {
       "🚀 ~ file: pglite.ts:14 ~ PGLiteDataSource ~ getBooks ~ filter:",
       filter
     );
-    let whereClause = undefined;
 
     const conditions: SQL<unknown>[] = []; // Array to hold individual conditions
 

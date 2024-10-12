@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import { BookRequestItem, BookResItem } from "@/interface/book";
 import { Book } from "epubjs";
 import { dal } from "@/dal";
+import { UploadFileBody } from "@/dal/type";
 
 async function formatMetadata(file: File): Promise<[BookRequestItem, string]> {
   const book = new Book(file as unknown as string);
@@ -37,6 +38,36 @@ export interface UploaderProps {
   onSuccess: (book: BookResItem) => void;
 }
 
+async function fileReaderAsync(file: File) {
+  return new Promise<string | ArrayBuffer | null>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      resolve(reader.result);
+    };
+    reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+  });
+}
+
+async function readFiles(files: File[]) {
+  const body: UploadFileBody[] = [];
+
+  for (const file of files) {
+    const [metadata, cover] = await formatMetadata(file);
+    const buffer = await fileReaderAsync(file);
+    body.push({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified,
+      buffer,
+      metadata,
+      cover,
+    });
+  }
+
+  return body;
+}
+
 export const Uploader = (props: UploaderProps) => {
   const openFileDialog = (): void => {
     const input = document.createElement("input");
@@ -56,30 +87,17 @@ export const Uploader = (props: UploaderProps) => {
             files
           );
 
-          // for (const file of files) {
-          const file = files[0];
-          const [metadata, cover] = await formatMetadata(file);
-          const reader = new FileReader();
-          reader.onload = () => {
-            dal.uploadFile({
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              lastModified: file.lastModified,
-              buffer: reader.result,
-              metadata,
-              cover,
-            });
-          };
-          reader.readAsArrayBuffer(file); // Read the file as an ArrayBuffer
+          const body = await readFiles(files);
+
+          dal.uploadFile(body);
 
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          window.electronAPI.onUploadFileSuccess(async (_e: any, args) => {
+          window.electronAPI.onUploadFileSuccess(async (_e: any, body) => {
             console.log(
-              "🚀 ~ file: index.tsx:83 ~ window.electronAPI.onUploadFileSuccess ~ args:",
-              args
+              "🚀 ~ file: index.tsx:83 ~ window.electronAPI.onUploadFileSuccess ~ body:",
+              body
             );
-            const { model } = args;
+            const { model } = body;
             toast.promise(dal.saveBookAndRelations(model), {
               loading: `Uploading ${model.title}`,
               success: (data) => {
@@ -91,13 +109,7 @@ export const Uploader = (props: UploaderProps) => {
                 return `Upload Error, ${error?.message}`;
               },
             });
-            const books = await dal.getBooks({});
-            console.log(
-              "🚀 ~ file: index.tsx:86 ~ window.electronAPI.onUploadFileSuccess ~ books:",
-              books
-            );
           });
-          // }
         } catch (err) {
           console.log("🚀 ~ err:", err);
         }

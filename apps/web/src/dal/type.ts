@@ -4,7 +4,7 @@ export interface UploadFileBody {
   name: string;
   size: number;
   type: string;
-  lastModified: Date;
+  lastModified: Date | number;
   buffer: string | ArrayBuffer | null;
   metadata: BookRequestItem;
   cover: string;
@@ -17,7 +17,7 @@ export type QueryBookFilter = {
   publish_at?: Date & { gt?: Date; lt?: Date; gte?: Date; lte?: Date };
 };
 export interface DataSource {
-  uploadFile: (body: UploadFileBody) => Promise<void>;
+  uploadFile: (files: UploadFileBody[]) => Promise<void>;
   getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
   getBookByUuid: (uuid: string) => Promise<BookResItem>;
   saveBookAndRelations: (model: BookRequestItem) => Promise<BookResItem>;

@@ -39,42 +39,40 @@ export const LayoutToolbar = () => {
   };
 
   return (
-    <div className="my-3 flex justify-between">
-      <div>
-        <Popover.Root>
-          <Popover.Trigger>
-            <Button variant="ghost">
-              <ListFilterIcon size={16} />
-              Filter
-            </Button>
-          </Popover.Trigger>
-          <Popover.Content className="p-0">
-            <Command>
-              <CommandInput
-                className="outline-none border-none bg-transparent"
-                placeholder="Filter..."
-              />
+    <div className="my-3 flex items-center justify-between">
+      <Popover.Root>
+        <Popover.Trigger>
+          <Button variant="ghost">
+            <ListFilterIcon size={16} />
+            Filter
+          </Button>
+        </Popover.Trigger>
+        <Popover.Content className="p-0">
+          <Command>
+            <CommandInput
+              className="outline-none border-none bg-transparent"
+              placeholder="Filter..."
+            />
 
-              <CommandList>
-                {/* {loading && <Command.Loading>Hang on…</Command.Loading>} */}
+            <CommandList>
+              {/* {loading && <Command.Loading>Hang on…</Command.Loading>} */}
 
-                <Command.Empty>No results found.</Command.Empty>
+              <Command.Empty>No results found.</Command.Empty>
 
-                <CommandGroup>
-                  <CommandItem>Apple</CommandItem>
-                  <CommandItem>Banana</CommandItem>
-                  <CommandItem>Orange</CommandItem>
-                  <Command.Separator />
-                  <CommandItem>Pear</CommandItem>
-                  <CommandItem>Blueberry</CommandItem>
-                </CommandGroup>
+              <CommandGroup>
+                <CommandItem>Apple</CommandItem>
+                <CommandItem>Banana</CommandItem>
+                <CommandItem>Orange</CommandItem>
+                <Command.Separator />
+                <CommandItem>Pear</CommandItem>
+                <CommandItem>Blueberry</CommandItem>
+              </CommandGroup>
 
-                <CommandItem>Fish</CommandItem>
-              </CommandList>
-            </Command>
-          </Popover.Content>
-        </Popover.Root>
-      </div>
+              <CommandItem>Fish</CommandItem>
+            </CommandList>
+          </Command>
+        </Popover.Content>
+      </Popover.Root>
       <div>
         {query}
         <TextField.Root
