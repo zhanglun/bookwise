@@ -15,7 +15,7 @@ export const TopBar = () => {
   }));
 
   return (
-    <div className="h-[42px] grid grid-cols-[auto_1fr]">
+    <div className="h-[36px] grid grid-cols-[auto_1fr]">
       <div className="h-[32px] flex flex-row items-center gap-3 px-3">
         <IconButton
           variant="ghost"
@@ -31,7 +31,7 @@ export const TopBar = () => {
         <ArrowRight size={20} />
       </div>
 
-      <ScrollArea style={{ flex: 1, height: '100%' }}>
+      <ScrollArea style={{ flex: 1, height: "100%" }}>
         <ViewTab />
       </ScrollArea>
     </div>

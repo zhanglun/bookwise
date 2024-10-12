@@ -11,6 +11,6 @@
   }
 
   .tab-item--active {
-    @apply text-[var(--gray-a10)] bg-[var(--gray-a4)] hover:text-[var(--gray-a11)] hover:bg-[var(--gray-a4)];
+    @apply text-[var(--gray-a10)] bg-[var(--gray-a6)] hover:text-[var(--gray-a11)] hover:bg-[var(--gray-a4)];
   }
 }

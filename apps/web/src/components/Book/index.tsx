@@ -1,5 +1,8 @@
 import { BookResItem } from "@/interface/book";
 import { Cover } from "./Cover";
+import { Badge } from "@radix-ui/themes";
+import { Ellipsis } from "lucide-react";
+import { BookContextMenu } from "./Menu";
 
 export interface BookProps {
   data: BookResItem;
@@ -31,15 +34,26 @@ export const Book = (props: BookProps) => {
           </h1>
           <div className="leading-5 flex flex-row items-center text-xs leading text-[var(--gray-11)]">
             <span className="flex-1 text-ellipsis overflow-hidden whitespace-nowrap">
-              {authors.map((author) => {
+              {/* {authors.map((author) => {
                 return <span>{author.name}</span>;
-              })}
+              })} */}
+              <span>张伦</span>
             </span>
           </div>
         </div>
       </div>
     </div>
   ) : (
-    <Cover book={data} onClick={() => onClick && onClick(data)} />
+    <div>
+      <Cover book={data} onClick={() => onClick && onClick(data)} />
+      <div className="flex justify-between my-2">
+        <Badge color="indigo" variant="solid" radius="full">
+          New
+        </Badge>
+        <BookContextMenu book={data}>
+          <Ellipsis />
+        </BookContextMenu>
+      </div>
+    </div>
   );
 };

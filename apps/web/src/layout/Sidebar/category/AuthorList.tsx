@@ -24,7 +24,7 @@ export const AuthorItem = ({ author, className }: AuthorItemProps) => {
     navigate(
       `${RouteConfig.FILTER}?${createSearchParams({
         category: CategoryEnum.Author,
-        author_id: author.id + "",
+        author_id: author.uuid + "",
       })}`
     );
   }
