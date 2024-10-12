@@ -21,4 +21,5 @@ export interface DataSource {
   getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
   getBookByUuid: (uuid: string) => Promise<BookResItem>;
   saveBookAndRelations: (model: BookRequestItem) => Promise<BookResItem>;
+  removeBookCache: (uuid: string) => Promise<void>;
 }

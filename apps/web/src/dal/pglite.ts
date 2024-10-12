@@ -7,6 +7,7 @@ import {
   publishers,
   bookAuthors,
   bookPublishers,
+  bookCaches,
 } from "@/db/schema";
 import { AuthorResItem, BookRequestItem, BookResItem } from "@/interface/book";
 
@@ -115,6 +116,12 @@ export class PGLiteDataSource implements DataSource {
     });
 
     return res as unknown as BookResItem;
+  }
+
+  async removeBookCache(bookUuid: string) {
+    await drizzleDB
+      .delete(bookCaches)
+      .where(eq(bookCaches.book_uuid, bookUuid));
   }
 
   async getAuthors(): Promise<AuthorResItem[]> {

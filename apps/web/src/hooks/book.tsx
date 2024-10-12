@@ -1,3 +1,5 @@
+import { RouteConfig } from "@/config";
+import { dal } from "@/dal";
 import { drizzleDB } from "@/db";
 import { bookCaches } from "@/db/schema";
 import { useBearStore } from "@/store";
@@ -48,34 +50,47 @@ export const useBook = () => {
     await activateBook(book_uuid);
   }
 
-  async function activateBook(bookUuid: string) {
+  async function activateBook(book_uuid: string) {
     await drizzleDB
       .update(bookCaches)
       .set({ is_active: 0 })
-      .where(ne(bookCaches.book_uuid, bookUuid));
+      .where(ne(bookCaches.book_uuid, book_uuid));
 
     await drizzleDB
       .update(bookCaches)
       .set({ is_active: 1 })
-      .where(eq(bookCaches.book_uuid, bookUuid));
+      .where(eq(bookCaches.book_uuid, book_uuid));
   }
 
-  /*************  ✨ Codeium Command ⭐  *************/
-  /**
-   * Remove a book from the cache.
-   * @param bookUuid The book ID to remove.
-   */
-  /******  8954fcfa-0373-46d3-b505-ca6eca3c44a2  *******/
-
-  async function removeBookCache(bookUuid: string) {
+  async function removeBookCache(book_uuid: string) {
     console.log(
-      "🚀 ~ file: book.tsx:48 ~ removeBookCache ~ bookUuid:",
-      bookUuid
+      "🚀 ~ file: book.tsx:48 ~ removeBookCache ~ book_uuid:",
+      book_uuid
     );
-    const res = await drizzleDB
-      .delete(bookCaches)
-      .where(eq(bookCaches.book_uuid, bookUuid));
-    console.log("🚀 ~ file: book.tsx:50 ~ removeBookCache ~ res:", res);
+
+    let idx = -1;
+    const newCaches = store.bookCaches.filter((item, i) => {
+      if (item.book_uuid === book_uuid) {
+        idx = i;
+        return false;
+      }
+      return true;
+    });
+
+    if (idx < 0) return;
+
+    const next = store.bookCaches[idx + 1] || store.bookCaches[idx - 1];
+
+    store.updateBookCaches(newCaches);
+
+    const res = await dal.removeBookCache(book_uuid);
+    console.log("🚀 ~ file: book.tsx:75 ~ removeBookCache ~ res:", res);
+
+    if (next && next.book_uuid) {
+      navigate(`/viewer/${next.book_uuid}`);
+    } else {
+      navigate(RouteConfig.HOME);
+    }
   }
 
   return {

@@ -40,6 +40,10 @@ export class DataAccessLayer {
   async saveBookAndRelations(model: BookRequestItem) {
     return this.dataSource.saveBookAndRelations(model);
   }
+
+  async removeBookCache(book_uuid: string) {
+    return this.dataSource.removeBookCache(book_uuid);
+  }
 }
 
 // usage
