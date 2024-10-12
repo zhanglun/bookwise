@@ -12,7 +12,7 @@ export const api = {
   uploadFile: (files: any) => ipcRendererSend("UPLOAD_FILE", files),
   onUploadFileSuccess: (callback: onCallback) => {
     console.log("🚀 ~ file: api.ts:12 ~ onUploadFileSuccess:");
-    ipcRenderer.on("ON_UPLOAD_FILE_SUCCESS", callback);
+    ipcRendererOn("ON_UPLOAD_FILE_SUCCESS", callback);
   },
 
   readLocalFile: (args: { path: string }) =>

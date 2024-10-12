@@ -74,7 +74,6 @@ export const LayoutToolbar = () => {
         </Popover.Content>
       </Popover.Root>
       <div>
-        {query}
         <TextField.Root
           placeholder="Search the books..."
           value={query}

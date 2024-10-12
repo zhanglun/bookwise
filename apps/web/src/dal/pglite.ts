@@ -1,4 +1,4 @@
-import { and, eq, gt, gte, like, lt, lte, or, SQL } from "drizzle-orm";
+import { and, eq, gt, gte, like, lt, lte, desc, SQL } from "drizzle-orm";
 import { drizzleDB } from "@/db";
 import { DataSource, QueryBookFilter, UploadFileBody } from "./type";
 import {
@@ -48,6 +48,7 @@ export class PGLiteDataSource implements DataSource {
         conditions.push(eq(books.publish_at, filter.publish_at));
       }
     }
+
     console.log(
       "🚀 ~ file: pglite.ts:63 ~ PGLiteDataSource ~ getBooks ~ conditions:",
       conditions
@@ -55,7 +56,8 @@ export class PGLiteDataSource implements DataSource {
     const records = await drizzleDB
       .select()
       .from(books)
-      .where(and(...conditions));
+      .where(and(...conditions))
+      .orderBy(desc(books.created_at));
 
     return records as unknown as BookResItem[];
   }
