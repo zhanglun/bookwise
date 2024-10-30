@@ -23,7 +23,9 @@ export const Book = (props: BookProps) => {
     >
       <div className="flex flex-col">
         <div className="w-full h-[202px] py-[8%] shrink-0 grow-0 flex items-center justify-center relative opacity-90 group-hover:opacity-100">
-          <Cover book={data} onClick={() => onClick && onClick(data)} />
+          <BookContextMenu book={data} variant="context">
+            <Cover book={data} onClick={() => onClick && onClick(data)} />
+          </BookContextMenu>
         </div>
         <div className="flex-1 p-3 flex flex-col gap-1 border-t border-[var(--gray-5)]">
           <div className="leading-5">
@@ -45,7 +47,9 @@ export const Book = (props: BookProps) => {
     </div>
   ) : (
     <div>
-      <Cover book={data} onClick={() => onClick && onClick(data)} />
+      <BookContextMenu book={data} variant="context">
+        <Cover book={data} onClick={() => onClick && onClick(data)} />
+      </BookContextMenu>
       <div className="flex justify-between my-2">
         <Badge color="indigo" variant="solid" radius="full">
           New

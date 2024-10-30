@@ -25,7 +25,7 @@ export const BookContextMenu = ({
   function editBook() {
     store.setCurrentEditingBook(book);
     store.updateIsEditing(true);
-    navigate(RouteConfig.EDITOR.replace(":id", book.id + ""));
+    navigate(RouteConfig.EDITOR.replace(":id", book.uuid + ""));
   }
 
   return variant === "context" ? (
