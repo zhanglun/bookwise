@@ -1,6 +1,6 @@
 import React from "react";
 import * as ToggleGroup from "@radix-ui/react-toggle-group";
-import { ListBulletIcon, DashboardIcon } from "@radix-ui/react-icons";
+import { ListBulletIcon, DashboardIcon, TableIcon } from "@radix-ui/react-icons";
 import { useBearStore } from "@/store";
 
 const toggleGroupItemClasses =
@@ -30,6 +30,13 @@ const LayoutGroup = () => {
         aria-label="List view"
       >
         <ListBulletIcon />
+      </ToggleGroup.Item>
+      <ToggleGroup.Item
+        className={toggleGroupItemClasses}
+        value="table"
+        aria-label="Table view"
+      >
+        <TableIcon />
       </ToggleGroup.Item>
       <ToggleGroup.Item
         className={toggleGroupItemClasses}

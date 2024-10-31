@@ -6,7 +6,7 @@ declare global {
     electronAPI: API; // 👈️ turn off type checking
   }
 
-  type LayoutViewType = "list" | "grid";
+  type LayoutViewType = "list" | "grid" | "table";
 }
 
 // 添加模块声明
