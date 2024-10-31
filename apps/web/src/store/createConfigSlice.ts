@@ -3,6 +3,9 @@ import { StateCreator } from "zustand";
 export interface ConfigSlice {
   leftSidebarExpanded: boolean;
   updateLeftSidebarExpanded: (status: boolean) => void;
+
+  layoutView: LayoutViewType;
+  updateLayoutView: (view: LayoutViewType) => void;
 }
 
 export const createConfigSlice: StateCreator<
@@ -16,6 +19,12 @@ export const createConfigSlice: StateCreator<
     updateLeftSidebarExpanded(status: boolean) {
       set(() => ({
         leftSidebarExpanded: status,
+      }));
+    },
+    layoutView: "list",
+    updateLayoutView(view: LayoutViewType) {
+      set(() => ({
+        layoutView: view,
       }));
     },
   };

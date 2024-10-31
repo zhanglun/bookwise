@@ -5,6 +5,8 @@ declare global {
   interface Window {
     electronAPI: API; // 👈️ turn off type checking
   }
+
+  type LayoutViewType = "list" | "grid";
 }
 
 // 添加模块声明

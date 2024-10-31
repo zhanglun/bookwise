@@ -1,4 +1,4 @@
-import { Button, Popover, TextField } from "@radix-ui/themes";
+import { Button, IconButton, Popover, TextField } from "@radix-ui/themes";
 import { Command } from "cmdk";
 import { ListFilterIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -8,9 +8,14 @@ import {
   CommandList,
   CommandGroup,
 } from "../command";
-import { MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {
+  DashboardIcon,
+  ListBulletIcon,
+  MagnifyingGlassIcon,
+} from "@radix-ui/react-icons";
 import { debounce } from "lodash-es";
 import { useBearStore } from "@/store";
+import LayoutGroup from "./LayoutGroup";
 
 export const LayoutToolbar = () => {
   const store = useBearStore((state) => ({
@@ -73,7 +78,11 @@ export const LayoutToolbar = () => {
           </Command>
         </Popover.Content>
       </Popover.Root>
-      <div>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <LayoutGroup />
+        </div>
+
         <TextField.Root
           placeholder="Search the books..."
           value={query}
