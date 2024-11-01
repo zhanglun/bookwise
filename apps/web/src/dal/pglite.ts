@@ -54,13 +54,36 @@ export class PGLiteDataSource implements DataSource {
       "🚀 ~ file: pglite.ts:63 ~ PGLiteDataSource ~ getBooks ~ conditions:",
       conditions
     );
-    const records = await drizzleDB
-      .select()
-      .from(books)
-      .where(and(...conditions))
-      .orderBy(desc(books.created_at));
+    //const records = await drizzleDB
+    //  .select()
+    //  .from(books)
+    //  .where(and(...conditions))
+    //  .orderBy(desc(books.created_at));
 
-    return records as unknown as BookResItem[];
+    const records = await drizzleDB.query.books.findMany({
+      //where: and(...conditions),
+      //orderBy: {
+      //  created_at: 'desc'
+      //}
+      with: {
+        language: true,
+        bookAuthors: {
+          with: {
+            author: true,
+          },
+        },
+        bookPublishers: {
+          with: {
+            publisher: true,
+          },
+        },
+      },
+    });
+
+    return records.map((record) => {
+      record.authors = record.bookAuthors.map((item) => item.author);
+      return record;
+    }) as unknown as BookResItem[];
   }
 
   async getBookByUuid(uuid: string): Promise<BookResItem> {

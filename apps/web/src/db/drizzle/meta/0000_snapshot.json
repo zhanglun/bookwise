@@ -1,5 +1,5 @@
 {
-  "id": "9b0d1821-6fca-4d3a-aa6e-4e56dfebb89f",
+  "id": "ba8b1b2f-927a-4dee-9273-4a667f8ff676",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -297,15 +297,7 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "books_title_unique": {
-          "name": "books_title_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "title"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     },
     "public.languages": {
       "name": "languages",

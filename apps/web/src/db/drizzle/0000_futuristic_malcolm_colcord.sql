@@ -41,8 +41,7 @@ CREATE TABLE IF NOT EXISTS "books" (
 	"publish_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now(),
 	"updated_at" timestamp with time zone,
-	"language_uuid" uuid,
-	CONSTRAINT "books_title_unique" UNIQUE("title")
+	"language_uuid" uuid
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "languages" (
