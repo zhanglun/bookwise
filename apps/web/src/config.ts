@@ -1,5 +1,5 @@
 export enum RouteConfig {
-  HOME = "/",
+  HOME = "/home",
   SEARCH = "/search",
   FILTER = "/filter",
   LIBRARY = "/library",

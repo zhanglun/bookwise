@@ -36,10 +36,10 @@ const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
-          //{
-          //  index: true,
-          //  element: <Home />,
-          //},
+          {
+            path: RouteConfig.HOME,
+            element: <Home />,
+          },
           {
             path: RouteConfig.SEARCH,
             element: <Search />,
