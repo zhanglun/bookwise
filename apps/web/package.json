@@ -40,6 +40,7 @@
     "@radix-ui/themes": "^3.0.2",
     "@savvywombat/tailwindcss-grid-areas": "^4.0.0",
     "@tailwindcss/typography": "^0.5.12",
+    "@tanstack/react-table": "^8.20.5",
     "@types/lodash-es": "^4.17.9",
     "autoprefixer": "^10.4.14",
     "cmdk": "^0.2.0",

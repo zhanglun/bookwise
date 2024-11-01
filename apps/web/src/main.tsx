@@ -8,6 +8,7 @@ import { All } from "@/views/All/index.tsx";
 import { Editor } from "@/views/Editor";
 import { Search } from "@/views/Search";
 import { Viewer } from "@/views/Viewer";
+import { Library } from "@/views/Library";
 
 import { Reading } from "@/views/Reading/index.tsx";
 import { PGLiteRepl } from "@/views/PGLiteRepl.tsx";
@@ -28,12 +29,17 @@ const router = createBrowserRouter([
     element: <App></App>,
     children: [
       {
+        //path: RouteConfig.LIBRARY,
+        index: true,
+        element: <Library />,
+      },
+      {
         element: <MainLayout />,
         children: [
-          {
-            index: true,
-            element: <Home />,
-          },
+          //{
+          //  index: true,
+          //  element: <Home />,
+          //},
           {
             path: RouteConfig.SEARCH,
             element: <Search />,

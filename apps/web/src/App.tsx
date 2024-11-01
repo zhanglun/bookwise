@@ -4,9 +4,9 @@ import { TopBar } from "./views/Viewer/Epub/TopBar";
 
 function App() {
   return (
-    <div className="text-foreground bg-app w-full h-full p-2 grid gap-2 grid-areas-layout grid-cols-[auto_1fr] grid-rows-[auto_1fr]">
-      <ModeSwitch />
-      <div className="grid-in-top-bar">
+    <div className="text-foreground bg-app w-full h-full p-2 grid grid-areas-layout grid-rows-[auto_1fr]">
+      <div className="grid-in-top-bar border-b border-[var(--gray-5)]">
+        <ModeSwitch />
         <TopBar />
       </div>
       <Outlet />

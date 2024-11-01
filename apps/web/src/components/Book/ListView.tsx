@@ -12,7 +12,7 @@ export const ListView = ({ data }: ListViewProps) => {
       <Table.Root>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Name</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell maxWidth='400px'>Name</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Author</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell>Public Date</Table.ColumnHeaderCell>
           </Table.Row>
@@ -21,7 +21,7 @@ export const ListView = ({ data }: ListViewProps) => {
         <Table.Body>
           {data.map((book: BookResItem) => {
             return <Table.Row>
-              <Table.RowHeaderCell maxWidth={400}>{book.title}</Table.RowHeaderCell>
+              <Table.RowHeaderCell>{book.title}</Table.RowHeaderCell>
               <Table.Cell>{(book.authors || []).join(',')}</Table.Cell>
               <Table.Cell>{format(book.publish_at, 'yyyy-MM-dd')}</Table.Cell>
             </Table.Row>;
