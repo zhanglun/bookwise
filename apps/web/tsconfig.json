@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "allowUnusedLabels": true,
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

@@ -11,12 +11,12 @@ export const InfoPanel = (props: InfoPanelType) => {
   const { data } = props;
   const [detail, setBookDetail] = useState<BookResItem | null>(null);
 
-  useEffect(() => {
-    request.get(`books/${data.uuid}`).then(({ data }) => {
-      console.log(data);
-      setBookDetail(data);
-    });
-  }, [data.uuid]);
+  //useEffect(() => {
+  //  data && request.get(`books/${data.uuid}`).then(({ data }) => {
+  //    console.log(data);
+  //    setBookDetail(data);
+  //  });
+  //}, [data]);
 
   if (!data) {
     return <div>Please select item to view</div>;
@@ -29,7 +29,7 @@ export const InfoPanel = (props: InfoPanelType) => {
         <Cover book={data} />
       </div>
       <div>{data.description}</div>
-      <MetaForm defaultData={detail} />
+      <MetaForm defaultData={data} />
     </div>
   );
 };

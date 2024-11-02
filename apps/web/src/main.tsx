@@ -5,7 +5,6 @@ import { Toaster } from "sonner";
 
 import { Home } from "@/views/Home";
 import { All } from "@/views/All/index.tsx";
-import { Editor } from "@/views/Editor";
 import { Search } from "@/views/Search";
 import { Viewer } from "@/views/Viewer";
 import { Library } from "@/views/Library";
@@ -55,10 +54,6 @@ const router = createBrowserRouter([
           {
             path: RouteConfig.FINISHED,
             element: <All />,
-          },
-          {
-            path: RouteConfig.EDITOR,
-            element: <Editor />,
           },
         ],
       },

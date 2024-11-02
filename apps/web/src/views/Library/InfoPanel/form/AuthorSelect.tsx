@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { request } from "@/helpers/request";
 import { AuthorResItem } from "@/interface/book";
 import {
@@ -10,11 +10,7 @@ import {
   CommandList,
   CommandSeparator,
 } from "@/components/command";
-import {
-  Button,
-  Badge,
-  Popover,
-} from "@radix-ui/themes";
+import { Button, Badge, Popover } from "@radix-ui/themes";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
 import { Check } from "lucide-react";
@@ -50,17 +46,17 @@ export const AuthorSelect = ({
 
     const limit = 1;
     const showItems = authorList
-      .filter((_) => selectedValues.includes(_.id))
+      .filter((_) => selectedValues.includes(_.uuid))
       .slice(0, limit)
       .map((_) => (
-        <Badge variant="secondary" className="rounded-sm px-1 font-normal">
+        <Badge variant="soft" className="rounded-sm px-1 font-normal">
           {_.name}
         </Badge>
       ));
 
     if (selectedValues.length > limit) {
       showItems.push(
-        <Badge variant="secondary" className="rounded-sm px-1 font-normal">
+        <Badge variant="soft" className="rounded-sm px-1 font-normal">
           and more {selectedValues.length - limit} selected
         </Badge>
       );
@@ -74,8 +70,8 @@ export const AuthorSelect = ({
   }, []);
 
   return (
-    <Popover open={open} onOpenChange={setOpen} {...props}>
-      <PopoverTrigger asChild className="w-full text-left">
+    <Popover.Root open={open} onOpenChange={setOpen} {...props}>
+      <Popover.Trigger asChild className="w-full text-left">
         <Button
           variant="outline"
           role="combobox"
@@ -86,27 +82,27 @@ export const AuthorSelect = ({
           <div className="flex gap-1">{renderPlaceholder()}</div>
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align="start">
+      </Popover.Trigger>
+      <Popover.Content className="w-[200px] p-0" align="start">
         <Command>
           <CommandInput placeholder="Add authors" />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {authorList.map((author) => {
-                const isSelected = selectedValues.indexOf(author.id) > -1;
+                const isSelected = selectedValues.indexOf(author.uuid) > -1;
                 return (
                   <CommandItem
-                    key={author.id}
+                    key={author.uuid}
                     onSelect={() => {
                       if (isSelected) {
                         setSelectedValues(
                           selectedValues.filter((_) => {
-                            return _ !== author.id;
+                            return _ !== author.uuid;
                           })
                         );
                       } else {
-                        setSelectedValues([...selectedValues, author.id]);
+                        setSelectedValues([...selectedValues, author.uuid]);
                       }
                     }}
                   >
@@ -125,7 +121,7 @@ export const AuthorSelect = ({
                 );
               })}
             </CommandGroup>
-            {selectedValues.size > 0 && (
+            {selectedValues.length > 0 && (
               <>
                 <CommandSeparator />
                 <CommandGroup>
@@ -137,7 +133,7 @@ export const AuthorSelect = ({
             )}
           </CommandList>
         </Command>
-      </PopoverContent>
-    </Popover>
+      </Popover.Content>
+    </Popover.Root>
   );
 };
