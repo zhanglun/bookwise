@@ -80,10 +80,10 @@ export class PGLiteDataSource implements DataSource {
       },
     });
 
-    let result = [];
+    const result = [];
 
-    for (let record of records) {
-      let temp = { ...record }
+    for (const record of records) {
+      const temp = { ...record }
 
       temp.authors = (temp.bookAuthors || []).map((item) => item.author);
       temp.publishers = (temp.bookPublishers || []).map((item) => item.publisher);
@@ -160,6 +160,8 @@ export class PGLiteDataSource implements DataSource {
 
   async getAuthors(): Promise<AuthorResItem[]> {
     const records = await drizzleDB.select().from(authors);
+
+    console.log(records)
 
     return records as unknown as AuthorResItem[];
   }

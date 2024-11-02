@@ -44,6 +44,10 @@ export class DataAccessLayer {
   async removeBookCache(book_uuid: string) {
     return this.dataSource.removeBookCache(book_uuid);
   }
+
+  async getAuthors() {
+    return this.dataSource.getAuthors();
+  }
 }
 
 // usage

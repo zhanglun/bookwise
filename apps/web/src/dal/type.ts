@@ -1,4 +1,4 @@
-import { BookRequestItem, BookResItem, FileFormat } from "@/interface/book";
+import {AuthorResItem, BookRequestItem, BookResItem, FileFormat} from "@/interface/book";
 
 export interface UploadFileBody {
   name: string;
@@ -22,6 +22,7 @@ export interface DataSource {
   getBookByUuid: (uuid: string) => Promise<BookResItem>;
   saveBookAndRelations: (model: BookRequestItem) => Promise<BookResItem>;
   removeBookCache: (uuid: string) => Promise<void>;
+  getAuthors: () => Promise<AuthorResItem[]>;
 }
 
 export type AuthorQueryRecord = {

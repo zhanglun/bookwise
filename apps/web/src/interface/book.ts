@@ -28,9 +28,9 @@ export interface BookResItem {
   page_size: number;
   isbn: string;
   path: string;
-  publish_at: Date;
-  created_at: Date;
-  updated_at: Date;
+  publish_at: string;
+  created_at: string;
+  updated_at: string;
   authors: AuthorResItem[];
   publishers: PublisherResItem[];
   additional_infos: AdditionalInfos | null;
