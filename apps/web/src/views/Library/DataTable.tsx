@@ -37,8 +37,10 @@ export const DataTable = (props: DataTableProps) => {
         accessorKey: "authors",
         header: "Author",
         cell: ({ row }) => (
-          <div className="w-[50%]">
-            {(row.getValue("authors") || []).join(",")}
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[340px]">
+            {(row.getValue("authors") || []).map((author) => (
+              <div key={author.name}>{author.name}</div>
+            ))}
           </div>
         ),
       },

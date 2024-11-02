@@ -53,7 +53,7 @@ export interface BookRequestItem {
   publish_at: Date;
 }
 
-export interface BokUploadRequestItem {
+export interface BookUploadRequestItem {
   book: BookRequestItem;
   files: File;
   cover: string;

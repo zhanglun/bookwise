@@ -1,6 +1,6 @@
 import { and, eq, gt, gte, like, lt, lte, desc, SQL } from "drizzle-orm";
 import { drizzleDB } from "@/db";
-import { DataSource, QueryBookFilter, UploadFileBody } from "./type";
+import { BookQueryRecord, DataSource, QueryBookFilter, UploadFileBody } from "./type";
 import {
   books,
   authors,
@@ -60,11 +60,11 @@ export class PGLiteDataSource implements DataSource {
     //  .where(and(...conditions))
     //  .orderBy(desc(books.created_at));
 
-    const records = await drizzleDB.query.books.findMany({
+    const records: BookQueryRecord[] = await drizzleDB.query.books.findMany({
       //where: and(...conditions),
       //orderBy: {
       //  created_at: 'desc'
-      //}
+      //},
       with: {
         language: true,
         bookAuthors: {
@@ -80,10 +80,21 @@ export class PGLiteDataSource implements DataSource {
       },
     });
 
-    return records.map((record) => {
-      record.authors = record.bookAuthors.map((item) => item.author);
-      return record;
-    }) as unknown as BookResItem[];
+    let result = [];
+
+    for (let record of records) {
+      let temp = { ...record }
+
+      temp.authors = (temp.bookAuthors || []).map((item) => item.author);
+      temp.publishers = (temp.bookPublishers || []).map((item) => item.publisher);
+
+      delete temp.bookPublishers;
+      delete temp.bookAuthors;
+
+      result.push(temp);
+    }
+
+    return result as unknown as BookResItem[];
   }
 
   async getBookByUuid(uuid: string): Promise<BookResItem> {

@@ -1,4 +1,4 @@
-import { BookRequestItem, BookResItem } from "@/interface/book";
+import { BookRequestItem, BookResItem, FileFormat } from "@/interface/book";
 
 export interface UploadFileBody {
   name: string;
@@ -23,3 +23,55 @@ export interface DataSource {
   saveBookAndRelations: (model: BookRequestItem) => Promise<BookResItem>;
   removeBookCache: (uuid: string) => Promise<void>;
 }
+
+export type AuthorQueryRecord = {
+  name: string;
+  uuid: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type PublisherQueryRecord = {
+  name: string;
+  uuid: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type AdditionalInfoQueryRecord = {
+  book_uuid: string;
+  id: number;
+  read_progress: number;
+  read_progress_updated_at: string;
+  spine_index: string;
+};
+
+export type BookQueryRecord = {
+  uuid: string;
+  title: string;
+  identifier: string;
+  subject: string;
+  description: string;
+  contributor: string;
+  source: string;
+  rights: string;
+  language_id: string;
+  format: (typeof FileFormat)[keyof typeof FileFormat];
+  page_size: number;
+  isbn: string;
+  path: string;
+  publish_at: Date;
+  created_at: Date;
+  updated_at: Date;
+  authors: AuthorQueryRecord[];
+  publishers: PublisherQueryRecord[];
+  additional_infos: AdditionalInfoQueryRecord | null;
+  bookAuthors?: (AuthorQueryRecord & {
+    bookAuthors: AuthorQueryRecord;
+    author: AuthorQueryRecord;
+  })[];
+  bookPublishers?: (PublisherQueryRecord & {
+    bookPublishers: PublisherQueryRecord;
+    publisher: PublisherQueryRecord;
+  })[];
+};
