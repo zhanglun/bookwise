@@ -11,9 +11,9 @@ import { Button, TextField } from "@radix-ui/themes";
 import { AuthorSelect } from "./AuthorSelect";
 import { useEffect, useState } from "react";
 import { DevTool } from "@hookform/devtools";
-import { TitleField } from "@/views/Editor/form/TitleField";
-import { DescriptionField } from "@/views/Editor/form/DescriptionField";
-import { AuthorField } from "@/views/Editor/form/AuthorField";
+import { TitleField } from "./TitleField";
+import { DescriptionField } from "./DescriptionField";
+import { AuthorField } from "./AuthorField";
 
 const formSchema = z.object({
   title: z.string(),

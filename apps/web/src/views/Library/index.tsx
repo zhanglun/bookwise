@@ -1,17 +1,21 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useBearStore } from "@/store";
+import { BookResItem } from "@/interface/book"
 import { LibraryToolbar } from "./LibraryToolbar";
 import { DataTable } from "./DataTable";
+import { InfoPanel } from "./InfoPanel";
 
 export const Library = () => {
   const store  = useBearStore((state) => ({
     books: state.books,
     getBooks: state.getBooks,
+
   }))
 
+  const [selectItem, setSelectItem] = useState<BookResItem | null>(null);
 
   function handleRowClick(row) {
-    console.log(row)
+    setSelectItem(row);
   }
 
   useEffect(() => {
@@ -28,7 +32,9 @@ export const Library = () => {
             <DataTable data={store.books} onRowClick={handleRowClick} />
           </div>
         </div>
-        <div className="border-l border-[var(--gray-5)]"></div>
+        <div className="border-l border-[var(--gray-5)]">
+          <InfoPanel data={selectItem}/>
+        </div>
       </div>
     </div>
   );

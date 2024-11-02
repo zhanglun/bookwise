@@ -1,4 +1,4 @@
-import { BookResItem } from "@/interface/book";
+import { AuthorResItem, BookResItem } from "@/interface/book";
 import { useMemo } from "react";
 import {
   createColumnHelper,
