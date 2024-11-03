@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { request } from "@/helpers/request";
 import { AuthorResItem } from "@/interface/book";
 import {
   Command,
@@ -14,28 +13,30 @@ import { Button, Badge, Popover } from "@radix-ui/themes";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
 import { Check } from "lucide-react";
+import {dal} from "@/dal";
+import {PopoverProps} from "@radix-ui/react-popover";
 
-export interface AuthorSelectProps {
-  onValueChange: any;
-  defaultValue: string;
+export interface AuthorSelectProps extends PopoverProps {
+  onChange: (value: string[]) => void;
+  defaultValue?: string[];
+  value : string[];
 }
 
 export const AuthorSelect = ({
-  onValueChange,
-  defaultValue = null,
-  className,
+  onChange,
+  defaultValue = [],
   open,
-  setOpen,
+  onOpenChange,
   ...props
 }: AuthorSelectProps) => {
   console.log("defaultValue", defaultValue);
-  // const [ open, setOpen ] = useState(false)
-  const [selectedValues, setSelectedValues] = useState([defaultValue]);
+  const [selectedValues, setSelectedValues] = useState([...defaultValue]);
   const [authorList, setAuthorList] = useState<AuthorResItem[]>([]);
 
   const getAuthorList = () => {
-    request.get("authors").then(({ data }) => {
-      setAuthorList(data.items || []);
+    dal.getAuthors().then((data) => {
+      console.log('author', data)
+      setAuthorList(data|| []);
     });
   };
 
@@ -66,12 +67,16 @@ export const AuthorSelect = ({
   }, [selectedValues, authorList]);
 
   useEffect(() => {
+    onChange(selectedValues);
+  }, [selectedValues]);
+
+  useEffect(() => {
     getAuthorList();
   }, []);
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen} {...props}>
-      <Popover.Trigger asChild className="w-full text-left">
+    <Popover.Root open={open} onOpenChange={onOpenChange} {...props}>
+      <Popover.Trigger className="w-full text-left">
         <Button
           variant="outline"
           role="combobox"
