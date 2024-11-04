@@ -14,7 +14,7 @@ export const Library = () => {
 
   const [selectItem, setSelectItem] = useState<BookResItem | null>(null);
 
-  function handleRowClick(row) {
+  function handleRowClick(row: BookResItem) {
     setSelectItem(row);
   }
 
@@ -24,7 +24,7 @@ export const Library = () => {
 
   return (
     <div className="grid-in-main-view px-4 sm:px-4">
-      <div className="h-full grid grid-cols-[160px_1fr_320px]">
+      <div className="h-full grid grid-cols-[minmax(100px,100px)_minmax(400px,1fr)_minmax(320px,360px)]">
         <div className="border-r border-[var(--gray-5)]"></div>
         <div className="flex flex-col">
           <LibraryToolbar />

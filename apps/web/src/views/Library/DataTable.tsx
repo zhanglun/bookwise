@@ -25,8 +25,10 @@ export const DataTable = (props: DataTableProps) => {
       {
         accessorKey: "title",
         header: "Name",
+        //min: 300,
+        //max: 540,
         cell: ({ row }) => (
-          <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[540px]">
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap">
             {row.getValue("title")}
           </div>
         ),
@@ -36,8 +38,10 @@ export const DataTable = (props: DataTableProps) => {
       {
         accessorKey: "authors",
         header: "Author",
+        //min: 200,
+        //max: 340,
         cell: ({ row }) => (
-          <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[340px]">
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap">
             {(row.getValue("authors") || []).map((author) => (
               <div key={author.name}>{author.name}</div>
             ))}
@@ -54,7 +58,7 @@ export const DataTable = (props: DataTableProps) => {
   });
 
   return (
-    <table className="w-full text-sm">
+    <table className="w-full table-fixed text-sm">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id} className={styles.row}>
