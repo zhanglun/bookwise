@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import {Controller, SubmitHandler, useForm} from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import * as Form from "@radix-ui/react-form";
 import * as z from "zod";
 
@@ -27,7 +27,7 @@ export interface MetaFormProps {
 export function MetaForm(props: MetaFormProps) {
   const { defaultData } = props;
 
-  console.log('defaultData', defaultData)
+  console.log("defaultData", defaultData);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -40,9 +40,11 @@ export function MetaForm(props: MetaFormProps) {
   useEffect(() => {
     defaultData.author_uuids = (defaultData?.authors || []).map((a) => a.uuid);
 
-    const date = new Date(defaultData?.publish_at ?? '');
+    const date = new Date(defaultData?.publish_at ?? "");
 
-    defaultData.publish_at = isNaN(date.getTime()) ? "" : defaultData.publish_at;
+    defaultData.publish_at = isNaN(date.getTime())
+      ? ""
+      : defaultData.publish_at;
 
     form.reset(defaultData);
   }, [defaultData]);
@@ -51,44 +53,48 @@ export function MetaForm(props: MetaFormProps) {
     // async request which may result error
     try {
       // await fetch()
-      console.log(data)
+      console.log(data);
     } catch (e) {
-      console.log(e)
+      console.log(e);
       // handle your error
     }
   };
 
-
   function handleSubmit(event: React.FormEvent<HTMLButtonElement>) {
-    form.handleSubmit(onSubmit)()
-    event.preventDefault()
+    form.handleSubmit(onSubmit)();
+    event.preventDefault();
   }
-
 
   return (
     <>
       <Form.Root className="space-y-8">
-          <Controller
-            name="title"
-            control={form.control}
-            defaultValue={form.getValues("title")}
-            render={({field}) => <TitleField field={field} label={"Title"}/>}
-          />
-          <Controller
-            name="description"
-            control={form.control}
-            defaultValue={form.getValues("description")}
-            render={({field}) => <DescriptionField field={field} label={"Description"}/>}
-          />
-          <Controller
-            name="author_uuids"
-            control={form.control}
-            defaultValue={form.getValues("author_uuids")}
-            render={({field}) => <AuthorField field={field} label={"Authors"}/>}
-          />
-        <Button variant={"solid"} onClick={handleSubmit}>Confirm</Button>
+        <Controller
+          name="title"
+          control={form.control}
+          defaultValue={form.getValues("title")}
+          render={({ field }) => <TitleField field={field} label={"Title"} />}
+        />
+        <Controller
+          name="description"
+          control={form.control}
+          defaultValue={form.getValues("description")}
+          render={({ field }) => (
+            <DescriptionField field={field} label={"Description"} />
+          )}
+        />
+        <Controller
+          name="author_uuids"
+          control={form.control}
+          defaultValue={form.getValues("author_uuids")}
+          render={({ field }) => (
+            <AuthorField field={field} label={"Authors"} />
+          )}
+        />
+        <Button variant={"solid"} onClick={handleSubmit}>
+          Confirm
+        </Button>
       </Form.Root>
-      <DevTool control={form.control}/> {/* set up the dev tool */}
+      <DevTool control={form.control} /> {/* set up the dev tool */}
     </>
   );
 }

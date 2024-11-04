@@ -24,9 +24,9 @@ export const InfoPanel = (props: InfoPanelType) => {
 
   return (
     <div>
-      <h1>{data.title}</h1>
-      <div>
-        <Cover book={data} />
+      <h1 className="font-bold py-3 px-3 min-h-[49px] border-b border-border">{data.title}</h1>
+      <div className="p-3">
+        <Cover book={data} className="w-[60%] m-auto" />
       </div>
       <div>{data.description}</div>
       <MetaForm defaultData={data} />

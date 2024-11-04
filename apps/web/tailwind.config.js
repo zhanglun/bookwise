@@ -59,6 +59,9 @@ module.exports = {
           11: "var(--accent-11)",
           12: "var(--accent-12)",
         },
+        border: {
+          DEFAULT: "var(--gray-6)",
+        },
       },
       gridTemplateAreas: {
         //layout: ["top-bar top-bar", "left-sidebar main-view"],
