@@ -3,3 +3,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .rt-TextAreaRoot.autosize {
+    .rt-TextAreaInput {
+      height: 30px;
+      flex-shrink: 1;
+      flex-grow: 0;
+    }
+  }
+}

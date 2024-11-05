@@ -10,12 +10,12 @@ export const TitleField = ({ label, initialValue, fieldName }) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const previousValue = useRef(value);
 
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
-      inputRef.current.focus();
-      inputRef.current.select();
+  function resizeTextArea() {
+    if (inputRef.current) {
+      inputRef.current.style.height = "30px";
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`;
     }
-  }, [isEditing]);
+  }
 
   const handleClick = () => {
     if (!isLoading) {
@@ -29,11 +29,10 @@ export const TitleField = ({ label, initialValue, fieldName }) => {
     console.log(e);
     if (e.key === "Escape") {
       setValue(previousValue.current);
-      // setValue(e.target.value)
       setError(undefined);
       setIsEditing(false);
     } else if (e.key === "Enter") {
-      await handleSave();
+      //await handleSave();
     }
   };
 
@@ -60,6 +59,17 @@ export const TitleField = ({ label, initialValue, fieldName }) => {
     handleSave();
   };
 
+  const handleInput = () => {
+    resizeTextArea();
+  };
+
+  useEffect(() => {
+    if (isEditing && inputRef.current) {
+      inputRef.current.focus();
+      resizeTextArea();
+    }
+  }, [isEditing]);
+
   return (
     <>
       <div className="pt-[4px]">{label}</div>
@@ -72,12 +82,14 @@ export const TitleField = ({ label, initialValue, fieldName }) => {
         {isEditing ? (
           <>
             <TextArea
-              className="w-full"
+              className="w-full !h-auto !min-h-0 autosize"
               ref={inputRef}
+              row={1}
               value={value}
               onChange={(e) => setValue(e.target.value)}
               onKeyDown={handleKeyDown}
               onBlur={handleBlur}
+              onInput={handleInput}
             ></TextArea>
           </>
         ) : (
