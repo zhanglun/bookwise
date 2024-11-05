@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-import { MetaForm } from "./form";
-import { request } from "@/helpers/request";
+import { useState } from "react";
 import { Cover } from "@/components/Book/Cover";
 import { BookResItem } from "@/interface/book";
+import { RichMeta } from "./RichMeta";
 
 export type InfoPanelType = {
   data: BookResItem | null;
@@ -29,7 +28,8 @@ export const InfoPanel = (props: InfoPanelType) => {
         <Cover book={data} className="w-[60%] m-auto" />
       </div>
       <div>{data.description}</div>
-      <MetaForm defaultData={data} />
+      {/*<MetaForm defaultData={data} />*/}
+      { data && <RichMeta defaultData={data} />}
     </div>
   );
 };
