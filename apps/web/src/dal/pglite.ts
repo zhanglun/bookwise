@@ -1,6 +1,11 @@
-import { and, eq, gt, gte, like, lt, lte, desc, SQL } from "drizzle-orm";
+import { desc, eq, gt, gte, like, lt, lte, SQL } from "drizzle-orm";
 import { drizzleDB } from "@/db";
-import { BookQueryRecord, DataSource, QueryBookFilter, UploadFileBody } from "./type";
+import {
+  BookQueryRecord,
+  DataSource,
+  QueryBookFilter,
+  UploadFileBody,
+} from "./type";
 import {
   books,
   authors,
@@ -62,9 +67,7 @@ export class PGLiteDataSource implements DataSource {
 
     const records: BookQueryRecord[] = await drizzleDB.query.books.findMany({
       //where: and(...conditions),
-      //orderBy: {
-      //  created_at: 'desc'
-      //},
+      orderBy: [desc(books.created_at)],
       with: {
         language: true,
         bookAuthors: {
@@ -83,10 +86,12 @@ export class PGLiteDataSource implements DataSource {
     const result = [];
 
     for (const record of records) {
-      const temp = { ...record }
+      const temp = { ...record };
 
       temp.authors = (temp.bookAuthors || []).map((item) => item.author);
-      temp.publishers = (temp.bookPublishers || []).map((item) => item.publisher);
+      temp.publishers = (temp.bookPublishers || []).map(
+        (item) => item.publisher
+      );
 
       delete temp.bookPublishers;
       delete temp.bookAuthors;
@@ -161,8 +166,16 @@ export class PGLiteDataSource implements DataSource {
   async getAuthors(): Promise<AuthorResItem[]> {
     const records = await drizzleDB.select().from(authors);
 
-    console.log(records)
+    console.log(records);
 
     return records as unknown as AuthorResItem[];
+  }
+
+  async updateBook(model: { uuid: string } & Partial<BookRequestItem>) {
+    console.log(
+      "🚀 ~ file: pglite.ts:177 ~ PGLiteDataSource ~ updateBook ~ model:",
+      model
+    );
+    return drizzleDB.update(books).set(model).where(eq(books.uuid, model.uuid));
   }
 }

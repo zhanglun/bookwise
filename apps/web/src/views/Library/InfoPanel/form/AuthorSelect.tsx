@@ -13,30 +13,30 @@ import { Button, Badge, Popover } from "@radix-ui/themes";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { clsx } from "clsx";
 import { Check } from "lucide-react";
-import {dal} from "@/dal";
-import {PopoverProps} from "@radix-ui/react-popover";
+import { dal } from "@/dal";
+import { PopoverProps } from "@radix-ui/react-popover";
 
-export interface AuthorSelectProps extends PopoverProps {
-  onChange: (value: string[]) => void;
-  defaultValue?: string[];
-  value : string[];
+export interface AuthorSelectProps<T> extends PopoverProps {
+  onChange: (value: T[]) => void;
+  value: T[];
 }
 
-export const AuthorSelect = ({
+export const AuthorSelect = <T,>({
   onChange,
-  defaultValue = [],
+  value = [],
   open,
   onOpenChange,
   ...props
-}: AuthorSelectProps) => {
-  console.log("defaultValue", defaultValue);
-  const [selectedValues, setSelectedValues] = useState([...defaultValue]);
+}: AuthorSelectProps<T>) => {
+  console.log("🚀 ~ file: AuthorSelect.tsx:32 ~ value:", value);
+
+  const [selectedValues, setSelectedValues] = useState<T[]>([...value]);
   const [authorList, setAuthorList] = useState<AuthorResItem[]>([]);
 
   const getAuthorList = () => {
     dal.getAuthors().then((data) => {
-      console.log('author', data)
-      setAuthorList(data|| []);
+      console.log("author", data);
+      setAuthorList(data || []);
     });
   };
 
@@ -47,7 +47,13 @@ export const AuthorSelect = ({
 
     const limit = 1;
     const showItems = authorList
-      .filter((_) => selectedValues.includes(_.uuid))
+      .filter((_) => {
+        console.log(
+          "🚀 ~ file: AuthorSelect.tsx:50 ~ .filter ~ selectedValues:",
+          selectedValues
+        );
+        return selectedValues.some((v) => v.uuid === _.uuid);
+      })
       .slice(0, limit)
       .map((_) => (
         <Badge variant="soft" className="rounded-sm px-1 font-normal">
@@ -69,6 +75,10 @@ export const AuthorSelect = ({
   useEffect(() => {
     onChange(selectedValues);
   }, [selectedValues]);
+
+  useEffect(() => {
+    setSelectedValues([...value]);
+  }, [value]);
 
   useEffect(() => {
     getAuthorList();
@@ -95,7 +105,9 @@ export const AuthorSelect = ({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {authorList.map((author) => {
-                const isSelected = selectedValues.indexOf(author.uuid) > -1;
+                const isSelected = selectedValues.some(
+                  (v) => v.uuid === author.uuid
+                );
                 return (
                   <CommandItem
                     key={author.uuid}
@@ -107,7 +119,7 @@ export const AuthorSelect = ({
                           })
                         );
                       } else {
-                        setSelectedValues([...selectedValues, author.uuid]);
+                        setSelectedValues([...selectedValues, author]);
                       }
                     }}
                   >

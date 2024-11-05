@@ -48,6 +48,10 @@ export class DataAccessLayer {
   async getAuthors() {
     return this.dataSource.getAuthors();
   }
+
+  async updateBook(model: { uuid: string } & Partial<BookRequestItem>) {
+    return this.dataSource.updateBook(model);
+  }
 }
 
 // usage
