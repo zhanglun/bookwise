@@ -27,16 +27,13 @@ export const AuthorField = ({
     handleInput,
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
-  console.log("🚀 ~ file: AuthorField.tsx:22 ~ initialValue:", initialValue);
-  console.log("🚀 ~ file: AuthorField.tsx:21 ~ value:", value);
-
   const [renderName, setRenderName] = useState(
     initialValue.map((a) => a.name).join(", ")
   );
 
   function onChange(value: AuthorResItem[]) {
     console.log("🚀 ~ file: AuthorField.tsx:23 ~ onChange ~ value:", value);
-    // setValue(value);
+    setValue(value);
   }
 
   useEffect(() => {
@@ -58,8 +55,13 @@ export const AuthorField = ({
           <AuthorSelect
             value={value}
             onChange={onChange}
-            onBlur={handleBlur}
-            onInput={handleInput}
+            onBlur={() => {}}
+            onOpenChange={(status) => {
+              console.log("🚀 ~ file: AuthorField.tsx:65 ~ status:", status);
+              if (!status) {
+                handleBlur();
+              }
+            }}
           />
         ) : (
           <div className="min-h-[32px] px-[8px] py-[6px] text-sm rounded hover:bg-[var(--gray-a3)]">

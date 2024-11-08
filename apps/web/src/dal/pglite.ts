@@ -166,8 +166,6 @@ export class PGLiteDataSource implements DataSource {
   async getAuthors(): Promise<AuthorResItem[]> {
     const records = await drizzleDB.select().from(authors);
 
-    console.log(records);
-
     return records as unknown as AuthorResItem[];
   }
 

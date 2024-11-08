@@ -10,8 +10,6 @@ export const RichMeta = (props: RichMetaType) => {
   const { defaultData } = props;
   const { uuid, title, description, authors } = defaultData;
 
-  console.log("🚀 ~ file: index.tsx:12 ~ RichMeta ~ authors:", authors);
-
   return (
     <div className="grid grid-cols-[auto_1fr] gap-2 items-start">
       <TitleField

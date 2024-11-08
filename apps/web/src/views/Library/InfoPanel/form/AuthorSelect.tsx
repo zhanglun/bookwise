@@ -25,19 +25,16 @@ export interface AuthorSelectProps<T> extends PopoverProps {
 export const AuthorSelect = <T,>({
   onChange,
   value = [],
-  open,
   onBlur,
   onOpenChange,
   ...props
 }: AuthorSelectProps<T>) => {
-  console.log("🚀 ~ file: AuthorSelect.tsx:32 ~ value:", value);
-
+  const [open, setOpen] = useState(false);
   const [selectedValues, setSelectedValues] = useState<T[]>([...value]);
   const [authorList, setAuthorList] = useState<AuthorResItem[]>([]);
 
   const getAuthorList = () => {
     dal.getAuthors().then((data) => {
-      console.log("author", data);
       setAuthorList(data || []);
     });
   };
@@ -50,10 +47,6 @@ export const AuthorSelect = <T,>({
     const limit = 1;
     const showItems = authorList
       .filter((_) => {
-        console.log(
-          "🚀 ~ file: AuthorSelect.tsx:50 ~ .filter ~ selectedValues:",
-          selectedValues
-        );
         return selectedValues.some((v) => v.uuid === _.uuid);
       })
       .slice(0, limit)
@@ -84,12 +77,6 @@ export const AuthorSelect = <T,>({
   useEffect(() => {
     setSelectedValues([...value]);
   }, [value]);
-
-  useEffect(() => {
-    if (!open) {
-      onBlur();
-    }
-  }, [open]);
 
   useEffect(() => {
     getAuthorList();
