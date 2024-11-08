@@ -17,8 +17,15 @@ export const AuthorField = ({
   uuid,
 }: RichMetaItemType) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const { value, setValue, isEditing, setIsHovered, handleClick } =
-    useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
+  const {
+    value,
+    setValue,
+    isEditing,
+    setIsHovered,
+    handleClick,
+    handleBlur,
+    handleInput,
+  } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
   console.log("🚀 ~ file: AuthorField.tsx:22 ~ initialValue:", initialValue);
   console.log("🚀 ~ file: AuthorField.tsx:21 ~ value:", value);
@@ -48,7 +55,12 @@ export const AuthorField = ({
         onClick={handleClick}
       >
         {isEditing ? (
-          <AuthorSelect value={value} onChange={onChange} />
+          <AuthorSelect
+            value={value}
+            onChange={onChange}
+            onBlur={handleBlur}
+            onInput={handleInput}
+          />
         ) : (
           <div className="min-h-[32px] px-[8px] py-[6px] text-sm rounded hover:bg-[var(--gray-a3)]">
             {renderName}

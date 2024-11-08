@@ -18,6 +18,7 @@ import { PopoverProps } from "@radix-ui/react-popover";
 
 export interface AuthorSelectProps<T> extends PopoverProps {
   onChange: (value: T[]) => void;
+  onBlur: () => void;
   value: T[];
 }
 
@@ -25,6 +26,7 @@ export const AuthorSelect = <T,>({
   onChange,
   value = [],
   open,
+  onBlur,
   onOpenChange,
   ...props
 }: AuthorSelectProps<T>) => {
@@ -56,7 +58,10 @@ export const AuthorSelect = <T,>({
       })
       .slice(0, limit)
       .map((_) => (
-        <Badge variant="soft" className="rounded-sm px-1 font-normal">
+        <Badge
+          variant="soft"
+          className="rounded-sm px-1 font-normal max-w-full text-wrap"
+        >
           {_.name}
         </Badge>
       ));
@@ -81,6 +86,12 @@ export const AuthorSelect = <T,>({
   }, [value]);
 
   useEffect(() => {
+    if (!open) {
+      onBlur();
+    }
+  }, [open]);
+
+  useEffect(() => {
     getAuthorList();
   }, []);
 
@@ -92,9 +103,11 @@ export const AuthorSelect = <T,>({
           role="combobox"
           aria-label="Load a preset..."
           aria-expanded={open}
-          className="flex-1 justify-between"
+          className="flex-1 justify-between h-auto"
         >
-          <div className="flex gap-1">{renderPlaceholder()}</div>
+          <div className="flex gap-1 flex-wrap min-h-5 py-[5px] w-full">
+            {renderPlaceholder()}
+          </div>
           <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </Popover.Trigger>
