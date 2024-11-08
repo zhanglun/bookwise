@@ -16,20 +16,22 @@ import { Check } from "lucide-react";
 import { dal } from "@/dal";
 import { PopoverProps } from "@radix-ui/react-popover";
 
-export interface AuthorSelectProps<T> extends PopoverProps {
+export interface AuthorSelectProps<T extends AuthorResItem> extends PopoverProps {
+  default: boolean
   onChange: (value: T[]) => void;
   onBlur: () => void;
   value: T[];
 }
 
-export const AuthorSelect = <T,>({
+export const AuthorSelect = <T extends AuthorResItem,>({
   onChange,
   value = [],
+  defaultOpen,
   onBlur,
   onOpenChange,
   ...props
 }: AuthorSelectProps<T>) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [selectedValues, setSelectedValues] = useState<T[]>([...value]);
   const [authorList, setAuthorList] = useState<AuthorResItem[]>([]);
 
@@ -74,16 +76,26 @@ export const AuthorSelect = <T,>({
     onChange(selectedValues);
   }, [selectedValues]);
 
-  useEffect(() => {
-    setSelectedValues([...value]);
-  }, [value]);
+  // useEffect(() => {
+  //   setSelectedValues([...value]);
+  // }, [value]);
 
   useEffect(() => {
     getAuthorList();
   }, []);
 
+  function handleOpenChange(open: boolean) {
+    setOpen(open);
+
+    if (!open) {
+      onBlur();
+    }
+
+    onOpenChange?.(open);
+  }
+
   return (
-    <Popover.Root open={open} onOpenChange={onOpenChange} {...props}>
+    <Popover.Root open={open} onOpenChange={handleOpenChange} {...props}>
       <Popover.Trigger className="w-full text-left">
         <Button
           variant="outline"
@@ -115,7 +127,7 @@ export const AuthorSelect = <T,>({
                       if (isSelected) {
                         setSelectedValues(
                           selectedValues.filter((_) => {
-                            return _ !== author.uuid;
+                            return _.uuid !== author.uuid;
                           })
                         );
                       } else {

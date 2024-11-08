@@ -24,7 +24,6 @@ export const AuthorField = ({
     setIsHovered,
     handleClick,
     handleBlur,
-    handleInput,
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
   const [renderName, setRenderName] = useState(
@@ -37,8 +36,8 @@ export const AuthorField = ({
   }
 
   useEffect(() => {
-    setRenderName(initialValue.map((a) => a.name).join(", "));
-  }, [initialValue]);
+    setRenderName(value.map((a) => a.name).join(", "));
+  }, [value]);
 
   return (
     <>
@@ -53,6 +52,7 @@ export const AuthorField = ({
       >
         {isEditing ? (
           <AuthorSelect
+            defaultOpen={isEditing}
             value={value}
             onChange={onChange}
             onBlur={() => {}}
