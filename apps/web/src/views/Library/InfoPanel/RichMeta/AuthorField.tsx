@@ -23,7 +23,7 @@ export const AuthorField = ({
     isEditing,
     setIsHovered,
     handleClick,
-    handleBlur,
+    submit,
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
   const [renderName, setRenderName] = useState(
@@ -55,11 +55,9 @@ export const AuthorField = ({
             defaultOpen={isEditing}
             value={value}
             onChange={onChange}
-            onBlur={() => {}}
             onOpenChange={(status) => {
-              console.log("🚀 ~ file: AuthorField.tsx:65 ~ status:", status);
               if (!status) {
-                handleBlur();
+                submit('author_uuids', value.map(v => v.uuid));
               }
             }}
           />

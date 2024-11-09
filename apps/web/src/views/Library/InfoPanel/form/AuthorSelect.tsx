@@ -76,10 +76,6 @@ export const AuthorSelect = <T extends AuthorResItem,>({
     onChange(selectedValues);
   }, [selectedValues]);
 
-  // useEffect(() => {
-  //   setSelectedValues([...value]);
-  // }, [value]);
-
   useEffect(() => {
     getAuthorList();
   }, []);
@@ -88,7 +84,7 @@ export const AuthorSelect = <T extends AuthorResItem,>({
     setOpen(open);
 
     if (!open) {
-      onBlur();
+      onBlur?.();
     }
 
     onOpenChange?.(open);
