@@ -23,6 +23,7 @@ export const AuthorField = ({
     isEditing,
     setIsHovered,
     handleClick,
+    handleSave,
     submit,
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
@@ -57,7 +58,7 @@ export const AuthorField = ({
             onChange={onChange}
             onOpenChange={(status) => {
               if (!status) {
-                submit('author_uuids', value.map(v => v.uuid));
+                handleSave(() => submit('author_uuids', value.map(v => v.uuid)));
               }
             }}
           />

@@ -62,7 +62,13 @@ export const useRichMetaHook = <I,>({
     resizeTextArea();
   };
 
-  const handleSave = () => {
+  /**
+   * Handles the saving of a field.
+   * @param customSubmit A custom submit function that will be called with the
+   * name of the field and the value to be saved. If not provided, the default
+   * submit function will be used.
+   */
+  const handleSave = (customSubmit?: () => void) => {
     if (value === previousValue.current) {
       setIsEditing(false);
       return;
@@ -71,7 +77,11 @@ export const useRichMetaHook = <I,>({
     try {
       setIsLoading(true);
       setError(undefined);
-      submit(fieldName, value);
+      if (customSubmit) {
+        customSubmit();
+      } else {
+        submit(fieldName, value);
+      }
       previousValue.current = value;
       setIsEditing(false);
     } catch (err) {
