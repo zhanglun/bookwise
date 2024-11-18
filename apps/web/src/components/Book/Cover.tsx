@@ -10,7 +10,40 @@ export interface CoverProps {
 export const Cover = (props: CoverProps) => {
   const { onClick, book, className } = props;
   const getBookCover = () => {
-    return `bookwise://${book.title}/cover.jpg`;
+    try {
+      // 记录原始的书籍信息
+      console.log('Book info:', {
+        title: book?.title,
+        path: book?.path,
+        uuid: book?.uuid
+      });
+
+      if (!book?.title) {
+        console.warn('Book title is missing:', book);
+        return '';
+      }
+
+      // 记录编码前后的书名
+      const originalTitle = book.title;
+      const encodedTitle = encodeURIComponent(book.title);
+      console.log('Book title encoding:', {
+        original: originalTitle,
+        encoded: encodedTitle
+      });
+
+      const coverUrl = `bookwise://${encodedTitle}/cover.jpg`;
+      console.log('Generated cover URL:', coverUrl);
+      
+      return coverUrl;
+    } catch (error) {
+      console.error('Error generating book cover URL:', {
+        error,
+        book: book,
+        errorName: error.name,
+        errorMessage: error.message
+      });
+      return '';
+    }
   };
 
   return book?.path ? (
