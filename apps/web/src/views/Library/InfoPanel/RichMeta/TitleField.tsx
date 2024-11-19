@@ -1,6 +1,7 @@
 import { TextArea } from "@radix-ui/themes";
 import { useRef } from "react";
 import { useRichMetaHook } from "./hook";
+import { stripHtml } from "@/helpers/string";
 
 type RichMetaItemType = {
   label: string;
@@ -27,6 +28,8 @@ export const TitleField = ({
     handleBlur,
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
+  const displayValue = fieldName === "description" ? stripHtml(value as string) : value;
+
   return (
     <>
       <div className="pt-[6px] text-sm text-right">{label}</div>
@@ -50,8 +53,8 @@ export const TitleField = ({
             onInput={handleInput}
           ></TextArea>
         ) : (
-          <div className="min-h-[32px] px-[8px] py-[6px] text-sm rounded hover:bg-[var(--gray-a3)]">
-            {value}
+          <div className="min-h-[30px] p-2 rounded hover:bg-gray-100 whitespace-pre-wrap">
+            {displayValue}
           </div>
         )}
       </div>
