@@ -16,7 +16,7 @@ export const BookList = (props: BookListProps) => {
   }));
   const { openBook } = useBook();
 
-  const layoutViewClass = {
+  const layoutViewClass: { [K in LayoutViewType]?: string } = {
     grid: "grid-cols-[repeat(auto-fill,minmax(144px,1fr))] grid-rows-1 gap-y-12 ",
     list: "grid-rows-1 grid-cols-1 divide-y divide-[var(--gray-a4)]",
   };

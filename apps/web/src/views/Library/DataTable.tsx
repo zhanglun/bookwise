@@ -1,7 +1,6 @@
-import { AuthorResItem, BookResItem } from "@/interface/book";
+import { BookResItem } from "@/interface/book";
 import { useMemo } from "react";
 import {
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -16,10 +15,11 @@ const styles = {
 export interface DataTableProps {
   data: BookResItem[];
   onRowClick: (row: BookResItem) => void;
+  onRowDoubleClick?: (row: BookResItem) => void;
 }
 
 export const DataTable = (props: DataTableProps) => {
-  const { data } = props;
+  const { data, onRowClick, onRowDoubleClick } = props;
   const columns = useMemo(() => {
     return [
       {
@@ -86,7 +86,8 @@ export const DataTable = (props: DataTableProps) => {
           <tr
             key={row.id}
             className={styles.row}
-            onClick={() => props.onRowClick(row.original)}
+            onClick={() => onRowClick(row.original)}
+            onDoubleClick={() => onRowDoubleClick?.(row.original)}
           >
             {row.getVisibleCells().map((cell) => (
               <td key={cell.id} className={styles.td}>

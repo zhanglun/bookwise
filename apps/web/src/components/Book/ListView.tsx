@@ -20,11 +20,15 @@ export const ListView = ({ data }: ListViewProps) => {
 
         <Table.Body>
           {data.map((book: BookResItem) => {
-            return <Table.Row>
-              <Table.RowHeaderCell>{book.title}</Table.RowHeaderCell>
-              <Table.Cell>{(book.authors || []).join(',')}</Table.Cell>
-              <Table.Cell>{format(book.publish_at, 'yyyy-MM-dd')}</Table.Cell>
-            </Table.Row>;
+            return (
+              <Table.Row>
+                <Table.RowHeaderCell>{book.title}</Table.RowHeaderCell>
+                <Table.Cell>{(book.authors || []).join(",")}</Table.Cell>
+                <Table.Cell>
+                  {format(new Date(book.publish_at), "yyyy-MM-dd")}
+                </Table.Cell>
+              </Table.Row>
+            );
           })}
         </Table.Body>
       </Table.Root>

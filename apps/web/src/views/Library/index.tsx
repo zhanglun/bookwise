@@ -4,8 +4,10 @@ import { BookResItem } from "@/interface/book";
 import { LibraryToolbar } from "./LibraryToolbar";
 import { DataTable } from "./DataTable";
 import { InfoPanel } from "./InfoPanel";
+import { useBook } from "@/hooks/book";
 
 export const Library = () => {
+  const { openBook } = useBook();
   const store = useBearStore((state) => ({
     books: state.books,
     getBooks: state.getBooks,
@@ -15,6 +17,10 @@ export const Library = () => {
 
   function handleRowClick(row: BookResItem) {
     setSelectItem(row);
+  }
+
+  function handleRowDoubleClick(row: BookResItem) {
+    openBook(row.uuid, row.title);
   }
 
   useEffect(() => {
@@ -32,7 +38,11 @@ export const Library = () => {
             <LibraryToolbar />
           </div>
           <div className="flex-1 overflow-auto min-h-0">
-            <DataTable data={store.books} onRowClick={handleRowClick} />
+            <DataTable
+              data={store.books}
+              onRowClick={handleRowClick}
+              onRowDoubleClick={handleRowDoubleClick}
+            />
           </div>
         </div>
         <div className="border-l border-[var(--gray-5)] flex flex-col min-h-0">

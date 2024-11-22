@@ -1,10 +1,4 @@
-import {
-  Button,
-  IconButton,
-  Popover,
-  Spinner,
-  TextField,
-} from "@radix-ui/themes";
+import { Button, Popover, Spinner, TextField } from "@radix-ui/themes";
 import { Command } from "cmdk";
 import { ListFilterIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -17,7 +11,6 @@ import {
 import { CrossCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { debounce } from "lodash-es";
 import { useBearStore } from "@/store";
-import { set } from "date-fns";
 
 export const LibraryToolbar = () => {
   const store = useBearStore((state) => ({
