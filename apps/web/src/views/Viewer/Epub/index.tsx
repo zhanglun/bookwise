@@ -2,7 +2,7 @@
 import ePub, { Book } from "epubjs";
 import Section from "epubjs/types/section";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
-import { MarkerToolbar, VirtualReference } from "@/components/MarkerToolbar";
+import { VirtualReference } from "@/components/MarkerToolbar";
 import { request } from "@/helpers/request.ts";
 import { Mark, TextMark } from "@/helpers/marker/types";
 import { Marker } from "@/helpers/marker";
@@ -12,7 +12,6 @@ import { ContentRender } from "./ContentRender";
 import { BookResItem } from "@/interface/book";
 import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import { getAbsoluteUrl } from "@/helpers/book";
-import { ViewerLayout } from "../Layout";
 import { useBearStore } from "@/store";
 import { dal } from "@/dal";
 import { TocItem } from "../Toc";
@@ -340,8 +339,6 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
     let elem = null;
     const i = e.nativeEvent.composedPath();
-
-    console.log("🚀 ~ handleUserClickEvent ~ i:", i);
 
     for (let a = 0; a <= i.length - 1; a++) {
       const s = i[a] as HTMLElement;

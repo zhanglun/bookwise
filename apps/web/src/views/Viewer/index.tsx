@@ -33,7 +33,7 @@ export const Viewer = () => {
     <div className="grid-in-main-view h-full overflow-hidden">
       <div className="h-full grid grid-cols-[minmax(240px,240px)_minmax(400px,1fr)_minmax(280px,320px)]">
         {leftSidebarExpanded && (
-          <div className="grid-in-left-sidebar overflow-hidden">
+          <div className="grid-in-left-sidebar overflow-hidden border-r">
             <ViewerSidebar book={book} toc={toc} />
           </div>
         )}
