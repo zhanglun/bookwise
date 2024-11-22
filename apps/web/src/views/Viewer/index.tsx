@@ -4,6 +4,7 @@ import { BookResItem } from "@/interface/book";
 import { useEffect, useState, useCallback } from "react";
 import { dal } from "@/dal";
 import { EpubViewer } from "./Epub";
+import { PdfViewer } from "./Pdf";
 import { TocItem } from "./Toc";
 import { useParams } from "react-router-dom";
 
@@ -29,6 +30,22 @@ export const Viewer = () => {
     return null;
   }
 
+  const renderViewer = () => {
+    const props = {
+      bookUuid: uuid,
+      onTocUpdate: handleTocUpdate,
+    };
+
+    switch (book.format.toLowerCase()) {
+      case "pdf":
+        return <PdfViewer {...props} />;
+      case "epub":
+        return <EpubViewer {...props} />;
+      default:
+        return <div>Unsupported file type: {book.format}</div>;
+    }
+  };
+
   return (
     <div className="grid-in-main-view h-full overflow-hidden">
       <div className="h-full grid grid-cols-[minmax(240px,240px)_minmax(400px,1fr)_minmax(280px,320px)]">
@@ -37,11 +54,7 @@ export const Viewer = () => {
             <ViewerSidebar book={book} toc={toc} />
           </div>
         )}
-        <div className="flex flex-col min-h-0">
-          {/* <div className="bg-cell rounded-lg h-full"> */}
-          <EpubViewer bookUuid={uuid} onTocUpdate={handleTocUpdate} />
-          {/* </div> */}
-        </div>
+        <div className="flex flex-col min-h-0">{renderViewer()}</div>
         <div className="border-l border-[var(--gray-5)] flex flex-col min-h-0">
           {/* <InfoPanel data={selectItem} /> */}
         </div>
