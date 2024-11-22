@@ -462,7 +462,7 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
       type="hover"
       scrollbars="vertical"
       ref={scrollAreaRef}
-      className="h-[calc(100vh-68px)] px-6 relative"
+      className="h-[calc(100vh-38px)] relative"
     >
       {loading && (
         <div className="absolute z-40 top-6 right-6 bottom-6 left-6 bg-cell flex items-center justify-center rounded-lg">

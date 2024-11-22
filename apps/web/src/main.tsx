@@ -35,10 +35,10 @@ const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
-          {
-            path: RouteConfig.HOME,
-            element: <Home />,
-          },
+          // {
+          //   path: RouteConfig.HOME,
+          //   element: <Home />,
+          // },
           {
             path: RouteConfig.SEARCH,
             element: <Search />,
