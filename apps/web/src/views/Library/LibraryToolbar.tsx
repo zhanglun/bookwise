@@ -1,5 +1,10 @@
-
-import { Button, IconButton, Popover, TextField } from "@radix-ui/themes";
+import {
+  Button,
+  IconButton,
+  Popover,
+  Spinner,
+  TextField,
+} from "@radix-ui/themes";
 import { Command } from "cmdk";
 import { ListFilterIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -9,17 +14,17 @@ import {
   CommandList,
   CommandGroup,
 } from "@/components/command";
-import {
-  MagnifyingGlassIcon,
-} from "@radix-ui/react-icons";
+import { CrossCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { debounce } from "lodash-es";
 import { useBearStore } from "@/store";
+import { set } from "date-fns";
 
 export const LibraryToolbar = () => {
   const store = useBearStore((state) => ({
     getBooks: state.getBooks,
   }));
   const [query, setQuery] = useState("");
+  const [searching, setSearching] = useState(false);
 
   const debouncedQuery = useCallback(
     debounce((q) => {
@@ -27,17 +32,24 @@ export const LibraryToolbar = () => {
       const params = {
         title: q,
       };
-      store.getBooks(params);
+      store.getBooks(params).finally(() => {
+        setSearching(false);
+      });
     }, 300),
     []
   );
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
+    const value = e.target.value;
+
+    setQuery(value);
+    setSearching(true);
+    debouncedQuery(value);
   };
 
   const handleStartQuery = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const value = (e.target as HTMLInputElement).value;
+    setSearching(true);
     debouncedQuery(value);
   };
 
@@ -77,7 +89,6 @@ export const LibraryToolbar = () => {
         </Popover.Content>
       </Popover.Root>
       <div className="flex items-center gap-3">
-
         <TextField.Root
           placeholder="Search the books..."
           value={query}
@@ -86,6 +97,20 @@ export const LibraryToolbar = () => {
         >
           <TextField.Slot>
             <MagnifyingGlassIcon height="16" width="16" />
+          </TextField.Slot>
+          <TextField.Slot>
+            {query && !searching && (
+              <CrossCircledIcon
+                height="16"
+                width="16"
+                onClick={() => {
+                  setQuery("");
+                  debouncedQuery("");
+                }}
+                className="cursor-pointer hover:text-[var(--gray-12)]"
+              />
+            )}
+            {searching && <Spinner size="1" />}
           </TextField.Slot>
         </TextField.Root>
       </div>

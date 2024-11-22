@@ -1,5 +1,16 @@
-import {desc, eq, gt, gte, inArray, like, lt, lte, SQL} from "drizzle-orm";
-import {drizzleDB} from "@/db";
+import {
+  and,
+  desc,
+  eq,
+  gt,
+  gte,
+  inArray,
+  like,
+  lt,
+  lte,
+  SQL,
+} from "drizzle-orm";
+import { drizzleDB } from "@/db";
 import {
   BookQueryRecord,
   DataSource,
@@ -14,7 +25,7 @@ import {
   bookPublishers,
   bookCaches,
 } from "@/db/schema";
-import {AuthorResItem, BookRequestItem, BookResItem} from "@/interface/book";
+import { AuthorResItem, BookRequestItem, BookResItem } from "@/interface/book";
 
 export class PGLiteDataSource implements DataSource {
   async uploadFile(files: UploadFileBody[]) {
@@ -66,7 +77,7 @@ export class PGLiteDataSource implements DataSource {
     //  .orderBy(desc(books.created_at));
 
     const records: BookQueryRecord[] = await drizzleDB.query.books.findMany({
-      //where: and(...conditions),
+      where: and(...conditions),
       orderBy: [desc(books.created_at)],
       with: {
         language: true,
@@ -86,7 +97,7 @@ export class PGLiteDataSource implements DataSource {
     const result = [];
 
     for (const record of records) {
-      const temp = {...record};
+      const temp = { ...record };
 
       temp.authors = (temp.bookAuthors || []).map((item) => item.author);
       temp.publishers = (temp.bookPublishers || []).map(
@@ -115,7 +126,7 @@ export class PGLiteDataSource implements DataSource {
     const res = await drizzleDB.transaction(async (tx) => {
       const [newBook] = await tx
         .insert(books)
-        .values({...model})
+        .values({ ...model })
         .returning();
 
       if (!newBook) {
@@ -169,7 +180,11 @@ export class PGLiteDataSource implements DataSource {
     return records as unknown as AuthorResItem[];
   }
 
-  async updateBook(model: { uuid: string } & Partial<BookRequestItem> & { author_uuids: string[] }) {
+  async updateBook(
+    model: { uuid: string } & Partial<BookRequestItem> & {
+        author_uuids: string[];
+      }
+  ) {
     console.log(
       "🚀 ~ file: pglite.ts:177 ~ PGLiteDataSource ~ updateBook ~ model:",
       model
@@ -179,19 +194,24 @@ export class PGLiteDataSource implements DataSource {
     });
 
     if (!book) {
-      return {error: 'BookNotFoundError', message: `Book with uuid ${model.uuid} not found`};
+      return {
+        error: "BookNotFoundError",
+        message: `Book with uuid ${model.uuid} not found`,
+      };
     }
 
     if (model.author_uuids) {
       const values = model.author_uuids.map((uuid) => {
         return {
-          author_uuid:uuid,
-          book_uuid: model.uuid
-        }
-      })
+          author_uuid: uuid,
+          book_uuid: model.uuid,
+        };
+      });
 
-      await drizzleDB.delete(bookAuthors).where(eq(bookAuthors.book_uuid, model.uuid))
-      await drizzleDB.insert(bookAuthors).values(values)
+      await drizzleDB
+        .delete(bookAuthors)
+        .where(eq(bookAuthors.book_uuid, model.uuid));
+      await drizzleDB.insert(bookAuthors).values(values);
     }
 
     return drizzleDB.update(books).set(model).where(eq(books.uuid, model.uuid));
