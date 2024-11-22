@@ -53,7 +53,7 @@ export const TitleField = ({
             onInput={handleInput}
           ></TextArea>
         ) : (
-          <div className="min-h-[30px] p-2 rounded hover:bg-gray-100 whitespace-pre-wrap">
+          <div className="min-h-[32px] px-[8px] py-[6px] text-sm rounded hover:bg-[var(--gray-a3)] whitespace-pre-wrap">
             {displayValue}
           </div>
         )}
