@@ -1,33 +1,37 @@
-import { BookResItem } from "@/interface/book";
-import { SegmentedControl } from "@radix-ui/themes";
-import { Toc } from "./Epub/Toc";
-import { Cover } from "@/components/Book/Cover";
-import Navigation from "epubjs/types/navigation";
-import { PackagingMetadataObject } from "epubjs/types/packaging";
+import { memo, useState } from "react";
 import {
   BookmarkIcon,
   HighlighterIcon,
   NotebookPen,
   TableOfContents,
 } from "lucide-react";
-import { useState } from "react";
+import { SegmentedControl } from "@radix-ui/themes";
+import { BookResItem } from "@/interface/book";
+import { Toc, TocItem } from "./Toc";
+import { useBearStore } from "@/store";
+import { Cover } from "@/components/Book/Cover";
 
-export interface ViewerSidebarProps {
+interface ViewerSidebarProps {
   book: BookResItem;
-  navigation?: Navigation;
-  metadata?: PackagingMetadataObject;
+  toc: TocItem[];
 }
 
-export const ViewerSidebar = (props: ViewerSidebarProps) => {
-  const { book, metadata, navigation } = props;
+export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
+  const store = useBearStore((state) => ({
+    handleTocClick: state.handleTocClick,
+  }));
   const [segmented, setSegmented] = useState("toc");
+
+  const handleTocItemClick = (item: TocItem) => {
+    store.handleTocClick(item);
+  };
 
   return (
     <div className="h-full flex flex-col w-[240px]">
       <div className="h-[70px] py-2 px-3 shrink-0 grow-0 flex gap-2 relative border-b border-gray-7">
         <Cover book={book} className="w-[48px]" />
         <span className="text-sm font-bold overflow-hidden whitespace-nowrap text-ellipsis">
-          {metadata?.title}
+          {book.title}
         </span>
       </div>
       <SegmentedControl.Root
@@ -53,15 +57,13 @@ export const ViewerSidebar = (props: ViewerSidebarProps) => {
         </SegmentedControl.Item>
       </SegmentedControl.Root>
       {segmented === "toc" && (
-        <Toc
-          navigation={navigation}
-          metadata={metadata}
-          onItemClick={() => {}}
-        />
+        <Toc items={toc} onItemClick={handleTocItemClick} />
       )}
       {segmented === "bookmark" && <div>TODO: bookmark</div>}
       {segmented === "notes" && <div>TODO: notes</div>}
       {segmented === "" && <div>TODO: hightligher</div>}
     </div>
   );
-};
+});
+
+ViewerSidebar.displayName = "ViewerSidebar";

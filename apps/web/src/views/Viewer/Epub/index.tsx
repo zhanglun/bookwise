@@ -15,12 +15,15 @@ import { getAbsoluteUrl } from "@/helpers/book";
 import { ViewerLayout } from "../Layout";
 import { useBearStore } from "@/store";
 import { dal } from "@/dal";
+import { TocItem } from "../Toc";
+import { NavItem } from "epubjs";
 
 export interface EpubViewerProps {
   bookUuid: string;
+  onTocUpdate?: (items: TocItem[]) => void;
 }
 
-export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
+export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   const store = useBearStore((state) => ({
     currentTocItem: state.currentTocItem,
   }));
@@ -37,42 +40,107 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
   const [currentSection, setCurrentSection] = useState<Section>();
   const [content, setContent] = useState<string>("");
 
-  function getBookDetail() {
+  // 将 epub 的 NavItem 转换为通用的 TocItem
+  const convertNavItemsToTocItems = (navItems: NavItem[]): TocItem[] => {
+    return navItems.map((item) => ({
+      label: item.label,
+      href: item.href,
+      subitems: item.subitems
+        ? convertNavItemsToTocItems(item.subitems)
+        : undefined,
+    }));
+  };
+
+  useEffect(() => {
+    if (book?.navigation) {
+      const tocItems = convertNavItemsToTocItems(book.navigation.toc);
+      onTocUpdate?.(tocItems);
+    }
+  }, [book?.navigation, onTocUpdate]);
+
+  const getBookDetail = useCallback(() => {
     return dal.getBookByUuid(bookUuid).then((data) => {
       setBookDetail(data);
-
       return data;
     });
-  }
+  }, [bookUuid]);
 
-  function getNotes() {
-    request
+  const getNotes = useCallback(() => {
+    return request
       .get("/notes", {
         params: {
-          // filter: [`book_id:eq:${bookUuid}`, `content:like:要么`],
-          filter: [`book_id:eq:${bookUuid}`],
+          book_uuid: bookUuid,
         },
       })
       .then((res) => {
-        const { data: notes } = res;
-
-        notes.forEach((note: Mark) => {
-          note.position_metrics = JSON.parse(note.position_metrics);
-          note.style_config = JSON.parse(note.style_config);
-
-          notesMap[note.spine_index] = notesMap[note.spine_index] || [];
-          notesMap[note.spine_index].push(note);
+        const map: { [key: number]: Mark[] } = {};
+        res.data.forEach((note: TextMark) => {
+          const { spine_index } = note;
+          if (!map[spine_index]) {
+            map[spine_index] = [];
+          }
+          map[spine_index].push(note);
         });
-
-        console.log("%c Line:71 🍰 notesMap", "color:#b03734", notesMap);
-
-        setNotesMap({
-          ...notesMap,
-        });
+        setNotesMap(map);
       });
-  }
+  }, [bookUuid]);
 
-  const display = (index: number, book?: Book, anchorId?: string) => {
+  useEffect(() => {
+    if (bookUuid) {
+      console.log("🚀 ~ file: index.tsx:90 ~ useEffect ~ bookUuid:", bookUuid);
+      Promise.all([getBookDetail()]).then(([detail]) => {
+        const { path } = detail;
+        window.electronAPI.readLocalFile({ path });
+      });
+    }
+  }, [bookUuid]);
+
+  const onReadLocalFileSuccess = useCallback(
+    async (
+      _e: unknown,
+      { type, buffer }: { ext: string; type: string; buffer: Buffer }
+    ) => {
+      const blob = new Blob([buffer], { type });
+      const book = ePub(blob as unknown as ArrayBuffer);
+
+      if (book) {
+        try {
+          await book.opened;
+          console.log("book.open");
+          // 等待导航数据加载
+          await book.loaded.navigation;
+          // 设置 book 状态
+          setBook(book);
+          const spine_index = "0";
+
+          // 在导航数据加载完成后更新目录
+          if (book.navigation) {
+            const tocItems = convertNavItemsToTocItems(book.navigation.toc);
+            onTocUpdate?.(tocItems);
+          }
+
+          display(parseInt(spine_index || "0", 10), book);
+          setCurrentSection(book.spine.get(spine_index));
+        } catch (error) {
+          console.error("Error loading book:", error);
+        }
+      }
+    },
+    [display, setCurrentSection, convertNavItemsToTocItems, onTocUpdate]
+  );
+
+  useEffect(() => {
+    window.electronAPI.onReadLocalFileSuccess(onReadLocalFileSuccess);
+    return () => {
+      // 清理事件监听
+      window.electronAPI.removeListener?.(
+        "read-local-file-success",
+        onReadLocalFileSuccess
+      );
+    };
+  }, [onReadLocalFileSuccess]);
+
+  function display(index: number, book?: Book, anchorId?: string) {
     setLoading(true);
 
     const section = book?.spine.get(index);
@@ -117,39 +185,7 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
     }
 
     return section;
-  };
-
-  const onReadLocalFileSuccess = useCallback(
-    async (
-      _e: unknown,
-      { type, buffer }: { ext: string; type: string; buffer: Buffer }
-    ) => {
-      const blob = new Blob([buffer], { type });
-      const book = ePub(blob as unknown as ArrayBuffer);
-      console.log("🚀 ~ file: index.tsx:125 ~ book:", book);
-
-      setBook(book);
-
-      if (book) {
-        book.opened.then(function () {
-          console.log("book.open");
-          const spine_index = "0";
-
-          // if (detail.additional_infos) {
-          //   spine_index = detail.additional_infos.spine_index;
-          // }
-
-          display(parseInt(spine_index || "0", 10), book);
-          setCurrentSection(book.spine.get(spine_index));
-        });
-      }
-    },
-    [display, setCurrentSection]
-  );
-
-  useEffect(() => {
-    window.electronAPI.onReadLocalFileSuccess(onReadLocalFileSuccess);
-  }, []);
+  }
 
   function updateReadProgress(spine_index: number, read_progress: number) {
     const body = {
@@ -197,77 +233,10 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
     const root = document.getElementById("canvasRoot") as HTMLElement;
     const el = document.getElementById("canvas") as HTMLDivElement;
 
-    markerRef.current = new Marker(root, el);
-  }, []);
-
-  useEffect(() => {
-    if (bookUuid) {
-      console.log("🚀 ~ file: index.tsx:195 ~ useEffect ~ bookUuid:", bookUuid);
-      Promise.all([
-        // getNotes(),
-        getBookDetail(),
-      ]).then(
-        ([detail]: [
-          // NoteResItem[],
-          BookResItem
-        ]) => {
-          const { path } = detail;
-          console.log("🚀 ~ file: index.tsx:205 ~ useEffect ~ detail:", detail);
-          window.electronAPI.readLocalFile({ path });
-        }
-      );
+    if (root && el) {
+      // markerRef.current = new Marker(root, el);
     }
-  }, [bookUuid]);
-
-  function handleSelectColor(color: string) {
-    const config = {
-      rectFill: color,
-      strokeWidth: 3,
-    };
-
-    if (currentSection) {
-      const {
-        idref: pageId,
-        index: spineIndex,
-        href: spineName,
-      } = currentSection;
-
-      let mark = activatedMark;
-
-      if (mark) {
-        mark.style_config.rectFill = color;
-        markerRef.current.updateMark(mark);
-      } else {
-        mark = markerRef.current.getSelectionRange(document.selection, config, {
-          spine_index: parseInt(spineIndex, 10),
-          spine_name: spineName,
-        });
-
-        if (mark) markerRef.current.addMark(mark);
-      }
-
-      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
-
-      if (mark) {
-        request
-          .post("/notes", {
-            book_id: parseInt(bookUuid, 10),
-            spine_index: mark.spine_index,
-            spine_name: mark.spine_name,
-            type: mark.type,
-            title: mark.title,
-            content: mark.content,
-            position_metrics: mark.position_metrics,
-            style_config: mark.style_config,
-          })
-          .then((res) => {
-            console.log("%c Line:123 🌭 res", "color:#42b983", res);
-          });
-      }
-    }
-
-    window?.getSelection()?.removeAllRanges();
-  }
+  }, []); // 只在组件挂载时初始化一次
 
   useEffect(() => {
     function activeToolbar(event: any) {
@@ -439,54 +408,97 @@ export const EpubViewer = memo(({ bookUuid }: EpubViewerProps) => {
     // }
   }
 
-  return (
-    <ViewerLayout
-      book={bookDetail}
-      navigation={book?.navigation}
-      metadata={book?.packaging?.metadata}
-      area={
-        <ScrollArea
-          id="canvasRoot"
-          size="1"
-          type="hover"
-          scrollbars="vertical"
-          ref={scrollAreaRef}
-          className="h-[calc(100vh-68px)] px-6 relative"
-        >
-          {loading && (
-            <div className="absolute z-40 top-6 right-6 bottom-6 left-6 bg-cell flex items-center justify-center rounded-lg">
-              <Spinner size="3" />
-            </div>
-          )}
-          <div className="relative m-auto max-w-[1200px] bg-cell text-cell-foreground my-6 mb-30 rounded-lg">
-            <div className="relative m-auto max-w-[980px] px-[60px] pb-20 mb-20">
-              <section
-                className="py-16 w-full h-full"
-                id="book-section"
-                onClick={handleUserClickEvent}
-              >
-                <ContentRender contentString={content} />
-              </section>
-            </div>
-          </div>
-          <span
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
-            onClick={() => prevPage()}
-          >
-            <ChevronLeftIcon width={22} height={22} />
-          </span>
-          <span
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
-            onClick={() => nextPage()}
-          >
-            <ChevronRightIcon width={22} height={22} />
-          </span>
-          <div
-            id="canvas"
-            className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
-          />
-        </ScrollArea>
+  function handleSelectColor(color: string) {
+    const config = {
+      rectFill: color,
+      strokeWidth: 3,
+    };
+
+    if (currentSection) {
+      const {
+        idref: pageId,
+        index: spineIndex,
+        href: spineName,
+      } = currentSection;
+
+      let mark = activatedMark;
+
+      if (mark) {
+        mark.style_config.rectFill = color;
+        markerRef.current.updateMark(mark);
+      } else {
+        mark = markerRef.current.getSelectionRange(document.selection, config, {
+          spine_index: parseInt(spineIndex, 10),
+          spine_name: spineName,
+        });
+
+        if (mark) markerRef.current.addMark(mark);
       }
-    ></ViewerLayout>
+
+      console.log("%c Line:108 🍖 mark", "color:#e41a6a", mark);
+
+      if (mark) {
+        request
+          .post("/notes", {
+            book_id: parseInt(bookUuid, 10),
+            spine_index: mark.spine_index,
+            spine_name: mark.spine_name,
+            type: mark.type,
+            title: mark.title,
+            content: mark.content,
+            position_metrics: mark.position_metrics,
+            style_config: mark.style_config,
+          })
+          .then((res) => {
+            console.log("%c Line:123 🌭 res", "color:#42b983", res);
+          });
+      }
+    }
+
+    window?.getSelection()?.removeAllRanges();
+  }
+
+  return (
+    <ScrollArea
+      id="canvasRoot"
+      size="1"
+      type="hover"
+      scrollbars="vertical"
+      ref={scrollAreaRef}
+      className="h-[calc(100vh-68px)] px-6 relative"
+    >
+      {loading && (
+        <div className="absolute z-40 top-6 right-6 bottom-6 left-6 bg-cell flex items-center justify-center rounded-lg">
+          <Spinner size="3" />
+        </div>
+      )}
+      <div className="relative">
+        <div className="relative m-auto max-w-[980px] px-[60px] pb-20 mb-20">
+          <section
+            className="py-16 w-full h-full"
+            id="book-section"
+            onClick={handleUserClickEvent}
+          >
+            <ContentRender contentString={content} />
+          </section>
+        </div>
+      </div>
+      <span
+        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
+        onClick={() => prevPage()}
+      >
+        <ChevronLeftIcon width={22} height={22} />
+      </span>
+      <span
+        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
+        onClick={() => nextPage()}
+      >
+        <ChevronRightIcon width={22} height={22} />
+      </span>
+      <div
+        id="canvas"
+        className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
+      />
+    </ScrollArea>
   );
 });
