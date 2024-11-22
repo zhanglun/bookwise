@@ -1,4 +1,10 @@
-import { Button, Popover, Spinner, TextField } from "@radix-ui/themes";
+import {
+  Button,
+  IconButton,
+  Popover,
+  Spinner,
+  TextField,
+} from "@radix-ui/themes";
 import { Command } from "cmdk";
 import { ListFilterIcon } from "lucide-react";
 import { useCallback, useState } from "react";
@@ -8,13 +14,20 @@ import {
   CommandList,
   CommandGroup,
 } from "@/components/command";
-import { CrossCircledIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
+import {
+  CrossCircledIcon,
+  FilePlusIcon,
+  MagnifyingGlassIcon,
+} from "@radix-ui/react-icons";
 import { debounce } from "lodash-es";
 import { useBearStore } from "@/store";
+import { Uploader } from "@/layout/Sidebar/Uploader";
+import { BookResItem } from "@/interface/book";
 
 export const LibraryToolbar = () => {
   const store = useBearStore((state) => ({
     getBooks: state.getBooks,
+    addBooks: state.addBooks,
   }));
   const [query, setQuery] = useState("");
   const [searching, setSearching] = useState(false);
@@ -46,41 +59,51 @@ export const LibraryToolbar = () => {
     debouncedQuery(value);
   };
 
+  function handleUploadSuccessCallback(book: BookResItem) {
+    store.addBooks([book]);
+  }
+
   return (
     <div className="py-2 px-2 flex items-center justify-between">
-      <Popover.Root>
-        <Popover.Trigger>
-          <Button variant="ghost">
-            <ListFilterIcon size={16} />
-            Filter
-          </Button>
-        </Popover.Trigger>
-        <Popover.Content className="p-0">
-          <Command>
-            <CommandInput
-              className="outline-none border-none bg-transparent"
-              placeholder="Filter..."
-            />
+      <div className="flex items-center gap-3">
+        <Uploader onSuccess={handleUploadSuccessCallback} />
+        {/* <IconButton variant="ghost" onClick={() => {}}>
+          <FilePlusIcon width={16} height={16} />
+        </IconButton> */}
+        <Popover.Root>
+          <Popover.Trigger>
+            <Button variant="ghost">
+              <ListFilterIcon size={16} />
+              Filter
+            </Button>
+          </Popover.Trigger>
+          <Popover.Content className="p-0">
+            <Command>
+              <CommandInput
+                className="outline-none border-none bg-transparent"
+                placeholder="Filter..."
+              />
 
-            <CommandList>
-              {/* {loading && <Command.Loading>Hang on…</Command.Loading>} */}
+              <CommandList>
+                {/* {loading && <Command.Loading>Hang on…</Command.Loading>} */}
 
-              <Command.Empty>No results found.</Command.Empty>
+                <Command.Empty>No results found.</Command.Empty>
 
-              <CommandGroup>
-                <CommandItem>Apple</CommandItem>
-                <CommandItem>Banana</CommandItem>
-                <CommandItem>Orange</CommandItem>
-                <Command.Separator />
-                <CommandItem>Pear</CommandItem>
-                <CommandItem>Blueberry</CommandItem>
-              </CommandGroup>
+                <CommandGroup>
+                  <CommandItem>Apple</CommandItem>
+                  <CommandItem>Banana</CommandItem>
+                  <CommandItem>Orange</CommandItem>
+                  <Command.Separator />
+                  <CommandItem>Pear</CommandItem>
+                  <CommandItem>Blueberry</CommandItem>
+                </CommandGroup>
 
-              <CommandItem>Fish</CommandItem>
-            </CommandList>
-          </Command>
-        </Popover.Content>
-      </Popover.Root>
+                <CommandItem>Fish</CommandItem>
+              </CommandList>
+            </Command>
+          </Popover.Content>
+        </Popover.Root>
+      </div>
       <div className="flex items-center gap-3">
         <TextField.Root
           placeholder="Search the books..."

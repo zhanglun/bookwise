@@ -1,4 +1,4 @@
-import { PlusCircledIcon } from "@radix-ui/react-icons";
+import { FilePlusIcon } from "@radix-ui/react-icons";
 import { IconButton, Tooltip } from "@radix-ui/themes";
 import { getFileFormatType } from "@/helpers/epub";
 import { toast } from "sonner";
@@ -127,61 +127,14 @@ export const Uploader = (props: UploaderProps) => {
     );
   }, []);
 
-  // useEffect(() => {
-  //   if (files.length) {
-  //     const formData = new FormData();
-  //     const fns = [];
-
-  //     const parseFileAndSaveIt = async (file: File) => {
-  //       const bookPkg = await ePub(file);
-  //       const { metadata } = bookPkg;
-  //       const book = {
-  //         title: metadata.title,
-  //         cover: "",
-  //         subject: metadata.subject,
-  //         description: metadata.description,
-  //         contributor: metadata.contributor,
-  //         source: "",
-  //         language: metadata.language,
-  //         format: "",
-  //         page_count: 0,
-  //         isbn: "",
-  //         authors: metadata.creator,
-  //         publisher: metadata.publisher,
-  //         publish_at: new Date(metadata.publish_at),
-  //       };
-
-  //       formData.append("files", file, metadata.title);
-  //       formData.append("book", JSON.stringify(book));
-
-  //       // request
-  //       //   .post("/books", book, {
-  //       //     headers: { "Content-Type": "multipart/form-data" },
-  //       //   })
-  //       //   .then((res) => {
-  //       //     console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
-  //       //   });
-
-  //       // request
-  //       //   .post("/books/upload/files", formData, {
-  //       //     headers: { "Content-Type": "multipart/form-data" },
-  //       //   })
-  //       //   .then((res) => {
-  //       //     console.log("🚀 ~ file: Toc.tsx:25 ~ useEffect ~ res:", res);
-  //       //   });
-  //     };
-
-  //     for (const file of files) {
-  //       console.log("%c Line:83 🍤 file", "color:#465975", file);
-  //       fns.push(parseFileAndSaveIt(file));
-  //     }
-  //   }
-  // }, [files]);
-
   return (
     <Tooltip content="Add new book">
-      <IconButton variant="ghost" radius="full" className="cursor-pointer">
-        <PlusCircledIcon onClick={openFileDialog} width={20} height={20} />
+      <IconButton
+        variant="ghost"
+        className="cursor-pointer"
+        onClick={openFileDialog}
+      >
+        <FilePlusIcon width={18} height={18} />
       </IconButton>
     </Tooltip>
   );
