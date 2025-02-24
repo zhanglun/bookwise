@@ -27,3 +27,4 @@ release
 *.sw?
 .vs
 *.db
+.venv
