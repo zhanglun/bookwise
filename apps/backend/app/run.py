@@ -19,4 +19,4 @@ def upload_file():
     for file in files:
       print(file.filename)
 
-    return 'okk'
+    return 'okk3'
