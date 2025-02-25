@@ -1,19 +1,16 @@
 from flask import Blueprint, request
+import app.services.book as book
 
 book_bp = Blueprint("book", __name__, url_prefix="/books")
 
 @book_bp.route("/upload", methods=["POST"])
 def upload_file():
   if request.method == 'POST':
-    print("f{}", request.form)
-    print("{}", request.files)
-
     if 'files' not in request.files:
       return "ok"
 
     files = request.files.getlist('files')
 
-    for file in files:
-      print(file.filename)
+    book.save_files(files)
 
     return 'okk3'
