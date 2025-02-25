@@ -1,22 +1,13 @@
 from flask import Flask, request
+import app.config as config
+import app.db as db
+from app.blueprint.book import book_bp
+
 app = Flask(__name__)
+app.config.from_object(config)
 
-@app.route("/")
-def hello_world():
-  return "<p>Hello, World!</p>"
+print(app.config['URI'])
 
-@app.route("/upload", methods=["POST"])
-def upload_file():
-  if request.method == 'POST':
-    print("f{}", request.form)
-    print("{}", request.files)
+db_instance = db.create_db(app.config)
 
-    if 'files' not in request.files:
-      return "ok"
-
-    files = request.files.getlist('files')
-
-    for file in files:
-      print(file.filename)
-
-    return 'okk3'
+app.register_blueprint(book_bp)
