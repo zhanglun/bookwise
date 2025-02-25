@@ -2,7 +2,12 @@ import os
 
 def get_lib_path():
   home = os.path.expanduser("~")
-  return os.path.join(home, "Document", "BookWise Library")
+  lib_path = os.path.join(home, "Documents", "BookWise")
+
+  if not os.path.exists(lib_path):
+    os.makedirs(lib_path)
+
+  return lib_path
 
 def save_files(files):
   print(files)
@@ -10,4 +15,6 @@ def save_files(files):
   print(dest)
 
   for file in files:
+    print("file {}", file)
+    print("===> {}", os.path.join(dest, file.filename))
     file.save(os.path.join(dest, file.filename))
