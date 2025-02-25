@@ -1,4 +1,3 @@
-
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
@@ -16,5 +15,5 @@ def create_db(config):
         return client
     except Exception as e:
         print(e)
-  # else:
-  #   raise Exception("MongoDB not found!")
+  else:
+    raise Exception("MongoDB not found!")
