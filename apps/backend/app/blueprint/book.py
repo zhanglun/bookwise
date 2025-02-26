@@ -1,4 +1,4 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, current_app
 import app.services.book as book
 
 book_bp = Blueprint("book", __name__, url_prefix="/books")

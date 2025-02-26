@@ -15,5 +15,5 @@ def create_db(config):
         return client
     except Exception as e:
         print(e)
-  else:
-    raise Exception("MongoDB not found!")
+  # else:
+  #   raise Exception("MongoDB not found!")
