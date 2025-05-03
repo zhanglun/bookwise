@@ -3,12 +3,12 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
-    "dev:web": "pnpm -F @bookwise/web dev",
-    "dev:bookwise": "pnpm -F @bookwise/desktop dev",
-    "build:bookwise": "pnpm -F @bookwise/desktop build",
-    "dev:server": "pnpm -F @bookwise/server start:dev",
-    "debug:server": "pnpm -F @bookwise/server start:debug",
-    "build:server": "pnpm -F @bookwise/server build"
+    "web:dev": "pnpm -F @bookwise/web dev",
+    "bookwise:dev": "pnpm -F @bookwise/desktop dev",
+    "bookwise:build": "pnpm -F @bookwise/desktop build",
+    "server:dev": "pnpm -F @bookwise/server start:dev",
+    "server:debug": "pnpm -F @bookwise/server start:debug",
+    "server:build": "pnpm -F @bookwise/server build"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.7",
@@ -23,6 +23,7 @@
     "clsx": "^2.0.0",
     "cross-env": "^7.0.3",
     "date-fns": "^2.30.0",
+    "electorn": "0.0.1-security",
     "jszip": "^3.10.1",
     "lucide-react": "^0.427.0",
     "mime-types": "^2.1.35",

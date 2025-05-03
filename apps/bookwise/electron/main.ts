@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, protocol, net } from "electron";
 import path from "node:path";
 import url from "node:url";
 import { fork } from "child_process";
-import { uploadFile, loadBookBlob } from "./test";
+import { uploadFile, loadBookBlob } from "./fileService";
 import { createWindow, getWindowWebContents } from "./windowManager";
 
 // The built directory structure

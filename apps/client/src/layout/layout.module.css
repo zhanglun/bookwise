@@ -1,0 +1,17 @@
+.mainLayout {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-areas: 'top-bar' 'main-view';
+  grid-template-rows: auto 1fr;
+}
+
+.layoutSidebar {
+  grid-area: top-bar;
+  overflow: hidden;
+}
+
+.layoutView {
+  grid-area: main-view;
+  overflow: hidden;
+}
