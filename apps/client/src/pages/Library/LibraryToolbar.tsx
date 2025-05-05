@@ -1,7 +1,9 @@
 import { useCallback, useState } from 'react';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import { debounce } from 'lodash-es';
-import { Button, IconButton, Input, Popover, Spinner, TextField } from '@mantine/core';
+import { Input } from '@mantine/core';
+import { Uploader } from '@/components/Uploader';
+import classes from './library.module.css';
 
 export const LibraryToolbar = () => {
   const [query, setQuery] = useState('');
@@ -10,9 +12,9 @@ export const LibraryToolbar = () => {
   const debouncedQuery = useCallback(
     debounce((q) => {
       console.log('🚀 ~ file: index.tsx:19 ~ debounce ~ q:', q);
-      const params = {
-        title: q,
-      };
+      // const params = {
+      //   title: q,
+      // };
     }, 300),
     []
   );
@@ -32,8 +34,10 @@ export const LibraryToolbar = () => {
   };
 
   return (
-    <div className="py-2 px-2 flex items-center justify-between">
-      <div className="flex items-center gap-3">asdfasdf</div>
+    <div className={classes.toolbar}>
+      <div className="flex items-center gap-3">
+        <Uploader />
+      </div>
       <div className="flex items-center gap-3">
         <Input
           placeholder="Search the books..."
