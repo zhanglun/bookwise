@@ -1,35 +1,11 @@
-import {
-  and,
-  desc,
-  eq,
-  gt,
-  gte,
-  inArray,
-  like,
-  lt,
-  lte,
-  SQL,
-} from "drizzle-orm";
-import { drizzleDB } from "@/db";
-import {
-  BookQueryRecord,
-  DataSource,
-  QueryBookFilter,
-  UploadFileBody,
-} from "./type";
-import {
-  books,
-  authors,
-  publishers,
-  bookAuthors,
-  bookPublishers,
-  bookCaches,
-} from "@/db/schema";
-import { AuthorResItem, BookMetadata, BookResItem } from "@/interface/book";
+import { and, desc, eq, gt, gte, inArray, like, lt, lte, SQL } from 'drizzle-orm';
+import { drizzleDB } from '@/db';
+import { authors, bookAuthors, bookCaches, bookPublishers, books, publishers } from '@/db/schema';
+import { AuthorResItem, BookMetadata, BookResItem } from '@/interface/book';
+import { BookQueryRecord, DataSource, QueryBookFilter, UploadFileBody } from './type';
 
 export class PGLiteDataSource implements DataSource {
   async getBooks(filter: QueryBookFilter): Promise<BookResItem[]> {
-
     const conditions: SQL<unknown>[] = []; // Array to hold individual conditions
 
     if (filter.uuid) {
@@ -60,9 +36,7 @@ export class PGLiteDataSource implements DataSource {
       const temp = { ...record };
 
       temp.authors = (temp.bookAuthors || []).map((item) => item.author);
-      temp.publishers = (temp.bookPublishers || []).map(
-        (item) => item.publisher
-      );
+      temp.publishers = (temp.bookPublishers || []).map((item) => item.publisher);
 
       delete temp.bookPublishers;
       delete temp.bookAuthors;
@@ -74,10 +48,7 @@ export class PGLiteDataSource implements DataSource {
   }
 
   async getBookByUuid(uuid: string): Promise<BookResItem> {
-    const record = await drizzleDB
-      .select()
-      .from(books)
-      .where(eq(books.uuid, uuid));
+    const record = await drizzleDB.select().from(books).where(eq(books.uuid, uuid));
 
     return record[0] as unknown as BookResItem;
   }
@@ -90,7 +61,7 @@ export class PGLiteDataSource implements DataSource {
         .returning();
 
       if (!newBook) {
-        throw new Error("插入书籍失败");
+        throw new Error('插入书籍失败');
       }
 
       const [author] = await tx
@@ -119,10 +90,10 @@ export class PGLiteDataSource implements DataSource {
         });
       } else {
         tx.rollback();
-        throw new Error("插入作者或出版社失败");
+        throw new Error('插入作者或出版社失败');
       }
 
-      console.log("🚀 ~ PGLiteDataSource ~ res ~ newBook:", newBook)
+      console.log('🚀 ~ PGLiteDataSource ~ res ~ newBook:', newBook);
       return newBook;
     });
 
@@ -130,9 +101,7 @@ export class PGLiteDataSource implements DataSource {
   }
 
   async removeBookCache(bookUuid: string) {
-    await drizzleDB
-      .delete(bookCaches)
-      .where(eq(bookCaches.book_uuid, bookUuid));
+    await drizzleDB.delete(bookCaches).where(eq(bookCaches.book_uuid, bookUuid));
   }
 
   async getAuthors(): Promise<AuthorResItem[]> {
@@ -143,20 +112,17 @@ export class PGLiteDataSource implements DataSource {
 
   async updateBook(
     model: { uuid: string } & Partial<BookMetadata> & {
-      author_uuids: string[];
-    }
+        author_uuids: string[];
+      }
   ) {
-    console.log(
-      "🚀 ~ file: pglite.ts:177 ~ PGLiteDataSource ~ updateBook ~ model:",
-      model
-    );
+    console.log('🚀 ~ file: pglite.ts:177 ~ PGLiteDataSource ~ updateBook ~ model:', model);
     const book = await drizzleDB.query.books.findFirst({
       where: eq(books.uuid, model.uuid),
     });
 
     if (!book) {
       return {
-        error: "BookNotFoundError",
+        error: 'BookNotFoundError',
         message: `Book with uuid ${model.uuid} not found`,
       };
     }
@@ -169,9 +135,7 @@ export class PGLiteDataSource implements DataSource {
         };
       });
 
-      await drizzleDB
-        .delete(bookAuthors)
-        .where(eq(bookAuthors.book_uuid, model.uuid));
+      await drizzleDB.delete(bookAuthors).where(eq(bookAuthors.book_uuid, model.uuid));
       await drizzleDB.insert(bookAuthors).values(values);
     }
 

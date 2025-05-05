@@ -8,7 +8,6 @@ export const Uploader = () => {
   const { t } = useTranslation();
   const { openFileDialog } = useFileUpload({
     onSuccess: (body) => {
-      console.log(body);
       body.forEach(async (book) => {
         const res = await dal.saveBookAndRelations(book.metadata);
         console.log('🚀 ~ body.forEach ~ res:', res);

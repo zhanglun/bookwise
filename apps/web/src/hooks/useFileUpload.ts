@@ -127,6 +127,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
   };
 
   const openFileDialog = () => {
+    console.log("🚀 ~ openFileDialog ~ openFileDialog:");
     const input = document.createElement("input");
     input.type = "file";
     input.multiple = true;
