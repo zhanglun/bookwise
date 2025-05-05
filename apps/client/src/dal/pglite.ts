@@ -28,53 +28,13 @@ import {
 import { AuthorResItem, BookMetadata, BookResItem } from "@/interface/book";
 
 export class PGLiteDataSource implements DataSource {
-  async uploadFile(files: UploadFileBody[]) {
-    window.electronAPI?.uploadFile(files);
-  }
-
   async getBooks(filter: QueryBookFilter): Promise<BookResItem[]> {
-    console.log(
-      "🚀 ~ file: pglite.ts:14 ~ PGLiteDataSource ~ getBooks ~ filter:",
-      filter
-    );
 
     const conditions: SQL<unknown>[] = []; // Array to hold individual conditions
 
     if (filter.uuid) {
       conditions.push(eq(books.uuid, filter.uuid));
     }
-
-    if (filter.title) {
-      conditions.push(like(books.title, `%${filter.title}%`)); // Case-insensitive LIKE
-    }
-
-    // if (filter.author) {
-    //   conditions.push(like(books.author, `%${filter.author}%`));
-    // }
-
-    if (filter.publish_at) {
-      if (typeof filter.publish_at === "object") {
-        const dateFilter = filter.publish_at;
-        if (dateFilter.gt) conditions.push(gt(books.publish_at, dateFilter.gt));
-        if (dateFilter.lt) conditions.push(lt(books.publish_at, dateFilter.lt));
-        if (dateFilter.gte)
-          conditions.push(gte(books.publish_at, dateFilter.gte));
-        if (dateFilter.lte)
-          conditions.push(lte(books.publish_at, dateFilter.lte));
-      } else {
-        conditions.push(eq(books.publish_at, filter.publish_at));
-      }
-    }
-
-    console.log(
-      "🚀 ~ file: pglite.ts:63 ~ PGLiteDataSource ~ getBooks ~ conditions:",
-      conditions
-    );
-    //const records = await drizzleDB
-    //  .select()
-    //  .from(books)
-    //  .where(and(...conditions))
-    //  .orderBy(desc(books.created_at));
 
     const records: BookQueryRecord[] = await drizzleDB.query.books.findMany({
       where: and(...conditions),
@@ -162,6 +122,7 @@ export class PGLiteDataSource implements DataSource {
         throw new Error("插入作者或出版社失败");
       }
 
+      console.log("🚀 ~ PGLiteDataSource ~ res ~ newBook:", newBook)
       return newBook;
     });
 

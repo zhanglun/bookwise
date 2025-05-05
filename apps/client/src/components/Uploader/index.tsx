@@ -6,11 +6,12 @@ import { useFileUpload } from '@/hooks/useFileUpload';
 
 export const Uploader = () => {
   const { t } = useTranslation();
-  const { isUploading, openFileDialog } = useFileUpload({
+  const { openFileDialog } = useFileUpload({
     onSuccess: (body) => {
       console.log(body);
       body.forEach(async (book) => {
-        await dal.saveBookAndRelations(book.metadata);
+        const res = await dal.saveBookAndRelations(book.metadata);
+        console.log('🚀 ~ body.forEach ~ res:', res);
       });
     },
   });

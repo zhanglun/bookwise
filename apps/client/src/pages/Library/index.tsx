@@ -1,7 +1,19 @@
 import { useEffect, useState } from 'react';
+import { dal } from '@/dal';
 import { LibraryToolbar } from './LibraryToolbar';
 
 export const Library = () => {
+  const getList = async () => {
+    const list = await dal.getBooks({});
+    console.log('🚀 ~ getList ~ list:', list);
+  };
+
+  useEffect(() => {
+    const get = async () => {
+      await getList();
+    };
+    get();
+  }, []);
   return (
     <div className="grid-in-main-view h-full overflow-hidden">
       <div className="h-full grid grid-cols-[minmax(160px,160px)_minmax(400px,1fr)_minmax(280px,320px)]">
