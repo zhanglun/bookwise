@@ -40,6 +40,7 @@ export const LibraryToolbar = () => {
       </div>
       <div className="flex items-center gap-3">
         <Input
+          size="xs"
           placeholder="Search the books..."
           value={query}
           onChange={handleQueryChange}

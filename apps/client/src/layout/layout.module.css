@@ -13,5 +13,6 @@
 
 .layoutView {
   grid-area: main-view;
+  height: 100%;
   overflow: hidden;
 }

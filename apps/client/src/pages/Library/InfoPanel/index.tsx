@@ -1,6 +1,7 @@
-import { Cover } from "@/components/Book/Cover";
-import { BookResItem } from "@/interface/book";
-import { RichMeta } from "./RichMeta";
+import { Cover } from '@/components/Book/Cover';
+import { BookResItem } from '@/interface/book';
+
+// import { RichMeta } from './RichMeta';
 
 export type InfoPanelType = {
   data: BookResItem | null;
@@ -26,7 +27,7 @@ export const InfoPanel = (props: InfoPanelType) => {
         <div className="p-3">
           <Cover book={data} className="w-[60%] m-auto" />
         </div>
-        {data && <RichMeta defaultData={data} />}
+        {/* {data && <RichMeta defaultData={data} />} */}
       </div>
     </div>
   );
