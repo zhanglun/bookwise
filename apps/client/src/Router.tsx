@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { HomePage } from './pages/Home.page';
 import { Library } from './pages/Library';
+import { PGLiteRepl } from './pages/PGLiteRepl';
 
 export enum RouteConfig {
   HOME = '/',
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
         element: <Library />,
       },
     ],
+  },
+  {
+    path: '/repl',
+    element: <PGLiteRepl />,
   },
 ]);
 
