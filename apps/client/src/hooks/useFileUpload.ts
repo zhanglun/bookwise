@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { Book } from "epubjs";
-import { toast } from "sonner";
-import { BookMetadata, FileFormat } from "@/interface/book";
+import { useState } from 'react';
+import * as AdmZip from 'adm-zip';
+import { Book } from 'epubjs';
+import JSZip from 'jszip';
+import { toast } from 'sonner';
+import { BookMetadata, FileFormat } from '@/interface/book';
 
 export function getFileFormatType(file: File): (typeof FileFormat)[keyof typeof FileFormat] {
   const mimeType = file.type;
@@ -35,16 +37,16 @@ const epubHandler: FileHandler = {
     return [
       {
         title: metadata.title,
-        subject: "",
+        subject: '',
         description: metadata.description,
-        contributor: "",
+        contributor: '',
         identifier: metadata.identifier,
-        source: "",
-        rights: "",
+        source: '',
+        rights: '',
         language: metadata.language,
         format: getFileFormatType(file),
         page_count: 0,
-        isbn: "",
+        isbn: '',
         authors: metadata.creator,
         publisher: metadata.publisher,
         publish_at: new Date(metadata.pubdate),
@@ -58,29 +60,29 @@ const pdfHandler: FileHandler = {
   async formatMetadata(file: File): Promise<[BookMetadata, string]> {
     return [
       {
-        title: file.name.replace(".pdf", ""),
-        subject: "",
-        description: "",
-        contributor: "",
-        identifier: "",
-        source: "",
-        rights: "",
-        language: "",
+        title: file.name.replace('.pdf', ''),
+        subject: '',
+        description: '',
+        contributor: '',
+        identifier: '',
+        source: '',
+        rights: '',
+        language: '',
         format: getFileFormatType(file),
         page_count: 0,
-        isbn: "",
-        authors: "",
-        publisher: "",
+        isbn: '',
+        authors: '',
+        publisher: '',
         publish_at: new Date(file.lastModified),
       },
-      "",
+      '',
     ];
   },
 };
 
 const fileHandlers: Record<string, FileHandler> = {
-  "application/epub+zip": epubHandler,
-  "application/pdf": pdfHandler,
+  'application/epub+zip': epubHandler,
+  'application/pdf': pdfHandler,
 };
 
 async function fileReaderAsync(file: File) {
@@ -107,9 +109,40 @@ export interface UseFileUploadOptions {
   acceptTypes?: string[];
 }
 
+async function parseCover(cover: string, blob: Blob): Promise<Blob | null> {
+  console.log('%c Line:186 🥒 cover', 'color:#6ec1c2', cover);
+
+  const zip = new JSZip();
+  const result = await zip.loadAsync(blob);
+  const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
+
+  for (let filename in files) {
+    if (cover.lastIndexOf(filename) !== -1) {
+      const unit8 = await files[filename].async('uint8array');
+      return new Blob([unit8]);
+    }
+  }
+
+  return null;
+
+  // const a = Object.keys(files).reduce(
+  //   (acu, z) => {
+  //     console.log('z.entry', z.entryName);
+  //     if (z.entryName.lastIndexOf(cover) != -1) {
+  //       acu = z.getData();
+  //     }
+
+  //     return acu;
+  //   },
+  //   null as unknown as Buffer
+  // );
+
+  // return [a, a.toString('base64')];
+}
+
 export function useFileUpload(options: UseFileUploadOptions = {}) {
   const [isUploading, setIsUploading] = useState(false);
-  const { onSuccess, acceptTypes = [".epub", ".pdf"] } = options;
+  const { onSuccess, acceptTypes = ['.epub', '.pdf'] } = options;
 
   const processFiles = async (files: File[]) => {
     const body: UploadFileBody[] = [];
@@ -121,7 +154,10 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       }
 
       const [metadata, cover] = await handler.formatMetadata(file);
+      console.log('🚀 ~ processFiles ~ cover:', cover);
       const buffer = await fileReaderAsync(file);
+      const coverBlob = await parseCover(cover, buffer as any);
+      console.log('🚀 ~ processFiles ~ coverBase64:', coverBlob);
 
       body.push({
         name: file.name,
@@ -144,7 +180,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
 
       onSuccess && onSuccess(body);
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       toast.error(`Upload failed: ${(error as Error).message}`);
     } finally {
       setIsUploading(false);
@@ -152,13 +188,13 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
   };
 
   const openFileDialog = () => {
-    const input = document.createElement("input");
-    input.type = "file";
+    const input = document.createElement('input');
+    input.type = 'file';
     input.multiple = true;
-    input.accept = acceptTypes.join(",");
+    input.accept = acceptTypes.join(',');
 
     input.addEventListener(
-      "change",
+      'change',
       async (e: Event) => {
         const files = (e.target as HTMLInputElement).files;
         if (files) {

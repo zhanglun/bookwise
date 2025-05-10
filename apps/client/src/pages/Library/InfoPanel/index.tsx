@@ -4,7 +4,7 @@ import { BookResItem } from '@/interface/book';
 // import { RichMeta } from './RichMeta';
 
 export type InfoPanelType = {
-  data: BookResItem | null;
+  data: BookResItem;
 };
 
 export const InfoPanel = (props: InfoPanelType) => {
