@@ -54,8 +54,11 @@ export class PGLiteDataSource implements DataSource {
   }
 
   async saveBookAndRelations(model: BookMetadata): Promise<BookResItem> {
-    const res = await drizzleDB.transaction(async (tx) => {
-      const [newBook] = await tx
+    try {
+      console.log('开始保存书籍及相关数据:', model);
+      // 插入书籍
+      console.log('正在插入书籍...');
+      const [newBook] = await drizzleDB
         .insert(books)
         .values({ ...model })
         .returning();
@@ -63,41 +66,84 @@ export class PGLiteDataSource implements DataSource {
       if (!newBook) {
         throw new Error('插入书籍失败');
       }
+      console.log('书籍插入成功:', newBook);
 
-      const [author] = await tx
-        .insert(authors)
-        .values({
-          name: model.authors as string,
-        })
-        .onConflictDoNothing()
-        .returning();
-      const [publisher] = await tx
-        .insert(publishers)
-        .values({
-          name: model.publisher as string,
-        })
-        .onConflictDoNothing()
-        .returning();
+      // 查询或插入作者
+      console.log('正在处理作者信息...');
+      let author = await drizzleDB
+        .select()
+        .from(authors)
+        .where(eq(authors.name, model.authors as string))
+        .then((rows) => rows[0]);
 
-      if (newBook && author && publisher) {
-        await tx.insert(bookAuthors).values({
+      if (!author) {
+        console.log('作者不存在，正在创建新作者...');
+        [author] = await drizzleDB
+          .insert(authors)
+          .values({
+            name: model.authors as string,
+          })
+          .returning();
+        if (!author) {
+          throw new Error('创建作者失败');
+        }
+      }
+      console.log('作者处理完成:', author);
+
+      // 查询或插入出版社
+      console.log('正在处理出版社信息...');
+      let publisher = await drizzleDB
+        .select()
+        .from(publishers)
+        .where(eq(publishers.name, model.publisher as string))
+        .then((rows) => rows[0]);
+
+      if (!publisher) {
+        console.log('出版社不存在，正在创建新出版社...');
+        [publisher] = await drizzleDB
+          .insert(publishers)
+          .values({
+            name: model.publisher as string,
+          })
+          .returning();
+        if (!publisher) {
+          throw new Error('创建出版社失败');
+        }
+      }
+      console.log('出版社处理完成:', publisher);
+
+      // 建立关联关系
+      console.log('正在建立书籍与作者的关联...');
+      const bookAuthorResult = await drizzleDB
+        .insert(bookAuthors)
+        .values({
           book_uuid: newBook.uuid,
           author_uuid: author.uuid,
-        });
-        await tx.insert(bookPublishers).values({
+        })
+        .returning();
+      if (!bookAuthorResult || bookAuthorResult.length === 0) {
+        throw new Error('建立书籍作者关联失败');
+      }
+      console.log('书籍作者关联建立成功');
+
+      console.log('正在建立书籍与出版社的关联...');
+      const bookPublisherResult = await drizzleDB
+        .insert(bookPublishers)
+        .values({
           book_uuid: newBook.uuid,
           publisher_uuid: publisher.uuid,
-        });
-      } else {
-        tx.rollback();
-        throw new Error('插入作者或出版社失败');
+        })
+        .returning();
+      if (!bookPublisherResult || bookPublisherResult.length === 0) {
+        throw new Error('建立书籍出版社关联失败');
       }
+      console.log('书籍出版社关联建立成功');
 
-      console.log('🚀 ~ PGLiteDataSource ~ res ~ newBook:', newBook);
       return newBook;
-    });
-
-    return res as unknown as BookResItem;
+    } catch (error) {
+      console.error('保存书籍及相关数据时发生错误:', error);
+      throw error;
+    }
   }
 
   async removeBookCache(bookUuid: string) {
