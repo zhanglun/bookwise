@@ -109,7 +109,7 @@ export interface UseFileUploadOptions {
   acceptTypes?: string[];
 }
 
-async function parseCover(cover: string, blob: Blob): Promise<Blob | null> {
+async function parseCover(cover: string, blob: Blob): Promise<string | null> {
   console.log('%c Line:186 🥒 cover', 'color:#6ec1c2', cover);
 
   const zip = new JSZip();
@@ -118,8 +118,8 @@ async function parseCover(cover: string, blob: Blob): Promise<Blob | null> {
 
   for (let filename in files) {
     if (cover.lastIndexOf(filename) !== -1) {
-      const unit8 = await files[filename].async('uint8array');
-      return new Blob([unit8]);
+      const unit8 = await files[filename].async('base64');
+      return unit8;
     }
   }
 
