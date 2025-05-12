@@ -47,6 +47,7 @@ const epubHandler: FileHandler = {
         format: getFileFormatType(file),
         page_count: 0,
         isbn: '',
+        cover,
         authors: metadata.creator,
         publisher: metadata.publisher,
         publish_at: new Date(metadata.pubdate),
@@ -72,6 +73,7 @@ const pdfHandler: FileHandler = {
         page_count: 0,
         isbn: '',
         authors: '',
+        cover: '',
         publisher: '',
         publish_at: new Date(file.lastModified),
       },
@@ -156,8 +158,8 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       const [metadata, cover] = await handler.formatMetadata(file);
       console.log('🚀 ~ processFiles ~ cover:', cover);
       const buffer = await fileReaderAsync(file);
-      const coverBlob = await parseCover(cover, buffer as any);
-      console.log('🚀 ~ processFiles ~ coverBase64:', coverBlob);
+      const coverBase64 = await parseCover(cover, buffer as any);
+      console.log('🚀 ~ processFiles ~ coverBase64:', coverBase64);
 
       body.push({
         name: file.name,
@@ -166,7 +168,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
         lastModified: file.lastModified,
         buffer,
         metadata,
-        cover,
+        cover: coverBase64 as string,
       });
     }
 

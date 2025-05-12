@@ -1,6 +1,15 @@
 import { and, desc, eq, gt, gte, inArray, like, lt, lte, SQL } from 'drizzle-orm';
 import { drizzleDB } from '@/db';
-import { authors, bookAuthors, bookCaches, bookPublishers, books, publishers } from '@/db/schema';
+import {
+  authors,
+  bookAuthors,
+  bookCaches,
+  bookCovers,
+  bookPublishers,
+  books,
+  covers,
+  publishers,
+} from '@/db/schema';
 import { AuthorResItem, BookMetadata, BookResItem } from '@/interface/book';
 import { BookQueryRecord, DataSource, QueryBookFilter, UploadFileBody } from './type';
 
@@ -25,6 +34,11 @@ export class PGLiteDataSource implements DataSource {
         bookPublishers: {
           with: {
             publisher: true,
+          },
+        },
+        bookCovers: {
+          with: {
+            cover: true,
           },
         },
       },
@@ -53,11 +67,8 @@ export class PGLiteDataSource implements DataSource {
     return record[0] as unknown as BookResItem;
   }
 
-  async saveBookAndRelations(model: BookMetadata): Promise<BookResItem> {
+  async saveBookAndRelations(model: BookMetadata, cover: string): Promise<BookResItem> {
     try {
-      console.log('开始保存书籍及相关数据:', model);
-      // 插入书籍
-      console.log('正在插入书籍...');
       const [newBook] = await drizzleDB
         .insert(books)
         .values({ ...model })
@@ -66,10 +77,22 @@ export class PGLiteDataSource implements DataSource {
       if (!newBook) {
         throw new Error('插入书籍失败');
       }
-      console.log('书籍插入成功:', newBook);
 
-      // 查询或插入作者
-      console.log('正在处理作者信息...');
+      const coverRecord = await drizzleDB
+        .insert(covers)
+        .values({
+          data: cover,
+        })
+        .returning();
+
+      await drizzleDB
+        .insert(bookCovers)
+        .values({
+          book_uuid: newBook.uuid,
+          cover_uuid: coverRecord[0]?.uuid || '',
+        })
+        .returning();
+
       let author = await drizzleDB
         .select()
         .from(authors)
@@ -77,7 +100,6 @@ export class PGLiteDataSource implements DataSource {
         .then((rows) => rows[0]);
 
       if (!author) {
-        console.log('作者不存在，正在创建新作者...');
         [author] = await drizzleDB
           .insert(authors)
           .values({
@@ -88,10 +110,7 @@ export class PGLiteDataSource implements DataSource {
           throw new Error('创建作者失败');
         }
       }
-      console.log('作者处理完成:', author);
 
-      // 查询或插入出版社
-      console.log('正在处理出版社信息...');
       let publisher = await drizzleDB
         .select()
         .from(publishers)
@@ -99,7 +118,6 @@ export class PGLiteDataSource implements DataSource {
         .then((rows) => rows[0]);
 
       if (!publisher) {
-        console.log('出版社不存在，正在创建新出版社...');
         [publisher] = await drizzleDB
           .insert(publishers)
           .values({
@@ -110,10 +128,7 @@ export class PGLiteDataSource implements DataSource {
           throw new Error('创建出版社失败');
         }
       }
-      console.log('出版社处理完成:', publisher);
 
-      // 建立关联关系
-      console.log('正在建立书籍与作者的关联...');
       const bookAuthorResult = await drizzleDB
         .insert(bookAuthors)
         .values({
@@ -124,9 +139,7 @@ export class PGLiteDataSource implements DataSource {
       if (!bookAuthorResult || bookAuthorResult.length === 0) {
         throw new Error('建立书籍作者关联失败');
       }
-      console.log('书籍作者关联建立成功');
 
-      console.log('正在建立书籍与出版社的关联...');
       const bookPublisherResult = await drizzleDB
         .insert(bookPublishers)
         .values({
@@ -137,9 +150,8 @@ export class PGLiteDataSource implements DataSource {
       if (!bookPublisherResult || bookPublisherResult.length === 0) {
         throw new Error('建立书籍出版社关联失败');
       }
-      console.log('书籍出版社关联建立成功');
 
-      return newBook;
+      return newBook as unknown as BookResItem;
     } catch (error) {
       console.error('保存书籍及相关数据时发生错误:', error);
       throw error;

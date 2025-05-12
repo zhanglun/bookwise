@@ -1,14 +1,14 @@
 // data-access-layer.ts
 
-import { BookMetadata } from "@/interface/book";
-import { ApiDataSource } from "./api";
-import { PGLiteDataSource } from "./pglite";
-import { DataSource, UploadFileBody, QueryBookFilter } from "./type";
+import { BookMetadata } from '@/interface/book';
+import { ApiDataSource } from './api';
+import { PGLiteDataSource } from './pglite';
+import { DataSource, QueryBookFilter, UploadFileBody } from './type';
 
 let instance: DataAccessLayer;
 
 export class DataAccessLayer {
-  constructor(private dataSource: DataSource) { }
+  constructor(private dataSource: DataSource) {}
 
   static getInstance(dataSource: DataSource) {
     if (!instance) {
@@ -37,8 +37,8 @@ export class DataAccessLayer {
     return this.dataSource.getBookByUuid(uuid);
   }
 
-  async saveBookAndRelations(model: BookMetadata) {
-    return this.dataSource.saveBookAndRelations(model);
+  async saveBookAndRelations(model: BookMetadata, cover: string) {
+    return this.dataSource.saveBookAndRelations(model, cover);
   }
 
   async removeBookCache(book_uuid: string) {
@@ -57,12 +57,12 @@ export class DataAccessLayer {
 // usage
 
 const config = {
-  source: "pglite",
+  source: 'pglite',
 };
 
 let dataSource;
 
-if (config.source === "api") {
+if (config.source === 'api') {
   dataSource = new ApiDataSource();
 } else {
   dataSource = new PGLiteDataSource();

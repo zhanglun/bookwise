@@ -1,4 +1,3 @@
-
 export interface AdditionalInfos {
   book_uuid: string;
   id: number;
@@ -27,6 +26,7 @@ export interface BookResItem {
   page_size: number;
   isbn: string;
   path: string;
+  cover: string;
   publish_at: string;
   created_at: string;
   updated_at: string;
@@ -47,6 +47,7 @@ export interface BookMetadata {
   format: (typeof FileFormat)[keyof typeof FileFormat];
   page_count: number;
   isbn: string;
+  cover: string;
   authors: string | string[];
   publisher: string | string[];
   publish_at: Date;
@@ -79,9 +80,9 @@ export interface LanguageResItem {
 }
 
 export const FileFormat = {
-  EPUB: "EPUB",
-  PDF: "PDF",
-  MOBI: "MOBI",
-  TEXT: "TEXT",
-  UNKNOWN: "UNKNOWN",
+  EPUB: 'EPUB',
+  PDF: 'PDF',
+  MOBI: 'MOBI',
+  TEXT: 'TEXT',
+  UNKNOWN: 'UNKNOWN',
 } as const;
