@@ -25,7 +25,11 @@ export class PGLiteDataSource implements DataSource {
       where: and(...conditions),
       orderBy: [desc(books.created_at)],
       with: {
-        language: true,
+        bookLanguages: {
+          with: {
+            language: true,
+          },
+        },
         bookAuthors: {
           with: {
             author: true,
@@ -46,14 +50,18 @@ export class PGLiteDataSource implements DataSource {
 
     const result = [];
 
+    console.log('🚀 ~ PGLiteDataSource ~ getBooks ~ records:', records);
+
     for (const record of records) {
       const temp = { ...record };
 
       temp.authors = (temp.bookAuthors || []).map((item) => item.author);
       temp.publishers = (temp.bookPublishers || []).map((item) => item.publisher);
+      temp.cover = temp.bookCovers?.cover.data;
 
       delete temp.bookPublishers;
       delete temp.bookAuthors;
+      delete temp.bookCovers;
 
       result.push(temp);
     }

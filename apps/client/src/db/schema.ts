@@ -68,6 +68,16 @@ export const bookLanguages = pgTable('book_languages', {
   language_uuid: uuid('language_uuid').references(() => languages.uuid),
 });
 
+export const booksRelations = relations(books, ({ one, many }) => ({
+  bookLanguages: one(bookLanguages, {
+    fields: [books.uuid],
+    references: [bookLanguages.book_uuid],
+  }),
+  bookAuthors: many(bookAuthors),
+  bookPublishers: many(bookPublishers),
+  bookCovers: one(bookCovers),
+}));
+
 export const bookLanguagesRelations = relations(bookLanguages, ({ one }) => ({
   book: one(books, {
     fields: [bookLanguages.book_uuid],

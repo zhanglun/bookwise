@@ -40,6 +40,11 @@ export type PublisherQueryRecord = {
   updated_at: Date;
 };
 
+export type CoverQueryRecord = {
+  data: string;
+  uuid: string;
+};
+
 export type AdditionalInfoQueryRecord = {
   book_uuid: string;
   id: number;
@@ -67,6 +72,7 @@ export type BookQueryRecord = {
   updated_at: Date;
   authors: AuthorQueryRecord[];
   publishers: PublisherQueryRecord[];
+  cover?: string;
   additional_infos: AdditionalInfoQueryRecord | null;
   bookAuthors?: (AuthorQueryRecord & {
     bookAuthors: AuthorQueryRecord;
@@ -76,4 +82,8 @@ export type BookQueryRecord = {
     bookPublishers: PublisherQueryRecord;
     publisher: PublisherQueryRecord;
   })[];
+  bookCovers?: CoverQueryRecord & {
+    bookCovers: CoverQueryRecord;
+    cover: CoverQueryRecord;
+  };
 };

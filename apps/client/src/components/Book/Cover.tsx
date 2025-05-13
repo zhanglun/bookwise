@@ -24,8 +24,7 @@ export const Cover = (props: CoverProps) => {
         encoded: encodedTitle,
       });
 
-      const coverUrl = `bookwise://${encodedTitle}/cover.jpg`;
-      console.log('Generated cover URL:', coverUrl);
+      const coverUrl = `data:image/png;base64,${book.cover}`;
 
       return coverUrl;
     } catch (error: any) {
@@ -39,7 +38,7 @@ export const Cover = (props: CoverProps) => {
     }
   };
 
-  return book?.path ? (
+  return book?.cover ? (
     <div
       className={clsx(
         ' relative rounded-sm',
