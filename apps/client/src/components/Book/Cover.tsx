@@ -1,10 +1,10 @@
 import { clsx } from 'clsx';
-import { BookMetadata } from '@/interface/book';
+import { BookResItem } from '@/interface/book';
 
 export interface CoverProps {
-  book: BookMetadata;
+  book: BookResItem;
   className?: string;
-  onClick?: (book: BookMetadata) => void;
+  onClick?: (book: BookResItem) => void;
 }
 
 export const Cover = (props: CoverProps) => {

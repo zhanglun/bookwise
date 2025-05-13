@@ -3,7 +3,11 @@ import { live } from '@electric-sql/pglite/live';
 import { drizzle } from 'drizzle-orm/pglite';
 import * as schema from './schema';
 
-const client = new PGlite('idb://BookWiseDatabase');
+const client = new PGlite('idb://BookWiseDatabase', {
+  extensions: {
+    live,
+  },
+});
 const drizzleDB = drizzle(client, { schema });
 
 export { drizzleDB, client as pgDB };

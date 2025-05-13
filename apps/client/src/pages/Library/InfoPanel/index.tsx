@@ -1,10 +1,9 @@
 import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
-
-// import { RichMeta } from './RichMeta';
+import { RichMeta } from './RichMeta';
 
 export type InfoPanelType = {
-  data: BookResItem;
+  data?: BookResItem;
 };
 
 export const InfoPanel = (props: InfoPanelType) => {
@@ -19,15 +18,13 @@ export const InfoPanel = (props: InfoPanelType) => {
   }
 
   return (
-    <div className="h-full flex flex-col min-h-0">
-      <h1 className="font-bold py-3 px-3 min-h-[49px] border-b border-border shrink-0">
-        {data.title}
-      </h1>
-      <div className="flex-1 overflow-auto min-h-0">
-        <div className="p-3">
-          <Cover book={data} className="w-[60%] m-auto" />
+    <div>
+      {/* <div>{data.title}</div> */}
+      <div>
+        <div>
+          <Cover book={data} />
         </div>
-        {/* {data && <RichMeta defaultData={data} />} */}
+        {data && <RichMeta defaultData={data} />}
       </div>
     </div>
   );

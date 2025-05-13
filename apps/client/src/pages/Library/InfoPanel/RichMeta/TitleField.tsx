@@ -1,7 +1,7 @@
-import { TextArea } from "@radix-ui/themes";
-import { useRef } from "react";
-import { useRichMetaHook } from "./hook";
-import { stripHtml } from "@/helpers/string";
+import { useRef } from 'react';
+import { Textarea } from '@mantine/core';
+import { stripHtml } from '@/helpers/string';
+import { useRichMetaHook } from './hook';
 
 type RichMetaItemType = {
   label: string;
@@ -10,12 +10,7 @@ type RichMetaItemType = {
   uuid: string;
 };
 
-export const TitleField = ({
-  label,
-  initialValue,
-  fieldName,
-  uuid,
-}: RichMetaItemType) => {
+export const TitleField = ({ label, initialValue, fieldName, uuid }: RichMetaItemType) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const {
     value,
@@ -28,7 +23,7 @@ export const TitleField = ({
     handleBlur,
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
-  const displayValue = fieldName === "description" ? stripHtml(value as string) : value;
+  const displayValue = fieldName === 'description' ? stripHtml(value as string) : value;
 
   return (
     <>
@@ -40,7 +35,7 @@ export const TitleField = ({
         onClick={handleClick}
       >
         {isEditing ? (
-          <TextArea
+          <Textarea
             className="w-full !h-auto !min-h-0 autosize"
             ref={inputRef}
             rows={1}
@@ -51,7 +46,7 @@ export const TitleField = ({
             }}
             onBlur={handleBlur}
             onInput={handleInput}
-          ></TextArea>
+          ></Textarea>
         ) : (
           <div className="min-h-[32px] px-[8px] py-[6px] text-sm rounded hover:bg-[var(--gray-a3)] whitespace-pre-wrap">
             {displayValue}
