@@ -46,7 +46,11 @@ export const books = pgTable('books', {
   publish_at: timestamp('publish_at', { withTimezone: true }),
   created_at: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updated_at: timestamp('updated_at', { withTimezone: true }).$onUpdate(() => new Date()),
-  language_uuid: uuid('language_uuid').references(() => languages.uuid),
+});
+
+export const bookCovers = pgTable('book_covers', {
+  book_uuid: uuid('book_uuid').references(() => books.uuid),
+  cover_uuid: uuid('cover_uuid').references(() => covers.uuid),
 });
 
 export const bookAuthors = pgTable('book_authors', {
@@ -59,40 +63,30 @@ export const bookPublishers = pgTable('book_publishers', {
   publisher_uuid: uuid('publisher_uuid').references(() => publishers.uuid),
 });
 
-// Relations
-export const booksRelations = relations(books, ({ one, many }) => ({
+export const bookLanguages = pgTable('book_languages', {
+  book_uuid: uuid('book_uuid').references(() => books.uuid),
+  language_uuid: uuid('language_uuid').references(() => languages.uuid),
+});
+
+export const bookLanguagesRelations = relations(bookLanguages, ({ one }) => ({
+  book: one(books, {
+    fields: [bookLanguages.book_uuid],
+    references: [books.uuid],
+  }),
   language: one(languages, {
-    fields: [books.language_uuid],
+    fields: [bookLanguages.language_uuid],
     references: [languages.uuid],
   }),
-  bookAuthors: many(bookAuthors, {
-    fields: [books.uuid],
-    references: [bookAuthors.book_uuid],
-  }),
-  bookPublishers: many(bookPublishers, {
-    fields: [books.uuid],
-    references: [bookPublishers.book_uuid],
-  }),
 }));
 
-export const languagesRelations = relations(languages, ({ many }) => ({
-  books: many(books, {
-    fields: [languages.uuid],
-    references: [books.language_uuid],
+export const bookCoversRelations = relations(bookCovers, ({ one }) => ({
+  book: one(books, {
+    fields: [bookCovers.book_uuid],
+    references: [books.uuid],
   }),
-}));
-
-export const authorsRelations = relations(authors, ({ many }) => ({
-  bookAuthors: many(bookAuthors, {
-    fields: [authors.uuid],
-    references: [bookAuthors.author_uuid],
-  }),
-}));
-
-export const publishersRelations = relations(publishers, ({ many }) => ({
-  bookPublishers: many(bookPublishers, {
-    fields: [publishers.uuid],
-    references: [bookPublishers.publisher_uuid],
+  cover: one(covers, {
+    fields: [bookCovers.cover_uuid],
+    references: [covers.uuid],
   }),
 }));
 
