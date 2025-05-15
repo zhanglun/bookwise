@@ -1,16 +1,7 @@
-import { BookResItem } from "@/interface/book";
-import { useMemo } from "react";
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-
-const styles = {
-  row: "text-sm border-b transition-colors hover:bg-[var(--gray-a3)] data-[state=selected]:bg-[var(--gray-a4)] hover:bg-[var(--gray-a3)] cursor-default",
-  th: "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-  td: "p-2 align-middle [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
-};
+import { useMemo } from 'react';
+import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import { AuthorResItem, BookResItem } from '@/interface/book';
+import classes from './table.module.css';
 
 export interface DataTableProps {
   data: BookResItem[];
@@ -23,26 +14,26 @@ export const DataTable = (props: DataTableProps) => {
   const columns = useMemo(() => {
     return [
       {
-        accessorKey: "title",
-        header: "Name",
+        accessorKey: 'title',
+        header: 'Name',
         //min: 300,
         //max: 540,
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="text-ellipsis overflow-hidden whitespace-nowrap">
-            {row.getValue("title")}
+            {row.getValue('title')}
           </div>
         ),
         enableSorting: false,
         enableHiding: false,
       },
       {
-        accessorKey: "authors",
-        header: "Author",
+        accessorKey: 'authors',
+        header: 'Author',
         //min: 200,
         //max: 340,
-        cell: ({ row }) => (
+        cell: ({ row }: any) => (
           <div className="text-ellipsis overflow-hidden whitespace-nowrap">
-            {(row.getValue("authors") || []).map((author) => (
+            {(row.getValue('authors') || []).map((author: AuthorResItem) => (
               <div key={author.name}>{author.name}</div>
             ))}
           </div>
@@ -61,21 +52,18 @@ export const DataTable = (props: DataTableProps) => {
     <table className="w-full table-fixed text-sm">
       <thead>
         {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id} className={styles.row}>
+          <tr key={headerGroup.id} className={classes.row}>
             {headerGroup.headers.map((header) => (
               <th
                 key={header.id}
                 style={{
                   width: header.getSize(),
                 }}
-                className={styles.th}
+                className={classes.th}
               >
                 {header.isPlaceholder
                   ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                  : flexRender(header.column.columnDef.header, header.getContext())}
               </th>
             ))}
           </tr>
@@ -85,12 +73,12 @@ export const DataTable = (props: DataTableProps) => {
         {table.getRowModel().rows.map((row) => (
           <tr
             key={row.id}
-            className={styles.row}
+            className={classes.row}
             onClick={() => onRowClick(row.original)}
             onDoubleClick={() => onRowDoubleClick?.(row.original)}
           >
             {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className={styles.td}>
+              <td key={cell.id} className={classes.td}>
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}
@@ -104,10 +92,7 @@ export const DataTable = (props: DataTableProps) => {
               <th key={header.id}>
                 {header.isPlaceholder
                   ? null
-                  : flexRender(
-                      header.column.columnDef.footer,
-                      header.getContext()
-                    )}
+                  : flexRender(header.column.columnDef.footer, header.getContext())}
               </th>
             ))}
           </tr>

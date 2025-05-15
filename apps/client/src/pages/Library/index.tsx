@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
+import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
-import { DataTable } from './DataTable';
 import { InfoPanel } from './InfoPanel';
 import { LibraryToolbar } from './LibraryToolbar';
 import classes from './library.module.css';
@@ -20,6 +20,7 @@ export const Library = () => {
   }
 
   function handleRowDoubleClick(row: BookResItem) {
+    console.log('🚀 ~ handleRowDoubleClick ~ row:', row);
     // openBook(row.uuid, row.title);
   }
 
@@ -31,7 +32,7 @@ export const Library = () => {
   }, []);
   return (
     <div className={classes.main}>
-      <div className={classes.leftSide}></div>
+      <div className={classes.leftSide} />
       <div className={classes.content}>
         <LibraryToolbar />
         <div className="flex-1 overflow-auto min-h-0">
