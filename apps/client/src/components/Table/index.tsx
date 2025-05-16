@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { AuthorResItem, BookResItem } from '@/interface/book';
 import classes from './table.module.css';
@@ -11,6 +11,8 @@ export interface DataTableProps {
 
 export const DataTable = (props: DataTableProps) => {
   const { data, onRowClick, onRowDoubleClick } = props;
+  console.log('🚀 ~ DataTable ~ data:', data);
+  const [selectedRow, setSelectedRow] = useState<BookResItem | null>(null);
   const columns = useMemo(() => {
     return [
       {
@@ -72,9 +74,12 @@ export const DataTable = (props: DataTableProps) => {
       <tbody>
         {table.getRowModel().rows.map((row) => (
           <tr
-            key={row.id}
-            className={classes.row}
-            onClick={() => onRowClick(row.original)}
+            key={row.original.uuid}
+            className={`${classes.row} ${selectedRow?.uuid === row.original.uuid ? classes.selected : ''}`}
+            onClick={() => {
+              setSelectedRow(row.original);
+              onRowClick(row.original);
+            }}
             onDoubleClick={() => onRowDoubleClick?.(row.original)}
           >
             {row.getVisibleCells().map((cell) => (

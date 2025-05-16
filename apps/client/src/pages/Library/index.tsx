@@ -11,7 +11,6 @@ export const Library = () => {
   const [books, setBooks] = useState<BookResItem[]>([]);
   const getList = async () => {
     const list = await dal.getBooks({});
-    console.log('🚀 ~ getList ~ list:', list);
     setBooks(list);
   };
 

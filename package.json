@@ -5,6 +5,7 @@
   "scripts": {
     "web:dev": "pnpm -F @bookwise/web dev",
     "client:dev": "pnpm -F @bookwise/client dev",
+    "client:build": "pnpm -F @bookwise/client build",
     "bookwise:dev": "pnpm -F @bookwise/desktop dev",
     "bookwise:build": "pnpm -F @bookwise/desktop build",
     "server:dev": "pnpm -F @bookwise/server start:dev",

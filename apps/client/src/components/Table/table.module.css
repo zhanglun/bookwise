@@ -1,6 +1,38 @@
 .row {
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+  transition: background-color 0.2s ease;
+  color: var(--mantine-color-gray-7);
 }
+
+.row:nth-child(even) {
+  background-color: var(--mantine-color-gray-1);
+}
+
+.row:hover {
+  background-color: var(--mantine-color-gray-0);
+}
+
+.selected {
+  background-color: var(--mantine-primary-color-filled) !important;
+  color: var(--mantine-color-white) !important;
+}
+
+/* 表格主体行样式 */
+
+/* 表头样式 */
+thead .row {
+  background-color: var(--mantine-color-gray-2);
+}
+
 .th {
+  height: 40px;
+  padding: 8px 12px;
+  text-align: left;
+  font-weight: 500;
+  border-bottom: 2px solid var(--mantine-color-gray-3);
 }
+
 .td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--mantine-color-gray-3);
 }
