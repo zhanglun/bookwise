@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
-import { AuthorResItem, BookResItem } from '@/interface/book';
+import { format } from 'date-fns';
+import { AuthorResItem, BookResItem, PublisherResItem } from '@/interface/book';
 import classes from './table.module.css';
 
 export interface DataTableProps {
@@ -11,7 +12,6 @@ export interface DataTableProps {
 
 export const DataTable = (props: DataTableProps) => {
   const { data, onRowClick, onRowDoubleClick } = props;
-  console.log('🚀 ~ DataTable ~ data:', data);
   const [selectedRow, setSelectedRow] = useState<BookResItem | null>(null);
   const columns = useMemo(() => {
     return [
@@ -38,6 +38,35 @@ export const DataTable = (props: DataTableProps) => {
             {(row.getValue('authors') || []).map((author: AuthorResItem) => (
               <div key={author.name}>{author.name}</div>
             ))}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        cell: ({ row }: any) => (
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap">
+            {format(row.getValue('created_at'), 'yyyy-MM-dd mm:ss')}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'publishers',
+        header: 'Publisher',
+        cell: ({ row }: any) => (
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap">
+            {(row.getValue('publishers') || []).map((publisher: PublisherResItem) => (
+              <div key={publisher.name}>{publisher.name}</div>
+            ))}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'publish_at',
+        header: 'Published At',
+        cell: ({ row }: any) => (
+          <div className="text-ellipsis overflow-hidden whitespace-nowrap">
+            {format(row.getValue('publish_at'), 'yyyy-MM-dd')}
           </div>
         ),
       },
