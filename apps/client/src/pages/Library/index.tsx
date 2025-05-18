@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { BookDrawer } from '@/components/BookDrawer';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
@@ -9,6 +10,8 @@ import classes from './library.module.css';
 export const Library = () => {
   const [selectItem, setSelectItem] = useState<BookResItem>();
   const [books, setBooks] = useState<BookResItem[]>([]);
+  const [drawerOpened, setDrawerOpened] = useState(false);
+  const [editingBook, setEditingBook] = useState<BookResItem>();
   const getList = async () => {
     const list = await dal.getBooks({});
     setBooks(list);
@@ -39,12 +42,17 @@ export const Library = () => {
             data={books}
             onRowClick={handleRowClick}
             onRowDoubleClick={handleRowDoubleClick}
+            onEdit={(book) => {
+              setEditingBook(book);
+              setDrawerOpened(true);
+            }}
           />
         </div>
       </div>
       <div className={classes.rightSide}>
         <InfoPanel data={selectItem} />
       </div>
+      <BookDrawer opened={drawerOpened} onClose={() => setDrawerOpened(false)} data={editingBook} />
     </div>
   );
 };

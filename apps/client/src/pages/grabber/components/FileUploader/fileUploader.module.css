@@ -1,0 +1,38 @@
+.uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.icon {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.iconSuccess {
+  composes: icon;
+  color: rgb(34, 197, 94);
+}
+
+.iconError {
+  composes: icon;
+  color: rgb(239, 68, 68);
+}
+
+.iconIdle {
+  composes: icon;
+  color: rgb(156, 163, 175);
+}
+
+.iconAccept {
+  composes: icon;
+  color: rgb(59, 130, 246);
+}
+
+.iconReject {
+  composes: icon;
+  color: rgb(239, 68, 68);
+}

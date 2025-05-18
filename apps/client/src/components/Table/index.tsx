@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
+import { IconDownload, IconEdit } from '@tabler/icons-react';
 import { flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { format } from 'date-fns';
+import { ActionIcon, Group } from '@mantine/core';
 import { AuthorResItem, BookResItem, PublisherResItem } from '@/interface/book';
 import classes from './table.module.css';
 
@@ -8,10 +10,12 @@ export interface DataTableProps {
   data: BookResItem[];
   onRowClick: (row: BookResItem) => void;
   onRowDoubleClick?: (row: BookResItem) => void;
+  onEdit?: (row: BookResItem) => void;
+  onDownload?: (row: BookResItem) => void;
 }
 
 export const DataTable = (props: DataTableProps) => {
-  const { data, onRowClick, onRowDoubleClick } = props;
+  const { data, onRowClick, onRowDoubleClick, onEdit, onDownload } = props;
   const [selectedRow, setSelectedRow] = useState<BookResItem | null>(null);
   const columns = useMemo(() => {
     return [
@@ -68,6 +72,34 @@ export const DataTable = (props: DataTableProps) => {
           <div className="text-ellipsis overflow-hidden whitespace-nowrap">
             {format(row.getValue('publish_at'), 'yyyy-MM-dd')}
           </div>
+        ),
+      },
+      {
+        id: 'actions',
+        header: '操作',
+        cell: ({ row }: any) => (
+          <Group gap="xs">
+            <ActionIcon
+              variant="subtle"
+              color="blue"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit?.(row.original);
+              }}
+            >
+              <IconEdit size="1rem" />
+            </ActionIcon>
+            <ActionIcon
+              variant="subtle"
+              color="blue"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDownload?.(row.original);
+              }}
+            >
+              <IconDownload size="1rem" />
+            </ActionIcon>
+          </Group>
         ),
       },
     ];
