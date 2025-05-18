@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
+import { processFiles } from '@/helpers/uploader';
 import { BookResItem } from '@/interface/book';
 import { BookForm } from './components/BookForm';
 import { FileUploader } from './components/FileUploader';
@@ -18,9 +19,15 @@ export const Grabber = () => {
     setBooks(list);
   };
 
-  const handleFileSelect = (files: File[]) => {
-    // TODO: 处理文件上传和元数据提取
-    console.log('Selected files:', files);
+  const handleFileSelect = async (files: File[]) => {
+    const body = await processFiles(files);
+
+    body.forEach(async (book) => {
+      const res = await dal.saveBookAndRelations(book.metadata, book.cover);
+      console.log('🚀 ~ body.forEach ~ res:', res);
+    });
+
+    // TODO: search book metadata
   };
 
   const handleBookDataChange = (data: Partial<BookResItem>) => {

@@ -19,7 +19,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({ onFileSelect }) => {
       }}
       className="flex flex-col items-center justify-center p-8"
     >
-      <Group position="center">
+      <Group align="center">
         <Dropzone.Accept>
           <Upload className="w-12 h-12 text-blue-500 mb-4" />
         </Dropzone.Accept>
