@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Grid } from '@mantine/core';
 import { BookDrawer } from '@/components/BookDrawer';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
@@ -16,6 +17,7 @@ export const Grabber = () => {
   const [bookData, setBookData] = useState<Partial<BookResItem>>();
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [editingBook, setEditingBook] = useState<BookResItem>();
+  const [collapsed, setCollapsed] = useState(!drawerOpened);
 
   const getList = async () => {
     const list = await dal.getBooks({});
@@ -56,6 +58,7 @@ export const Grabber = () => {
   const handleEdit = (book: BookResItem) => {
     setEditingBook(book);
     setDrawerOpened(true);
+    setCollapsed(false);
   };
 
   const handleDownload = async (book: BookResItem) => {
@@ -65,18 +68,26 @@ export const Grabber = () => {
 
   return (
     <div className={classes.container}>
-      <FileUploader onFileSelect={handleFileSelect} />
-      <div className={classes.fileList}>
-        <h2 className={classes.fileListTitle}>已上传的文件</h2>
-        <DataTable
-          data={books}
-          onRowClick={handleRowClick}
-          onRowDoubleClick={handleRowDoubleClick}
-          onEdit={handleEdit}
-          onDownload={handleDownload}
+      <Grid gutter={0}>
+        <Grid.Col span={collapsed ? 13 : 9}>
+          <FileUploader onFileSelect={handleFileSelect} />
+          <div className={classes.fileList}>
+            <h2 className={classes.fileListTitle}>已上传的文件</h2>
+            <DataTable
+              data={books}
+              onRowClick={handleRowClick}
+              onRowDoubleClick={handleRowDoubleClick}
+              onEdit={handleEdit}
+              onDownload={handleDownload}
+            />
+          </div>
+        </Grid.Col>
+        <BookDrawer
+          opened={drawerOpened}
+          onClose={() => setDrawerOpened(false)}
+          data={editingBook}
         />
-      </div>
-      <BookDrawer opened={drawerOpened} onClose={() => setDrawerOpened(false)} data={editingBook} />
+      </Grid>
     </div>
   );
 };

@@ -1,23 +1,31 @@
+import { useEffect, useState } from 'react';
 import { format } from 'date-fns';
-import { Drawer, Group, Image, Stack, Text } from '@mantine/core';
+import { Grid, Group, Stack, Text } from '@mantine/core';
 import { BookResItem } from '@/interface/book';
 import { Cover } from '../Book/Cover';
+import classes from './bookDrawer.module.css';
 
 interface BookDrawerProps {
   opened: boolean;
   onClose: () => void;
   data?: BookResItem;
+  children?: React.ReactNode;
 }
 
 export const BookDrawer = (props: BookDrawerProps) => {
-  const { opened, onClose, data } = props;
+  const { opened, onClose, data, children } = props;
+  const [collapsed, setCollapsed] = useState(!opened);
+
+  useEffect(() => {
+    setCollapsed(!opened);
+  }, [opened]);
 
   if (!data) {
-    return null;
+    return children;
   }
 
   return (
-    <Drawer opened={opened} onClose={onClose} position="right" size="md" title="图书详情">
+    <Grid.Col span={collapsed ? 0 : 3} className={classes.drawer} p="md">
       <Stack gap="md">
         {data.cover && (
           <div style={{ width: '50%' }}>
@@ -79,6 +87,6 @@ export const BookDrawer = (props: BookDrawerProps) => {
           <Text size="sm">{data.description}</Text>
         </Group>
       </Stack>
-    </Drawer>
+    </Grid.Col>
   );
 };
