@@ -28,7 +28,7 @@ export const AuthorField = ({
   } = useRichMetaHook({ inputRef, initialValue, fieldName, uuid });
 
   const [renderName, setRenderName] = useState(
-    initialValue.map((a) => a.name).join(", ")
+    (initialValue || []).map((a) => a.name).join(", ")
   );
 
   function onChange(value: AuthorResItem[]) {
@@ -58,7 +58,12 @@ export const AuthorField = ({
             onChange={onChange}
             onOpenChange={(status) => {
               if (!status) {
-                handleSave(() => submit('author_uuids', value.map(v => v.uuid)));
+                handleSave(() =>
+                  submit(
+                    "author_uuids",
+                    value.map((v) => v.uuid)
+                  )
+                );
               }
             }}
           />
