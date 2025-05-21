@@ -4,17 +4,14 @@
   padding: rem(14px);
   border-radius: var(--mantine-radius-md);
   display: grid;
-  grid-template-areas: 'top-bar' 'main-view';
-  grid-template-rows: auto 1fr;
+  grid-template-columns: auto 1fr;
 }
 
 .layoutSidebar {
-  grid-area: top-bar;
   overflow: hidden;
 }
 
 .layoutView {
-  grid-area: main-view;
   height: 100%;
   overflow: hidden;
 }

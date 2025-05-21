@@ -34,7 +34,6 @@ export const Library = () => {
   }, []);
   return (
     <div className={classes.main}>
-      <div className={classes.leftSide} />
       <div className={classes.content}>
         <LibraryToolbar />
         <div className="flex-1 overflow-auto min-h-0">

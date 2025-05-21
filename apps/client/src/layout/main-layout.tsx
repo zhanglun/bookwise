@@ -4,9 +4,8 @@ import clsx from 'clsx';
 import { motion, MotionConfig } from 'framer-motion';
 import clamp from 'lodash-es/clamp';
 import { Outlet } from 'react-router-dom';
-import { Button } from '@mantine/core';
+import { ActionIcon, Button } from '@mantine/core';
 import FloatSidebar from '@/components/Sidebar';
-import { TopBar } from './Topbar';
 import classes from './layout.module.css';
 
 const Open = {
@@ -24,7 +23,7 @@ const Locked = {
 type Locked = (typeof Locked)[keyof typeof Locked];
 
 export const MainLayout = () => {
-  const [sidebarCollapse, updateSidebarCollapse] = useState(false);
+  const [sidebarCollapse, _updateSidebarCollapse] = useState(false);
 
   const [width, setWidth] = useState(40);
   const originalWidth = useRef(width);
@@ -38,10 +37,9 @@ export const MainLayout = () => {
       if (isLocked === Locked.Locked) {
         setOpen(Open.Closed);
         return Locked.Unlocked;
-      } else {
-        setOpen(Open.Open);
-        return Locked.Locked;
       }
+      setOpen(Open.Open);
+      return Locked.Locked;
     });
   };
 
@@ -49,7 +47,9 @@ export const MainLayout = () => {
     <div
       className={classes.mainLayout}
       onPointerMove={(e: PointerEvent) => {
-        if (isDragging) return;
+        if (isDragging) {
+          return;
+        }
 
         if (e.clientX < 8) {
           setOpen(Open.Open);
@@ -69,7 +69,9 @@ export const MainLayout = () => {
           ele = ele.parentElement;
         }
 
-        if (!called) setOpen((open) => (locked === Locked.Unlocked ? Open.Closed : open));
+        if (!called) {
+          setOpen((open) => (locked === Locked.Unlocked ? Open.Closed : open));
+        }
       }}
       onPointerLeave={(e: PointerEvent) => {
         setOpen((open) => (locked === Locked.Unlocked ? Open.Closed : open));
@@ -117,42 +119,15 @@ export const MainLayout = () => {
           <div className="bg-white/0 h-full flex flex-col">
             <div className="flex gap-1">
               {!sidebarCollapse && (
-                <Button
-                  data-show-unlocked-sidebar
-                  size="icon"
-                  variant="ghost"
-                  className="w-8 h-8 text-stone-700 hover:text-stone-800 hover:bg-white/30"
-                  onClick={toggleSidebar}
-                >
+                <ActionIcon data-show-unlocked-sidebar variant="default" onClick={toggleSidebar}>
                   <IconSquareRoundedArrowLeft size={18} />
-                </Button>
+                </ActionIcon>
               )}
               {sidebarCollapse && (
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="w-8 h-8 text-stone-700 hover:text-stone-800 hover:bg-white/30"
-                  onClick={toggleSidebar}
-                >
+                <ActionIcon variant="ghost" onClick={toggleSidebar}>
                   <IconSquareRoundedArrowRight size={18} />
-                </Button>
+                </ActionIcon>
               )}
-              {/* <Button
-              size="icon"
-              variant="ghost"
-              className="w-8 h-8 text-stone-700 hover:text-stone-800 hover:bg-white/30"
-              onClick={() => navigate(-1)}
-            >
-              <ChevronLeft size={18} />
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="w-8 h-8 text-stone-700 hover:text-stone-800 hover:bg-white/30"
-              onClick={() => navigate(1)}
-            >
-              <ChevronRight size={18} />
-            </Button> */}
             </div>
 
             <FloatSidebar />
@@ -191,10 +166,9 @@ export const MainLayout = () => {
                         if (isLocked === Locked.Locked) {
                           setOpen(Open.Closed);
                           return Locked.Unlocked;
-                        } else {
-                          setOpen(Open.Open);
-                          return Locked.Locked;
                         }
+                        setOpen(Open.Open);
+                        return Locked.Locked;
                       });
                     }
                   }
@@ -209,12 +183,9 @@ export const MainLayout = () => {
             </div>
           </div>
         </motion.div>
-        {/* <div className="flex-1 rounded-lg overflow-hidden p-2"> */}
-
         <div className={classes.layoutView}>
           <Outlet />
         </div>
-        <div />
       </MotionConfig>
     </div>
   );

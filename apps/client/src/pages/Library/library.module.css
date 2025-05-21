@@ -1,7 +1,7 @@
 .main {
   height: 100%;
   display: grid;
-  grid-template-columns: minmax(160px, 160px) minmax(400px, 1fr) minmax(280px, 320px);
+  grid-template-columns: minmax(400px, 1fr) minmax(280px, 320px);
 }
 
 .toolbar {
