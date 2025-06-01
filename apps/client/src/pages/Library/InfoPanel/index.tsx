@@ -19,12 +19,11 @@ export const InfoPanel = (props: InfoPanelType) => {
 
   return (
     <div>
-      {/* <div>{data.title}</div> */}
       <div>
         <div>
           <Cover book={data} />
         </div>
-        {data && <RichMeta defaultData={data} />}
+        {/* {data && <RichMeta defaultData={data} />} */}
       </div>
     </div>
   );

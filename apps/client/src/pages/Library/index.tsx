@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { BookDrawer } from '@/components/BookDrawer';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
 import { InfoPanel } from './InfoPanel';
 import { LibraryToolbar } from './LibraryToolbar';
+import { MetaModal } from './meta-modal/meta-modal';
 import classes from './library.module.css';
 
 export const Library = () => {
@@ -51,7 +51,11 @@ export const Library = () => {
       <div className={classes.rightSide}>
         <InfoPanel data={selectItem} />
       </div>
-      <BookDrawer opened={drawerOpened} onClose={() => setDrawerOpened(false)} data={editingBook} />
+      <MetaModal
+        isOpen={drawerOpened}
+        setIsOpen={() => setDrawerOpened(false)}
+        data={editingBook}
+      />
     </div>
   );
 };
