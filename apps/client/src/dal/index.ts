@@ -53,6 +53,10 @@ export class DataAccessLayer {
     return this.dataSource.getPublishers();
   }
 
+  async getLanguaages() {
+    return this.dataSource.getLanguages();
+  }
+
   async updateBook(model: { uuid: string } & Partial<BookMetadata>) {
     return this.dataSource.updateBook(model);
   }

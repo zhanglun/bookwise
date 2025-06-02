@@ -1,4 +1,14 @@
+.modal {
+  position: relative;
+}
+
 .content {
   display: flex;
   gap: rem(14px);
+}
+
+.closeButton {
+  position: absolute;
+  right: rem(14px);
+  top: rem(14px);
 }

@@ -11,7 +11,7 @@ import {
   publishers,
 } from '@/db/schema';
 import { AuthorResItem, BookMetadata, BookResItem, PublisherResItem } from '@/interface/book';
-import { BookQueryRecord, DataSource, QueryBookFilter, UploadFileBody } from './type';
+import { BookQueryRecord, DataSource, QueryBookFilter } from './type';
 
 export class PGLiteDataSource implements DataSource {
   async getBooks(filter: QueryBookFilter): Promise<BookResItem[]> {

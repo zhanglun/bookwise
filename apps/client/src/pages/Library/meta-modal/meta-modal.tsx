@@ -1,5 +1,7 @@
 import { FC } from 'react';
-import { Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
+import { useTranslation } from 'react-i18next';
+import { ActionIcon, Button, Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
 import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
@@ -14,12 +16,13 @@ export interface MetaModalProps {
 }
 
 export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
+  const { t } = useTranslation();
   const handleSubmit = () => {};
 
   const renderContent = () => {
     return (
       <div className={classes.content}>
-        {data.cover && (
+        {data?.cover && (
           <div style={{ width: '30%' }}>
             <Cover book={data} />
           </div>
@@ -79,8 +82,25 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
     );
   };
   return (
-    <Modal opened={isOpen} onClose={setIsOpen} centered fullScreen>
+    <Modal
+      opened={isOpen}
+      onClose={setIsOpen}
+      centered
+      fullScreen
+      withCloseButton={false}
+      className={classes.modal}
+    >
+      <div className={classes.closeButton}>
+        <ActionIcon onClick={setIsOpen} variant="default" color="gray">
+          <IconX size={20} color="gray" />
+        </ActionIcon>
+      </div>
       {data && renderContent()}
+      <div>
+        <Group justify="flex-end" mt="md">
+          <Button type="submit">{t('Save')}</Button>
+        </Group>
+      </div>
     </Modal>
   );
 };
