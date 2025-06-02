@@ -1,8 +1,10 @@
 import { FC } from 'react';
-import { format } from 'date-fns';
-import { Group, Modal, Stack, Text } from '@mantine/core';
+import { Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import { DatePickerInput } from '@mantine/dates';
 import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
+import { AuthorSelect } from './components/author-select';
+import { PublisherSelect } from './components/publisher-select';
 import classes from './meta-modal.module.css';
 
 export interface MetaModalProps {
@@ -12,72 +14,65 @@ export interface MetaModalProps {
 }
 
 export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
+  const handleSubmit = () => {};
+
   const renderContent = () => {
     return (
       <div className={classes.content}>
-        <div>
-          {data.cover && (
-            <div style={{ width: '50%' }}>
-              <Cover book={data} />
-            </div>
-          )}
-        </div>
+        {data.cover && (
+          <div style={{ width: '30%' }}>
+            <Cover book={data} />
+          </div>
+        )}
         <div className={classes.metaList}>
           <Stack>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                标题
-              </Text>
-              <Text size="sm">{data.title}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                作者
-              </Text>
-              <Text size="sm">{data.authors.map((author) => author.name).join(', ')}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                出版社
-              </Text>
-              <Text size="sm">{data.publishers.map((publisher) => publisher.name).join(', ')}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                ISBN
-              </Text>
-              <Text size="sm">{data.isbn}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                语言
-              </Text>
-              <Text size="sm">{data.language_id}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                格式
-              </Text>
-              <Text size="sm">{data.format}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                页数
-              </Text>
-              <Text size="sm">{data.page_size}</Text>
-            </Group>
-            <Group gap="xs">
-              <Text fw={500} size="sm" w={100}>
-                出版日期
-              </Text>
-              <Text size="sm">{format(new Date(data.publish_at), 'yyyy-MM-dd')}</Text>
-            </Group>
-            <Group gap="xs" align="flex-start">
-              <Text fw={500} size="sm" w={100}>
-                描述
-              </Text>
-              <Text size="sm">{data.description}</Text>
-            </Group>
+            <form onSubmit={handleSubmit} className={classes.form}>
+              <Group gap="xs">
+                <Text fw={500} size="sm" w={100}>
+                  标题
+                </Text>
+                <TextInput value={data?.title} />
+              </Group>
+              <Group gap="xs">
+                <Text fw={500} size="sm" w={100}>
+                  作者
+                </Text>
+                <AuthorSelect value={data?.authors.map((v) => v.uuid) || []} onChange={() => {}} />
+              </Group>
+              <Group gap="xs">
+                <Text fw={500} size="sm" w={100}>
+                  出版社
+                </Text>
+                <PublisherSelect
+                  value={data?.publishers.map((v) => v.uuid) || []}
+                  onChange={() => {}}
+                />
+              </Group>
+              <Group gap="xs">
+                <Text fw={500} size="sm" w={100}>
+                  ISBN
+                </Text>
+                <TextInput value={data?.isbn} />
+              </Group>
+              <Group gap="xs">
+                <Text fw={500} size="sm" w={100}>
+                  语言
+                </Text>
+                <Select value={data.language_id} />
+              </Group>
+              <Group gap="xs" align="flex-start">
+                <Text fw={500} size="sm" w={100}>
+                  描述
+                </Text>
+                <TextInput defaultValue={data.description} />
+              </Group>
+              <Group gap="xs">
+                <Text fw={500} size="sm" w={100}>
+                  出版日期
+                </Text>
+                <DatePickerInput placeholder="Pick date" value={data.publish_at} />
+              </Group>
+            </form>
           </Stack>
         </div>
       </div>

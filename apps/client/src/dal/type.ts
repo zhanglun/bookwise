@@ -1,4 +1,4 @@
-import { AuthorResItem, BookMetadata, BookResItem, FileFormat } from '@/interface/book';
+import { AuthorResItem, BookMetadata, BookResItem, FileFormat, PublisherResItem } from '@/interface/book';
 
 export interface UploadFileBody {
   name: string;
@@ -23,6 +23,7 @@ export interface DataSource {
   saveBookAndRelations: (model: BookMetadata, cover: string) => Promise<BookResItem>;
   removeBookCache: (uuid: string) => Promise<void>;
   getAuthors: () => Promise<AuthorResItem[]>;
+  getPublishers: () => Promise<PublisherResItem[]>;
   updateBook: (model: { uuid: string } & Partial<BookMetadata>) => Promise<void>;
 }
 

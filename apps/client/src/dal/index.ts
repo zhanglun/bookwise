@@ -8,7 +8,7 @@ import { DataSource, QueryBookFilter, UploadFileBody } from './type';
 let instance: DataAccessLayer;
 
 export class DataAccessLayer {
-  constructor(private dataSource: DataSource) {}
+  constructor(private dataSource: DataSource) { }
 
   static getInstance(dataSource: DataSource) {
     if (!instance) {
@@ -47,6 +47,10 @@ export class DataAccessLayer {
 
   async getAuthors() {
     return this.dataSource.getAuthors();
+  }
+
+  async getPublishers() {
+    return this.dataSource.getPublishers();
   }
 
   async updateBook(model: { uuid: string } & Partial<BookMetadata>) {
