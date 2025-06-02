@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { Grid } from '@mantine/core';
-import { BookDrawer } from '@/components/BookDrawer';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
 import { processFiles } from '@/helpers/uploader';
@@ -82,11 +81,6 @@ export const Grabber = () => {
             />
           </div>
         </Grid.Col>
-        <BookDrawer
-          opened={drawerOpened}
-          onClose={() => setDrawerOpened(false)}
-          data={editingBook}
-        />
       </Grid>
     </div>
   );

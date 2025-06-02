@@ -11,7 +11,7 @@ export const Library = () => {
   const [selectItem, setSelectItem] = useState<BookResItem>();
   const [books, setBooks] = useState<BookResItem[]>([]);
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [editingBook, setEditingBook] = useState<BookResItem>();
+  const [editingBook, setEditingBook] = useState<BookResItem>(null);
   const getList = async () => {
     const list = await dal.getBooks({});
     setBooks(list);
