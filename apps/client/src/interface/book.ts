@@ -72,8 +72,9 @@ export interface PublisherResItem {
 }
 
 export interface LanguageResItem {
-  id: number;
+  uuid: string;
   code: string;
+  name: string;
   _count: {
     books: number;
   };

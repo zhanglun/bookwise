@@ -1,11 +1,13 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { IconX } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
-import { ActionIcon, Button, Group, Modal, Select, Stack, Text, TextInput } from '@mantine/core';
+import { ActionIcon, Button, Group, Modal, Stack, Text, Textarea, TextInput } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
+import { useForm } from '@mantine/form';
 import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
 import { AuthorSelect } from './components/author-select';
+import { LanguageSelect } from './components/language-select';
 import { PublisherSelect } from './components/publisher-select';
 import classes from './meta-modal.module.css';
 
@@ -17,7 +19,29 @@ export interface MetaModalProps {
 
 export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
   const { t } = useTranslation();
-  const handleSubmit = () => {};
+  const form = useForm({
+    mode: 'uncontrolled',
+    initialValues: {
+      title: '',
+      authors: [] as string[],
+      publisher: [] as string[],
+    },
+  });
+
+  useEffect(() => {
+    if (data) {
+      form.setValues({
+        title: data.title,
+        authors: data.authors.map((v) => v.uuid) || [],
+        publisher: data.publishers.map((v) => v.uuid) || [],
+      });
+    }
+  }, [data]);
+
+  const handleSubmit = () => {
+    const values = form.getValues();
+    console.log('🚀 ~ handleSubmit ~ values:', values);
+  };
 
   const renderContent = () => {
     return (
@@ -34,13 +58,13 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
                 <Text fw={500} size="sm" w={100}>
                   标题
                 </Text>
-                <TextInput value={data?.title} />
+                <TextInput key={form.key('title')} {...form.getInputProps('title')} />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
                   作者
                 </Text>
-                <AuthorSelect value={data?.authors.map((v) => v.uuid) || []} onChange={() => {}} />
+                <AuthorSelect key={form.key('authors')} {...form.getInputProps('authors')} />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
@@ -61,19 +85,19 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
                 <Text fw={500} size="sm" w={100}>
                   语言
                 </Text>
-                <Select value={data.language_id} />
+                <LanguageSelect value={data?.language_id || ''} onChange={() => {}} />
               </Group>
               <Group gap="xs" align="flex-start">
                 <Text fw={500} size="sm" w={100}>
                   描述
                 </Text>
-                <TextInput defaultValue={data.description} />
+                <Textarea value={data?.description} />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
                   出版日期
                 </Text>
-                <DatePickerInput placeholder="Pick date" value={data.publish_at} />
+                <DatePickerInput placeholder="Pick date" value={data?.publish_at} />
               </Group>
             </form>
           </Stack>
@@ -98,7 +122,9 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
       {data && renderContent()}
       <div>
         <Group justify="flex-end" mt="md">
-          <Button type="submit">{t('Save')}</Button>
+          <Button type="submit" onClick={handleSubmit}>
+            {t('Save')}
+          </Button>
         </Group>
       </div>
     </Modal>

@@ -8,9 +8,16 @@ import {
   bookPublishers,
   books,
   covers,
+  languages,
   publishers,
 } from '@/db/schema';
-import { AuthorResItem, BookMetadata, BookResItem, PublisherResItem } from '@/interface/book';
+import {
+  AuthorResItem,
+  BookMetadata,
+  BookResItem,
+  LanguageResItem,
+  PublisherResItem,
+} from '@/interface/book';
 import { BookQueryRecord, DataSource, QueryBookFilter } from './type';
 
 export class PGLiteDataSource implements DataSource {
@@ -182,10 +189,16 @@ export class PGLiteDataSource implements DataSource {
     return records as unknown as PublisherResItem[];
   }
 
+  async getLanguages(): Promise<LanguageResItem[]> {
+    const records = await drizzleDB.select().from(languages);
+
+    return records as unknown as LanguageResItem[];
+  }
+
   async updateBook(
     model: { uuid: string } & Partial<BookMetadata> & {
-      author_uuids: string[];
-    }
+        author_uuids: string[];
+      }
   ) {
     console.log('🚀 ~ file: pglite.ts:177 ~ PGLiteDataSource ~ updateBook ~ model:', model);
     const book = await drizzleDB.query.books.findFirst({

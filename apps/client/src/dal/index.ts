@@ -8,7 +8,7 @@ import { DataSource, QueryBookFilter, UploadFileBody } from './type';
 let instance: DataAccessLayer;
 
 export class DataAccessLayer {
-  constructor(private dataSource: DataSource) { }
+  constructor(private dataSource: DataSource) {}
 
   static getInstance(dataSource: DataSource) {
     if (!instance) {
@@ -53,7 +53,7 @@ export class DataAccessLayer {
     return this.dataSource.getPublishers();
   }
 
-  async getLanguaages() {
+  async getLanguages() {
     return this.dataSource.getLanguages();
   }
 
