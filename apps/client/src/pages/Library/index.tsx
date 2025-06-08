@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
+import { useBook } from '@/hooks/book';
 import { BookResItem } from '@/interface/book';
 import { InfoPanel } from './InfoPanel';
 import { LibraryToolbar } from './LibraryToolbar';
@@ -8,10 +9,11 @@ import { MetaModal } from './meta-modal/meta-modal';
 import classes from './library.module.css';
 
 export const Library = () => {
+  const { openBook } = useBook();
   const [selectItem, setSelectItem] = useState<BookResItem>();
   const [books, setBooks] = useState<BookResItem[]>([]);
   const [drawerOpened, setDrawerOpened] = useState(false);
-  const [editingBook, setEditingBook] = useState<BookResItem>(null);
+  const [editingBook, setEditingBook] = useState<BookResItem | null>(null);
   const getList = async () => {
     const list = await dal.getBooks({});
     setBooks(list);
@@ -23,7 +25,7 @@ export const Library = () => {
 
   function handleRowDoubleClick(row: BookResItem) {
     console.log('🚀 ~ handleRowDoubleClick ~ row:', row);
-    // openBook(row.uuid, row.title);
+    openBook(row.uuid, row.title);
   }
 
   useEffect(() => {
@@ -32,6 +34,7 @@ export const Library = () => {
     };
     get();
   }, []);
+
   return (
     <div className={classes.main}>
       <div className={classes.content}>

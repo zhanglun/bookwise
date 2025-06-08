@@ -3,6 +3,7 @@ import { Grabber } from './pages/grabber';
 import { HomePage } from './pages/Home.page';
 import { Library } from './pages/Library';
 import { PGLiteRepl } from './pages/PGLiteRepl';
+import { Viewer } from './pages/viewer';
 
 export enum RouteConfig {
   HOME = '/',
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
   {
     path: '/repl',
     element: <PGLiteRepl />,
+  },
+  {
+    path: '/viewer/:uuid',
+    element: <Viewer />,
   },
 ]);
 
