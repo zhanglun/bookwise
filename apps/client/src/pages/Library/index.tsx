@@ -3,7 +3,7 @@ import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
 import { useBook } from '@/hooks/book';
 import { BookResItem } from '@/interface/book';
-import { InfoPanel } from './InfoPanel';
+import { InfoPanel } from './info-panel';
 import { LibraryToolbar } from './LibraryToolbar';
 import { MetaModal } from './meta-modal/meta-modal';
 import classes from './library.module.css';
@@ -24,8 +24,7 @@ export const Library = () => {
   }
 
   function handleRowDoubleClick(row: BookResItem) {
-    console.log('🚀 ~ handleRowDoubleClick ~ row:', row);
-    openBook(row.uuid, row.title);
+    openBook(row.uuid);
   }
 
   useEffect(() => {

@@ -15,7 +15,7 @@ import classes from './meta-modal.module.css';
 export interface MetaModalProps {
   isOpen: boolean;
   setIsOpen: () => void;
-  data?: BookResItem;
+  data?: BookResItem | null | undefined;
 }
 
 export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {

@@ -1,7 +1,7 @@
 .mainLayout {
   width: 100vw;
   height: 100vh;
-  padding: rem(14px);
+  /* padding: rem(14px); */
   border-radius: var(--mantine-radius-md);
   display: grid;
   grid-template-columns: auto 1fr;

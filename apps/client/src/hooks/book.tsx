@@ -9,7 +9,6 @@ export const useBook = () => {
   const navigate = useNavigate();
 
   async function openBook(book_uuid: string) {
-    // navigate(`/viewer/${book_uuid}`);
     window.open(`/viewer/${book_uuid}`, '_blank');
   }
 

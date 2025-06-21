@@ -1,0 +1,13 @@
+.infoPanel {
+  padding: rem(12px);
+}
+
+.infoPanelCover {
+  margin-bottom: 14px;
+}
+
+.infoPanelContent {
+  display: flex;
+  flex-direction: column;
+  gap: rem(10px);
+}
