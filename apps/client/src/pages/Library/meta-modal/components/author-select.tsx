@@ -9,7 +9,7 @@ export interface AuthorSelectProps extends Omit<MultiSelectProps, 'onChange'> {
 }
 
 export const AuthorSelect: FC<AuthorSelectProps> = ({ value, ...props }) => {
-  const [authorList, setAuthorList] = useState<AuthorResItem[]>([]);
+  const [, setAuthorList] = useState<AuthorResItem[]>([]);
   const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const getAuthorList = () => {
     dal.getAuthors().then((data) => {
@@ -17,10 +17,6 @@ export const AuthorSelect: FC<AuthorSelectProps> = ({ value, ...props }) => {
       setOptions(data.map((author) => ({ value: author.uuid, label: author.name })));
     });
   };
-
-  // const getOptions = (uuids: string[]) => {
-  //   return authorList.filter((author) => uuids.includes(author.uuid));
-  // };
 
   useEffect(() => {
     getAuthorList();

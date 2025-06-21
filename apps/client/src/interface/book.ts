@@ -49,8 +49,8 @@ export interface BookMetadata {
   isbn: string;
   cover: string;
   authors: string | string[];
-  publisher: string | string[];
-  publish_at: Date;
+  publishers: string | string[];
+  publish_at: Date | string;
 }
 
 export interface BookUploadRequestItem {

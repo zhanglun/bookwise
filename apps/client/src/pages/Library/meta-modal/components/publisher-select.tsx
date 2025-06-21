@@ -1,16 +1,12 @@
 import { FC, useEffect, useState } from 'react';
-import { MultiSelect } from '@mantine/core';
+import { MultiSelect, MultiSelectProps } from '@mantine/core';
 import { dal } from '@/dal';
 import { PublisherResItem } from '@/interface/book';
 
-export interface PublisherSelectProps {
-  value: string[];
-  onChange: (values: PublisherSelectProps['value'], rawOptions: any[]) => void;
-}
+export interface PublisherSelectProps extends Omit<MultiSelectProps, 'onChange'> {}
 
-export const PublisherSelect: FC<PublisherSelectProps> = ({ value, onChange }) => {
-  const [selectedValues, setSelectedValues] = useState<PublisherSelectProps['value']>(value);
-  const [publisherList, setPublisherList] = useState<PublisherResItem[]>([]);
+export const PublisherSelect: FC<PublisherSelectProps> = ({ value, ...props }) => {
+  const [, setPublisherList] = useState<PublisherResItem[]>([]);
   const [options, setOptions] = useState<{ value: string; label: string }[]>([]);
   const getPublisherList = () => {
     dal.getPublishers().then((data) => {
@@ -19,25 +15,9 @@ export const PublisherSelect: FC<PublisherSelectProps> = ({ value, onChange }) =
     });
   };
 
-  const getOptions = (uuids: string[]) => {
-    return publisherList.filter((publisher) => uuids.includes(publisher.uuid));
-  };
-
-  const handleChange = (values: string[]) => {
-    setSelectedValues(values);
-    onChange(values, getOptions(values));
-  };
-
   useEffect(() => {
     getPublisherList();
   }, []);
 
-  return (
-    <MultiSelect
-      data={options}
-      placeholder="Pick publishers"
-      value={selectedValues}
-      onChange={handleChange}
-    />
-  );
+  return <MultiSelect data={options} placeholder="Pick publishers" {...props} />;
 };

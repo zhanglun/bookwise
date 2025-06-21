@@ -5,6 +5,7 @@ import { ActionIcon, Button, Group, Modal, Stack, Text, Textarea, TextInput } fr
 import { DatePickerInput } from '@mantine/dates';
 import { useForm } from '@mantine/form';
 import { Cover } from '@/components/Book/Cover';
+import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
 import { AuthorSelect } from './components/author-select';
 import { LanguageSelect } from './components/language-select';
@@ -23,8 +24,11 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
     mode: 'uncontrolled',
     initialValues: {
       title: '',
-      authors: [] as string[],
-      publisher: [] as string[],
+      isbn: '',
+      description: '',
+      author_uuids: [] as string[],
+      publisher_uuids: [] as string[],
+      publish_at: '' as string,
     },
   });
 
@@ -32,15 +36,27 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
     if (data) {
       form.setValues({
         title: data.title,
-        authors: data.authors.map((v) => v.uuid) || [],
-        publisher: data.publishers.map((v) => v.uuid) || [],
+        isbn: data.isbn,
+        description: data.description,
+        author_uuids: data.authors.map((v) => v.uuid) || [],
+        publisher_uuids: data.publishers.map((v) => v.uuid) || [],
+        publish_at: data.publish_at,
       });
     }
   }, [data]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const values = form.getValues();
+
+    if (!data || !data.uuid) {
+      return;
+    }
+
     console.log('🚀 ~ handleSubmit ~ values:', values);
+    await dal.updateBook({
+      uuid: data.uuid,
+      ...values,
+    });
   };
 
   const renderContent = () => {
@@ -64,40 +80,51 @@ export const MetaModal: FC<MetaModalProps> = ({ isOpen, setIsOpen, data }) => {
                 <Text fw={500} size="sm" w={100}>
                   作者
                 </Text>
-                <AuthorSelect key={form.key('authors')} {...form.getInputProps('authors')} />
+                <AuthorSelect
+                  key={form.key('author_uuids')}
+                  {...form.getInputProps('author_uuids')}
+                />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
                   出版社
                 </Text>
                 <PublisherSelect
-                  value={data?.publishers.map((v) => v.uuid) || []}
-                  onChange={() => {}}
+                  key={form.key('publisher_uuids')}
+                  {...form.getInputProps('publisher_uuids')}
                 />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
                   ISBN
                 </Text>
-                <TextInput value={data?.isbn} />
+                <TextInput key={form.key('isbn')} {...form.getInputProps('isbn')} />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
                   语言
                 </Text>
-                <LanguageSelect value={data?.language_id || ''} onChange={() => {}} />
+                <LanguageSelect
+                  key={form.key('language_id')}
+                  {...form.getInputProps('language_id')}
+                />
               </Group>
               <Group gap="xs" align="flex-start">
                 <Text fw={500} size="sm" w={100}>
                   描述
                 </Text>
-                <Textarea value={data?.description} />
+                <Textarea key={form.key('description')} {...form.getInputProps('description')} />
               </Group>
               <Group gap="xs">
                 <Text fw={500} size="sm" w={100}>
                   出版日期
                 </Text>
-                <DatePickerInput placeholder="Pick date" value={data?.publish_at} />
+                <DatePickerInput
+                  placeholder="Pick date"
+                  valueFormat="YYYY-MM-DD"
+                  key={form.key('publish_at')}
+                  {...form.getInputProps('publish_at')}
+                />
               </Group>
             </form>
           </Stack>

@@ -198,6 +198,7 @@ export class PGLiteDataSource implements DataSource {
   async updateBook(
     model: { uuid: string } & Partial<BookMetadata> & {
         author_uuids: string[];
+        publisher_uuids: string[];
       }
   ) {
     console.log('🚀 ~ file: pglite.ts:177 ~ PGLiteDataSource ~ updateBook ~ model:', model);
@@ -224,6 +225,19 @@ export class PGLiteDataSource implements DataSource {
       await drizzleDB.insert(bookAuthors).values(values);
     }
 
+    if (model.publisher_uuids) {
+      const values = model.publisher_uuids.map((uuid) => {
+        return {
+          publisher_uuid: uuid,
+          book_uuid: model.uuid,
+        };
+      });
+
+      await drizzleDB.delete(bookPublishers).where(eq(bookPublishers.book_uuid, model.uuid));
+      await drizzleDB.insert(bookPublishers).values(values);
+    }
+
+    console.log('🚀 ~ PGLiteDataSource ~ model:', model);
     return drizzleDB.update(books).set(model).where(eq(books.uuid, model.uuid));
   }
 }
