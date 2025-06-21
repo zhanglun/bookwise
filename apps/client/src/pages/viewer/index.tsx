@@ -34,10 +34,10 @@ export const Viewer = () => {
     };
 
     switch (book.format.toLowerCase()) {
-      // case 'pdf':
-      //   return <PdfViewer {...props} />;
-      // case 'epub':
-      //   return <EpubViewer {...props} />;
+      case 'pdf':
+        return <PdfViewer {...props} />;
+      case 'epub':
+        return <EpubViewer {...props} />;
       default:
         return <div>Unsupported file type: {book.format}</div>;
     }

@@ -4,12 +4,14 @@
  * @returns 移除 HTML 标签后的纯文本
  */
 export function stripHtml(html: string): string {
-  if (!html) return '';
-  
+  if (!html) {
+    return '';
+  }
+
   // 创建一个临时的 div 元素
   const tmp = document.createElement('div');
   tmp.innerHTML = html;
-  
+
   // 获取纯文本内容
   return tmp.textContent || tmp.innerText || '';
 }
@@ -21,8 +23,10 @@ export function stripHtml(html: string): string {
  * @returns 移除 HTML 标签后的纯文本
  */
 export function stripHtmlTags(html: string): string {
-  if (!html) return '';
-  
+  if (!html) {
+    return '';
+  }
+
   // 移除所有 HTML 标签
   return html.replace(/<[^>]*>/g, '');
 }

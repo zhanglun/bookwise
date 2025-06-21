@@ -129,14 +129,14 @@ export class PGLiteDataSource implements DataSource {
       let publisher = await drizzleDB
         .select()
         .from(publishers)
-        .where(eq(publishers.name, model.publisher as string))
+        .where(eq(publishers.name, model.publishers as string))
         .then((rows) => rows[0]);
 
       if (!publisher) {
         [publisher] = await drizzleDB
           .insert(publishers)
           .values({
-            name: model.publisher as string,
+            name: model.publishers as string,
           })
           .returning();
         if (!publisher) {

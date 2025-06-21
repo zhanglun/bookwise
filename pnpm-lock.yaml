@@ -391,6 +391,9 @@ importers:
       framer-motion:
         specifier: ^10.18.0
         version: 10.18.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      html-react-parser:
+        specifier: ^5.2.2
+        version: 5.2.2(@types/react@19.1.2)(react@19.1.0)
       i18next:
         specifier: ^25.0.2
         version: 25.0.2(typescript@5.8.3)
@@ -16494,6 +16497,16 @@ snapshots:
       style-to-js: 1.1.16
     optionalDependencies:
       '@types/react': 18.3.18
+
+  html-react-parser@5.2.2(@types/react@19.1.2)(react@19.1.0):
+    dependencies:
+      domhandler: 5.0.3
+      html-dom-parser: 5.0.13
+      react: 19.1.0
+      react-property: 2.0.2
+      style-to-js: 1.1.16
+    optionalDependencies:
+      '@types/react': 19.1.2
 
   html-tags@3.3.1: {}
 

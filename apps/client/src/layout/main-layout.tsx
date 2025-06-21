@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { motion, MotionConfig } from 'framer-motion';
 import clamp from 'lodash-es/clamp';
 import { Outlet } from 'react-router-dom';
-import { ActionIcon, Button } from '@mantine/core';
+import { ActionIcon } from '@mantine/core';
 import FloatSidebar from '@/components/Sidebar';
 import classes from './layout.module.css';
 
