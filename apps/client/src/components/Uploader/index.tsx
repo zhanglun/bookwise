@@ -9,8 +9,10 @@ export const Uploader = () => {
   const { openFileDialog } = useFileUpload({
     onSuccess: (body) => {
       body.forEach(async (book) => {
-        const res = await dal.saveBookAndRelations(book.metadata, book.cover);
-        console.log('🚀 ~ body.forEach ~ res:', res);
+        if (book.buffer) {
+          const res = await dal.saveBookAndRelations(book.metadata, book.buffer, book.cover);
+          console.log('🚀 ~ body.forEach ~ res:', res);
+        }
       });
     },
   });

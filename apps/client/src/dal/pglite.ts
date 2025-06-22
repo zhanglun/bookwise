@@ -1,8 +1,11 @@
 import { and, desc, eq, gt, gte, inArray, like, lt, lte, SQL } from 'drizzle-orm';
+import { b } from 'vitest/dist/chunks/suite.d.FvehnV49.js';
 import { drizzleDB } from '@/db';
 import {
   authors,
+  blobs,
   bookAuthors,
+  bookBlobs,
   bookCaches,
   bookCovers,
   bookPublishers,
@@ -82,7 +85,31 @@ export class PGLiteDataSource implements DataSource {
     return record[0] as unknown as BookResItem;
   }
 
-  async saveBookAndRelations(model: BookMetadata, cover: string): Promise<BookResItem> {
+  async getBookBlob(uuid: string): Promise<ArrayBuffer | null> {
+    const record = await drizzleDB.select().from(bookBlobs).where(eq(bookBlobs.book_uuid, uuid));
+
+    if (record.length === 0) {
+      return null;
+    }
+
+    const file = await drizzleDB
+      .select()
+      .from(blobs)
+      .where(eq(blobs.uuid, record[0].blob_uuid as string));
+
+    return file[0] as unknown as ArrayBuffer;
+  }
+
+  async saveBookAndRelations(
+    model: BookMetadata,
+    file: ArrayBuffer,
+    cover: string
+  ): Promise<BookResItem> {
+    console.log('🚀 ~ PGLiteDataSource ~ file:', file);
+    if (!file) {
+      throw new Error('文件不存在');
+    }
+
     try {
       const [newBook] = await drizzleDB
         .insert(books)
@@ -107,6 +134,17 @@ export class PGLiteDataSource implements DataSource {
           cover_uuid: coverRecord[0]?.uuid || '',
         })
         .returning();
+
+      const blobRecord = await drizzleDB.insert(blobs).values({ data: file }).returning();
+      await drizzleDB
+        .insert(bookBlobs)
+        .values({
+          book_uuid: newBook.uuid,
+          blob_uuid: blobRecord[0]?.uuid || '',
+        })
+        .returning();
+
+      console.log('🚀 ~ PGLiteDataSource ~ blobRecord:', blobRecord);
 
       let author = await drizzleDB
         .select()

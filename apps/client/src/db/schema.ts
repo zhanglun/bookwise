@@ -1,5 +1,28 @@
 import { relations } from 'drizzle-orm';
-import { integer, pgEnum, pgTable, text, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
+import {
+  customType,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
+
+const bytea = customType<{ data: Uint8Array; notNull: false; default: false }>({
+  dataType() {
+    return 'bytea';
+  },
+  // 将 JS 的 Uint8Array 转换为 PGlite 的 BYTEA 格式（ArrayBuffer）
+  toDriver: (value: Uint8Array) => {
+    return value;
+  },
+  // 从 PGlite 读取时，将 ArrayBuffer 转换回 Uint8Array
+  fromDriver: (value: ArrayBuffer | unknown) => {
+    return new Uint8Array(value as ArrayBuffer);
+  },
+});
 
 // Enums
 export const bookFormatEnum = pgEnum('format', ['EPUB', 'PDF', 'MOBI', 'TEXT', 'UNKNOWN']);
@@ -31,6 +54,11 @@ export const covers = pgTable('covers', {
   data: text('data').notNull().default(''),
 });
 
+export const blobs = pgTable('blobs', {
+  uuid: uuid('uuid').defaultRandom().notNull().primaryKey(),
+  data: bytea('data'),
+});
+
 export const books = pgTable('books', {
   uuid: uuid('uuid').defaultRandom().notNull().primaryKey(),
   title: varchar('title', { length: 256 }).default(''),
@@ -51,6 +79,11 @@ export const books = pgTable('books', {
 export const bookCovers = pgTable('book_covers', {
   book_uuid: uuid('book_uuid').references(() => books.uuid),
   cover_uuid: uuid('cover_uuid').references(() => covers.uuid),
+});
+
+export const bookBlobs = pgTable('book_blobs', {
+  book_uuid: uuid('book_uuid').references(() => books.uuid),
+  blob_uuid: uuid('blob_uuid').references(() => blobs.uuid),
 });
 
 export const bookAuthors = pgTable('book_authors', {

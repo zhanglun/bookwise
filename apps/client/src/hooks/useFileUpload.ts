@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as AdmZip from 'adm-zip';
 import { Book } from 'epubjs';
 import JSZip from 'jszip';
 import { toast } from 'sonner';
@@ -49,7 +48,7 @@ const epubHandler: FileHandler = {
         isbn: '',
         cover,
         authors: metadata.creator,
-        publisher: metadata.publisher,
+        publishers: metadata.publisher,
         publish_at: new Date(metadata.pubdate),
       },
       cover,
@@ -74,7 +73,7 @@ const pdfHandler: FileHandler = {
         isbn: '',
         authors: '',
         cover: '',
-        publisher: '',
+        publishers: '',
         publish_at: new Date(file.lastModified),
       },
       '',
@@ -87,11 +86,11 @@ const fileHandlers: Record<string, FileHandler> = {
   'application/pdf': pdfHandler,
 };
 
-async function fileReaderAsync(file: File) {
-  return new Promise<string | ArrayBuffer | null>((resolve) => {
+async function fileReaderAsync(file: File): Promise<ArrayBuffer> {
+  return new Promise<ArrayBuffer>((resolve) => {
     const reader = new FileReader();
     reader.onload = () => {
-      resolve(reader.result);
+      resolve(reader.result as ArrayBuffer);
     };
     reader.readAsArrayBuffer(file);
   });
@@ -102,7 +101,7 @@ export interface UploadFileBody {
   size: number;
   type: string;
   lastModified: Date | number;
-  buffer: string | ArrayBuffer | null;
+  buffer: Uint8Array;
   metadata: BookMetadata;
   cover: string;
 }
@@ -112,13 +111,11 @@ export interface UseFileUploadOptions {
 }
 
 async function parseCover(cover: string, blob: Blob): Promise<string | null> {
-  console.log('%c Line:186 🥒 cover', 'color:#6ec1c2', cover);
-
   const zip = new JSZip();
   const result = await zip.loadAsync(blob);
   const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
 
-  for (let filename in files) {
+  for (const filename in files) {
     if (cover.lastIndexOf(filename) !== -1) {
       const unit8 = await files[filename].async('base64');
       return unit8;
@@ -156,17 +153,15 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       }
 
       const [metadata, cover] = await handler.formatMetadata(file);
-      console.log('🚀 ~ processFiles ~ cover:', cover);
       const buffer = await fileReaderAsync(file);
       const coverBase64 = await parseCover(cover, buffer as any);
-      console.log('🚀 ~ processFiles ~ coverBase64:', coverBase64);
 
       body.push({
         name: file.name,
         size: file.size,
         type: file.type,
         lastModified: file.lastModified,
-        buffer,
+        buffer: new Uint8Array(buffer),
         metadata,
         cover: coverBase64 as string,
       });
@@ -182,7 +177,6 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
 
       onSuccess && onSuccess(body);
     } catch (error) {
-      console.error('Upload error:', error);
       toast.error(`Upload failed: ${(error as Error).message}`);
     } finally {
       setIsUploading(false);

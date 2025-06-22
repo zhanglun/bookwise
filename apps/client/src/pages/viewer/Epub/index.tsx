@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import ePub, { Book, NavItem } from 'epubjs';
 import Section from 'epubjs/types/section';
+import { fileTypeFromBuffer } from 'file-type';
 import { Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
 import { getAbsoluteUrl } from '@/helpers/book';
@@ -47,55 +48,47 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
     });
   }, [bookUuid]);
 
+  const getBookBlob = useCallback(() => {
+    return dal.getBookBlob(bookUuid).then((data) => {
+      console.log('🚀 ~ returndal.getBookBlob ~ data:', data);
+      return data;
+    });
+  }, [bookUuid]);
+
   useEffect(() => {
     if (bookUuid) {
-      console.log('🚀 ~ file: index.tsx:90 ~ useEffect ~ bookUuid:', bookUuid);
-      Promise.all([getBookDetail()]).then(([detail]) => {
-        const { path } = detail;
+      Promise.all([getBookDetail(), getBookBlob()]).then(async ([, record]) => {
+        const buffer = record.data;
+        const type = (await fileTypeFromBuffer(buffer)) as { mime: string };
+        const blob = new Blob([buffer], { type: type.mime as string });
+        const book = ePub(blob as unknown as ArrayBuffer);
+        console.log('🚀 ~ Promise.all ~ book:', book);
 
-        // window.electronAPI.readLocalFile({ path });
+        if (book) {
+          try {
+            await book.opened;
+            console.log('book.open');
+            // 等待导航数据加载
+            await book.loaded.navigation;
+            // 设置 book 状态
+            setBook(book);
+            const spine_index = '0';
+
+            // 在导航数据加载完成后更新目录
+            if (book.navigation) {
+              const tocItems = convertNavItemsToTocItems(book.navigation.toc);
+              onTocUpdate?.(tocItems);
+            }
+
+            display(parseInt(spine_index || '0', 10), book);
+            setCurrentSection(book.spine.get(spine_index));
+          } catch (error) {
+            console.error('Error loading book:', error);
+          }
+        }
       });
     }
   }, [bookUuid]);
-
-  const onReadLocalFileSuccess = useCallback(
-    async (_e: unknown, { type, buffer }: { ext: string; type: string; buffer: Buffer }) => {
-      const blob = new Blob([buffer], { type });
-      const book = ePub(blob as unknown as ArrayBuffer);
-
-      if (book) {
-        try {
-          await book.opened;
-          console.log('book.open');
-          // 等待导航数据加载
-          await book.loaded.navigation;
-          // 设置 book 状态
-          setBook(book);
-          const spine_index = '0';
-
-          // 在导航数据加载完成后更新目录
-          if (book.navigation) {
-            const tocItems = convertNavItemsToTocItems(book.navigation.toc);
-            onTocUpdate?.(tocItems);
-          }
-
-          display(parseInt(spine_index || '0', 10), book);
-          setCurrentSection(book.spine.get(spine_index));
-        } catch (error) {
-          console.error('Error loading book:', error);
-        }
-      }
-    },
-    [display, setCurrentSection, convertNavItemsToTocItems, onTocUpdate]
-  );
-
-  // useEffect(() => {
-  //   window.electronAPI.onReadLocalFileSuccess(onReadLocalFileSuccess);
-  //   return () => {
-  //     // 清理事件监听
-  //     window.electronAPI.removeListener?.('read-local-file-success', onReadLocalFileSuccess);
-  //   };
-  // }, [onReadLocalFileSuccess]);
 
   function display(index: number, book?: Book, anchorId?: string) {
     setLoading(true);

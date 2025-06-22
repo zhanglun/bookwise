@@ -49,7 +49,7 @@ export const epubHandler: FileHandler = {
         isbn: '',
         cover,
         authors: metadata.creator,
-        publisher: metadata.publisher,
+        publishers: metadata.publisher,
         publish_at: new Date(metadata.pubdate),
       },
       cover,
@@ -74,7 +74,7 @@ export const pdfHandler: FileHandler = {
         isbn: '',
         authors: '',
         cover: '',
-        publisher: '',
+        publishers: '',
         publish_at: new Date(file.lastModified),
       },
       '',
@@ -118,7 +118,7 @@ export async function parseCover(cover: string, blob: Blob): Promise<string | nu
   const result = await zip.loadAsync(blob);
   const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
 
-  for (let filename in files) {
+  for (const filename in files) {
     if (cover.lastIndexOf(filename) !== -1) {
       const unit8 = await files[filename].async('base64');
       return unit8;
@@ -154,6 +154,7 @@ export const processFiles = async (files: File[]) => {
     const [metadata, cover] = await handler.formatMetadata(file);
     console.log('🚀 ~ processFiles ~ cover:', cover);
     const buffer = await fileReaderAsync(file);
+    console.log('🚀 ~ processFiles ~ buffer:', buffer);
     const coverBase64 = await parseCover(cover, buffer as any);
     console.log('🚀 ~ processFiles ~ coverBase64:', coverBase64);
 

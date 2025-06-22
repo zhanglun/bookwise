@@ -388,6 +388,9 @@ importers:
       epubjs:
         specifier: ^0.3.93
         version: 0.3.93
+      file-type:
+        specifier: ^19.6.0
+        version: 19.6.0
       framer-motion:
         specifier: ^10.18.0
         version: 10.18.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)

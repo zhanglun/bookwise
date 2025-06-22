@@ -1,4 +1,11 @@
-import { AuthorResItem, BookMetadata, BookResItem, FileFormat, LanguageResItem, PublisherResItem } from '@/interface/book';
+import {
+  AuthorResItem,
+  BookMetadata,
+  BookResItem,
+  FileFormat,
+  LanguageResItem,
+  PublisherResItem,
+} from '@/interface/book';
 
 export interface UploadFileBody {
   name: string;
@@ -20,7 +27,12 @@ export interface DataSource {
   uploadFile: (files: UploadFileBody[]) => Promise<void>;
   getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
   getBookByUuid: (uuid: string) => Promise<BookResItem>;
-  saveBookAndRelations: (model: BookMetadata, cover: string) => Promise<BookResItem>;
+  getBookBlob: (uuid: string) => Promise<{ uuid: string; data: ArrayBuffer }>;
+  saveBookAndRelations: (
+    model: BookMetadata,
+    file: ArrayBuffer,
+    cover: string
+  ) => Promise<BookResItem>;
   removeBookCache: (uuid: string) => Promise<void>;
   getAuthors: () => Promise<AuthorResItem[]>;
   getPublishers: () => Promise<PublisherResItem[]>;
