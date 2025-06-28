@@ -6,7 +6,8 @@ import HTMLReactParser, {
   HTMLReactParserOptions,
 } from 'html-react-parser';
 import ReactDOM from 'react-dom/client';
-import { Text } from '@mantine/core';
+import { MantineProvider, Text } from '@mantine/core';
+import { theme } from '@/theme';
 
 // 自定义转换函数，用于替换标签
 const options: HTMLReactParserOptions = {
@@ -108,10 +109,10 @@ export const ContentRender = (props: ContentRenderProps) => {
       // 渲染新内容
       const root = ReactDOM.createRoot(contentContainer);
       root.render(
-        <div>
+        <MantineProvider theme={theme}>
           <style>{stylesText}</style>
           {HTMLReactParser(bodyContent, options)}
-        </div>
+        </MantineProvider>
       );
     },
     []

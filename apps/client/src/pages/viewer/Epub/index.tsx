@@ -1,3 +1,6 @@
+/* eslint-disable react/button-has-type */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import ePub, { Book, NavItem } from 'epubjs';
@@ -251,12 +254,12 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
       >
         <IconChevronLeft width={22} height={22} />
       </span>
-      <button
+      <span
         className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
         onClick={() => nextPage()}
       >
         <IconChevronRight width={22} height={22} />
-      </button>
+      </span>
       <div
         id="canvas"
         className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
