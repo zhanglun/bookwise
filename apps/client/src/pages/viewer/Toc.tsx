@@ -1,6 +1,7 @@
-import { ScrollArea, Text } from "@radix-ui/themes";
-import clsx from "clsx";
-import { useBearStore } from "@/store";
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+import clsx from 'clsx';
+import { ScrollArea, Text } from '@mantine/core';
 
 export interface TocItem {
   label: string;
@@ -16,10 +17,6 @@ export interface TocProps {
 }
 
 export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
-  const store = useBearStore((state) => ({
-    currentTocItem: state.currentTocItem,
-  }));
-
   const handleItemClick = (item: TocItem) => {
     if (onItemClick) {
       onItemClick(item);
@@ -29,40 +26,31 @@ export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
   const renderItems = (list: TocItem[], level = 0) => {
     return (list || []).map((item) => {
       const { label, href, subitems } = item;
-      const isActive = store.currentTocItem?.href === href;
 
       return (
         <div
-          className={clsx("text-sm cursor-default", className)}
+          className={clsx('text-sm cursor-default', className)}
           key={href}
           style={{ paddingLeft: `${level * 16}px` }}
         >
           <div
             data-href={href}
             className={clsx(
-              "hover:underline hover:text-[var(--accent-11)] overflow-hidden text-ellipsis whitespace-nowrap",
-              "pb-2",
-              isActive && "text-[var(--accent-11)] font-medium"
+              'hover:underline hover:text-[var(--accent-11)] overflow-hidden text-ellipsis whitespace-nowrap',
+              'pb-2'
             )}
             onClick={() => handleItemClick(item)}
           >
             <Text truncate>{label}</Text>
           </div>
-          {subitems && subitems.length > 0 && (
-            <div>{renderItems(subitems, level + 1)}</div>
-          )}
+          {subitems && subitems.length > 0 && <div>{renderItems(subitems, level + 1)}</div>}
         </div>
       );
     });
   };
 
   return (
-    <ScrollArea
-      size="1"
-      type="hover"
-      scrollbars="vertical"
-      className="h-[calc(100vh-68px)]"
-    >
+    <ScrollArea type="hover" className="h-[calc(100vh-68px)]">
       <div className="p-2">{renderItems(items)}</div>
     </ScrollArea>
   );

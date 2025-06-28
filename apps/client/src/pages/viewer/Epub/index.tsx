@@ -6,10 +6,10 @@ import { fileTypeFromBuffer } from 'file-type';
 import { Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
 import { getAbsoluteUrl } from '@/helpers/book';
-// import { substitute } from '@/helpers/epub';
+import { substitute } from '@/helpers/epub';
 import { BookResItem } from '@/interface/book';
-import { TocItem } from '../Toc';
-import { ContentRender } from './ContentRender';
+import { TocItem } from '../toc';
+import { ContentRender } from './content-render';
 
 export interface EpubViewerProps {
   bookUuid: string;
@@ -104,13 +104,14 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
       // @ts-expect-error library typed error
       p.then((content: HTMLElement) => {
         if (content && content.innerHTML) {
+          console.log('🚀 ~ p.then ~ content:', content);
           // const styles = content.querySelectorAll('[type="text/css"]');
 
           // styles.forEach((s: Element) => s.remove());
 
           // @ts-expect-error library typed error
-          // const { urls, replacementUrls } = book.resources;
-          // const str = substitute(content.innerHTML, urls, replacementUrls);
+          const { urls, replacementUrls } = book.resources;
+          const str = substitute(content.innerHTML, urls, replacementUrls);
 
           setContent(str);
           setCurrentSectionIndex(index);
@@ -187,65 +188,6 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
     }
   }, []); // 只在组件挂载时初始化一次
 
-  useEffect(() => {
-    function activeToolbar(event: any) {
-      console.log('activeToolbar currentSection', currentSection);
-
-      if (currentSection) {
-        const { idref: pageId, spineIndex, spineHref: spineName } = currentSection;
-
-        const selection = window.getSelection();
-        let tempMark;
-
-        if (selection) {
-          tempMark = markerRef.current.textMarker.createRange(
-            selection,
-            { rectFill: 'black', lineStroke: 'red', strokeWidth: 3 },
-            {
-              spine_index: spineIndex,
-              spine_name: spineName,
-            }
-          );
-          //
-          // setVirtualRef({
-          // 	getBoundingClientRect: () =>
-          // 		selection.getRangeAt(0).getBoundingClientRect(),
-          // 	getClientRects: () => selection.getRangeAt(0).getClientRects(),
-          // });
-          //
-          // setOpen(true);
-        } else {
-          const id = markerRef.current.getMarkIdByPointer(event.clientX, event.clientY);
-
-          if (id) {
-            const mark = markerRef.current.getMark(id);
-            console.log('%c Line:206 🥚 mark', 'color:#e41a6a', mark);
-            const virtualRange = markerRef.current.getRangeFromMark(mark);
-
-            virtualRange &&
-              setVirtualRef({
-                getBoundingClientRect: () => virtualRange.getBoundingClientRect(),
-                getClientRects: () => virtualRange.getClientRects(),
-              });
-
-            setActivatedMark(mark);
-            setOpen(true);
-          } else {
-            setActivatedMark(null);
-            setVirtualRef(null);
-            setOpen(false);
-          }
-        }
-      }
-    }
-
-    document.getElementById('book-section')?.addEventListener('mouseup', activeToolbar);
-
-    return () => {
-      document.getElementById('book-section')?.removeEventListener('mouseup', activeToolbar);
-    };
-  }, [currentSection]);
-
   function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
     let elem = null;
     const i = e.nativeEvent.composedPath();
@@ -287,7 +229,6 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   return (
     <ScrollArea
       id="canvasRoot"
-      size="1"
       type="hover"
       ref={scrollAreaRef}
       className="h-[calc(100vh-38px)] relative"
@@ -310,12 +251,12 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
       >
         <IconChevronLeft width={22} height={22} />
       </span>
-      <span
+      <button
         className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
         onClick={() => nextPage()}
       >
         <IconChevronRight width={22} height={22} />
-      </span>
+      </button>
       <div
         id="canvas"
         className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"

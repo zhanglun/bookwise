@@ -2,16 +2,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
-import { EpubViewer } from './Epub';
+import { EpubViewer } from './epub';
 import { PdfViewer } from './Pdf';
-import { ViewerSidebar } from './Sidebar';
-import { TocItem } from './Toc';
+import { ViewerSidebar } from './sidebar';
+import { TocItem } from './toc';
 
 export const Viewer = () => {
   const { uuid } = useParams();
   const [book, setBook] = useState<BookResItem | null>(null);
   const [toc, setToc] = useState<TocItem[]>([]);
-  const leftSidebarExpanded = false;
+  const leftSidebarExpanded = true;
 
   useEffect(() => {
     if (uuid) {

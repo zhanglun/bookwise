@@ -3,7 +3,7 @@ import { BookmarkIcon, HighlighterIcon, NotebookPen, TableOfContents } from 'luc
 import { SegmentedControl } from '@mantine/core';
 import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
-import { Toc, TocItem } from './Toc';
+import { Toc, TocItem } from './toc';
 
 interface ViewerSidebarProps {
   book: BookResItem;
@@ -13,7 +13,7 @@ interface ViewerSidebarProps {
 export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
   const [segmented, setSegmented] = useState('toc');
 
-  const handleTocItemClick = (item: TocItem) => {};
+  const handleTocItemClick = () => {};
 
   return (
     <div className="h-full flex flex-col w-[240px]">
@@ -50,6 +50,10 @@ export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
           },
         ]}
       />
+      {segmented === 'toc' && <Toc items={toc} onItemClick={handleTocItemClick} />}
+      {segmented === 'bookmark' && <div>TODO: bookmark</div>}
+      {segmented === 'notes' && <div>TODO: notes</div>}
+      {segmented === '' && <div>TODO: hightligher</div>}
     </div>
   );
 });
