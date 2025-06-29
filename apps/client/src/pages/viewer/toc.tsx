@@ -30,15 +30,22 @@ export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
 
       return (
         <div
-          className={clsx(classes.tocItem, className)}
+          className={clsx(className)}
           key={href}
-          style={{ paddingLeft: `${level * 16}px` }}
+          style={{
+            paddingLeft: `${Math.min(1, level) * 10}px`,
+            marginBottom: level === 0 ? '8px' : '0',
+          }}
         >
-          <div data-href={href} onClick={() => handleItemClick(item)}>
-            <Text truncate size="md">
-              {label}
-            </Text>
-          </div>
+          <Text
+            truncate
+            size="sm"
+            data-href={href}
+            className={classes.tocItem}
+            onClick={() => handleItemClick(item)}
+          >
+            {label}
+          </Text>
           {subitems && subitems.length > 0 && <div>{renderItems(subitems, level + 1)}</div>}
         </div>
       );
@@ -47,7 +54,7 @@ export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
 
   return (
     <ScrollArea className="h-full" type="hover">
-      <div className="p-2">{renderItems(items)}</div>
+      <div className={classes.toc}>{renderItems(items)}</div>
     </ScrollArea>
   );
 };

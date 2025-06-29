@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
-import { EpubViewer } from './Epub';
+import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
 import { PdfViewer } from './Pdf';
 import { ViewerSidebar } from './sidebar';
@@ -53,7 +53,7 @@ export const Viewer = () => {
         <ViewerSidebar book={book} toc={toc} />
       </div>
       <div className={classes.main}>
-        <div className="flex flex-col min-h-0">{renderViewer()}</div>
+        <div className="h-full">{renderViewer()}</div>
       </div>
       <div className={classes.rightSide}>right</div>
     </div>

@@ -31,27 +31,6 @@ const options: HTMLReactParserOptions = {
           </Text>
         );
       }
-      // if (node.name === "h1") {
-      //   return (
-      //     <Heading {...attributesToProps(node.attribs)} size="8" mb="6">
-      //       {domToReact(node.children as DOMNode[], options)}
-      //     </Heading>
-      //   );
-      // }
-      // if (node.name === "h2") {
-      //   return (
-      //     <Heading {...attributesToProps(node.attribs)} size="7" mb="5">
-      //       {domToReact(node.children as DOMNode[], options)}
-      //     </Heading>
-      //   );
-      // }
-      // if (node.name === "h3") {
-      //   return (
-      //     <Heading {...attributesToProps(node.attribs)} size="6" mb="4">
-      //       {domToReact(node.children as DOMNode[], options)}
-      //     </Heading>
-      //   );
-      // }
 
       if (node.name === 'a') {
         return (

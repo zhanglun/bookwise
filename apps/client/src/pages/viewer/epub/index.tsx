@@ -6,7 +6,7 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import ePub, { Book, NavItem } from 'epubjs';
 import Section from 'epubjs/types/section';
 import { fileTypeFromBuffer } from 'file-type';
-import { Loader, ScrollArea } from '@mantine/core';
+import { Button, Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
 import { getAbsoluteUrl } from '@/helpers/book';
 import { substitute } from '@/helpers/epub';
@@ -21,7 +21,7 @@ export interface EpubViewerProps {
 
 export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   const [book, setBook] = useState<Book>();
-  const [bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
+  const [_bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
@@ -60,7 +60,7 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
 
   useEffect(() => {
     if (bookUuid) {
-      Promise.all([getBookDetail(), getBookBlob()]).then(async ([, record]) => {
+      Promise.all([getBookDetail(), getBookBlob()]).then(async ([_bookDetail, record]) => {
         const buffer = record.data;
         const type = (await fileTypeFromBuffer(buffer)) as { mime: string };
         const blob = new Blob([buffer], { type: type.mime as string });
@@ -141,7 +141,7 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
     return section;
   }
 
-  function updateReadProgress(spine_index: number, read_progress: number) {
+  function updateReadProgress(_spine_index: number, _read_progress: number) {
     // const body = {
     //   spine_index: spine_index.toString(),
     //   read_progress,
@@ -230,40 +230,54 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   }
 
   return (
-    <ScrollArea
-      id="canvasRoot"
-      type="hover"
-      ref={scrollAreaRef}
-      className="h-[calc(100vh-38px)] relative"
-    >
-      {loading && (
-        <div className="absolute z-40 top-6 right-6 bottom-6 left-6 bg-cell flex items-center justify-center rounded-lg">
-          <Loader size="3" />
-        </div>
-      )}
-      <div className="relative">
-        <div className="relative m-auto max-w-[1020px] px-[40px] py-4">
-          <section className="w-full h-full" id="book-section" onClick={handleUserClickEvent}>
-            <ContentRender contentString={content} />
-          </section>
-        </div>
+    <div className="h-full flex flex-col">
+      {/* 可视区域 - 盛满剩余高度并可滚动 */}
+      <div className="flex-1 min-h-0">
+        <ScrollArea
+          id="canvasRoot"
+          type="hover"
+          ref={scrollAreaRef}
+          className="h-full relative"
+          classNames={{
+            root: 'h-full relative',
+            viewport: 'viewport',
+          }}
+        >
+          {loading && (
+            <div className="absolute z-40 top-6 right-6 bottom-6 left-6 bg-cell flex items-center justify-center rounded-lg">
+              <Loader size="3" />
+            </div>
+          )}
+          <div className="relative m-auto max-w-[1020px] px-[40px] py-4">
+            <section className="w-full h-full" id="book-section" onClick={handleUserClickEvent}>
+              <ContentRender contentString={content} />
+            </section>
+          </div>
+        </ScrollArea>
       </div>
-      <span
-        className="absolute left-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
-        onClick={() => prevPage()}
-      >
-        <IconChevronLeft width={22} height={22} />
-      </span>
-      <span
-        className="absolute right-2 top-1/2 -translate-y-1/2 z-50 px-2 py-16 rounded-md cursor-pointer transition-all text-[var(--gray-10)] hover:text-[var(--gray-12)] hover:bg-[var(--gray-3)]"
-        onClick={() => nextPage()}
-      >
-        <IconChevronRight width={22} height={22} />
-      </span>
-      <div
-        id="canvas"
-        className="absolute top-0 right-0 bottom-0 left-0 pointer-events-none mix-blend-multiply"
-      />
-    </ScrollArea>
+
+      {/* 操作区域 - 固定高度42px */}
+      <div className="h-[42px] border-t border-gray-200 bg-white flex items-center justify-center space-x-4 px-4 flex-shrink-0">
+        <Button
+          variant="subtle"
+          size="sm"
+          leftSection={<IconChevronLeft size={16} />}
+          onClick={prevPage}
+          disabled={currentSectionIndex <= 0}
+        >
+          上一页
+        </Button>
+        <Button
+          variant="subtle"
+          size="sm"
+          rightSection={<IconChevronRight size={16} />}
+          onClick={nextPage}
+        >
+          下一页
+        </Button>
+      </div>
+    </div>
   );
 });
+
+EpubViewer.displayName = 'EpubViewer';
