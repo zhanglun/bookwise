@@ -1,7 +1,5 @@
 import { memo, useState } from 'react';
-import { BookmarkIcon, HighlighterIcon, NotebookPen, TableOfContents } from 'lucide-react';
 import { SegmentedControl } from '@mantine/core';
-import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
 import { Toc, TocItem } from './toc';
 
@@ -16,11 +14,7 @@ export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
   const handleTocItemClick = () => {};
 
   return (
-    <div>
-      <div>
-        <Cover book={book} />
-        <span>{book.title}</span>
-      </div>
+    <div className="h-full flex flex-col">
       <div>
         <SegmentedControl
           defaultValue={segmented}
@@ -32,30 +26,24 @@ export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
           data={[
             {
               value: 'toc',
-              // label: <TableOfContents size={14} />,
               label: '目录',
             },
             {
               value: 'bookmark',
-              // label: <BookmarkIcon size={14} />,
               label: '书签',
             },
             {
               value: 'notes',
-              // label: <NotebookPen size={12} />,
               label: '笔记',
             },
-            // {
-            //   value: 'hightligher',
-            //   label: <HighlighterIcon size={13} />,
-            // },
           ]}
         />
       </div>
-      {segmented === 'toc' && <Toc items={toc} onItemClick={handleTocItemClick} />}
-      {segmented === 'bookmark' && <div>TODO: bookmark</div>}
-      {segmented === 'notes' && <div>TODO: notes</div>}
-      {segmented === '' && <div>TODO: hightligher</div>}
+      <div className="flex-1 overflow-hidden">
+        {segmented === 'toc' && <Toc items={toc} onItemClick={handleTocItemClick} />}
+        {segmented === 'bookmark' && <div className="p-4">TODO: bookmark</div>}
+        {segmented === 'notes' && <div className="p-4">TODO: notes</div>}
+      </div>
     </div>
   );
 });

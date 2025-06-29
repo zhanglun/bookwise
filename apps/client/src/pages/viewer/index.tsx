@@ -2,16 +2,17 @@ import { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
-import { EpubViewer } from './epub';
+import { EpubViewer } from './Epub';
+import { ViewerHeader } from './header';
 import { PdfViewer } from './Pdf';
 import { ViewerSidebar } from './sidebar';
 import { TocItem } from './toc';
+import classes from './viewer.module.css';
 
 export const Viewer = () => {
   const { uuid } = useParams();
   const [book, setBook] = useState<BookResItem | null>(null);
   const [toc, setToc] = useState<TocItem[]>([]);
-  const leftSidebarExpanded = true;
 
   useEffect(() => {
     if (uuid) {
@@ -44,18 +45,17 @@ export const Viewer = () => {
   };
 
   return (
-    <div className="grid-in-main-view h-full overflow-hidden">
-      <div className="h-full grid grid-cols-[minmax(240px,240px)_minmax(400px,1fr)_minmax(280px,320px)]">
-        {leftSidebarExpanded && (
-          <div className="grid-in-left-sidebar overflow-hidden border-r">
-            <ViewerSidebar book={book} toc={toc} />
-          </div>
-        )}
-        <div className="flex flex-col min-h-0">{renderViewer()}</div>
-        <div className="border-l border-[var(--gray-5)] flex flex-col min-h-0">
-          {/* <InfoPanel data={selectItem} /> */}
-        </div>
+    <div className={classes.layout}>
+      <div className={classes.header}>
+        <ViewerHeader book={book} />
       </div>
+      <div className={classes.sidebar}>
+        <ViewerSidebar book={book} toc={toc} />
+      </div>
+      <div className={classes.main}>
+        <div className="flex flex-col min-h-0">{renderViewer()}</div>
+      </div>
+      <div className={classes.rightSide}>right</div>
     </div>
   );
 };

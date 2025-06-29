@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx';
 import { ScrollArea, Text } from '@mantine/core';
+import classes from './viewer.module.css';
 
 export interface TocItem {
   label: string;
@@ -29,19 +30,14 @@ export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
 
       return (
         <div
-          className={clsx('text-sm cursor-default', className)}
+          className={clsx(classes.tocItem, className)}
           key={href}
           style={{ paddingLeft: `${level * 16}px` }}
         >
-          <div
-            data-href={href}
-            className={clsx(
-              'hover:underline hover:text-[var(--accent-11)] overflow-hidden text-ellipsis whitespace-nowrap',
-              'pb-2'
-            )}
-            onClick={() => handleItemClick(item)}
-          >
-            <Text truncate>{label}</Text>
+          <div data-href={href} onClick={() => handleItemClick(item)}>
+            <Text truncate size="md">
+              {label}
+            </Text>
           </div>
           {subitems && subitems.length > 0 && <div>{renderItems(subitems, level + 1)}</div>}
         </div>
@@ -50,7 +46,7 @@ export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
   };
 
   return (
-    <ScrollArea type="hover" className="h-[calc(100vh-68px)]">
+    <ScrollArea className="h-full" type="hover">
       <div className="p-2">{renderItems(items)}</div>
     </ScrollArea>
   );

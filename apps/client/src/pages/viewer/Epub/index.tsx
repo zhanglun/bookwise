@@ -242,8 +242,8 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
         </div>
       )}
       <div className="relative">
-        <div className="relative m-auto max-w-[980px] px-[60px] pb-20 mb-20">
-          <section className="py-16 w-full h-full" id="book-section" onClick={handleUserClickEvent}>
+        <div className="relative m-auto max-w-[1020px] px-[40px] py-4">
+          <section className="w-full h-full" id="book-section" onClick={handleUserClickEvent}>
             <ContentRender contentString={content} />
           </section>
         </div>
