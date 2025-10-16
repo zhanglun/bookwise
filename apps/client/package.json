@@ -39,6 +39,7 @@
     "framer-motion": "^10.18.0",
     "html-react-parser": "^5.2.2",
     "i18next": "^25.0.2",
+    "jotai": "^2.15.0",
     "jszip": "^3.10.1",
     "lodash-es": "^4.17.21",
     "react": "^19.1.0",

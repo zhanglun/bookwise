@@ -1,7 +1,9 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx';
+import { useAtom } from 'jotai';
 import { ScrollArea, Text } from '@mantine/core';
+import { currentTocItemAtom } from './epub/epub-atom';
 import classes from './viewer.module.css';
 
 export interface TocItem {
@@ -14,14 +16,13 @@ export interface TocItem {
 export interface TocProps {
   items?: TocItem[];
   className?: string;
-  onItemClick?: (item: TocItem) => void;
 }
 
-export const Toc = ({ items = [], className, onItemClick }: TocProps) => {
+export const Toc = ({ items = [], className }: TocProps) => {
+  const [currentTocItem, setCurrentTocItem] = useAtom(currentTocItemAtom);
+
   const handleItemClick = (item: TocItem) => {
-    if (onItemClick) {
-      onItemClick(item);
-    }
+    setCurrentTocItem(item);
   };
 
   const renderItems = (list: TocItem[], level = 0) => {

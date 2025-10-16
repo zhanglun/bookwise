@@ -6,6 +6,7 @@ import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import ePub, { Book, NavItem } from 'epubjs';
 import Section from 'epubjs/types/section';
 import { fileTypeFromBuffer } from 'file-type';
+import { useAtom } from 'jotai';
 import { Button, Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
 import { getAbsoluteUrl } from '@/helpers/book';
@@ -13,6 +14,7 @@ import { substitute } from '@/helpers/epub';
 import { BookResItem } from '@/interface/book';
 import { TocItem } from '../toc';
 import { ContentRender } from './content-render';
+import { currentTocItemAtom } from './epub-atom';
 
 export interface EpubViewerProps {
   bookUuid: string;
@@ -20,12 +22,13 @@ export interface EpubViewerProps {
 }
 
 export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
+  const [currentTocItem] = useAtom(currentTocItemAtom);
+  const [currentSection, setCurrentSection] = useState<Section>();
+  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [book, setBook] = useState<Book>();
   const [_bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [currentSectionIndex, setCurrentSectionIndex] = useState<number>(0);
-  const [currentSection, setCurrentSection] = useState<Section>();
   const [content, setContent] = useState<string>('');
 
   // 将 epub 的 NavItem 转换为通用的 TocItem
@@ -182,15 +185,6 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
     };
   }, []);
 
-  useEffect(() => {
-    const root = document.getElementById('canvasRoot') as HTMLElement;
-    const el = document.getElementById('canvas') as HTMLDivElement;
-
-    if (root && el) {
-      // markerRef.current = new Marker(root, el);
-    }
-  }, []); // 只在组件挂载时初始化一次
-
   function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
     let elem = null;
     const i = e.nativeEvent.composedPath();
@@ -228,6 +222,19 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
       }
     }
   }
+
+  useEffect(() => {
+    if (currentTocItem) {
+      const { href } = currentTocItem;
+      const section = book?.spine.get(href);
+
+      if (section) {
+        setCurrentSection(section);
+        setCurrentSectionIndex(section.index as number);
+        display(section.index, book);
+      }
+    }
+  }, [currentTocItem]);
 
   return (
     <div className="h-full flex flex-col">

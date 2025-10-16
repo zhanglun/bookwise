@@ -11,8 +11,6 @@ interface ViewerSidebarProps {
 export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
   const [segmented, setSegmented] = useState('toc');
 
-  const handleTocItemClick = () => {};
-
   return (
     <div className="h-full flex flex-col">
       <div>
@@ -40,7 +38,7 @@ export const ViewerSidebar = memo(({ book, toc }: ViewerSidebarProps) => {
         />
       </div>
       <div className="flex-1 overflow-hidden">
-        {segmented === 'toc' && <Toc items={toc} onItemClick={handleTocItemClick} />}
+        {segmented === 'toc' && <Toc items={toc} />}
         {segmented === 'bookmark' && <div className="p-4">TODO: bookmark</div>}
         {segmented === 'notes' && <div className="p-4">TODO: notes</div>}
       </div>
