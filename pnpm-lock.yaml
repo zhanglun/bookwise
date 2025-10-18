@@ -47,6 +47,9 @@ importers:
       electorn:
         specifier: 0.0.1-security
         version: 0.0.1-security
+      foliate-js:
+        specifier: github:johnfactotum/foliate-js
+        version: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -391,6 +394,9 @@ importers:
       file-type:
         specifier: ^19.6.0
         version: 19.6.0
+      foliate-js:
+        specifier: github:johnfactotum/foliate-js
+        version: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c
       framer-motion:
         specifier: ^10.18.0
         version: 10.18.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -6206,6 +6212,10 @@ packages:
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
 
+  foliate-js@https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c:
+    resolution: {tarball: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c}
+    version: 0.0.0
+
   follow-redirects@1.15.9:
     resolution: {integrity: sha512-gew4GsXizNgdoRyqmyfMHyAmXsZDk6mHkSxZFCzW9gwlbtOW44CDtYavM+y+72qD/Vq2l550kMF52DT8fOLJqQ==}
     engines: {node: '>=4.0'}
@@ -7566,6 +7576,7 @@ packages:
   multer@1.4.4-lts.1:
     resolution: {integrity: sha512-WeSGziVj6+Z2/MwQo3GvqzgR+9Uc+qt8SwHKh3gvNPiISKfsMfG4SvCOFYlxxgkXt7yIV2i1yczehm0EOKIxIg==}
     engines: {node: '>= 6.0.0'}
+    deprecated: Multer 1.x is impacted by a number of vulnerabilities, which have been patched in 2.x. You should upgrade to the latest 2.x version.
 
   mute-stream@0.0.8:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
@@ -8953,7 +8964,7 @@ packages:
   superagent@8.1.2:
     resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
     engines: {node: '>=6.4.0 <13 || >=14'}
-    deprecated: Please upgrade to v9.0.0+ as we have fixed a public vulnerability with formidable dependency. Note that v9.0.0+ requires Node.js v14.18.0+. See https://github.com/ladjs/superagent/pull/1800 for insight. This project is supported and maintained by the team at Forward Email @ https://forwardemail.net
+    deprecated: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
 
   supertest@6.3.4:
     resolution: {integrity: sha512-erY3HFDG0dPnhw4U+udPfrzXa4xhSG+n4rxfRuZWCUvjFWwKl+OxWf/7zk50s84/fAAs7vf5QAb9uRa0cCykxw==}
@@ -16158,6 +16169,8 @@ snapshots:
       hookified: 1.8.2
 
   flatted@3.3.3: {}
+
+  foliate-js@https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c: {}
 
   follow-redirects@1.15.9: {}
 

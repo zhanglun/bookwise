@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { Foliate } from './pages/foliate';
 import { Grabber } from './pages/grabber';
 import { HomePage } from './pages/Home.page';
 import { Library } from './pages/Library';
@@ -8,6 +9,7 @@ import { Viewer } from './pages/viewer';
 export enum RouteConfig {
   HOME = '/',
   GRABBER = '/grabber',
+  FOLIATE = '/foliate',
   SEARCH = '/search',
   FILTER = '/filter',
   LIBRARY = '/library',
@@ -31,6 +33,10 @@ const router = createBrowserRouter([
   {
     path: RouteConfig.GRABBER,
     element: <Grabber />,
+  },
+  {
+    path: RouteConfig.FOLIATE,
+    element: <Foliate />,
   },
   {
     path: '/repl',

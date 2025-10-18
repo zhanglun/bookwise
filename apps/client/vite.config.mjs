@@ -19,5 +19,8 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['@electric-sql/pglite'],
+    esbuildOptions: {
+      target: 'esnext', // or 'es2022'
+    },
   },
 });
