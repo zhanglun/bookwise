@@ -395,8 +395,8 @@ importers:
         specifier: ^19.6.0
         version: 19.6.0
       foliate-js:
-        specifier: github:johnfactotum/foliate-js
-        version: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c
+        specifier: file:../../submodules/foliate-js
+        version: file:submodules/foliate-js
       framer-motion:
         specifier: ^10.18.0
         version: 10.18.0(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -6211,6 +6211,9 @@ packages:
 
   flatted@3.3.3:
     resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
+
+  foliate-js@file:submodules/foliate-js:
+    resolution: {directory: submodules/foliate-js, type: directory}
 
   foliate-js@https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c:
     resolution: {tarball: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c}
@@ -16169,6 +16172,8 @@ snapshots:
       hookified: 1.8.2
 
   flatted@3.3.3: {}
+
+  foliate-js@file:submodules/foliate-js: {}
 
   foliate-js@https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c: {}
 
