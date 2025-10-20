@@ -4,7 +4,7 @@ import { dal } from '@/dal';
 import { useBook } from '@/hooks/book';
 import { BookResItem } from '@/interface/book';
 import { InfoPanel } from './info-panel';
-import { LibraryToolbar } from './LibraryToolbar';
+import { LibraryToolbar } from './library-toolbar';
 import { MetaModal } from './meta-modal/meta-modal';
 import classes from './library.module.css';
 
@@ -14,6 +14,7 @@ export const Library = () => {
   const [books, setBooks] = useState<BookResItem[]>([]);
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [editingBook, setEditingBook] = useState<BookResItem | null>(null);
+
   const getList = async () => {
     const list = await dal.getBooks({});
     setBooks(list);
@@ -31,6 +32,7 @@ export const Library = () => {
     const get = async () => {
       await getList();
     };
+
     get();
   }, []);
 

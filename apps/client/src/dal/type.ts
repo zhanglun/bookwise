@@ -17,6 +17,11 @@ export interface UploadFileBody {
   cover: string;
 }
 
+export interface CoverQueryRecord {
+  uuid: string;
+  data: Uint8Array | null;
+}
+
 export type QueryBookFilter = {
   uuid?: string;
   title?: string;
@@ -27,7 +32,7 @@ export interface DataSource {
   uploadFile: (files: UploadFileBody[]) => Promise<void>;
   getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
   getBookByUuid: (uuid: string) => Promise<BookResItem>;
-  getBookBlob: (uuid: string) => Promise<{ uuid: string; data: ArrayBuffer }>;
+  getBookBlob: (uuid: string) => Promise<ArrayBuffer | null>;
   saveBookAndRelations: (
     model: BookMetadata,
     file: Uint8Array,
@@ -52,11 +57,6 @@ export type PublisherQueryRecord = {
   uuid: string;
   created_at: Date;
   updated_at: Date;
-};
-
-export type CoverQueryRecord = {
-  data: string;
-  uuid: string;
 };
 
 export type AdditionalInfoQueryRecord = {
@@ -86,7 +86,7 @@ export type BookQueryRecord = {
   updated_at: Date;
   authors: AuthorQueryRecord[];
   publishers: PublisherQueryRecord[];
-  cover?: string;
+  cover?: Uint8Array | null;
   additional_infos: AdditionalInfoQueryRecord | null;
   bookAuthors?: (AuthorQueryRecord & {
     bookAuthors: AuthorQueryRecord;
@@ -96,8 +96,4 @@ export type BookQueryRecord = {
     bookPublishers: PublisherQueryRecord;
     publisher: PublisherQueryRecord;
   })[];
-  bookCovers?: CoverQueryRecord & {
-    bookCovers: CoverQueryRecord;
-    cover: CoverQueryRecord;
-  };
 };

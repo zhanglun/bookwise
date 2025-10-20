@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Foliate } from './pages/foliate';
 import { Grabber } from './pages/grabber';
 import { HomePage } from './pages/Home.page';
-import { Library } from './pages/Library';
+import { Library } from './pages/library';
 import { PGLiteRepl } from './pages/PGLiteRepl';
 import { Viewer } from './pages/viewer';
 

@@ -10,6 +10,7 @@ export type InfoPanelType = {
 
 export const InfoPanel = (props: InfoPanelType) => {
   const { data } = props;
+  const { cover } = data || {};
 
   console.log('🚀 ~ InfoPanel ~ data:', data);
 
@@ -24,7 +25,7 @@ export const InfoPanel = (props: InfoPanelType) => {
   return (
     <div className={classes.infoPanel}>
       <div className={classes.infoPanelCover}>
-        <Cover book={data} />
+        <Cover book={data} cover={cover} />
       </div>
       <div className={classes.infoPanelContent}>
         <Title order={3}>{data.title}</Title>

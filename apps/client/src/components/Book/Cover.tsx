@@ -1,44 +1,36 @@
 import { clsx } from 'clsx';
+import { CoverQueryRecord } from '@/dal/type';
 import { BookResItem } from '@/interface/book';
 
 export interface CoverProps {
   book: BookResItem;
   className?: string;
+  cover?: CoverQueryRecord;
   onClick?: (book: BookResItem) => void;
 }
 
 export const Cover = (props: CoverProps) => {
-  const { onClick, book, className } = props;
+  const { onClick, book, cover, className } = props;
   const getBookCover = () => {
-    try {
-      if (!book?.title) {
-        console.warn('Book title is missing:', book);
+    if (cover) {
+      try {
+        const imageBlob = new Blob([cover.data as Uint8Array<ArrayBuffer>], { type: 'image/jpeg' });
+
+        return URL.createObjectURL(imageBlob);
+      } catch (error: any) {
+        console.error('Error generating book cover URL:', {
+          error,
+          book: book,
+          errorName: error.name,
+          errorMessage: error.message,
+        });
         return '';
       }
-
-      // 记录编码前后的书名
-      const originalTitle = book.title;
-      const encodedTitle = encodeURIComponent(book.title);
-      console.log('Book title encoding:', {
-        original: originalTitle,
-        encoded: encodedTitle,
-      });
-
-      const coverUrl = `data:image/png;base64,${book.cover}`;
-
-      return coverUrl;
-    } catch (error: any) {
-      console.error('Error generating book cover URL:', {
-        error,
-        book: book,
-        errorName: error.name,
-        errorMessage: error.message,
-      });
-      return '';
     }
+    return '';
   };
 
-  return book?.cover ? (
+  return cover ? (
     <div
       role="button"
       tabIndex={0}

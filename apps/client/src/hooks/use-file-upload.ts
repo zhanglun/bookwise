@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Book } from 'epubjs';
 import { makeBook } from 'foliate-js/view.js';
 import { toast } from 'sonner';
 import { BookMetadata, FileFormat } from '@/interface/book';
@@ -22,39 +21,39 @@ export function getFileFormatType(file: File): (typeof FileFormat)[keyof typeof 
   return FileFormat.UNKNOWN;
 }
 
-interface FileHandler {
-  formatMetadata: (file: File) => Promise<[BookMetadata, string]>;
-}
+// interface FileHandler {
+//   formatMetadata: (file: File) => Promise<[BookMetadata, string]>;
+// }
 
-const epubHandler: FileHandler = {
-  async formatMetadata(file: File): Promise<[BookMetadata, string]> {
-    const book = new Book(file as unknown as string);
-    const opened = (await book.opened) as Book & { cover: string };
-    const { cover, packaging } = opened;
-    const { metadata } = packaging;
+// const epubHandler: FileHandler = {
+//   async formatMetadata(file: File): Promise<[BookMetadata, string]> {
+//     const book = new Book(file as unknown as string);
+//     const opened = (await book.opened) as Book & { cover: string };
+//     const { cover, packaging } = opened;
+//     const { metadata } = packaging;
 
-    return [
-      {
-        title: metadata.title,
-        subject: '',
-        description: metadata.description,
-        contributor: '',
-        identifier: metadata.identifier,
-        source: '',
-        rights: '',
-        language: metadata.language,
-        format: getFileFormatType(file),
-        page_count: 0,
-        isbn: '',
-        cover,
-        authors: metadata.creator,
-        publishers: metadata.publisher,
-        publish_at: new Date(metadata.pubdate),
-      },
-      cover,
-    ];
-  },
-};
+//     return [
+//       {
+//         title: metadata.title,
+//         subject: '',
+//         description: metadata.description,
+//         contributor: '',
+//         identifier: metadata.identifier,
+//         source: '',
+//         rights: '',
+//         language: metadata.language,
+//         format: getFileFormatType(file),
+//         page_count: 0,
+//         isbn: '',
+//         cover,
+//         authors: metadata.creator,
+//         publishers: metadata.publisher,
+//         publish_at: new Date(metadata.pubdate),
+//       },
+//       cover,
+//     ];
+//   },
+// };
 
 async function fileReaderAsync(file: File): Promise<ArrayBuffer> {
   return new Promise<ArrayBuffer>((resolve) => {
@@ -92,8 +91,6 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
       const metadata = book.metadata;
       const cover = await book.getCover();
       const coverBuffer = cover ? new Uint8Array(await cover.arrayBuffer()) : null;
-
-      console.log('🚀 ~ processFiles ~ coverBuffer:', coverBuffer);
 
       const buffer = await fileReaderAsync(file);
 

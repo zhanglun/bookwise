@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import * as AdmZip from 'adm-zip';
 import { Book } from 'epubjs';
 import JSZip from 'jszip';
 import { toast } from 'sonner';

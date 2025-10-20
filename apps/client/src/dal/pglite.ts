@@ -20,7 +20,7 @@ import {
   LanguageResItem,
   PublisherResItem,
 } from '@/interface/book';
-import { BookQueryRecord, DataSource, QueryBookFilter } from './type';
+import { BookQueryRecord, CoverQueryRecord, DataSource, QueryBookFilter } from './type';
 
 export class PGLiteDataSource implements DataSource {
   async getBooks(filter: QueryBookFilter): Promise<BookResItem[]> {
@@ -49,31 +49,39 @@ export class PGLiteDataSource implements DataSource {
             publisher: true,
           },
         },
-        bookCovers: {
-          with: {
-            cover: true,
-          },
-        },
       },
     });
 
+    const bookUuids = records.map((item) => item.uuid);
+    const coverRecords = await drizzleDB
+      .select({
+        bookUuid: bookCovers.book_uuid,
+        cover: covers,
+      })
+      .from(bookCovers)
+      .innerJoin(covers, eq(bookCovers.cover_uuid, covers.uuid))
+      .where(inArray(bookCovers.book_uuid, bookUuids));
+
+    const coverMap = new Map<string, CoverQueryRecord>();
+
+    for (const record of coverRecords) {
+      coverMap.set(record.bookUuid as string, record.cover);
+    }
+
     const result = [];
 
-    console.log('🚀 ~ PGLiteDataSource ~ getBooks ~ records:', records);
-
     for (const record of records) {
-      const temp = { ...record };
+      record.authors = (record.bookAuthors || []).map((item) => item.author);
+      record.publishers = (record.bookPublishers || []).map((item) => item.publisher);
+      record.cover = coverMap.get(record.uuid) as CoverQueryRecord;
 
-      temp.authors = (temp.bookAuthors || []).map((item) => item.author);
-      temp.publishers = (temp.bookPublishers || []).map((item) => item.publisher);
-      temp.cover = temp.bookCovers?.cover.data;
+      delete record.bookPublishers;
+      delete record.bookAuthors;
 
-      delete temp.bookPublishers;
-      delete temp.bookAuthors;
-      delete temp.bookCovers;
-
-      result.push(temp);
+      result.push(record);
     }
+
+    console.log('🚀 ~ PGLiteDataSource ~ getBooks ~ result:', result);
 
     return result as unknown as BookResItem[];
   }
@@ -104,8 +112,6 @@ export class PGLiteDataSource implements DataSource {
     file: Uint8Array,
     cover: Uint8Array | null
   ): Promise<BookResItem> {
-    console.log('🚀 ~ PGLiteDataSource ~ saveBookAndRelations ~ model:', model);
-
     if (!file) {
       throw new Error('文件不存在');
     }
@@ -136,6 +142,7 @@ export class PGLiteDataSource implements DataSource {
         .returning();
 
       const blobRecord = await drizzleDB.insert(blobs).values({ data: file }).returning();
+
       await drizzleDB
         .insert(bookBlobs)
         .values({
