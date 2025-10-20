@@ -41,7 +41,7 @@ export class DataAccessLayer {
     return this.dataSource.getBookBlob(uuid);
   }
 
-  async saveBookAndRelations(model: BookMetadata, file: ArrayBuffer, cover: string) {
+  async saveBookAndRelations(model: BookMetadata, file: Uint8Array, cover: Uint8Array | null) {
     return this.dataSource.saveBookAndRelations(model, file, cover);
   }
 

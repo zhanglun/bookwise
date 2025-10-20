@@ -51,7 +51,7 @@ export const publishers = pgTable('publishers', {
 
 export const covers = pgTable('covers', {
   uuid: uuid('uuid').defaultRandom().notNull().primaryKey(),
-  data: text('data').notNull().default(''),
+  data: bytea('data'),
 });
 
 export const blobs = pgTable('blobs', {

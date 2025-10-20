@@ -25,6 +25,7 @@ export const Foliate = () => {
         try {
           // makeBook 可以直接接受 URL 字符串
           const book = await makeBook(url);
+          console.log('🚀 ~ loadBooks ~ book?.getCover():', await book?.getCover());
           results[format] = book;
         } catch (error) {
           console.error(`Failed to load ${format}:`, error);
@@ -33,6 +34,7 @@ export const Foliate = () => {
       }
 
       setBooks(results);
+      console.log('🚀 ~ loadBooks ~ results:', results);
       setErrors(errorResults);
       setLoading(false);
     };

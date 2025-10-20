@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Book } from 'epubjs';
-import JSZip from 'jszip';
+import { makeBook } from 'foliate-js/view.js';
 import { toast } from 'sonner';
 import { BookMetadata, FileFormat } from '@/interface/book';
 
@@ -56,36 +56,6 @@ const epubHandler: FileHandler = {
   },
 };
 
-const pdfHandler: FileHandler = {
-  async formatMetadata(file: File): Promise<[BookMetadata, string]> {
-    return [
-      {
-        title: file.name.replace('.pdf', ''),
-        subject: '',
-        description: '',
-        contributor: '',
-        identifier: '',
-        source: '',
-        rights: '',
-        language: '',
-        format: getFileFormatType(file),
-        page_count: 0,
-        isbn: '',
-        authors: '',
-        cover: '',
-        publishers: '',
-        publish_at: new Date(file.lastModified),
-      },
-      '',
-    ];
-  },
-};
-
-const fileHandlers: Record<string, FileHandler> = {
-  'application/epub+zip': epubHandler,
-  'application/pdf': pdfHandler,
-};
-
 async function fileReaderAsync(file: File): Promise<ArrayBuffer> {
   return new Promise<ArrayBuffer>((resolve) => {
     const reader = new FileReader();
@@ -103,40 +73,11 @@ export interface UploadFileBody {
   lastModified: Date | number;
   buffer: Uint8Array;
   metadata: BookMetadata;
-  cover: string;
+  cover: Uint8Array | null;
 }
 export interface UseFileUploadOptions {
   onSuccess?: (books: UploadFileBody[]) => void;
   acceptTypes?: string[];
-}
-
-async function parseCover(cover: string, blob: Blob): Promise<string | null> {
-  const zip = new JSZip();
-  const result = await zip.loadAsync(blob);
-  const { files }: { files: { [key: string]: JSZip.JSZipObject } } = result;
-
-  for (const filename in files) {
-    if (cover.lastIndexOf(filename) !== -1) {
-      const unit8 = await files[filename].async('base64');
-      return unit8;
-    }
-  }
-
-  return null;
-
-  // const a = Object.keys(files).reduce(
-  //   (acu, z) => {
-  //     console.log('z.entry', z.entryName);
-  //     if (z.entryName.lastIndexOf(cover) != -1) {
-  //       acu = z.getData();
-  //     }
-
-  //     return acu;
-  //   },
-  //   null as unknown as Buffer
-  // );
-
-  // return [a, a.toString('base64')];
 }
 
 export function useFileUpload(options: UseFileUploadOptions = {}) {
@@ -147,14 +88,14 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     const body: UploadFileBody[] = [];
 
     for (const file of files) {
-      const handler = fileHandlers[file.type];
-      if (!handler) {
-        throw new Error(`Unsupported file type: ${file.type}`);
-      }
+      const book = await makeBook(file as unknown as string);
+      const metadata = book.metadata;
+      const cover = await book.getCover();
+      const coverBuffer = cover ? new Uint8Array(await cover.arrayBuffer()) : null;
 
-      const [metadata, cover] = await handler.formatMetadata(file);
+      console.log('🚀 ~ processFiles ~ coverBuffer:', coverBuffer);
+
       const buffer = await fileReaderAsync(file);
-      const coverBase64 = await parseCover(cover, buffer as any);
 
       body.push({
         name: file.name,
@@ -162,8 +103,24 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
         type: file.type,
         lastModified: file.lastModified,
         buffer: new Uint8Array(buffer),
-        metadata,
-        cover: coverBase64 as string,
+        metadata: {
+          title: metadata.title,
+          subject: '',
+          description: metadata.description,
+          contributor: '',
+          identifier: metadata.identifier,
+          source: '',
+          rights: '',
+          language: metadata.language,
+          format: getFileFormatType(file),
+          page_count: 0,
+          isbn: '',
+          cover,
+          authors: [metadata.author?.name],
+          publishers: [metadata.publisher?.name],
+          publish_at: new Date(metadata.published),
+        },
+        cover: coverBuffer,
       });
     }
 

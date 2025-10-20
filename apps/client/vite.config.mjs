@@ -15,6 +15,7 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@tabler/icons-react': '@tabler/icons-react/dist/esm/icons/index.mjs',
+      'foliate-js': path.resolve(__dirname, '../../submodules/foliate-js'),
     },
   },
   optimizeDeps: {

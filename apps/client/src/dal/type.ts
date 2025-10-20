@@ -30,8 +30,8 @@ export interface DataSource {
   getBookBlob: (uuid: string) => Promise<{ uuid: string; data: ArrayBuffer }>;
   saveBookAndRelations: (
     model: BookMetadata,
-    file: ArrayBuffer,
-    cover: string
+    file: Uint8Array,
+    cover: Uint8Array | null
   ) => Promise<BookResItem>;
   removeBookCache: (uuid: string) => Promise<void>;
   getAuthors: () => Promise<AuthorResItem[]>;

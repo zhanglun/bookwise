@@ -1,5 +1,4 @@
 import { and, desc, eq, gt, gte, inArray, like, lt, lte, SQL } from 'drizzle-orm';
-import { b } from 'vitest/dist/chunks/suite.d.FvehnV49.js';
 import { drizzleDB } from '@/db';
 import {
   authors,
@@ -102,10 +101,11 @@ export class PGLiteDataSource implements DataSource {
 
   async saveBookAndRelations(
     model: BookMetadata,
-    file: ArrayBuffer,
-    cover: string
+    file: Uint8Array,
+    cover: Uint8Array | null
   ): Promise<BookResItem> {
-    console.log('🚀 ~ PGLiteDataSource ~ file:', file);
+    console.log('🚀 ~ PGLiteDataSource ~ saveBookAndRelations ~ model:', model);
+
     if (!file) {
       throw new Error('文件不存在');
     }
@@ -144,64 +144,73 @@ export class PGLiteDataSource implements DataSource {
         })
         .returning();
 
-      console.log('🚀 ~ PGLiteDataSource ~ blobRecord:', blobRecord);
+      if (model.authors.length) {
+        const existingAuthors = await drizzleDB
+          .select()
+          .from(authors)
+          .where(inArray(authors.name, model.authors as string[]));
+        const existingNames = new Set(existingAuthors.map((a) => a.name));
 
-      let author = await drizzleDB
-        .select()
-        .from(authors)
-        .where(eq(authors.name, model.authors as string))
-        .then((rows) => rows[0]);
+        const newAuthorNames = (model.authors as string[]).filter(
+          (name) => !existingNames.has(name)
+        );
 
-      if (!author) {
-        [author] = await drizzleDB
-          .insert(authors)
-          .values({
-            name: model.authors as string,
-          })
-          .returning();
-        if (!author) {
-          throw new Error('创建作者失败');
+        if (newAuthorNames.length > 0) {
+          const insertAuthorResult = await drizzleDB
+            .insert(authors)
+            .values(newAuthorNames.map((name) => ({ name })))
+            .returning({ uuid: authors.uuid, name: authors.name });
+          const authorUuids = insertAuthorResult.map((a) => a.uuid);
+
+          if (authorUuids.length > 0) {
+            const bookAuthorValues = authorUuids.map((uuid) => ({
+              book_uuid: newBook.uuid,
+              author_uuid: uuid,
+            }));
+            const bookAuthorResult = await drizzleDB
+              .insert(bookAuthors)
+              .values(bookAuthorValues)
+              .returning();
+            if (!bookAuthorResult || bookAuthorResult.length === 0) {
+              throw new Error('建立书籍作者关联失败');
+            }
+          }
         }
       }
 
-      let publisher = await drizzleDB
-        .select()
-        .from(publishers)
-        .where(eq(publishers.name, model.publishers as string))
-        .then((rows) => rows[0]);
+      if (model.publishers.length) {
+        const existingPublishers = await drizzleDB
+          .select()
+          .from(publishers)
+          .where(inArray(publishers.name, model.publishers as string[]));
+        const existingNames = new Set(existingPublishers.map((p) => p.name));
 
-      if (!publisher) {
-        [publisher] = await drizzleDB
-          .insert(publishers)
-          .values({
-            name: model.publishers as string,
-          })
-          .returning();
-        if (!publisher) {
-          throw new Error('创建出版社失败');
+        const newPublisherNames = (model.publishers as string[]).filter(
+          (name) => !existingNames.has(name)
+        );
+
+        if (newPublisherNames.length > 0) {
+          const insertPublishers = await drizzleDB
+            .insert(publishers)
+            .values(newPublisherNames.map((name) => ({ name })))
+            .returning({ uuid: publishers.uuid, name: publishers.name });
+
+          const publisherUuids = insertPublishers.map((p) => p.uuid);
+
+          if (publisherUuids.length > 0) {
+            const bookPublisherValues = publisherUuids.map((uuid) => ({
+              book_uuid: newBook.uuid,
+              publisher_uuid: uuid,
+            }));
+            const bookPublisherResult = await drizzleDB
+              .insert(bookPublishers)
+              .values(bookPublisherValues)
+              .returning();
+            if (!bookPublisherResult || bookPublisherResult.length === 0) {
+              throw new Error('建立书籍出版社关联失败');
+            }
+          }
         }
-      }
-
-      const bookAuthorResult = await drizzleDB
-        .insert(bookAuthors)
-        .values({
-          book_uuid: newBook.uuid,
-          author_uuid: author.uuid,
-        })
-        .returning();
-      if (!bookAuthorResult || bookAuthorResult.length === 0) {
-        throw new Error('建立书籍作者关联失败');
-      }
-
-      const bookPublisherResult = await drizzleDB
-        .insert(bookPublishers)
-        .values({
-          book_uuid: newBook.uuid,
-          publisher_uuid: publisher.uuid,
-        })
-        .returning();
-      if (!bookPublisherResult || bookPublisherResult.length === 0) {
-        throw new Error('建立书籍出版社关联失败');
       }
 
       return newBook as unknown as BookResItem;
