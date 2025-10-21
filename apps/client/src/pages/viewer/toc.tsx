@@ -19,7 +19,7 @@ export interface TocProps {
 }
 
 export const Toc = ({ items = [], className }: TocProps) => {
-  const [currentTocItem, setCurrentTocItem] = useAtom(currentTocItemAtom);
+  const [, setCurrentTocItem] = useAtom(currentTocItemAtom);
 
   const handleItemClick = (item: TocItem) => {
     setCurrentTocItem(item);

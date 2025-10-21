@@ -32,7 +32,7 @@ export interface DataSource {
   uploadFile: (files: UploadFileBody[]) => Promise<void>;
   getBooks: (filter: QueryBookFilter) => Promise<BookResItem[]>;
   getBookByUuid: (uuid: string) => Promise<BookResItem>;
-  getBookBlob: (uuid: string) => Promise<ArrayBuffer | null>;
+  getBookBlob: (uuid: string) => Promise<{ uuid: string; data: Uint8Array | null }>;
   saveBookAndRelations: (
     model: BookMetadata,
     file: Uint8Array,

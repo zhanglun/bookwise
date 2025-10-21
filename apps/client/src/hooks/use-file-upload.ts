@@ -89,6 +89,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
     for (const file of files) {
       const book = await makeBook(file as unknown as string);
       const metadata = book.metadata;
+      console.log('🚀 ~ processFiles ~ metadata:', metadata);
       const cover = await book.getCover();
       const coverBuffer = cover ? new Uint8Array(await cover.arrayBuffer()) : null;
 
@@ -101,7 +102,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
         lastModified: file.lastModified,
         buffer: new Uint8Array(buffer),
         metadata: {
-          title: metadata.title,
+          title: metadata.title || file.name,
           subject: '',
           description: metadata.description,
           contributor: '',
@@ -115,7 +116,7 @@ export function useFileUpload(options: UseFileUploadOptions = {}) {
           cover,
           authors: [metadata.author?.name],
           publishers: [metadata.publisher?.name],
-          publish_at: new Date(metadata.published),
+          publish_at: new Date(metadata.published || Date.now()),
         },
         cover: coverBuffer,
       });

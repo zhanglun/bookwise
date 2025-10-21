@@ -3,9 +3,9 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
-import ePub, { Book, NavItem } from 'epubjs';
+import { Book, NavItem } from 'epubjs';
 import Section from 'epubjs/types/section';
-import { fileTypeFromBuffer } from 'file-type';
+import { makeBook } from 'foliate-js/view.js';
 import { useAtom } from 'jotai';
 import { Button, Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
@@ -64,34 +64,35 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   useEffect(() => {
     if (bookUuid) {
       Promise.all([getBookDetail(), getBookBlob()]).then(async ([_bookDetail, record]) => {
-        const buffer = record.data;
-        const type = (await fileTypeFromBuffer(buffer)) as { mime: string };
-        const blob = new Blob([buffer], { type: type.mime as string });
-        const book = ePub(blob as unknown as ArrayBuffer);
-        console.log('🚀 ~ Promise.all ~ book:', book);
-
-        if (book) {
-          try {
-            await book.opened;
-            console.log('book.open');
-            // 等待导航数据加载
-            await book.loaded.navigation;
-            // 设置 book 状态
-            setBook(book);
-            const spine_index = '0';
-
-            // 在导航数据加载完成后更新目录
-            if (book.navigation) {
-              const tocItems = convertNavItemsToTocItems(book.navigation.toc);
-              onTocUpdate?.(tocItems);
-            }
-
-            display(parseInt(spine_index || '0', 10), book);
-            setCurrentSection(book.spine.get(spine_index));
-          } catch (error) {
-            console.error('Error loading book:', error);
-          }
+        if (record && record.data) {
+          const f = new File([record.data], _bookDetail.title);
+          const book = await makeBook(f);
+          console.log('🚀 ~ book:', book);
+          onTocUpdate?.(book.toc);
         }
+
+        // if (book) {
+        //   try {
+        //     await book.opened;
+        //     console.log('book.open');
+        //     // 等待导航数据加载
+        //     await book.loaded.navigation;
+        //     // 设置 book 状态
+        //     setBook(book);
+        //     const spine_index = '0';
+
+        //     // 在导航数据加载完成后更新目录
+        //     if (book.navigation) {
+        //       const tocItems = convertNavItemsToTocItems(book.navigation.toc);
+        //       onTocUpdate?.(tocItems);
+        //     }
+
+        //     display(parseInt(spine_index || '0', 10), book);
+        //     setCurrentSection(book.spine.get(spine_index));
+        //   } catch (error) {
+        //     console.error('Error loading book:', error);
+        //   }
+        // }
       });
     }
   }, [bookUuid]);
