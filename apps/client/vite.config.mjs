@@ -24,4 +24,7 @@ export default defineConfig({
       target: 'esnext', // or 'es2022'
     },
   },
+  server: {
+    port: '3344',
+  },
 });

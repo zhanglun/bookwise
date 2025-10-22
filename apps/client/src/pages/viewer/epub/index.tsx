@@ -5,7 +5,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Book, NavItem } from 'epubjs';
 import Section from 'epubjs/types/section';
-import { makeBook } from 'foliate-js/view.js';
+import { makeBook, View } from 'foliate-js/view.js';
 import { useAtom } from 'jotai';
 import { Button, Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
@@ -23,13 +23,11 @@ export interface EpubViewerProps {
 
 export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   const [currentTocItem] = useAtom(currentTocItemAtom);
-  const [currentSection, setCurrentSection] = useState<Section>();
-  const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [book, setBook] = useState<Book>();
   const [_bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [content, setContent] = useState<string>('');
+  const [url, setUrl] = useState('');
 
   // 将 epub 的 NavItem 转换为通用的 TocItem
   const convertNavItemsToTocItems = (navItems: NavItem[]): TocItem[] => {
@@ -69,80 +67,34 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
           const book = await makeBook(f);
           console.log('🚀 ~ book:', book);
           onTocUpdate?.(book.toc);
+
+          const view = document.createElement('foliate-view');
+
+          document.body.append(view);
+          scrollAreaRef.current && scrollAreaRef.current.append(view);
+
+          view.addEventListener('relocate', (e) => {
+            console.log('location changed');
+            console.log(e.detail);
+          });
+
+          // can open a File/Blob object or a URL
+          // or any object that implements the "book" interface
+          await view.open(f);
+
+          await view.goTo(1);
+
+          // display(0, book);
         }
-
-        // if (book) {
-        //   try {
-        //     await book.opened;
-        //     console.log('book.open');
-        //     // 等待导航数据加载
-        //     await book.loaded.navigation;
-        //     // 设置 book 状态
-        //     setBook(book);
-        //     const spine_index = '0';
-
-        //     // 在导航数据加载完成后更新目录
-        //     if (book.navigation) {
-        //       const tocItems = convertNavItemsToTocItems(book.navigation.toc);
-        //       onTocUpdate?.(tocItems);
-        //     }
-
-        //     display(parseInt(spine_index || '0', 10), book);
-        //     setCurrentSection(book.spine.get(spine_index));
-        //   } catch (error) {
-        //     console.error('Error loading book:', error);
-        //   }
-        // }
       });
     }
   }, [bookUuid]);
 
-  function display(index: number, book?: Book, anchorId?: string) {
+  async function display(index: number, book?: Book, anchorId?: string) {
     setLoading(true);
 
-    const section = book?.spine.get(index);
-
-    if (section && book) {
-      setCurrentSection(section);
-      setContent('');
-
-      const p = section.load(book.load.bind(book));
-
-      // @ts-expect-error library typed error
-      p.then((content: HTMLElement) => {
-        if (content && content.innerHTML) {
-          console.log('🚀 ~ p.then ~ content:', content);
-          // const styles = content.querySelectorAll('[type="text/css"]');
-
-          // styles.forEach((s: Element) => s.remove());
-
-          // @ts-expect-error library typed error
-          const { urls, replacementUrls } = book.resources;
-          const str = substitute(content.innerHTML, urls, replacementUrls);
-
-          setContent(str);
-          setCurrentSectionIndex(index);
-
-          setTimeout(() => {
-            if (anchorId) {
-              const target = document.getElementById(anchorId);
-
-              target?.scrollIntoView();
-            } else {
-              scrollAreaRef.current && scrollAreaRef.current.scrollTo(0, 0);
-            }
-
-            setLoading(false);
-
-            const progress = scrollAreaRef?.current?.scrollTop || 0;
-
-            updateReadProgress(index, progress);
-          });
-        }
-      });
-    }
-
-    return section;
+    const url = await book?.sections[index].load();
+    setUrl(url);
   }
 
   function updateReadProgress(_spine_index: number, _read_progress: number) {
@@ -160,82 +112,74 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
     //   });
   }
 
-  const nextPage = () => {
-    display(currentSectionIndex + 1, book);
-  };
+  // useEffect(() => {
+  //   const keyListener = function (e: KeyboardEvent) {
+  //     if ((e.keyCode || e.which) === 37) {
+  //       prevPage();
+  //     }
 
-  const prevPage = () => {
-    display(currentSectionIndex - 1, book);
-  };
+  //     if ((e.keyCode || e.which) === 39) {
+  //       nextPage();
+  //     }
+  //   };
 
-  useEffect(() => {
-    const keyListener = function (e: KeyboardEvent) {
-      if ((e.keyCode || e.which) === 37) {
-        prevPage();
-      }
+  //   document.addEventListener('keyup', keyListener, false);
 
-      if ((e.keyCode || e.which) === 39) {
-        nextPage();
-      }
-    };
+  //   return function () {
+  //     document.addEventListener('keyup', keyListener, false);
+  //   };
+  // }, []);
 
-    document.addEventListener('keyup', keyListener, false);
+  // function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
+  //   let elem = null;
+  //   const i = e.nativeEvent.composedPath();
 
-    return function () {
-      document.addEventListener('keyup', keyListener, false);
-    };
-  }, []);
+  //   for (let a = 0; a <= i.length - 1; a++) {
+  //     const s = i[a] as HTMLElement;
 
-  function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
-    let elem = null;
-    const i = e.nativeEvent.composedPath();
+  //     if (s.tagName === 'A') {
+  //       elem = s;
+  //       break;
+  //     }
+  //   }
 
-    for (let a = 0; a <= i.length - 1; a++) {
-      const s = i[a] as HTMLElement;
+  //   if (elem && elem.getAttribute('href')) {
+  //     e.preventDefault();
+  //     e.stopPropagation();
 
-      if (s.tagName === 'A') {
-        elem = s;
-        break;
-      }
-    }
+  //     const href = elem.getAttribute('href') || '';
 
-    if (elem && elem.getAttribute('href')) {
-      e.preventDefault();
-      e.stopPropagation();
+  //     if (
+  //       href &&
+  //       (href.indexOf('http://') >= 0 || href.indexOf('https://') >= 0 || href.indexOf('www.') >= 0)
+  //     ) {
+  //       window.open(href);
+  //     } else if (currentSection) {
+  //       const realHref = getAbsoluteUrl(currentSection?.href, href);
+  //       const [hrefId, anchorId] = realHref.split('#');
+  //       const section = book?.spine.get(hrefId);
 
-      const href = elem.getAttribute('href') || '';
+  //       if (section) {
+  //         setCurrentSection(section);
+  //         setCurrentSectionIndex(section.index as number);
+  //         display(section.index, book, anchorId);
+  //       }
+  //     }
+  //   }
+  // }
 
-      if (
-        href &&
-        (href.indexOf('http://') >= 0 || href.indexOf('https://') >= 0 || href.indexOf('www.') >= 0)
-      ) {
-        window.open(href);
-      } else if (currentSection) {
-        const realHref = getAbsoluteUrl(currentSection?.href, href);
-        const [hrefId, anchorId] = realHref.split('#');
-        const section = book?.spine.get(hrefId);
+  // useEffect(() => {
+  //   if (currentTocItem) {
+  //     const { href } = currentTocItem;
+  //     const section = book?.spine.get(href);
 
-        if (section) {
-          setCurrentSection(section);
-          setCurrentSectionIndex(section.index as number);
-          display(section.index, book, anchorId);
-        }
-      }
-    }
-  }
-
-  useEffect(() => {
-    if (currentTocItem) {
-      const { href } = currentTocItem;
-      const section = book?.spine.get(href);
-
-      if (section) {
-        setCurrentSection(section);
-        setCurrentSectionIndex(section.index as number);
-        display(section.index, book);
-      }
-    }
-  }, [currentTocItem]);
+  //     if (section) {
+  //       setCurrentSection(section);
+  //       setCurrentSectionIndex(section.index as number);
+  //       display(section.index, book);
+  //     }
+  //   }
+  // }, [currentTocItem]);
 
   return (
     <div className="h-full flex flex-col">
@@ -256,16 +200,17 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
               <Loader size="3" />
             </div>
           )}
-          <div className="relative m-auto max-w-[1020px] px-[40px] py-4">
+          {/* <div className="relative m-auto max-w-[1020px] px-[40px] py-4">
             <section className="w-full h-full" id="book-section" onClick={handleUserClickEvent}>
               <ContentRender contentString={content} />
             </section>
-          </div>
+          </div> */}
+          {/* <iframe src={url} sandbox="allow-same-origin allow-scripts" scrolling="no" /> */}
         </ScrollArea>
       </div>
 
       {/* 操作区域 - 固定高度42px */}
-      <div className="h-[42px] border-t border-gray-200 bg-white flex items-center justify-center space-x-4 px-4 flex-shrink-0">
+      {/* <div className="h-[42px] border-t border-gray-200 bg-white flex items-center justify-center space-x-4 px-4 flex-shrink-0">
         <Button
           variant="subtle"
           size="sm"
@@ -283,7 +228,7 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
         >
           下一页
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 });

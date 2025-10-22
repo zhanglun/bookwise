@@ -25,7 +25,14 @@ export const Foliate = () => {
         try {
           // makeBook 可以直接接受 URL 字符串
           const book = await makeBook(url);
-          console.log('🚀 ~ loadBooks ~ book?.getCover():', await book?.getCover());
+          console.log('🚀 ~ loadBooks ~ book:', book);
+          const toc = book.toc;
+          console.log('🚀 ~ loadBooks ~ toc:', toc);
+
+          const first = await book.sections[0].load();
+
+          console.log('🚀 ~ loadBooks ~ first:', first);
+
           results[format] = book;
         } catch (error) {
           console.error(`Failed to load ${format}:`, error);
