@@ -2,19 +2,15 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Book, NavItem } from 'epubjs';
-import Section from 'epubjs/types/section';
 import { makeBook, View } from 'foliate-js/view.js';
 import { useAtom } from 'jotai';
 import { Button, Loader, ScrollArea } from '@mantine/core';
 import { dal } from '@/dal';
-import { getAbsoluteUrl } from '@/helpers/book';
-import { substitute } from '@/helpers/epub';
 import { BookResItem } from '@/interface/book';
 import { TocItem } from '../toc';
-import { ContentRender } from './content-render';
 import { currentTocItemAtom } from './epub-atom';
+import { Renderer } from './renderer';
 
 export interface EpubViewerProps {
   bookUuid: string;
@@ -27,7 +23,6 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
   const [_bookDetail, setBookDetail] = useState<BookResItem>({} as BookResItem);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState('');
 
   // 将 epub 的 NavItem 转换为通用的 TocItem
   const convertNavItemsToTocItems = (navItems: NavItem[]): TocItem[] => {
@@ -66,126 +61,18 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
           const f = new File([record.data], _bookDetail.title);
           const book = await makeBook(f);
           console.log('🚀 ~ book:', book);
+          setBook(book);
           onTocUpdate?.(book.toc);
-
-          const view = document.createElement('foliate-view');
-
-          document.body.append(view);
-          scrollAreaRef.current && scrollAreaRef.current.append(view);
-
-          view.addEventListener('relocate', (e) => {
-            console.log('location changed');
-            console.log(e.detail);
-          });
-
-          // can open a File/Blob object or a URL
-          // or any object that implements the "book" interface
-          await view.open(f);
-
-          await view.goTo(1);
-
-          // display(0, book);
         }
       });
     }
   }, [bookUuid]);
 
-  async function display(index: number, book?: Book, anchorId?: string) {
-    setLoading(true);
-
-    const url = await book?.sections[index].load();
-    setUrl(url);
-  }
-
-  function updateReadProgress(_spine_index: number, _read_progress: number) {
-    // const body = {
-    //   spine_index: spine_index.toString(),
-    //   read_progress,
-    //   read_progress_updated_at: new Date(),
-    // };
-    // request
-    //   .post(`/books/${bookUuid}/additional_infos`, {
-    //     ...body,
-    //   })
-    //   .then((res) => {
-    //     console.log('%c Line:126 🍎 res', 'color:#fca650', res);
-    //   });
-  }
-
-  // useEffect(() => {
-  //   const keyListener = function (e: KeyboardEvent) {
-  //     if ((e.keyCode || e.which) === 37) {
-  //       prevPage();
-  //     }
-
-  //     if ((e.keyCode || e.which) === 39) {
-  //       nextPage();
-  //     }
-  //   };
-
-  //   document.addEventListener('keyup', keyListener, false);
-
-  //   return function () {
-  //     document.addEventListener('keyup', keyListener, false);
-  //   };
-  // }, []);
-
-  // function handleUserClickEvent(e: React.MouseEvent<HTMLElement>) {
-  //   let elem = null;
-  //   const i = e.nativeEvent.composedPath();
-
-  //   for (let a = 0; a <= i.length - 1; a++) {
-  //     const s = i[a] as HTMLElement;
-
-  //     if (s.tagName === 'A') {
-  //       elem = s;
-  //       break;
-  //     }
-  //   }
-
-  //   if (elem && elem.getAttribute('href')) {
-  //     e.preventDefault();
-  //     e.stopPropagation();
-
-  //     const href = elem.getAttribute('href') || '';
-
-  //     if (
-  //       href &&
-  //       (href.indexOf('http://') >= 0 || href.indexOf('https://') >= 0 || href.indexOf('www.') >= 0)
-  //     ) {
-  //       window.open(href);
-  //     } else if (currentSection) {
-  //       const realHref = getAbsoluteUrl(currentSection?.href, href);
-  //       const [hrefId, anchorId] = realHref.split('#');
-  //       const section = book?.spine.get(hrefId);
-
-  //       if (section) {
-  //         setCurrentSection(section);
-  //         setCurrentSectionIndex(section.index as number);
-  //         display(section.index, book, anchorId);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (currentTocItem) {
-  //     const { href } = currentTocItem;
-  //     const section = book?.spine.get(href);
-
-  //     if (section) {
-  //       setCurrentSection(section);
-  //       setCurrentSectionIndex(section.index as number);
-  //       display(section.index, book);
-  //     }
-  //   }
-  // }, [currentTocItem]);
-
   return (
     <div className="h-full flex flex-col">
       {/* 可视区域 - 盛满剩余高度并可滚动 */}
       <div className="flex-1 min-h-0">
-        <ScrollArea
+        {/* <ScrollArea
           id="canvasRoot"
           type="hover"
           ref={scrollAreaRef}
@@ -200,35 +87,9 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
               <Loader size="3" />
             </div>
           )}
-          {/* <div className="relative m-auto max-w-[1020px] px-[40px] py-4">
-            <section className="w-full h-full" id="book-section" onClick={handleUserClickEvent}>
-              <ContentRender contentString={content} />
-            </section>
-          </div> */}
-          {/* <iframe src={url} sandbox="allow-same-origin allow-scripts" scrolling="no" /> */}
-        </ScrollArea>
+        </ScrollArea> */}
+        <Renderer book={book} />
       </div>
-
-      {/* 操作区域 - 固定高度42px */}
-      {/* <div className="h-[42px] border-t border-gray-200 bg-white flex items-center justify-center space-x-4 px-4 flex-shrink-0">
-        <Button
-          variant="subtle"
-          size="sm"
-          leftSection={<IconChevronLeft size={16} />}
-          onClick={prevPage}
-          disabled={currentSectionIndex <= 0}
-        >
-          上一页
-        </Button>
-        <Button
-          variant="subtle"
-          size="sm"
-          rightSection={<IconChevronRight size={16} />}
-          onClick={nextPage}
-        >
-          下一页
-        </Button>
-      </div> */}
     </div>
   );
 });

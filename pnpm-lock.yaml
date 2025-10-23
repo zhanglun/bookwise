@@ -49,7 +49,7 @@ importers:
         version: 0.0.1-security
       foliate-js:
         specifier: github:johnfactotum/foliate-js
-        version: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c
+        version: git+https://git@github.com:johnfactotum/foliate-js.git#c49ded0cc498ed323b044eb3274bbfc3e4e9b07c
       jszip:
         specifier: ^3.10.1
         version: 3.10.1
@@ -382,6 +382,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.2
         version: 8.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@tanstack/react-virtual':
+        specifier: ^3.13.12
+        version: 3.13.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
@@ -3903,9 +3906,18 @@ packages:
       react: '>=16.8'
       react-dom: '>=16.8'
 
+  '@tanstack/react-virtual@3.13.12':
+    resolution: {integrity: sha512-Gd13QdxPSukP8ZrkbgS2RwoZseTTbQPLnQEn7HY/rqtM+8Zt95f7xKC7N0EsKs7aoz0WzZ+fditZux+F8EzYxA==}
+    peerDependencies:
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
   '@tanstack/table-core@8.21.2':
     resolution: {integrity: sha512-uvXk/U4cBiFMxt+p9/G7yUWI/UbHYbyghLCjlpWZ3mLeIZiUBSKcUnw9UnKkdRz7Z/N4UBuFLWQdJCjUe7HjvA==}
     engines: {node: '>=12'}
+
+  '@tanstack/virtual-core@3.13.12':
+    resolution: {integrity: sha512-1YBOJfRHV4sXUmWsFSf5rQor4Ss82G8dQWLRbnk3GA4jeP8hQt1hxXh0tmflpC0dz3VgEv/1+qwPyLeWkQuPFA==}
 
   '@testing-library/dom@10.4.0':
     resolution: {integrity: sha512-pemlzrSESWbdAloYml3bAJMEfNh1Z7EduzqPKprCH5S341frlpYnUEW0H72dLxa6IsYr+mPno20GiSm+h9dEdQ==}
@@ -6215,8 +6227,8 @@ packages:
   foliate-js@file:submodules/foliate-js:
     resolution: {directory: submodules/foliate-js, type: directory}
 
-  foliate-js@https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c:
-    resolution: {tarball: https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c}
+  foliate-js@git+https://git@github.com:johnfactotum/foliate-js.git#c49ded0cc498ed323b044eb3274bbfc3e4e9b07c:
+    resolution: {commit: c49ded0cc498ed323b044eb3274bbfc3e4e9b07c, repo: git@github.com:johnfactotum/foliate-js.git, type: git}
     version: 0.0.0
 
   follow-redirects@1.15.9:
@@ -13038,7 +13050,15 @@ snapshots:
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
 
+  '@tanstack/react-virtual@3.13.12(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@tanstack/virtual-core': 3.13.12
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+
   '@tanstack/table-core@8.21.2': {}
+
+  '@tanstack/virtual-core@3.13.12': {}
 
   '@testing-library/dom@10.4.0':
     dependencies:
@@ -16175,7 +16195,7 @@ snapshots:
 
   foliate-js@file:submodules/foliate-js: {}
 
-  foliate-js@https://codeload.github.com/johnfactotum/foliate-js/tar.gz/c49ded0cc498ed323b044eb3274bbfc3e4e9b07c: {}
+  foliate-js@git+https://git@github.com:johnfactotum/foliate-js.git#c49ded0cc498ed323b044eb3274bbfc3e4e9b07c: {}
 
   follow-redirects@1.15.9: {}
 
