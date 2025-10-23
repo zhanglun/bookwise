@@ -21,7 +21,9 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
 
   // 检测格式
   useEffect(() => {
-    if (!book) return;
+    if (!book) {
+      return;
+    }
     const isPrepaginated = book.rendition?.layout === 'pre-paginated';
     setIsPrePaginated(isPrepaginated);
   }, [book]);
@@ -36,7 +38,9 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
 
   // 设置预分页格式高度
   const setPrePaginatedHeight = useCallback((iframe: HTMLIFrameElement, img: HTMLImageElement) => {
-    if (!scrollContainerRef.current) return;
+    if (!scrollContainerRef.current) {
+      return;
+    }
     const containerWidth = scrollContainerRef.current.clientWidth;
     const aspectRatio = img.naturalHeight / img.naturalWidth;
     iframe.style.height = `${containerWidth * aspectRatio}px`;
@@ -47,11 +51,15 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
     (doc: Document, index: number, goToFn: (href: string) => void) => {
       doc.addEventListener('click', (e) => {
         const a = (e.target as Element).closest('a[href]');
-        if (!a) return;
+        if (!a) {
+          return;
+        }
 
         e.preventDefault();
         const href = a.getAttribute('href');
-        if (!href) return;
+        if (!href) {
+          return;
+        }
 
         const section = bookRef.current?.sections[index];
         const resolvedHref = section?.resolveHref?.(href) ?? href;
@@ -86,7 +94,9 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
   const handleIframeLoad = useCallback(
     (iframe: HTMLIFrameElement, index: number, goToFn: (href: string) => void) => {
       const doc = iframe.contentDocument;
-      if (!doc) return;
+      if (!doc) {
+        return;
+      }
 
       // 处理页面内链接
       handleIframeLinks(doc, index, goToFn);
@@ -137,7 +147,9 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
   // 跳转到指定位置
   const goTo = useCallback(
     async (href: string | number) => {
-      if (!bookRef.current || isNavigatingRef.current) return;
+      if (!bookRef.current || isNavigatingRef.current) {
+        return;
+      }
 
       isNavigatingRef.current = true;
       setIsLoading(true);
@@ -152,7 +164,9 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
           return;
         }
 
-        if (!resolved) return;
+        if (!resolved) {
+          return;
+        }
 
         const targetIndex = resolved.index;
 
@@ -207,18 +221,26 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
   // 监听滚动事件 - 关键:检查导航锁
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || !onRelocate) return;
+    if (!container || !onRelocate) {
+      return;
+    }
 
     let timeoutId: NodeJS.Timeout;
     const handleScroll = () => {
       // 关键:如果正在导航,忽略滚动事件
-      if (isNavigatingRef.current) return;
+      if (isNavigatingRef.current) {
+        return;
+      }
 
-      if (timeoutId) clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
 
       timeoutId = setTimeout(() => {
         const items = virtualizer.getVirtualItems();
-        if (items.length === 0) return;
+        if (items.length === 0) {
+          return;
+        }
 
         const firstVisibleItem = items[0];
         const scrollTop = container.scrollTop;
@@ -234,7 +256,9 @@ export const useRenderer = ({ book, onRelocate }: RendererProps) => {
     container.addEventListener('scroll', handleScroll);
     return () => {
       container.removeEventListener('scroll', handleScroll);
-      if (timeoutId) clearTimeout(timeoutId);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [virtualizer, onRelocate]);
 
@@ -277,7 +301,9 @@ const SectionRenderer: React.FC<{
 
   useEffect(() => {
     const iframe = iframeRef.current;
-    if (!iframe || !url) return;
+    if (!iframe || !url) {
+      return;
+    }
 
     const handleLoad = () => onLoad(iframe, index, goTo);
     iframe.addEventListener('load', handleLoad);
@@ -307,6 +333,7 @@ const SectionRenderer: React.FC<{
   return (
     <iframe
       ref={iframeRef}
+      title={url}
       src={url}
       style={{
         width: '100%',
