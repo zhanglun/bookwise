@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { DemoPage } from './pages/demo';
 import { Foliate } from './pages/foliate';
 import { Grabber } from './pages/grabber';
 import { HomePage } from './pages/Home.page';
@@ -17,6 +18,7 @@ export enum RouteConfig {
   ALL = '/all',
   READING = '/reading',
   FINISHED = '/finished',
+  DEMO = '/demo',
 }
 
 const router = createBrowserRouter([
@@ -45,6 +47,10 @@ const router = createBrowserRouter([
   {
     path: '/viewer/:uuid',
     element: <Viewer />,
+  },
+  {
+    path: '/demo',
+    element: <DemoPage />,
   },
 ]);
 

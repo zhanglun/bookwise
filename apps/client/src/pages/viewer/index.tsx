@@ -49,13 +49,13 @@ export const Viewer = () => {
       <div className={classes.header}>
         <ViewerHeader book={book} />
       </div>
-      <div className={classes.sidebar}>
+      {/* <div className={classes.sidebar}>
         <ViewerSidebar book={book} toc={toc} />
-      </div>
+      </div> */}
       <div className={classes.main}>
         <div className="h-full">{renderViewer()}</div>
       </div>
-      <div className={classes.rightSide}>right</div>
+      {/* <div className={classes.rightSide}>right</div> */}
     </div>
   );
 };

@@ -3,9 +3,12 @@
   --sidebar-width: 240px;
   --right-side-width: 240px;
   display: grid;
+  /* grid-template-areas:
+    'header header header'
+    'sidebar main right-side'; */
   grid-template-areas:
     'header header header'
-    'sidebar main right-side';
+    'main main main';
   grid-template-rows: var(--header-height) 1fr;
   grid-template-columns: var(--sidebar-width) 1fr var(--right-side-width);
   height: 100vh;
