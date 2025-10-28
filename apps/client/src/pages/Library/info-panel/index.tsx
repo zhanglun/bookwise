@@ -12,8 +12,6 @@ export const InfoPanel = (props: InfoPanelType) => {
   const { data } = props;
   const { cover } = data || {};
 
-  console.log('🚀 ~ InfoPanel ~ data:', data);
-
   if (!data) {
     return (
       <div className="h-full flex items-center justify-center text-gray-500">

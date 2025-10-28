@@ -81,13 +81,26 @@ export class PGLiteDataSource implements DataSource {
       result.push(record);
     }
 
-    console.log('🚀 ~ PGLiteDataSource ~ getBooks ~ result:', result);
-
     return result as unknown as BookResItem[];
   }
 
   async getBookByUuid(uuid: string): Promise<BookResItem> {
     const record = await drizzleDB.select().from(books).where(eq(books.uuid, uuid));
+
+    if (record[0]) {
+      const coverRecords = await drizzleDB
+        .select({
+          bookUuid: bookCovers.book_uuid,
+          cover: covers,
+        })
+        .from(bookCovers)
+        .innerJoin(covers, eq(bookCovers.cover_uuid, covers.uuid))
+        .where(eq(bookCovers.book_uuid, record[0].uuid));
+
+      if (coverRecords[0]) {
+        record[0].cover = coverRecords[0]?.cover || null;
+      }
+    }
 
     return record[0] as unknown as BookResItem;
   }

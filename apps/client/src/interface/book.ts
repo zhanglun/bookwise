@@ -1,3 +1,5 @@
+import { CoverQueryRecord } from '@/dal/type';
+
 export interface AdditionalInfos {
   book_uuid: string;
   id: number;
@@ -26,7 +28,7 @@ export interface BookResItem {
   page_size: number;
   isbn: string;
   path: string;
-  cover: string;
+  cover: CoverQueryRecord;
   publish_at: string;
   created_at: string;
   updated_at: string;

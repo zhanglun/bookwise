@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
+import { currentDetailUuidAtom } from './atoms/detail-atoms';
 import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
+import { useDetail } from './hooks/use-detail';
 import { PdfViewer } from './Pdf';
 import { ViewerSidebar } from './sidebar';
 import { TocItem } from './toc';
@@ -11,18 +14,34 @@ import classes from './viewer.module.css';
 
 export const Viewer = () => {
   const { uuid } = useParams();
-  const [book, setBook] = useState<BookResItem | null>(null);
-  const [toc, setToc] = useState<TocItem[]>([]);
+  const setCurrentUuid = useSetAtom(currentDetailUuidAtom);
+
+  const { data: book, isLoading, isError, error } = useDetail();
+
+  console.log('🚀 ~ Viewer ~ res:', book);
 
   useEffect(() => {
     if (uuid) {
-      dal.getBookByUuid(uuid).then(setBook);
+      setCurrentUuid(uuid);
     }
-  }, [uuid]);
 
-  const handleTocUpdate = useCallback((tocItems: TocItem[]) => {
-    setToc(tocItems);
-  }, []);
+    // 清理函数
+    return () => {
+      setCurrentUuid(null);
+    };
+  }, [uuid, setCurrentUuid]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  if (!book) {
+    return <div>No data found</div>;
+  }
 
   if (!uuid || !book) {
     return null;
@@ -31,7 +50,7 @@ export const Viewer = () => {
   const renderViewer = () => {
     const props = {
       bookUuid: uuid,
-      onTocUpdate: handleTocUpdate,
+      // onTocUpdate: handleTocUpdate,
     };
 
     switch (book.format.toLowerCase()) {
@@ -46,9 +65,7 @@ export const Viewer = () => {
 
   return (
     <div className={classes.layout}>
-      <div className={classes.header}>
-        <ViewerHeader book={book} />
-      </div>
+      <ViewerHeader book={book} />
       {/* <div className={classes.sidebar}>
         <ViewerSidebar book={book} toc={toc} />
       </div> */}

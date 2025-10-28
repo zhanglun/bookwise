@@ -20,7 +20,7 @@ export const Cover = (props: CoverProps) => {
       } catch (error: any) {
         console.error('Error generating book cover URL:', {
           error,
-          book: book,
+          book,
           errorName: error.name,
           errorMessage: error.message,
         });
@@ -34,7 +34,6 @@ export const Cover = (props: CoverProps) => {
     <div
       role="button"
       tabIndex={0}
-      alt=""
       className={clsx(
         'relative rounded-sm',
         'shadow-[0px_0px_0px_1.11765px_rgba(0,0,0,0.03),0px_16.7647px_21.2353px_-14.5294px_rgba(0,0,0,0.2),0px_4.2439px_20.3859px_rgba(0,0,0,0.0715329),0px_1.26352px_1.41217px_rgba(0,0,0,0.0484671)]',
@@ -51,7 +50,7 @@ export const Cover = (props: CoverProps) => {
         }
       }}
     >
-      <img src={getBookCover()} className="object-cover rounded-sm" />
+      <img src={getBookCover()} alt="" className="object-cover rounded-sm" />
     </div>
   ) : (
     <div />
