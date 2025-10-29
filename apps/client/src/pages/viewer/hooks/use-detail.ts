@@ -1,8 +1,9 @@
 import { useAtomValue } from 'jotai';
-import { detailDataAtom } from '../atoms/detail-atoms';
+import { blobDataAtom, detailDataAtom } from '../atoms/detail-atoms';
 
 export const useDetail = () => {
-  const result = useAtomValue(detailDataAtom);
+  const detail = useAtomValue(detailDataAtom);
+  const blob = useAtomValue(blobDataAtom);
 
-  return result;
+  return { detail, blob };
 };

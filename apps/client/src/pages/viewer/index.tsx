@@ -16,7 +16,9 @@ export const Viewer = () => {
   const { uuid } = useParams();
   const setCurrentUuid = useSetAtom(currentDetailUuidAtom);
 
-  const { data: book, isLoading, isError, error } = useDetail();
+  const {
+    detail: { data: book, isLoading, isError, error },
+  } = useDetail();
 
   console.log('🚀 ~ Viewer ~ res:', book);
 

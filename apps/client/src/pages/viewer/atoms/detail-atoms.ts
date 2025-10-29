@@ -5,6 +5,7 @@ import { BookResItem } from '@/interface/book';
 
 // 存储当前详情的 UUID
 export const currentDetailUuidAtom = atom<string | null>(null);
+
 export const detailDataAtom = atomWithQuery((get) => {
   const uuid = get(currentDetailUuidAtom);
 
@@ -16,6 +17,21 @@ export const detailDataAtom = atomWithQuery((get) => {
     queryKey: ['detail', uuid],
     queryFn: async (): Promise<BookResItem> => {
       return dal.getBookByUuid(uuid);
+    },
+  };
+});
+
+export const blobDataAtom = atomWithQuery((get) => {
+  const uuid = get(currentDetailUuidAtom);
+
+  if (!uuid) {
+    return { queryKey: ['blob', 'no-uuid'], queryFn: () => null };
+  }
+
+  return {
+    queryKey: ['blob', uuid],
+    queryFn: async (): Promise<{ uuid: string; data: Uint8Array | null }> => {
+      return dal.getBookBlob(uuid);
     },
   };
 });
