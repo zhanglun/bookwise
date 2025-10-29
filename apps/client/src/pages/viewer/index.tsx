@@ -1,15 +1,12 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
-import { dal } from '@/dal';
-import { BookResItem } from '@/interface/book';
 import { currentDetailUuidAtom } from './atoms/detail-atoms';
 import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
 import { useDetail } from './hooks/use-detail';
-import { PdfViewer } from './Pdf';
-import { ViewerSidebar } from './sidebar';
-import { TocItem } from './toc';
+import { PdfViewer } from './pdf';
+// import { ViewerSidebar } from './sidebar';
 import classes from './viewer.module.css';
 
 export const Viewer = () => {
@@ -19,8 +16,6 @@ export const Viewer = () => {
   const {
     detail: { data: book, isLoading, isError, error },
   } = useDetail();
-
-  console.log('🚀 ~ Viewer ~ res:', book);
 
   useEffect(() => {
     if (uuid) {
@@ -50,16 +45,11 @@ export const Viewer = () => {
   }
 
   const renderViewer = () => {
-    const props = {
-      bookUuid: uuid,
-      // onTocUpdate: handleTocUpdate,
-    };
-
     switch (book.format.toLowerCase()) {
       case 'pdf':
-        return <PdfViewer {...props} />;
+        return <PdfViewer />;
       case 'epub':
-        return <EpubViewer {...props} />;
+        return <EpubViewer />;
       default:
         return <div>Unsupported file type: {book.format}</div>;
     }

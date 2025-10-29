@@ -7,11 +7,11 @@ export interface PdfViewerProps {
   onTocUpdate?: (items: TocItem[]) => void;
 }
 
-export const PdfViewer = memo(({ bookUuid, onTocUpdate: _onTocUpdate }: PdfViewerProps) => {
+export const PdfViewer = memo(() => {
   return (
     <ScrollArea className="h-full">
       <div className="p-4">
-        <div>PDF Viewer - {bookUuid}</div>
+        <div>PDF Viewer - {}</div>
         <div>TODO: Implement PDF viewer</div>
       </div>
     </ScrollArea>

@@ -1,26 +1,22 @@
-/* eslint-disable react/button-has-type */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import { memo, useEffect, useState } from 'react';
 import { Book, NavItem } from 'epubjs';
 import { makeBook } from 'foliate-js/view.js';
 import { useAtom } from 'jotai';
+import { tocItemsAtom } from '../atoms/detail-atoms';
 import { useDetail } from '../hooks/use-detail';
 import { TocItem } from '../toc';
-import { currentTocItemAtom } from './epub-atom';
 import { Renderer } from './renderer';
 
 export interface EpubViewerProps {
-  bookUuid: string;
   onTocUpdate?: (items: TocItem[]) => void;
 }
 
-export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
+export const EpubViewer = memo(({ onTocUpdate }: EpubViewerProps) => {
   const {
     detail: { data: detail },
     blob: { data: blob },
   } = useDetail();
-  const [currentTocItem] = useAtom(currentTocItemAtom);
+  const [, setTocItems] = useAtom(tocItemsAtom);
   const [book, setBook] = useState<Book>();
 
   // 将 epub 的 NavItem 转换为通用的 TocItem
@@ -45,6 +41,7 @@ export const EpubViewer = memo(({ bookUuid, onTocUpdate }: EpubViewerProps) => {
         const f = new File([blob.data], detail.title);
         const book = await makeBook(f);
 
+        setTocItems(book.toc);
         setBook(book);
       }
     })();

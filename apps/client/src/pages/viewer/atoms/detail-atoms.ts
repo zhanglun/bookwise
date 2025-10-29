@@ -2,6 +2,7 @@ import { atom } from 'jotai';
 import { atomWithQuery } from 'jotai-tanstack-query';
 import { dal } from '@/dal';
 import { BookResItem } from '@/interface/book';
+import { TocItem } from '../toc';
 
 // 存储当前详情的 UUID
 export const currentDetailUuidAtom = atom<string | null>(null);
@@ -35,3 +36,5 @@ export const blobDataAtom = atomWithQuery((get) => {
     },
   };
 });
+
+export const tocItemsAtom = atom<TocItem[]>([]);

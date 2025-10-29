@@ -3,6 +3,7 @@
 import clsx from 'clsx';
 import { useAtom } from 'jotai';
 import { ScrollArea, Text } from '@mantine/core';
+import { tocItemsAtom } from './atoms/detail-atoms';
 import { currentTocItemAtom } from './epub/epub-atom';
 import classes from './viewer.module.css';
 
@@ -14,12 +15,12 @@ export interface TocItem {
 }
 
 export interface TocProps {
-  items?: TocItem[];
   className?: string;
 }
 
-export const Toc = ({ items = [], className }: TocProps) => {
+export const Toc = ({ className }: TocProps) => {
   const [, setCurrentTocItem] = useAtom(currentTocItemAtom);
+  const [tocItems] = useAtom(tocItemsAtom);
 
   const handleItemClick = (item: TocItem) => {
     setCurrentTocItem(item);
@@ -55,7 +56,7 @@ export const Toc = ({ items = [], className }: TocProps) => {
 
   return (
     <ScrollArea className="h-full" type="hover">
-      <div className={classes.toc}>{renderItems(items)}</div>
+      <div className={classes.toc}>{renderItems(tocItems)}</div>
     </ScrollArea>
   );
 };
