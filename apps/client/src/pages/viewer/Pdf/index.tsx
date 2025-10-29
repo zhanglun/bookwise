@@ -1,20 +1,14 @@
 import { memo } from 'react';
-import { ScrollArea } from '@mantine/core';
-import { TocItem } from '../toc';
+import { Renderer } from '../epub/renderer';
 
-export interface PdfViewerProps {
-  bookUuid: string;
-  onTocUpdate?: (items: TocItem[]) => void;
-}
-
-export const PdfViewer = memo(() => {
+export const PdfViewer = memo(({ book }) => {
   return (
-    <ScrollArea className="h-full">
-      <div className="p-4">
-        <div>PDF Viewer - {}</div>
-        <div>TODO: Implement PDF viewer</div>
+    <div className="h-full flex flex-col">
+      {/* 可视区域 - 盛满剩余高度并可滚动 */}
+      <div className="flex-1 min-h-0">
+        <Renderer book={book} />
       </div>
-    </ScrollArea>
+    </div>
   );
 });
 

@@ -1,7 +1,8 @@
-import { useEffect } from 'react';
-import { useSetAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+import { makeBook } from 'foliate-js/view.js';
+import { useAtom, useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
-import { currentDetailUuidAtom } from './atoms/detail-atoms';
+import { currentDetailUuidAtom, tocItemsAtom } from './atoms/detail-atoms';
 import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
 import { useDetail } from './hooks/use-detail';
@@ -12,10 +13,12 @@ import classes from './viewer.module.css';
 export const Viewer = () => {
   const { uuid } = useParams();
   const setCurrentUuid = useSetAtom(currentDetailUuidAtom);
-
   const {
-    detail: { data: book, isLoading, isError, error },
+    detail: { data: detail, isLoading, isError, error },
+    blob: { data: blob },
   } = useDetail();
+  const [, setTocItems] = useAtom(tocItemsAtom);
+  const [book, setBook] = useState();
 
   useEffect(() => {
     if (uuid) {
@@ -28,6 +31,18 @@ export const Viewer = () => {
     };
   }, [uuid, setCurrentUuid]);
 
+  useEffect(() => {
+    (async () => {
+      if (blob && blob.data && detail) {
+        const f = new File([blob.data], detail.title);
+        const book = await makeBook(f);
+
+        setTocItems(book.toc);
+        setBook(book);
+      }
+    })();
+  }, [blob, detail]);
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -36,28 +51,31 @@ export const Viewer = () => {
     return <div>Error: {error.message}</div>;
   }
 
-  if (!book) {
+  if (!detail) {
     return <div>No data found</div>;
   }
 
-  if (!uuid || !book) {
+  if (!uuid || !blob) {
     return null;
   }
 
+  console.log('🚀 ~ Viewer ~ detail:', detail);
+  console.log('🚀 ~ Viewer ~ book:', book);
+
   const renderViewer = () => {
-    switch (book.format.toLowerCase()) {
+    switch (detail.format.toLowerCase()) {
       case 'pdf':
-        return <PdfViewer />;
+        return <PdfViewer book={book} />;
       case 'epub':
-        return <EpubViewer />;
+        return <EpubViewer book={book} />;
       default:
-        return <div>Unsupported file type: {book.format}</div>;
+        return <div>Unsupported file type: {detail.format}</div>;
     }
   };
 
   return (
     <div className={classes.layout}>
-      <ViewerHeader book={book} />
+      <ViewerHeader book={detail} />
       {/* <div className={classes.sidebar}>
         <ViewerSidebar book={book} toc={toc} />
       </div> */}
