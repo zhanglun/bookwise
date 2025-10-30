@@ -53,6 +53,7 @@ export class PGLiteDataSource implements DataSource {
     });
 
     const bookUuids = records.map((item) => item.uuid);
+    console.log('🚀 ~ PGLiteDataSource ~ getBooks ~ records:', records);
     const coverRecords = await drizzleDB
       .select({
         bookUuid: bookCovers.book_uuid,

@@ -18,7 +18,6 @@ export const detailDataAtom = atomWithQuery((get) => {
     queryKey: ['detail', uuid],
     queryFn: async (): Promise<BookResItem> => {
       const res = await dal.getBookByUuid(uuid);
-      console.log('🚀 ~ res:', res);
       return res;
     },
   };
@@ -34,7 +33,6 @@ export const blobDataAtom = atomWithQuery((get) => {
   return {
     queryKey: ['blob', uuid],
     queryFn: async (): Promise<{ uuid: string; data: Uint8Array | null }> => {
-      console.log('🚀 ~ uuid:', uuid);
       return dal.getBookBlob(uuid);
     },
   };

@@ -7,6 +7,8 @@ const client = new PGlite('idb://BookWiseDatabase', {
   extensions: {
     live,
   },
+  relaxedDurability: true,
+  initialMemory: 512 * 1024 * 1024,
 });
 const drizzleDB = drizzle(client, { schema });
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { makeBook } from 'foliate-js/view.js';
 import { useAtom, useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
+import { Renderer } from '@/renderer/renderer';
 import { currentDetailUuidAtom, tocItemsAtom } from './atoms/detail-atoms';
 import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
@@ -33,6 +34,7 @@ export const Viewer = () => {
 
   useEffect(() => {
     (async () => {
+      console.log('🚀 ~ Viewer ~ blob:', blob);
       if (blob && blob.data && detail) {
         const f = new File([blob.data], detail.title);
         const book = await makeBook(f);
@@ -59,18 +61,8 @@ export const Viewer = () => {
     return null;
   }
 
-  console.log('🚀 ~ Viewer ~ detail:', detail);
-  console.log('🚀 ~ Viewer ~ book:', book);
-
-  const renderViewer = () => {
-    switch (detail.format.toLowerCase()) {
-      case 'pdf':
-        return <PdfViewer book={book} />;
-      case 'epub':
-        return <EpubViewer book={book} />;
-      default:
-        return <div>Unsupported file type: {detail.format}</div>;
-    }
+  const handleRelocate = (location) => {
+    console.log('Current location:', location);
   };
 
   return (
@@ -80,7 +72,9 @@ export const Viewer = () => {
         <ViewerSidebar book={book} toc={toc} />
       </div> */}
       <div className={classes.main}>
-        <div className="h-full">{renderViewer()}</div>
+        <div className="h-full">
+          <Renderer book={book} onRelocate={handleRelocate} />
+        </div>
       </div>
       {/* <div className={classes.rightSide}>right</div> */}
     </div>

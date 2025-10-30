@@ -10,7 +10,6 @@ export const Uploader = () => {
     onSuccess: (body) => {
       body.forEach(async (book) => {
         if (book.buffer) {
-          console.log('🚀 ~ Uploader ~ book:', book);
           const res = await dal.saveBookAndRelations(book.metadata, book.buffer, book.cover);
           console.log('🚀 ~ body.forEach ~ res:', res);
         }
