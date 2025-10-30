@@ -1,7 +1,7 @@
 import { memo, useState } from 'react';
 import { SegmentedControl } from '@mantine/core';
 import { BookResItem } from '@/interface/book';
-import { Toc, TocItem } from './toc';
+import { Toc, TocItem } from '../../components/toc-bubble/toc';
 
 interface ViewerSidebarProps {
   book: BookResItem;

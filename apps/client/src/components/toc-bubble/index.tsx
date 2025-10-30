@@ -1,10 +1,19 @@
 import { IconList } from '@tabler/icons-react';
 import { ActionIcon, Popover } from '@mantine/core';
-import { Toc } from '@/pages/viewer/toc';
+import { Toc } from './toc';
+import classes from './toc.module.css';
 
 export const TocBubble = () => {
   return (
-    <Popover width={300} trapFocus position="bottom" withArrow shadow="md">
+    <Popover
+      trapFocus
+      position="bottom"
+      withArrow
+      shadow="md"
+      classNames={{
+        dropdown: classes.tocDropdown,
+      }}
+    >
       <Popover.Target>
         <ActionIcon>
           <IconList />

@@ -52,19 +52,3 @@
   border-left: 1px solid #e5e7eb;
   overflow: hidden;
 }
-
-.toc {
-  padding: 8px 12px;
-}
-
-.tocItem {
-  font-size: 14px;
-  cursor: pointer;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-
-  &:hover {
-    text-decoration: underline;
-  }
-}

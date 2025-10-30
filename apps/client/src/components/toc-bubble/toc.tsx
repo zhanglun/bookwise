@@ -1,11 +1,9 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import clsx from 'clsx';
 import { useAtom } from 'jotai';
 import { ScrollArea, Text } from '@mantine/core';
-import { tocItemsAtom } from './atoms/detail-atoms';
-import { currentTocItemAtom } from './epub/epub-atom';
-import classes from './viewer.module.css';
+import { tocItemsAtom } from '../../pages/viewer/atoms/detail-atoms';
+import { currentTocItemAtom } from '../../pages/viewer/epub/epub-atom';
+import classes from './toc.module.css';
 
 export interface TocItem {
   label: string;
