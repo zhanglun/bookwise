@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { Book, SectionContent } from './types';
 
-export const useContentLoader = (book: Book | null) => {
+type SectionContent = {
+  doc: Document;
+  html: string;
+  styles: string[];
+};
+
+export const useContentLoader = (book: any) => {
   const cacheRef = useRef<Map<number, SectionContent>>(new Map());
   const bookRef = useRef(book);
 
@@ -9,7 +14,7 @@ export const useContentLoader = (book: Book | null) => {
     bookRef.current = book;
   }, [book]);
 
-  const loadSection = useCallback(async (index: number): Promise<SectionContent | null> => {
+  const loadSection = useCallback(async (index: number) => {
     if (!bookRef.current?.sections?.[index]) {
       return null;
     }
@@ -20,45 +25,49 @@ export const useContentLoader = (book: Book | null) => {
     }
 
     const section = bookRef.current.sections[index];
-    const result = await section.load();
 
-    // 缓存结果(可能是字符串或对象)
-    cacheRef.current.set(index, result);
+    // 使用 createDocument() 获取 Document 对象
+    const doc = await section.createDocument();
 
-    return result;
-  }, []);
+    // 提取 HTML
+    const html = doc.body.innerHTML;
 
-  const unloadSection = useCallback((index: number) => {
-    const content = cacheRef.current.get(index);
-    if (content) {
-      // 处理字符串 URL
-      if (typeof content === 'string') {
-        URL.revokeObjectURL(content);
+    // 提取样式
+    const styles: string[] = [];
+
+    // 内联样式
+    doc.querySelectorAll('style').forEach((styleEl: HTMLStyleElement) => {
+      if (styleEl.textContent) {
+        styles.push(styleEl.textContent);
       }
-      // 处理 PDF 对象格式
-      else if (content && typeof content === 'object' && content.src) {
-        URL.revokeObjectURL(content.src);
+    });
+
+    // 外部样式表 (需要异步加载)
+    const linkElements: HTMLLinkElement[] = doc.querySelectorAll('link[rel="stylesheet"]');
+    for (const linkEl of Array.from(linkElements)) {
+      const href = linkEl.getAttribute('href');
+      if (href) {
+        try {
+          const response = await fetch(href);
+          const cssText = await response.text();
+          styles.push(cssText);
+        } catch (error) {
+          console.warn(`Failed to load stylesheet: ${href}`);
+        }
       }
-      cacheRef.current.delete(index);
     }
 
-    bookRef.current?.sections[index]?.unload?.();
+    const content = { doc, html, styles };
+    cacheRef.current.set(index, content);
+    return content;
   }, []);
 
   const cleanup = useCallback(() => {
-    cacheRef.current.forEach((content) => {
-      if (typeof content === 'string') {
-        URL.revokeObjectURL(content);
-      } else if (content && typeof content === 'object' && content.src) {
-        URL.revokeObjectURL(content.src);
-      }
-    });
     cacheRef.current.clear();
   }, []);
 
   return {
     loadSection,
-    unloadSection,
     cleanup,
   };
 };

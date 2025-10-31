@@ -4,10 +4,8 @@ import { useAtom, useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
 import { Renderer } from '@/renderer/renderer';
 import { currentDetailUuidAtom, tocItemsAtom } from './atoms/detail-atoms';
-import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
 import { useDetail } from './hooks/use-detail';
-import { PdfViewer } from './pdf';
 // import { ViewerSidebar } from './sidebar';
 import classes from './viewer.module.css';
 
