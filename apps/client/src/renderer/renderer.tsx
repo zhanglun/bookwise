@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { useEPUBFormat } from './formats/use-epub-format';
 import { usePDFFormat } from './formats/use-pdf-format';
 import { useContentLoader } from './use-content-loader';
@@ -17,6 +17,11 @@ export const Renderer: React.FC<RendererProps> = ({ book, onRelocate }) => {
   const contentLoader = useContentLoader(book);
   const epubFormat = useEPUBFormat();
   const pdfFormat = usePDFFormat();
+  const bookRef = useRef(book);
+
+  useEffect(() => {
+    bookRef.current = book;
+  }, [book]);
 
   const isPrePaginated = book?.rendition?.layout === 'pre-paginated';
 
@@ -81,9 +86,9 @@ export const Renderer: React.FC<RendererProps> = ({ book, onRelocate }) => {
   useEffect(() => {
     return () => {
       contentLoader.cleanup();
-      book?.destroy?.();
+      bookRef?.current?.destroy?.();
     };
-  }, [book, contentLoader]);
+  }, []);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
