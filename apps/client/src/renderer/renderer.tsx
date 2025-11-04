@@ -37,11 +37,12 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
       try {
         // 使用 Shadow DOM 加载内容
         const section = bookRef.current.sections[index];
-        const element = await shadowDOM.loadContent(section);
+        const element = await shadowDOM.loadContent(book, section);
+        console.log('🚀 ~ element:', element);
 
         if (element) {
           // 应用格式特定的样式
-          epubFormat.applyStyles(element);
+          // epubFormat.applyStyles(element);
 
           // 处理页面内链接
           handleInternalLinks(element, index);
@@ -58,7 +59,7 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
         setIsLoading(false);
       }
     },
-    [shadowDOM, epubFormat, onRelocate]
+    [shadowDOM, epubFormat, onRelocate, book]
   );
 
   // 处理页面内链接

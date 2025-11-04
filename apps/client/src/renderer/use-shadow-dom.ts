@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { substitute } from '@/helpers/epub';
 
 export const useShadowDOMManager = () => {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,7 @@ export const useShadowDOMManager = () => {
   }, []);
 
   // 加载 section 内容到 Shadow DOM
-  const loadContent = useCallback(async (section: any) => {
+  const loadContent = useCallback(async (book: any, section: any) => {
     if (!shadowRootRef.current || !contentElementRef.current) {
       console.error('Shadow DOM not initialized');
       return null;
@@ -50,19 +51,32 @@ export const useShadowDOMManager = () => {
       await injectStyles(doc, shadowRootRef.current);
 
       // 替换图片路径
-      for (const img of doc.querySelectorAll('img[src]')) {
-        const src = img.getAttribute('src');
-        if (src && !src.startsWith('blob:') && !src.startsWith('http')) {
-          // 使用 section.resolveHref 或 book 的资源加载器来解析路径
-          const resolvedSrc = await section.resolveHref?.(src);
+      for (const image of doc.querySelectorAll('img[src], image')) {
+        let attr = 'src';
+        let href: string = image.getAttribute('src') || '';
+
+        if (!href) {
+          href = image.getAttributeNS('http://www.w3.org/1999/xlink', 'href') || '';
+          attr = 'href';
+        }
+
+        if (!href) {
+          href = image.getAttribute('xlink:href') || '';
+          attr = 'xlink:href';
+        }
+
+        if (href && !href.startsWith('blob:') && !href.startsWith('http')) {
+          const resolvedSrc = URL.createObjectURL(await book.loadBlob(href));
+
           if (resolvedSrc) {
-            img.src = resolvedSrc;
+            image.setAttribute(attr, resolvedSrc);
           }
         }
       }
 
       // 提取并注入 HTML 内容
       const bodyContent = doc.body.cloneNode(true) as HTMLElement;
+      console.log('🚀 ~ useShadowDOMManager ~ bodyContent:', bodyContent);
       contentElementRef.current.appendChild(bodyContent);
 
       return contentElementRef.current;

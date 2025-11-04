@@ -31,6 +31,7 @@ export const useContentLoader = (book: any) => {
 
     // 提取 HTML
     const html = doc.body.innerHTML;
+    console.log('🚀 ~ useContentLoader ~ html:', html);
 
     // 提取样式
     const styles: string[] = [];
