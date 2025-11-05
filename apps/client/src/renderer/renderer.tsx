@@ -25,42 +25,41 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
   }, [book]);
 
   // 加载当前 section
-  const loadCurrentSection = useCallback(
-    async (index: number) => {
-      if (!bookRef.current?.sections?.[index]) {
-        console.warn(`Section ${index} not found`);
-        return;
-      }
+  const loadCurrentSection = async (index: number) => {
+    console.log('🚀 ~ loadCurrentSection ~ loadCurrentSection:');
 
-      setIsLoading(true);
+    if (!bookRef.current?.sections?.[index]) {
+      console.warn(`Section ${index} not found`);
+      return;
+    }
 
-      try {
-        // 使用 Shadow DOM 加载内容
-        const section = bookRef.current.sections[index];
-        const element = await shadowDOM.loadContent(book, section);
-        console.log('🚀 ~ element:', element);
+    setIsLoading(true);
 
-        if (element) {
-          // 应用格式特定的样式
-          // epubFormat.applyStyles(element);
+    try {
+      // 使用 Shadow DOM 加载内容
+      const section = bookRef.current.sections[index];
+      const element = await shadowDOM.loadContent(book, section);
+      console.log('🚀 ~ loadCurrentSection ~ element:', element);
 
-          // 处理页面内链接
-          handleInternalLinks(element, index);
+      if (element) {
+        // 应用格式特定的样式
+        // epubFormat.applyStyles(element);
 
-          setCurrentIndex(index);
+        // 处理页面内链接
+        handleInternalLinks(element, index);
 
-          if (onRelocate) {
-            onRelocate({ index });
-          }
+        setCurrentIndex(index);
+
+        if (onRelocate) {
+          onRelocate({ index });
         }
-      } catch (error) {
-        console.error(`Failed to load section ${index}:`, error);
-      } finally {
-        setIsLoading(false);
       }
-    },
-    [shadowDOM, epubFormat, onRelocate, book]
-  );
+    } catch (error) {
+      console.error(`Failed to load section ${index}:`, error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // 处理页面内链接
   const handleInternalLinks = useCallback(
@@ -103,50 +102,51 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
   );
 
   // 导航方法
-  const goTo = useCallback(
-    async (target: string | number) => {
-      let resolved;
+  const goTo = async (target: string | number) => {
+    let resolved;
 
-      if (typeof target === 'number') {
-        resolved = { index: target };
-      } else if (bookRef.current?.resolveHref) {
-        resolved = await bookRef.current.resolveHref(target);
-      }
+    if (typeof target === 'number') {
+      resolved = { index: target };
+    } else if (bookRef.current?.resolveHref) {
+      resolved = await bookRef.current.resolveHref(target);
+    }
 
-      if (!resolved) {
-        console.warn('Could not resolve target:', target);
-        return;
-      }
+    if (!resolved) {
+      console.warn('Could not resolve target:', target);
+      return;
+    }
 
-      await loadCurrentSection(resolved.index);
+    console.log('🚀 ~ goTo ~ resolved.index:', resolved.index);
 
-      // 处理锚点
-      if (resolved.anchor) {
-        requestAnimationFrame(() => {
-          const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
-          if (shadowRoot) {
-            const doc = shadowRoot.querySelector('*')?.ownerDocument || document;
-            const targetElement = resolved.anchor(doc);
-            targetElement?.scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      }
-    },
-    [loadCurrentSection, shadowDOM]
-  );
+    await loadCurrentSection(resolved.index);
+
+    // 处理锚点
+    if (resolved.anchor) {
+      requestAnimationFrame(() => {
+        const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
+        if (shadowRoot) {
+          const doc = shadowRoot.querySelector('*')?.ownerDocument || document;
+          const targetElement = resolved.anchor(doc);
+          targetElement?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    }
+  };
 
   // 前进/后退方法
-  const next = useCallback(async () => {
+  const next = async () => {
     if (currentIndex < (bookRef.current?.sections?.length ?? 0) - 1) {
+      setCurrentIndex(currentIndex + 1);
       await goTo(currentIndex + 1);
     }
-  }, [currentIndex, goTo]);
+  };
 
-  const prev = useCallback(async () => {
+  const prev = async () => {
     if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
       await goTo(currentIndex - 1);
     }
-  }, [currentIndex, goTo]);
+  };
 
   // 暴露导航方法给父组件
   React.useImperativeHandle(ref, () => ({
@@ -161,15 +161,7 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
     if (book) {
       loadCurrentSection(0);
     }
-  }, [book, loadCurrentSection]);
-
-  // 清理
-  useEffect(() => {
-    return () => {
-      shadowDOM.cleanup();
-      contentLoader.cleanup();
-    };
-  }, [shadowDOM, contentLoader]);
+  }, [book]);
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
