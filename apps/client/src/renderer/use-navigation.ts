@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Book, Resolution } from './types';
 
 export const useNavigationManager = (book: Book | null) => {
@@ -10,7 +10,7 @@ export const useNavigationManager = (book: Book | null) => {
     bookRef.current = book;
   }, [book]);
 
-  const resolveTarget = useCallback(async (target: string | number): Promise<Resolution | null> => {
+  const resolveTarget = async (target: string | number): Promise<Resolution | null> => {
     if (!bookRef.current) {
       return null;
     }
@@ -24,31 +24,27 @@ export const useNavigationManager = (book: Book | null) => {
     }
 
     return null;
-  }, []);
+  };
+  const goTo = async (target: string | number) => {
+    if (isNavigating || !bookRef.current) {
+      return;
+    }
 
-  const goTo = useCallback(
-    async (target: string | number) => {
-      if (isNavigating || !bookRef.current) {
+    setIsNavigating(true);
+    try {
+      const resolved = await resolveTarget(target);
+      if (!resolved) {
         return;
       }
 
-      setIsNavigating(true);
-      try {
-        const resolved = await resolveTarget(target);
-        if (!resolved) {
-          return;
-        }
+      setCurrentIndex(resolved.index);
+      return resolved;
+    } finally {
+      setIsNavigating(false);
+    }
+  };
 
-        setCurrentIndex(resolved.index);
-        return resolved;
-      } finally {
-        setIsNavigating(false);
-      }
-    },
-    [isNavigating, resolveTarget]
-  );
-
-  const next = useCallback(async () => {
+  const next = async () => {
     if (!bookRef.current) {
       return;
     }
@@ -56,17 +52,18 @@ export const useNavigationManager = (book: Book | null) => {
     if (currentIndex < maxIndex) {
       await goTo(currentIndex + 1);
     }
-  }, [currentIndex, goTo]);
+  };
 
-  const prev = useCallback(async () => {
+  const prev = async () => {
     if (currentIndex > 0) {
       await goTo(currentIndex - 1);
     }
-  }, [currentIndex, goTo]);
+  };
 
   return {
     currentIndex,
     isNavigating,
+    resolveTarget,
     goTo,
     next,
     prev,

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigationManager } from './use-navigation';
 import { useShadowDOMManager } from './use-shadow-dom';
 
@@ -58,9 +58,6 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
     const links = element.querySelectorAll('a[href]');
     const section = bookRef.current.sections[currentIndex];
 
-    console.log('🚀 ~ handleInternalLinks ~ section:', section);
-
-    console.log('🚀 ~ links:', links);
     links.forEach((link) => {
       link.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -73,8 +70,9 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
         try {
           // 解析 href
           const resolved = bookRef.current?.resolveHref?.(section.resolveHref(href));
+
           if (resolved) {
-            await goTo(href);
+            await goTo(section.resolveHref(href));
 
             // 处理锚点
             if (resolved.anchor) {
@@ -98,31 +96,23 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
 
   // 导航方法
   const goTo = async (target: string | number) => {
-    let resolved;
-
-    if (typeof target === 'number') {
-      resolved = { index: target };
-    } else if (bookRef.current?.resolveHref) {
-      resolved = await bookRef.current.resolveHref(target);
-    }
+    const resolved = await navigation.resolveTarget(target);
 
     if (!resolved) {
       console.warn('Could not resolve target:', target);
       return;
     }
 
-    console.log('🚀 ~ goTo ~ resolved.index:', resolved.index);
-
     await loadCurrentSection(resolved.index);
 
     // 处理锚点
-    if (resolved.anchor) {
+    if (resolved && resolved.anchor) {
       requestAnimationFrame(() => {
         const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
-        if (shadowRoot) {
+        if (shadowRoot && resolved.anchor) {
           const doc = shadowRoot.querySelector('*')?.ownerDocument || document;
           const targetElement = resolved.anchor(doc);
-          targetElement?.scrollIntoView({ behavior: 'smooth' });
+          targetElement && (targetElement as HTMLElement).scrollIntoView({ behavior: 'smooth' });
         }
       });
     }
