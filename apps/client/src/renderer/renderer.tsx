@@ -1,6 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useEPUBFormat } from './formats/use-epub-format';
-import { useContentLoader } from './use-content-loader';
 import { useNavigationManager } from './use-navigation';
 import { useShadowDOMManager } from './use-shadow-dom';
 
@@ -11,9 +9,7 @@ interface RendererProps {
 
 export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate }, ref) => {
   const shadowDOM = useShadowDOMManager();
-  const contentLoader = useContentLoader(book);
   const navigation = useNavigationManager(book);
-  const epubFormat = useEPUBFormat();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,8 +22,6 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
 
   // 加载当前 section
   const loadCurrentSection = async (index: number) => {
-    console.log('🚀 ~ loadCurrentSection ~ loadCurrentSection:');
-
     if (!bookRef.current?.sections?.[index]) {
       console.warn(`Section ${index} not found`);
       return;
@@ -39,12 +33,10 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
       // 使用 Shadow DOM 加载内容
       const section = bookRef.current.sections[index];
       const element = await shadowDOM.loadContent(book, section);
+
       console.log('🚀 ~ loadCurrentSection ~ element:', element);
 
       if (element) {
-        // 应用格式特定的样式
-        // epubFormat.applyStyles(element);
-
         // 处理页面内链接
         handleInternalLinks(element, index);
 
@@ -62,44 +54,47 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
   };
 
   // 处理页面内链接
-  const handleInternalLinks = useCallback(
-    (element: HTMLElement, currentIndex: number) => {
-      const links = element.querySelectorAll('a[href]');
-      links.forEach((link) => {
-        link.addEventListener('click', async (e) => {
-          e.preventDefault();
-          const href = link.getAttribute('href');
-          if (!href) {
-            return;
-          }
+  const handleInternalLinks = (element: HTMLElement, currentIndex: number) => {
+    const links = element.querySelectorAll('a[href]');
+    const section = bookRef.current.sections[currentIndex];
 
-          try {
-            // 解析 href
-            const resolved = await bookRef.current?.resolveHref?.(href);
-            if (resolved) {
-              await goTo(resolved.index);
+    console.log('🚀 ~ handleInternalLinks ~ section:', section);
 
-              // 处理锚点
-              if (resolved.anchor) {
-                // 等待 DOM 更新
-                requestAnimationFrame(() => {
-                  const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
-                  if (shadowRoot) {
-                    const doc = shadowRoot.querySelector('*')?.ownerDocument || document;
-                    const targetElement = resolved.anchor(doc);
-                    targetElement?.scrollIntoView({ behavior: 'smooth' });
-                  }
-                });
-              }
+    console.log('🚀 ~ links:', links);
+    links.forEach((link) => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href');
+
+        if (!href) {
+          return;
+        }
+
+        try {
+          // 解析 href
+          const resolved = bookRef.current?.resolveHref?.(section.resolveHref(href));
+          if (resolved) {
+            await goTo(href);
+
+            // 处理锚点
+            if (resolved.anchor) {
+              // 等待 DOM 更新
+              requestAnimationFrame(() => {
+                const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
+                if (shadowRoot) {
+                  const doc = shadowRoot.querySelector('*')?.ownerDocument || document;
+                  const targetElement = resolved.anchor(doc);
+                  targetElement?.scrollIntoView({ behavior: 'smooth' });
+                }
+              });
             }
-          } catch (error) {
-            console.error('Failed to navigate:', error);
           }
-        });
+        } catch (error) {
+          console.error('Failed to navigate:', error);
+        }
       });
-    },
-    [shadowDOM]
-  );
+    });
+  };
 
   // 导航方法
   const goTo = async (target: string | number) => {
@@ -136,14 +131,12 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
   // 前进/后退方法
   const next = async () => {
     if (currentIndex < (bookRef.current?.sections?.length ?? 0) - 1) {
-      setCurrentIndex(currentIndex + 1);
       await goTo(currentIndex + 1);
     }
   };
 
   const prev = async () => {
     if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
       await goTo(currentIndex - 1);
     }
   };

@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { getAbsoluteUrl } from '@/helpers/book';
-import { substitute } from '@/helpers/epub';
 
 export const useShadowDOMManager = () => {
   const containerRef = useRef<HTMLDivElement>(null);
