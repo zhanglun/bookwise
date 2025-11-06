@@ -1,4 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useAtom, useSetAtom } from 'jotai';
+import {
+  currentIndexAtom,
+  currentTocHrefAtom,
+  currentTocItemAtom,
+  navigationFunctionAtom,
+} from '@/pages/viewer/atoms/navigation-atoms';
 import { useNavigationManager } from './use-navigation';
 import { useShadowDOMManager } from './use-shadow-dom';
 
@@ -7,11 +14,49 @@ interface RendererProps {
   onRelocate?: (location: { index: number }) => void;
 }
 
+const getTocItemForSection = (book: any, sectionIndex: number) => {
+  if (!book.toc || !book.sections) {
+    return null;
+  }
+
+  const section = book.sections[sectionIndex];
+  if (!section) {
+    return null;
+  }
+
+  // 使用 book.splitTOCHref 和 book.getTOCFragment 来匹配
+  const findMatchingItem = (items: any[]): any => {
+    for (const item of items) {
+      // 解析 TOC 项的 href
+      const resolved = book.resolveHref?.(item.href);
+      console.log('🚀 ~ findMatchingItem ~ item.href:', item.href);
+      if (resolved?.index === sectionIndex) {
+        return item;
+      }
+
+      // 递归查找子项
+      if (item.subitems) {
+        const found = findMatchingItem(item.subitems);
+        if (found) {
+          return found;
+        }
+      }
+    }
+    return null;
+  };
+
+  return findMatchingItem(book.toc);
+};
+
 export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate }, ref) => {
   const shadowDOM = useShadowDOMManager();
   const navigation = useNavigationManager(book);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useAtom(currentIndexAtom);
+  const setNavigationFunction = useSetAtom(navigationFunctionAtom);
+  const setCurrentTocHref = useSetAtom(currentTocHrefAtom);
+  const setCurrentTocItem = useSetAtom(currentTocItemAtom);
+
   const [isLoading, setIsLoading] = useState(false);
   const bookRef = useRef(book);
 
@@ -41,6 +86,12 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
         handleInternalLinks(element, index);
 
         setCurrentIndex(index);
+
+        const tocItem = getTocItemForSection(book, index);
+        if (tocItem) {
+          setCurrentTocHref(tocItem.href);
+          setCurrentTocItem(tocItem);
+        }
 
         if (onRelocate) {
           onRelocate({ index });
@@ -138,6 +189,12 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
     prev,
     currentIndex,
   }));
+
+  // 注册导航函数到 Jotai atom
+  useEffect(() => {
+    setNavigationFunction(() => goTo);
+    return () => setNavigationFunction(null);
+  }, [goTo, setNavigationFunction]);
 
   // 初始化
   useEffect(() => {

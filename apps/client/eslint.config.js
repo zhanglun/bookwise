@@ -5,6 +5,7 @@ console.log('🚀 ~ mantine:', mantine);
 
 export default tseslint.config(
   ...mantine,
+  { rules: { 'no-console': 'off' } },
   { ignores: ['**/*.{mjs,cjs,js,d.ts,d.mts}', './.storybook/main.ts'] },
   {
     files: ['**/*.story.tsx'],

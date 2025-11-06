@@ -1,8 +1,8 @@
 import clsx from 'clsx';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { ScrollArea, Text } from '@mantine/core';
+import { currentTocHrefAtom, navigateAtom } from '@/pages/viewer/atoms/navigation-atoms';
 import { tocItemsAtom } from '../../pages/viewer/atoms/detail-atoms';
-import { currentTocItemAtom } from '../../pages/viewer/epub/epub-atom';
 import classes from './toc.module.css';
 
 export interface TocItem {
@@ -17,16 +17,18 @@ export interface TocProps {
 }
 
 export const Toc = ({ className }: TocProps) => {
-  const [, setCurrentTocItem] = useAtom(currentTocItemAtom);
   const [tocItems] = useAtom(tocItemsAtom);
+  const navigate = useSetAtom(navigateAtom);
+  const currentHref = useAtomValue(currentTocHrefAtom);
 
-  const handleItemClick = (item: TocItem) => {
-    setCurrentTocItem(item);
+  const handleItemClick = async (href: string) => {
+    await navigate(href);
   };
 
   const renderItems = (list: TocItem[], level = 0) => {
     return (list || []).map((item) => {
       const { label, href, subitems } = item;
+      const isActive = href === currentHref;
 
       return (
         <div
@@ -42,7 +44,11 @@ export const Toc = ({ className }: TocProps) => {
             size="sm"
             data-href={href}
             className={classes.tocItem}
-            onClick={() => handleItemClick(item)}
+            style={{
+              fontWeight: isActive ? 'bold' : 'normal',
+              background: isActive ? 'red' : 'transparent',
+            }}
+            onClick={() => handleItemClick(item.href)}
           >
             {label}
           </Text>
