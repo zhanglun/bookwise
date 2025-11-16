@@ -26,7 +26,6 @@
     "cross-env": "^7.0.3",
     "date-fns": "^2.30.0",
     "electorn": "0.0.1-security",
-    "foliate-js": "github:johnfactotum/foliate-js",
     "jszip": "^3.10.1",
     "lucide-react": "^0.427.0",
     "mime-types": "^2.1.35",
