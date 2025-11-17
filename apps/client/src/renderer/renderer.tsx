@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
+import { ScrollArea } from '@mantine/core';
 import {
   currentIndexAtom,
   currentTocHrefAtom,
@@ -206,10 +207,7 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {/* Shadow DOM 容器 */}
-      <div
-        ref={shadowDOM.containerRef}
-        style={{ width: '100%', height: '100%', overflow: 'auto' }}
-      />
+      <div ref={shadowDOM.containerRef} style={{ padding: '0 30px 30px 80px' }} />
 
       {/* 加载指示器 */}
       {isLoading && (

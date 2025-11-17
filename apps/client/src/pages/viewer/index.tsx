@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { makeBook } from 'foliate-js/view.js';
 import { useAtom, useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
+import { ScrollArea } from '@mantine/core';
 import { Renderer } from '@/renderer/renderer';
 import { currentDetailUuidAtom, tocItemsAtom } from './atoms/detail-atoms';
 import { ViewerHeader } from './header';
@@ -69,10 +70,11 @@ export const Viewer = () => {
       {/* <div className={classes.sidebar}>
         <ViewerSidebar book={book} toc={toc} />
       </div> */}
+
       <div className={classes.main}>
-        <div className="h-full">
+        <ScrollArea style={{ height: '100%' }}>
           <Renderer book={book} onRelocate={handleRelocate} />
-        </div>
+        </ScrollArea>
       </div>
       {/* <div className={classes.rightSide}>right</div> */}
     </div>
