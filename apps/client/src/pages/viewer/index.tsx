@@ -2,9 +2,8 @@ import { useEffect, useState } from 'react';
 import { makeBook } from 'foliate-js/view.js';
 import { useAtom, useSetAtom } from 'jotai';
 import { useParams } from 'react-router-dom';
-import { ScrollArea } from '@mantine/core';
-import { Renderer } from '@/renderer/renderer';
 import { currentDetailUuidAtom, tocItemsAtom } from './atoms/detail-atoms';
+import { EpubViewer } from './epub';
 import { ViewerHeader } from './header';
 import { useDetail } from './hooks/use-detail';
 // import { ViewerSidebar } from './sidebar';
@@ -67,14 +66,9 @@ export const Viewer = () => {
   return (
     <div className={classes.layout}>
       <ViewerHeader book={detail} />
-      {/* <div className={classes.sidebar}>
-        <ViewerSidebar book={book} toc={toc} />
-      </div> */}
 
       <div className={classes.main}>
-        <ScrollArea style={{ height: '100%' }}>
-          <Renderer book={book} onRelocate={handleRelocate} />
-        </ScrollArea>
+        {book && <EpubViewer book={book} onRelocate={handleRelocate} />}
       </div>
       {/* <div className={classes.rightSide}>right</div> */}
     </div>

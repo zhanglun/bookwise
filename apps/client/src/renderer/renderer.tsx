@@ -7,35 +7,96 @@ import {
   currentTocItemAtom,
   navigationFunctionAtom,
 } from '@/pages/viewer/atoms/navigation-atoms';
+import { NavigationBar } from './navigation';
 import { useNavigationManager } from './use-navigation';
 import { useShadowDOMManager } from './use-shadow-dom';
 
 interface RendererProps {
   book: any;
-  onRelocate?: (location: { index: number }) => void;
+  onRelocate?: (location: { index: number; fraction: number }) => void;
+}
+
+// SectionProgress 类 - 从 foliate-js 移植
+class SectionProgress {
+  sizes: number[];
+  sizePerLoc: number;
+  sizePerTimeUnit: number;
+  sizeTotal: number;
+  sectionFractions: number[];
+
+  constructor(sections: any[], sizePerLoc: number, sizePerTimeUnit: number) {
+    this.sizes = sections.map((s) => (s.linear !== 'no' && s.size > 0 ? s.size : 0));
+    this.sizePerLoc = sizePerLoc;
+    this.sizePerTimeUnit = sizePerTimeUnit;
+    this.sizeTotal = this.sizes.reduce((a, b) => a + b, 0);
+    this.sectionFractions = this.getSectionFractions();
+  }
+
+  private getSectionFractions() {
+    const { sizeTotal } = this;
+    const results = [0];
+    let sum = 0;
+    for (const size of this.sizes) {
+      results.push((sum += size) / sizeTotal);
+    }
+    return results;
+  }
+
+  getProgress(index: number, fractionInSection: number, pageFraction = 0) {
+    const { sizes, sizePerLoc, sizePerTimeUnit, sizeTotal } = this;
+    const sizeInSection = sizes[index] ?? 0;
+    const sizeBefore = sizes.slice(0, index).reduce((a, b) => a + b, 0);
+    const size = sizeBefore + fractionInSection * sizeInSection;
+    const nextSize = size + pageFraction * sizeInSection;
+    const remainingTotal = sizeTotal - size;
+    const remainingSection = (1 - fractionInSection) * sizeInSection;
+    return {
+      fraction: nextSize / sizeTotal,
+      section: {
+        current: index,
+        total: sizes.length,
+      },
+      location: {
+        current: Math.floor(size / sizePerLoc),
+        next: Math.floor(nextSize / sizePerLoc),
+        total: Math.ceil(sizeTotal / sizePerLoc),
+      },
+      time: {
+        section: remainingSection / sizePerTimeUnit,
+        total: remainingTotal / sizePerTimeUnit,
+      },
+    };
+  }
+
+  getSection(fraction: number): [number, number] {
+    if (fraction <= 0) return [0, 0];
+    if (fraction >= 1) return [this.sizes.length - 1, 1];
+    fraction = fraction + Number.EPSILON;
+    const { sizeTotal } = this;
+    let index = this.sectionFractions.findIndex((x) => x > fraction) - 1;
+    if (index < 0) return [0, 0];
+    while (!this.sizes[index]) index++;
+    const fractionInSection =
+      (fraction - this.sectionFractions[index]) / (this.sizes[index] / sizeTotal);
+    return [index, fractionInSection];
+  }
 }
 
 const getTocItemForSection = (book: any, sectionIndex: number) => {
   if (!book.toc || !book.sections) {
     return null;
   }
-
   const section = book.sections[sectionIndex];
   if (!section) {
     return null;
   }
 
-  // 使用 book.splitTOCHref 和 book.getTOCFragment 来匹配
   const findMatchingItem = (items: any[]): any => {
     for (const item of items) {
-      // 解析 TOC 项的 href
       const resolved = book.resolveHref?.(item.href);
-      console.log('🚀 ~ findMatchingItem ~ item.href:', item.href);
       if (resolved?.index === sectionIndex) {
         return item;
       }
-
-      // 递归查找子项
       if (item.subitems) {
         const found = findMatchingItem(item.subitems);
         if (found) {
@@ -52,18 +113,26 @@ const getTocItemForSection = (book: any, sectionIndex: number) => {
 export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate }, ref) => {
   const shadowDOM = useShadowDOMManager();
   const navigation = useNavigationManager(book);
-
   const [currentIndex, setCurrentIndex] = useAtom(currentIndexAtom);
   const setNavigationFunction = useSetAtom(navigationFunctionAtom);
   const setCurrentTocHref = useSetAtom(currentTocHrefAtom);
   const setCurrentTocItem = useSetAtom(currentTocItemAtom);
-
+  const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [sectionProgress, setSectionProgress] = useState<SectionProgress | null>(null);
   const bookRef = useRef(book);
 
   // 更新 book ref
   useEffect(() => {
     bookRef.current = book;
+  }, [book]);
+
+  // 初始化 SectionProgress
+  useEffect(() => {
+    if (book?.sections) {
+      const progress = new SectionProgress(book.sections, 1500, 1600);
+      setSectionProgress(progress);
+    }
   }, [book]);
 
   // 加载当前 section
@@ -74,28 +143,28 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
     }
 
     setIsLoading(true);
-
     try {
-      // 使用 Shadow DOM 加载内容
       const section = bookRef.current.sections[index];
       const element = await shadowDOM.loadContent(book, section);
 
-      console.log('🚀 ~ loadCurrentSection ~ element:', element);
-
       if (element) {
-        // 处理页面内链接
         handleInternalLinks(element, index);
-
         setCurrentIndex(index);
+
+        // 计算并更新进度
+        if (sectionProgress) {
+          const progressData = sectionProgress.getProgress(index, 0, 0);
+          setProgress(progressData.fraction);
+
+          if (onRelocate) {
+            onRelocate({ index, fraction: progressData.fraction });
+          }
+        }
 
         const tocItem = getTocItemForSection(book, index);
         if (tocItem) {
           setCurrentTocHref(tocItem.href);
           setCurrentTocItem(tocItem);
-        }
-
-        if (onRelocate) {
-          onRelocate({ index });
         }
       }
     } catch (error) {
@@ -114,21 +183,16 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
       link.addEventListener('click', async (e) => {
         e.preventDefault();
         const href = link.getAttribute('href');
-
         if (!href) {
           return;
         }
 
         try {
-          // 解析 href
           const resolved = bookRef.current?.resolveHref?.(section.resolveHref(href));
-
           if (resolved) {
             await goTo(section.resolveHref(href));
 
-            // 处理锚点
             if (resolved.anchor) {
-              // 等待 DOM 更新
               requestAnimationFrame(() => {
                 const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
                 if (shadowRoot) {
@@ -149,7 +213,6 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
   // 导航方法
   const goTo = async (target: string | number) => {
     const resolved = await navigation.resolveTarget(target);
-
     if (!resolved) {
       console.warn('Could not resolve target:', target);
       return;
@@ -157,7 +220,6 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
 
     await loadCurrentSection(resolved.index);
 
-    // 处理锚点
     if (resolved && resolved.anchor) {
       requestAnimationFrame(() => {
         const shadowRoot = shadowDOM.containerRef.current?.shadowRoot;
@@ -168,6 +230,14 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
         }
       });
     }
+  };
+
+  // 通过进度值跳转
+  const goToFraction = async (fraction: number) => {
+    if (!sectionProgress) return;
+
+    const [index, fractionInSection] = sectionProgress.getSection(fraction);
+    await loadCurrentSection(index);
   };
 
   // 前进/后退方法
@@ -188,6 +258,7 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
     goTo,
     next,
     prev,
+    goToFraction,
     currentIndex,
   }));
 
@@ -206,64 +277,47 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {/* Shadow DOM 容器 */}
-      <div ref={shadowDOM.containerRef} style={{ padding: '0 30px 30px 80px' }} />
+      <ScrollArea style={{ height: '100%', minHeight: '100%' }}>
+        <div ref={shadowDOM.containerRef} style={{ padding: '0 30px 80px 30px' }} />
 
-      {/* 加载指示器 */}
-      {isLoading && (
-        <div
-          style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            background: 'rgba(0,0,0,0.7)',
-            color: 'white',
-            padding: '12px 24px',
-            borderRadius: '4px',
-            zIndex: 1000,
-          }}
-        >
-          Loading...
-        </div>
-      )}
+        {isLoading && (
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              background: 'rgba(0,0,0,0.7)',
+              color: 'white',
+              padding: '12px 24px',
+              borderRadius: '4px',
+              zIndex: 1000,
+            }}
+          >
+            Loading...
+          </div>
+        )}
+      </ScrollArea>
 
-      {/* 导航控制 */}
       <div
         style={{
           position: 'absolute',
-          bottom: '20px',
-          right: '20px',
-          display: 'flex',
-          gap: '8px',
-          zIndex: 100,
+          bottom: '0',
+          left: '0',
+          right: '0',
+          padding: '12px 24px',
+          zIndex: 1000,
         }}
       >
-        <button
-          onClick={prev}
-          disabled={currentIndex === 0 || isLoading}
-          style={{
-            padding: '8px 16px',
-            cursor: currentIndex === 0 || isLoading ? 'not-allowed' : 'pointer',
-            opacity: currentIndex === 0 || isLoading ? 0.5 : 1,
-          }}
-        >
-          Previous
-        </button>
-        <button
-          onClick={next}
-          disabled={currentIndex >= (book?.sections?.length ?? 0) - 1 || isLoading}
-          style={{
-            padding: '8px 16px',
-            cursor:
-              currentIndex >= (book?.sections?.length ?? 0) - 1 || isLoading
-                ? 'not-allowed'
-                : 'pointer',
-            opacity: currentIndex >= (book?.sections?.length ?? 0) - 1 || isLoading ? 0.5 : 1,
-          }}
-        >
-          Next
-        </button>
+        <NavigationBar
+          book={book}
+          currentIndex={currentIndex}
+          isLoading={isLoading}
+          progress={progress}
+          onProgressChange={goToFraction}
+          prev={prev}
+          next={next}
+        />
       </div>
     </div>
   );

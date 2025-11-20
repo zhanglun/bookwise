@@ -1,0 +1,9 @@
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px;
+  background: var(--mantine-color-body);
+  border-top: 1px solid var(--mantine-color-gray-3);
+}
