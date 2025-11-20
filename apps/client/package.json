@@ -23,6 +23,8 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.2.17",
     "@electric-sql/pglite-repl": "^0.2.17",
+    "@floating-ui/react": "^0.27.16",
+    "@floating-ui/react-dom": "^2.1.6",
     "@mantine/core": "7.17.7",
     "@mantine/dates": "^8.0.1",
     "@mantine/dropzone": "^8.0.1",
@@ -49,6 +51,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-i18next": "^15.5.1",
+    "react-konva": "^19.2.0",
     "react-router-dom": "^7.4.0",
     "sonner": "^1.7.4",
     "tailwindcss": "^4.1.5"

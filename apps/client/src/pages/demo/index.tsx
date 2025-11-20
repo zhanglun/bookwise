@@ -1,3 +1,5 @@
+import Canvas from '@/renderer/canvas';
+
 export const DemoPage = () => {
-  return <div>asdfasdf</div>;
+  return <Canvas />;
 };
