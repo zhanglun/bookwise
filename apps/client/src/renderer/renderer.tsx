@@ -69,15 +69,23 @@ class SectionProgress {
   }
 
   getSection(fraction: number): [number, number] {
-    if (fraction <= 0) return [0, 0];
-    if (fraction >= 1) return [this.sizes.length - 1, 1];
-    fraction = fraction + Number.EPSILON;
+    if (fraction <= 0) {
+      return [0, 0];
+    }
+    if (fraction >= 1) {
+      return [this.sizes.length - 1, 1];
+    }
+    const fractionWithEpsilon = (fraction + Number.EPSILON) as number;
     const { sizeTotal } = this;
-    let index = this.sectionFractions.findIndex((x) => x > fraction) - 1;
-    if (index < 0) return [0, 0];
-    while (!this.sizes[index]) index++;
+    let index = this.sectionFractions.findIndex((x) => x > fractionWithEpsilon) - 1;
+    if (index < 0) {
+      return [0, 0];
+    }
+    while (!this.sizes[index]) {
+      index++;
+    }
     const fractionInSection =
-      (fraction - this.sectionFractions[index]) / (this.sizes[index] / sizeTotal);
+      (fractionWithEpsilon - this.sectionFractions[index]) / (this.sizes[index] / sizeTotal);
     return [index, fractionInSection];
   }
 }
@@ -234,7 +242,9 @@ export const Renderer = React.forwardRef<any, RendererProps>(({ book, onRelocate
 
   // 通过进度值跳转
   const goToFraction = async (fraction: number) => {
-    if (!sectionProgress) return;
+    if (!sectionProgress) {
+      return;
+    }
 
     const [index, fractionInSection] = sectionProgress.getSection(fraction);
     await loadCurrentSection(index);
