@@ -5,14 +5,14 @@ export class DrawingEngine {
   private stage: Konva.Stage;
   private layer: Konva.Layer;
   private transformer: Konva.Transformer;
-  private shapes: Map<string, Konva.Shape> = new Map();
+  private shapes = new Map<string, Konva.Shape>();
   private shapeData: Shape[] = [];
   private currentTool: ToolType = 'select';
   private currentColor: string = '#000000';
   private isDrawing: boolean = false;
   private currentShape: Shape | null = null;
   private selectedId: string | null = null;
-  private listeners: Set<ShapeChangeListener> = new Set();
+  private listeners = new Set<ShapeChangeListener>();
 
   constructor(config: DrawingEngineConfig) {
     this.stage = new Konva.Stage({
@@ -81,9 +81,16 @@ export class DrawingEngine {
       return;
     }
 
+    // 开始绘制新形状前,取消当前选中状态
+    if (this.selectedId) {
+      this.selectShape(null);
+    }
+
     this.isDrawing = true;
     const pos = this.stage.getPointerPosition();
-    if (!pos) return;
+    if (!pos) {
+      return;
+    }
 
     const id = `shape-${Date.now()}`;
 
@@ -129,10 +136,14 @@ export class DrawingEngine {
   }
 
   private handleMouseMove(e: Konva.KonvaEventObject<MouseEvent>) {
-    if (!this.isDrawing || !this.currentShape) return;
+    if (!this.isDrawing || !this.currentShape) {
+      return;
+    }
 
     const pos = this.stage.getPointerPosition();
-    if (!pos) return;
+    if (!pos) {
+      return;
+    }
 
     const lastShape = this.shapeData[this.shapeData.length - 1];
 
@@ -263,7 +274,9 @@ export class DrawingEngine {
   // 从数据更新 Konva 节点
   private syncKonvaShapeFromData(shape: Shape) {
     const konvaShape = this.shapes.get(shape.id);
-    if (!konvaShape) return;
+    if (!konvaShape) {
+      return;
+    }
 
     if (shape.tool === 'line') {
       (konvaShape as Konva.Line).points(shape.points);
@@ -308,10 +321,44 @@ export class DrawingEngine {
 
   public setTool(tool: ToolType) {
     this.currentTool = tool;
+    // 切换到绘制工具时,取消当前选中状态
+    if (tool !== 'select' && this.selectedId) {
+      this.selectShape(null);
+    }
   }
 
   public setColor(color: string) {
     this.currentColor = color;
+
+    // 如果有选中的形状,同时修改该形状的颜色
+    if (this.selectedId) {
+      const index = this.shapeData.findIndex((s) => s.id === this.selectedId);
+      if (index === -1) {
+        return;
+      }
+
+      const shape = this.shapeData[index];
+
+      // 线条修改 stroke,其他形状修改 fill
+      if (shape.tool === 'line') {
+        shape.stroke = color;
+      } else if (shape.tool === 'circle' || shape.tool === 'rect') {
+        shape.fill = color;
+      }
+
+      // 立即同步到 Konva 节点
+      const konvaShape = this.shapes.get(this.selectedId);
+      if (konvaShape) {
+        if (shape.tool === 'line') {
+          (konvaShape as Konva.Line).stroke(color);
+        } else {
+          konvaShape.fill(color);
+        }
+        this.layer.batchDraw();
+      }
+
+      this.notifyListeners();
+    }
   }
 
   public clear() {
