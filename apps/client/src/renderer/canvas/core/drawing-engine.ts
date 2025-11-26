@@ -206,62 +206,69 @@ export class DrawingEngine {
       });
     }
 
-    if (shape.tool !== 'line') {
-      konvaShape.on('dragend', () => {
+    konvaShape.draggable(true);
+
+    konvaShape.on('dragstart', () => {
+      // 拖拽开始时自动选中该形状
+      if (this.selectedId !== shape.id) {
+        this.selectShape(shape.id);
+      }
+    });
+
+    konvaShape.on('dragend', () => {
+      this.updateShapeDataFromKonva(shape.id, {
+        x: konvaShape.x(),
+        y: konvaShape.y(),
+      });
+    });
+
+    konvaShape.on('transformend', () => {
+      const scaleX = konvaShape.scaleX();
+      const scaleY = konvaShape.scaleY();
+
+      if (shape.tool === 'circle') {
+        const newRadius = Math.max((konvaShape as Konva.Circle).radius() * scaleX, 5);
+        const newX = konvaShape.x();
+        const newY = konvaShape.y();
+
+        // 更新数据数组
         this.updateShapeDataFromKonva(shape.id, {
-          x: konvaShape.x(),
-          y: konvaShape.y(),
+          x: newX,
+          y: newY,
+          radius: newRadius,
         });
-      });
 
-      konvaShape.on('transformend', () => {
-        const scaleX = konvaShape.scaleX();
-        const scaleY = konvaShape.scaleY();
+        // 立即更新 Konva 节点
+        (konvaShape as Konva.Circle).radius(newRadius);
+        konvaShape.x(newX);
+        konvaShape.y(newY);
+      } else if (shape.tool === 'rect') {
+        const newWidth = Math.max(5, (konvaShape as Konva.Rect).width() * scaleX);
+        const newHeight = Math.max(5, (konvaShape as Konva.Rect).height() * scaleY);
+        const newX = konvaShape.x();
+        const newY = konvaShape.y();
 
-        if (shape.tool === 'circle') {
-          const newRadius = Math.max((konvaShape as Konva.Circle).radius() * scaleX, 5);
-          const newX = konvaShape.x();
-          const newY = konvaShape.y();
+        // 更新数据数组
+        this.updateShapeDataFromKonva(shape.id, {
+          x: newX,
+          y: newY,
+          width: newWidth,
+          height: newHeight,
+        });
 
-          // 更新数据数组
-          this.updateShapeDataFromKonva(shape.id, {
-            x: newX,
-            y: newY,
-            radius: newRadius,
-          });
+        // 立即更新 Konva 节点
+        (konvaShape as Konva.Rect).width(newWidth);
+        (konvaShape as Konva.Rect).height(newHeight);
+        konvaShape.x(newX);
+        konvaShape.y(newY);
+      }
 
-          // 立即更新 Konva 节点
-          (konvaShape as Konva.Circle).radius(newRadius);
-          konvaShape.x(newX);
-          konvaShape.y(newY);
-        } else if (shape.tool === 'rect') {
-          const newWidth = Math.max(5, (konvaShape as Konva.Rect).width() * scaleX);
-          const newHeight = Math.max(5, (konvaShape as Konva.Rect).height() * scaleY);
-          const newX = konvaShape.x();
-          const newY = konvaShape.y();
+      // 重置 scale
+      konvaShape.scaleX(1);
+      konvaShape.scaleY(1);
 
-          // 更新数据数组
-          this.updateShapeDataFromKonva(shape.id, {
-            x: newX,
-            y: newY,
-            width: newWidth,
-            height: newHeight,
-          });
-
-          // 立即更新 Konva 节点
-          (konvaShape as Konva.Rect).width(newWidth);
-          (konvaShape as Konva.Rect).height(newHeight);
-          konvaShape.x(newX);
-          konvaShape.y(newY);
-        }
-
-        // 重置 scale
-        konvaShape.scaleX(1);
-        konvaShape.scaleY(1);
-
-        this.layer.batchDraw();
-      });
-    }
+      this.layer.batchDraw();
+    });
 
     this.layer.add(konvaShape);
     this.shapes.set(shape.id, konvaShape);
@@ -307,12 +314,11 @@ export class DrawingEngine {
     if (id) {
       const konvaShape = this.shapes.get(id);
       if (konvaShape) {
-        konvaShape.draggable(true);
+        // konvaShape.draggable(true);
         this.transformer.nodes([konvaShape]);
         this.transformer.moveToTop();
       }
     } else {
-      this.shapes.forEach((shape) => shape.draggable(false));
       this.transformer.nodes([]);
     }
 
