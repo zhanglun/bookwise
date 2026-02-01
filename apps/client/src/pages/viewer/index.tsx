@@ -68,54 +68,58 @@ export const Viewer = () => {
       if (blob?.data && detail) {
         setIsLoading(true);
         try {
-          // 根据格式确定文件扩展名
-          const format = detail.format?.toLowerCase() || 'epub';
-          const fileExtension = format === 'pdf' ? '.pdf' : 
-                               format === 'mobi' ? '.mobi' : 
-                               format === 'txt' ? '.txt' : '.epub';
+          // 从数据库获取格式信息
+          const format = (detail.format || 'EPUB').toUpperCase();
           
-          // 确保文件名有正确的扩展名
-          let filename = detail.title || 'book';
-          if (!filename.toLowerCase().endsWith(fileExtension)) {
-            filename = `${filename}${fileExtension}`;
+          // 确定文件扩展名
+          let fileExtension = '.epub';
+          let mimeType = 'application/epub+zip';
+          
+          if (format === 'PDF') {
+            fileExtension = '.pdf';
+            mimeType = 'application/pdf';
+          } else if (format === 'MOBI') {
+            fileExtension = '.mobi';
+            mimeType = 'application/x-mobipocket-ebook';
+          } else if (format === 'TEXT' || format === 'TXT') {
+            fileExtension = '.txt';
+            mimeType = 'text/plain';
           }
           
-          console.log('Loading book:', {
-            uuid: detail.uuid,
-            title: detail.title,
-            format: detail.format,
-            filename,
-            blobSize: blob.data?.byteLength || blob.data?.length,
-          });
+          // 构建文件名 - 必须使用正确的扩展名
+          let filename = detail.title || 'book';
+          // 移除可能存在的错误扩展名
+          filename = filename.replace(/\.[^/.]+$/, '');
+          // 添加正确的扩展名
+          filename = `${filename}${fileExtension}`;
           
-          const f = new File([blob.data], filename, { 
-            type: format === 'pdf' ? 'application/pdf' : 
-                  format === 'epub' ? 'application/epub+zip' : 
-                  'application/octet-stream'
-          });
+          console.log('Loading book with format:', format);
+          console.log('File details:', { filename, mimeType, format });
+          console.log('Blob data size:', blob.data?.byteLength || blob.data?.length || 'unknown');
           
-          console.log('File created:', {
-            name: f.name,
-            size: f.size,
-            type: f.type,
-          });
+          // 创建 File 对象 - 必须使用正确的扩展名和 MIME 类型
+          const f = new File([blob.data], filename, { type: mimeType });
           
+          console.log('Created file:', f.name, 'size:', f.size, 'type:', f.type);
+          
+          // 使用 foliate-js 解析书籍
           const bookInstance = await makeBook(f);
 
-          console.log('Book loaded successfully:', {
-            format: bookInstance.format,
+          console.log('Book parsed successfully:', {
+            detectedFormat: bookInstance.format,
             sections: bookInstance.sections?.length,
             toc: bookInstance.toc?.length,
-            metadata: bookInstance.metadata,
           });
 
-          setBookFormat(bookInstance.format || format);
+          // 使用检测到的格式或回退到数据库格式
+          const actualFormat = bookInstance.format || format;
+          setBookFormat(actualFormat);
           setTocItems(bookInstance.toc || []);
           setBook(bookInstance);
           setTotalSections(bookInstance.sections?.length || 1);
 
-          // 根据格式初始化渲染
-          if (bookInstance.format === 'pdf' || format === 'pdf') {
+          // 根据检测到的格式初始化渲染
+          if (actualFormat === 'pdf') {
             await initPdfViewer(bookInstance);
           } else {
             await initEpubViewer(bookInstance);
@@ -127,18 +131,9 @@ export const Viewer = () => {
             name: error?.name,
             stack: error?.stack,
           });
-          
-          // 显示错误提示（可以添加 Toast 提示）
-          alert(`加载书籍失败: ${error?.message || '未知错误'}`);
         } finally {
           setIsLoading(false);
         }
-      } else {
-        console.log('Waiting for book data...', { 
-          hasBlob: !!blob?.data, 
-          hasDetail: !!detail,
-          blobData: blob?.data,
-        });
       }
     })();
 
