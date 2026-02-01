@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Grid } from '@mantine/core';
+import { toast } from 'sonner';
 import { DataTable } from '@/components/Table';
 import { dal } from '@/dal';
 import { processFiles } from '@/helpers/uploader';
@@ -24,14 +25,35 @@ export const Grabber = () => {
   };
 
   const handleFileSelect = async (files: File[]) => {
-    const body = await processFiles(files);
+    try {
+      const body = await processFiles(files);
+      const total = body.length;
+      let successCount = 0;
 
-    body.forEach(async (book) => {
-      const res = await dal.saveBookAndRelations(book.metadata, book.cover);
-      console.log('🚀 ~ body.forEach ~ res:', res);
-    });
+      toast.promise(
+        (async () => {
+          for (const book of body) {
+            const coverBuffer = book.cover ? Uint8Array.from(atob(book.cover), c => c.charCodeAt(0)) : null;
+            const fileBuffer = typeof book.buffer === 'string'
+              ? Uint8Array.from(atob(book.buffer), c => c.charCodeAt(0))
+              : new Uint8Array(book.buffer as ArrayBuffer);
 
-    // TODO: search book metadata
+            await dal.saveBookAndRelations(book.metadata, fileBuffer, coverBuffer);
+            successCount++;
+          }
+
+          await getList();
+        })(),
+        {
+          loading: `正在上传 ${total} 本书籍...`,
+          success: `${total} 本书籍上传成功`,
+          error: '上传失败，请重试',
+        }
+      );
+    } catch (error) {
+      console.error('上传失败:', error);
+      toast.error(`上传失败: ${(error as Error).message}`);
+    }
   };
 
   const handleBookDataChange = (data: Partial<BookResItem>) => {

@@ -5,23 +5,23 @@ import { Input } from '@mantine/core';
 import { Uploader } from '@/components/Uploader';
 import classes from './library.module.css';
 
-export const LibraryToolbar = () => {
+interface LibraryToolbarProps {
+  onUploadComplete?: () => void;
+}
+
+export const LibraryToolbar = ({ onUploadComplete }: LibraryToolbarProps) => {
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
 
   const debouncedQuery = useCallback(
     debounce((q) => {
       console.log('🚀 ~ file: index.tsx:19 ~ debounce ~ q:', q);
-      // const params = {
-      //   title: q,
-      // };
     }, 300),
     []
   );
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
     setQuery(value);
     setSearching(true);
     debouncedQuery(value);
@@ -36,12 +36,12 @@ export const LibraryToolbar = () => {
   return (
     <div className={classes.toolbar}>
       <div className="flex items-center gap-3">
-        <Uploader />
+        <Uploader onUploadComplete={onUploadComplete} />
       </div>
       <div className="flex items-center gap-3">
         <Input
           size="xs"
-          placeholder="Search the books..."
+          placeholder="Search for books..."
           value={query}
           onChange={handleQueryChange}
           onKeyUp={handleStartQuery}

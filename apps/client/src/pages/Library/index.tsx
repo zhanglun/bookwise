@@ -39,7 +39,7 @@ export const Library = () => {
   return (
     <div className={classes.main}>
       <div className={classes.content}>
-        <LibraryToolbar />
+        <LibraryToolbar onUploadComplete={getList} />
         <div className="flex-1 overflow-auto min-h-0">
           <BookList
             data={books}
