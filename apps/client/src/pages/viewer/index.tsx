@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { makeBook } from 'foliate-js/view.js';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom, useAtomValue } from 'jotai';
 import { useParams } from 'react-router-dom';
 import { ScrollArea } from '@mantine/core';
 import { currentDetailUuidAtom, tocItemsAtom } from './atoms/detail-atoms';
@@ -19,7 +19,6 @@ import {
   selectedTextAtom,
   floatingToolbarPositionAtom,
   annotationsAtom,
-  Annotation,
 } from './atoms/reader-atoms';
 import classes from './viewer.module.css';
 
@@ -28,12 +27,16 @@ export const Viewer = () => {
   const setCurrentUuid = useSetAtom(currentDetailUuidAtom);
   const { detail, blob } = useDetail();
   const [, setTocItems] = useAtom(tocItemsAtom);
+  
+  // 书籍状态
   const [book, setBook] = useState<any>(null);
+  const [bookFormat, setBookFormat] = useState<string>('');
   const [currentSection, setCurrentSection] = useState(0);
   const [totalSections, setTotalSections] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 阅读器状态
   const [leftOpen] = useAtom(leftPanelOpenAtom);
   const [rightOpen] = useAtom(rightPanelOpenAtom);
   const [theme] = useAtom(currentThemeAtom);
@@ -41,10 +44,13 @@ export const Viewer = () => {
   const [lineHeight] = useAtom(lineHeightAtom);
   const setSelectedText = useSetAtom(selectedTextAtom);
   const setFloatingPosition = useSetAtom(floatingToolbarPositionAtom);
-  const [annotations] = useAtom(annotationsAtom);
+  const annotations = useAtomValue(annotationsAtom);
 
+  // DOM 引用
   const contentRef = useRef<HTMLDivElement>(null);
   const shadowRootRef = useRef<ShadowRoot | null>(null);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
+  const pdfViewRef = useRef<any>(null);
 
   // 设置当前 UUID
   useEffect(() => {
@@ -60,26 +66,151 @@ export const Viewer = () => {
   useEffect(() => {
     (async () => {
       if (blob?.data && detail) {
-        const f = new File([blob.data], detail.title);
-        const bookInstance = await makeBook(f);
+        setIsLoading(true);
+        try {
+          // 根据格式确定文件扩展名
+          const format = detail.format?.toLowerCase() || 'epub';
+          const fileExtension = format === 'pdf' ? '.pdf' : 
+                               format === 'mobi' ? '.mobi' : 
+                               format === 'txt' ? '.txt' : '.epub';
+          
+          // 确保文件名有正确的扩展名
+          let filename = detail.title || 'book';
+          if (!filename.toLowerCase().endsWith(fileExtension)) {
+            filename = `${filename}${fileExtension}`;
+          }
+          
+          console.log('Loading book:', {
+            uuid: detail.uuid,
+            title: detail.title,
+            format: detail.format,
+            filename,
+            blobSize: blob.data?.byteLength || blob.data?.length,
+          });
+          
+          const f = new File([blob.data], filename, { 
+            type: format === 'pdf' ? 'application/pdf' : 
+                  format === 'epub' ? 'application/epub+zip' : 
+                  'application/octet-stream'
+          });
+          
+          console.log('File created:', {
+            name: f.name,
+            size: f.size,
+            type: f.type,
+          });
+          
+          const bookInstance = await makeBook(f);
 
-        setTocItems(bookInstance.toc || []);
-        setBook(bookInstance);
-        setTotalSections(bookInstance.sections?.length || 0);
+          console.log('Book loaded successfully:', {
+            format: bookInstance.format,
+            sections: bookInstance.sections?.length,
+            toc: bookInstance.toc?.length,
+            metadata: bookInstance.metadata,
+          });
 
-        // 创建 Shadow DOM
-        if (contentRef.current && !shadowRootRef.current) {
-          shadowRootRef.current = contentRef.current.attachShadow({ mode: 'open' });
+          setBookFormat(bookInstance.format || format);
+          setTocItems(bookInstance.toc || []);
+          setBook(bookInstance);
+          setTotalSections(bookInstance.sections?.length || 1);
+
+          // 根据格式初始化渲染
+          if (bookInstance.format === 'pdf' || format === 'pdf') {
+            await initPdfViewer(bookInstance);
+          } else {
+            await initEpubViewer(bookInstance);
+          }
+        } catch (error: any) {
+          console.error('Failed to load book:', error);
+          console.error('Error details:', {
+            message: error?.message,
+            name: error?.name,
+            stack: error?.stack,
+          });
+          
+          // 显示错误提示（可以添加 Toast 提示）
+          alert(`加载书籍失败: ${error?.message || '未知错误'}`);
+        } finally {
+          setIsLoading(false);
         }
-
-        // 加载第一个 section
-        await loadSection(0, bookInstance);
+      } else {
+        console.log('Waiting for book data...', { 
+          hasBlob: !!blob?.data, 
+          hasDetail: !!detail,
+          blobData: blob?.data,
+        });
       }
     })();
+
+    // 清理
+    return () => {
+      if (pdfViewRef.current) {
+        pdfViewRef.current.remove?.();
+        pdfViewRef.current = null;
+      }
+    };
   }, [blob, detail, setTocItems]);
 
-  // 加载 section
-  const loadSection = async (index: number, bookInstance: any = book) => {
+  // 初始化 EPUB 阅读器
+  const initEpubViewer = async (bookInstance: any) => {
+    if (!contentRef.current) return;
+
+    // 创建 Shadow DOM
+    if (!shadowRootRef.current) {
+      shadowRootRef.current = contentRef.current.attachShadow({ mode: 'open' });
+    }
+
+    // 加载第一个 section
+    await loadEpubSection(0, bookInstance);
+  };
+
+  // 初始化 PDF 阅读器
+  const initPdfViewer = async (bookInstance: any) => {
+    if (!pdfContainerRef.current) return;
+
+    // 清理旧内容
+    while (pdfContainerRef.current.firstChild) {
+      pdfContainerRef.current.removeChild(pdfContainerRef.current.firstChild);
+    }
+
+    // 创建 foliate-view 元素
+    const view = document.createElement('foliate-view');
+    pdfViewRef.current = view;
+
+    // 设置样式
+    view.style.width = '100%';
+    view.style.height = '100%';
+    view.style.overflow = 'auto';
+
+    pdfContainerRef.current.appendChild(view);
+
+    // 监听事件
+    view.addEventListener('load', (e: any) => {
+      console.log('PDF page loaded:', e.detail);
+    });
+
+    view.addEventListener('relocate', (e: any) => {
+      console.log('PDF relocated:', e.detail);
+      const { index, fraction } = e.detail || {};
+      if (index !== undefined) {
+        setCurrentSection(index);
+        setProgress(fraction || index / (bookInstance.sections?.length || 1));
+      }
+    });
+
+    try {
+      await view.open(bookInstance);
+      // 显示第一页
+      if (view.renderer) {
+        view.renderer.next?.();
+      }
+    } catch (err) {
+      console.error('Failed to open PDF:', err);
+    }
+  };
+
+  // 加载 EPUB section
+  const loadEpubSection = async (index: number, bookInstance: any = book) => {
     if (!bookInstance?.sections?.[index] || !shadowRootRef.current) return;
 
     setIsLoading(true);
@@ -130,7 +261,7 @@ export const Viewer = () => {
       color: ${theme === 'dark' ? '#e5e7eb' : '#374151'};
       max-width: 720px;
       margin: 0 auto;
-      padding: 48px 32px;
+      padding: 48px 32px 80px;
     }
 
     h1, h2, h3, h4, h5, h6 {
@@ -197,6 +328,14 @@ export const Viewer = () => {
     ::selection {
       background: ${theme === 'dark' ? 'rgba(96, 165, 250, 0.3)' : 'rgba(59, 130, 246, 0.2)'};
     }
+
+    /* PDF 在 Shadow DOM 内的样式 */
+    @media print {
+      .${classes.contentContainer} {
+        max-width: none;
+        padding: 0;
+      }
+    }
   `;
 
   // 处理内部链接
@@ -211,7 +350,7 @@ export const Viewer = () => {
         try {
           const resolved = bookInstance.resolveHref?.(href);
           if (resolved && resolved.index !== undefined) {
-            await loadSection(resolved.index, bookInstance);
+            await loadEpubSection(resolved.index, bookInstance);
             if (resolved.anchor) {
               setTimeout(() => {
                 const anchor = container.querySelector(`[id="${resolved.anchor}"]`);
@@ -241,7 +380,7 @@ export const Viewer = () => {
         if (rect) {
           setFloatingPosition({
             x: rect.left + rect.width / 2,
-            y: rect.top,
+            y: rect.top - 10,
             visible: true,
           });
         }
@@ -255,7 +394,7 @@ export const Viewer = () => {
 
   // 应用当前批注
   useEffect(() => {
-    if (!shadowRootRef.current || annotations.length === 0) return;
+    if (bookFormat === 'pdf' || !shadowRootRef.current || annotations.length === 0) return;
 
     const container = shadowRootRef.current.querySelector(`.${classes.contentContainer}`);
     if (!container) return;
@@ -305,29 +444,53 @@ export const Viewer = () => {
         }
       }
     });
-  }, [annotations, currentSection, classes.contentContainer]);
+  }, [annotations, currentSection, bookFormat, classes.contentContainer]);
 
-  // 导航处理
+  // 导航处理 - EPUB
   const handlePrev = useCallback(() => {
-    if (currentSection > 0) {
-      loadSection(currentSection - 1);
+    if (bookFormat === 'pdf') {
+      // PDF 导航
+      if (pdfViewRef.current?.renderer?.prev) {
+        pdfViewRef.current.renderer.prev();
+      }
+    } else {
+      // EPUB 导航
+      if (currentSection > 0) {
+        loadEpubSection(currentSection - 1);
+      }
     }
-  }, [currentSection]);
+  }, [bookFormat, currentSection]);
 
   const handleNext = useCallback(() => {
-    if (currentSection < totalSections - 1) {
-      loadSection(currentSection + 1);
+    if (bookFormat === 'pdf') {
+      // PDF 导航
+      if (pdfViewRef.current?.renderer?.next) {
+        pdfViewRef.current.renderer.next();
+      }
+    } else {
+      // EPUB 导航
+      if (currentSection < totalSections - 1) {
+        loadEpubSection(currentSection + 1);
+      }
     }
-  }, [currentSection, totalSections]);
+  }, [bookFormat, currentSection, totalSections]);
 
   const handleSectionChange = useCallback((section: number) => {
-    loadSection(section);
-  }, []);
+    if (bookFormat === 'pdf') {
+      // PDF 跳转到指定页
+      if (pdfViewRef.current?.goTo) {
+        pdfViewRef.current.goTo({ index: section });
+      }
+    } else {
+      // EPUB 跳转到指定章节
+      loadEpubSection(section);
+    }
+  }, [bookFormat]);
 
   const handleProgressChange = useCallback((p: number) => {
     const section = Math.floor(p * totalSections);
-    loadSection(Math.min(section, totalSections - 1));
-  }, [totalSections]);
+    handleSectionChange(Math.min(section, totalSections - 1));
+  }, [totalSections, handleSectionChange]);
 
   // 加载状态
   if (!detail.data && !blob.data) {
@@ -347,21 +510,34 @@ export const Viewer = () => {
         book={bookData}
         currentSection={currentSection}
         totalSections={totalSections}
+        bookFormat={bookFormat}
       />
 
       <div className={classes.mainLayout}>
         <div
           className={`${classes.leftPanel} ${leftOpen ? classes.open : classes.closed}`}
         >
-          <TocPanel isOpen={leftOpen} />
+          <TocPanel isOpen={leftOpen} bookFormat={bookFormat} />
         </div>
 
         <div className={classes.contentArea}>
-          <ScrollArea className={classes.scrollArea} scrollbarSize={8}>
-            <div className={classes.contentWrapper}>
-              <div ref={contentRef} className={classes.shadowHost} />
-            </div>
-          </ScrollArea>
+          {/* EPUB 阅读区域 */}
+          {bookFormat !== 'pdf' && (
+            <ScrollArea className={classes.scrollArea} scrollbarSize={8}>
+              <div className={classes.contentWrapper}>
+                <div ref={contentRef} className={classes.shadowHost} />
+              </div>
+            </ScrollArea>
+          )}
+
+          {/* PDF 阅读区域 */}
+          {bookFormat === 'pdf' && (
+            <div 
+              ref={pdfContainerRef} 
+              className={classes.pdfContainer}
+              style={{ width: '100%', height: '100%', overflow: 'auto' }}
+            />
+          )}
 
           {isLoading && (
             <div className={classes.loadingOverlay}>
@@ -369,13 +545,13 @@ export const Viewer = () => {
             </div>
           )}
 
-          <FloatingToolbar currentSection={currentSection} />
+          {bookFormat !== 'pdf' && <FloatingToolbar currentSection={currentSection} />}
         </div>
 
         <div
           className={`${classes.rightPanel} ${rightOpen ? classes.open : classes.closed}`}
         >
-          <AnnotationPanel isOpen={rightOpen} currentSection={currentSection} />
+          <AnnotationPanel isOpen={rightOpen} currentSection={currentSection} bookFormat={bookFormat} />
         </div>
       </div>
 
@@ -387,6 +563,7 @@ export const Viewer = () => {
         onProgressChange={handleProgressChange}
         onPrev={handlePrev}
         onNext={handleNext}
+        bookFormat={bookFormat}
       />
     </div>
   );

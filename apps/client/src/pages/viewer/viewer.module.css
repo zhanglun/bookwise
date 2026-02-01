@@ -254,3 +254,20 @@
 [data-theme='dark'] ::selection {
   --selection-bg: rgba(96, 165, 250, 0.3);
 }
+
+/* PDF 容器样式 */
+.pdfContainer {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: var(--content-bg, #ffffff);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pdfContainer > foliate-view {
+  width: 100%;
+  max-width: 900px;
+  height: 100%;
+}

@@ -1,0 +1,125 @@
+.previewContainer {
+  margin-top: rem(16px);
+  border: 1px solid var(--mantine-color-gray-3);
+  border-radius: rem(8px);
+  background: var(--mantine-color-white);
+  overflow: hidden;
+}
+
+.previewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: rem(8px) rem(12px);
+  border-bottom: 1px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-gray-0);
+}
+
+.pageIndicator {
+  font-variant-numeric: tabular-nums;
+}
+
+.previewContentWrapper {
+  position: relative;
+  max-height: rem(400px);
+  overflow-y: auto;
+  padding: rem(16px);
+}
+
+.previewViewport {
+  width: 100%;
+}
+
+.previewContent {
+  font-family: 'Source Han Serif CN', 'Noto Serif SC', Georgia, serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+}
+
+.previewPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: rem(40px) rem(20px);
+  gap: rem(12px);
+}
+
+.placeholderIcon {
+  color: var(--mantine-color-gray-4);
+  opacity: 0.6;
+}
+
+.previewControls {
+  display: flex;
+  justify-content: center;
+  gap: rem(8px);
+  padding: rem(8px);
+  border-top: 1px solid var(--mantine-color-gray-3);
+  background: var(--mantine-color-gray-0);
+}
+
+/* 预览内容内的样式 */
+.previewContent h1,
+.previewContent h2,
+.previewContent h3,
+.previewContent h4,
+.previewContent h5,
+.previewContent h6 {
+  font-family: 'Source Han Sans CN', 'Noto Sans SC', -apple-system, sans-serif;
+  font-weight: 600;
+  color: #1f2937;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+.previewContent h1 { font-size: 1.5em; }
+.previewContent h2 { font-size: 1.3em; }
+.previewContent h3 { font-size: 1.1em; }
+
+.previewContent p {
+  margin: 0.8em 0;
+  text-align: justify;
+  text-indent: 2em;
+}
+
+.previewContent img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em auto;
+  border-radius: 4px;
+}
+
+.previewContent blockquote {
+  margin: 1em 0;
+  padding: 0.5em 1em;
+  border-left: 3px solid #d1d5db;
+  background: rgba(0, 0, 0, 0.02);
+  font-style: italic;
+  color: #6b7280;
+}
+
+/* PDF 预览占位符样式 */
+.pdfPreviewPlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #6b7280;
+}
+
+.pdfIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.pdfHint {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-top: 8px;
+}

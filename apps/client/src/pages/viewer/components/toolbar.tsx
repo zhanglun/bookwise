@@ -28,9 +28,10 @@ interface ToolbarProps {
   book: BookResItem;
   currentSection?: number;
   totalSections?: number;
+  bookFormat?: string;
 }
 
-export const Toolbar = memo(({ book, currentSection = 0, totalSections = 1 }: ToolbarProps) => {
+export const Toolbar = memo(({ book, currentSection = 0, totalSections = 1, bookFormat = 'epub' }: ToolbarProps) => {
   const [leftOpen, setLeftOpen] = useAtom(leftPanelOpenAtom);
   const [rightOpen, setRightOpen] = useAtom(rightPanelOpenAtom);
   const [visible, setVisible] = useAtom(toolbarVisibleAtom);

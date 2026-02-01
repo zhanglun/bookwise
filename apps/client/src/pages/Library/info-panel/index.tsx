@@ -21,6 +21,7 @@ import {
 } from '@mantine/core';
 import { Cover } from '@/components/Book/Cover';
 import { BookResItem } from '@/interface/book';
+import { BookPreview } from './book-preview';
 import classes from './info-panel.module.css';
 
 export type InfoPanelType = {
@@ -132,6 +133,11 @@ export const InfoPanel = (props: InfoPanelType) => {
                 </Text>
               </>
             )}
+
+            {/* 书籍内容预览 */}
+            <div className={classes.divider} />
+            <div className={classes.sectionTitle}>内容预览</div>
+            <BookPreview book={data} maxPages={3} />
           </div>
         </div>
       </ScrollArea>
