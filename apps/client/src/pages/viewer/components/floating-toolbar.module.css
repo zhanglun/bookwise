@@ -1,0 +1,123 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+}
+
+.toolbar {
+  position: fixed;
+  z-index: 99;
+  background: var(--toolbar-bg, white);
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 6px;
+  animation: toolbarAppear 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%) translateY(-100%);
+  margin-top: -8px;
+}
+
+@keyframes toolbarAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-90%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-100%) scale(1);
+  }
+}
+
+.mainButtons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.actionBtn {
+  width: 36px;
+  height: 36px;
+  color: var(--text-secondary, #6b7280);
+  transition: all 0.15s ease;
+}
+
+.actionBtn:hover {
+  color: var(--text-primary, #1f2937);
+  background: var(--hover-bg, rgba(0, 0, 0, 0.04));
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--border-color, rgba(0, 0, 0, 0.08));
+  margin: 0 4px;
+}
+
+.closeBtn {
+  width: 32px;
+  height: 32px;
+  color: var(--text-muted, #9ca3af);
+}
+
+.closeBtn:hover {
+  color: var(--text-secondary, #6b7280);
+  background: var(--hover-bg, rgba(0, 0, 0, 0.04));
+}
+
+.colorPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  min-width: 160px;
+}
+
+.colorLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 4px;
+}
+
+.colorGrid {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.colorBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.colorBtn:hover {
+  transform: scale(1.1);
+  border-color: var(--text-secondary, #6b7280);
+}
+
+.backBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  color: var(--text-muted, #9ca3af);
+}
+
+.backBtn:hover {
+  color: var(--text-secondary, #6b7280);
+}
+
+/* 深色模式 */
+[data-theme='dark'] .toolbar {
+  --toolbar-bg: #2a2a2a;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+  --border-color: rgba(255, 255, 255, 0.1);
+}

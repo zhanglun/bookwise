@@ -1,54 +1,256 @@
-.layout {
-  --header-height: 45px;
-  --sidebar-width: 240px;
-  --right-side-width: 240px;
-  display: grid;
-  /* grid-template-areas:
-    'header header header'
-    'sidebar main right-side'; */
-  grid-template-areas:
-    'header header header'
-    'main main main';
-  grid-template-rows: var(--header-height) 1fr;
-  grid-template-columns: var(--sidebar-width) 1fr var(--right-side-width);
+/* 阅读器主容器 */
+.reader {
+  width: 100vw;
   height: 100vh;
-  width: 100%;
+  overflow: hidden;
+  background: var(--bg-primary, #ffffff);
+  color: var(--text-primary, #1f2937);
+  font-family: 'Source Han Sans CN', 'Noto Sans SC', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.header {
-  grid-area: header;
-  height: var(--header-height);
+/* 主布局 */
+.mainLayout {
+  display: flex;
+  height: 100%;
+  padding-top: 52px; /* 工具栏高度 */
+  padding-bottom: 80px; /* 进度条高度 */
+}
+
+/* 左侧面板 */
+.leftPanel {
+  flex-shrink: 0;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  background: var(--panel-bg, #fafafa);
+  border-right: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+}
+
+.leftPanel.open {
+  width: 280px;
+}
+
+.leftPanel.closed {
+  width: 48px;
+}
+
+/* 右侧面板 */
+.rightPanel {
+  flex-shrink: 0;
+  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  background: var(--panel-bg, #fafafa);
+  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+}
+
+.rightPanel.open {
+  width: 320px;
+}
+
+.rightPanel.closed {
+  width: 48px;
+}
+
+/* 中央内容区域 */
+.contentArea {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--content-bg, #ffffff);
+}
+
+.scrollArea {
+  height: 100%;
+}
+
+.contentWrapper {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* Shadow DOM 宿主 */
+.shadowHost {
   width: 100%;
-  background-color: white;
-  border-bottom: 1px solid #e5e7eb;
+  max-width: 900px;
+}
+
+/* 内容容器 - 在 Shadow DOM 内 */
+.contentContainer {
+  font-family: 'Source Han Serif CN', 'Noto Serif SC', Georgia, serif;
+  font-size: 18px;
+  line-height: 1.8;
+  color: var(--content-text, #374151);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+  transition: font-size 0.2s ease, line-height 0.2s ease;
+}
+
+/* 加载状态 */
+.loadingContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--bg-primary, #ffffff);
+  color: var(--text-secondary, #6b7280);
+}
+
+.loadingOverlay {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
-  z-index: 10;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  z-index: 50;
 }
 
-.sidebar {
-  grid-area: sidebar;
-  width: var(--sidebar-width);
-  height: 100%;
-  background-color: white;
-  border-right: 1px solid #e5e7eb;
-  overflow: hidden;
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-color, rgba(0, 0, 0, 0.1));
+  border-top-color: var(--accent, #3b82f6);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.main {
-  grid-area: main;
-  height: 100%;
-  background-color: white;
-  overflow: hidden;
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.rightSide {
-  grid-area: right-side;
-  width: var(--right-side-width);
-  height: 100%;
-  background-color: white;
-  border-left: 1px solid #e5e7eb;
-  overflow: hidden;
+/* 变量定义 */
+.reader {
+  --bg-primary: #ffffff;
+  --panel-bg: #fafafa;
+  --content-bg: #ffffff;
+  --border-color: rgba(0, 0, 0, 0.06);
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --content-text: #374151;
+  --accent: #3b82f6;
+  --accent-light: #60a5fa;
+  --hover-bg: rgba(0, 0, 0, 0.04);
+}
+
+/* 深色模式变量 */
+[data-theme='dark'] {
+  --bg-primary: #0f0f0f;
+  --panel-bg: #1a1a1a;
+  --content-bg: #171717;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --content-text: #e5e7eb;
+  --accent: #60a5fa;
+  --accent-light: #93c5fd;
+  --hover-bg: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .loadingOverlay {
+  background: rgba(15, 15, 15, 0.8);
+}
+
+/* 字体定义 */
+@font-face {
+  font-family: 'Source Han Serif CN';
+  src: local('Source Han Serif CN'), local('SourceHanSerifCN'),
+    local('Noto Serif SC'), local('NotoSerifSC');
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Han Sans CN';
+  src: local('Source Han Sans CN'), local('SourceHanSansCN'),
+    local('Noto Sans SC'), local('NotoSansSC');
+  font-display: swap;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .leftPanel.open {
+    width: 260px;
+  }
+
+  .rightPanel.open {
+    width: 280px;
+  }
+}
+
+@media (max-width: 768px) {
+  .leftPanel,
+  .rightPanel {
+    position: fixed;
+    top: 52px;
+    bottom: 80px;
+    z-index: 80;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .leftPanel {
+    left: 0;
+  }
+
+  .leftPanel.closed {
+    transform: translateX(-100%);
+    width: 260px;
+  }
+
+  .rightPanel {
+    right: 0;
+  }
+
+  .rightPanel.closed {
+    transform: translateX(100%);
+    width: 280px;
+  }
+
+  .contentContainer {
+    padding: 32px 20px 60px;
+    font-size: 16px;
+  }
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, rgba(0, 0, 0, 0.2));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, rgba(0, 0, 0, 0.3));
+}
+
+[data-theme='dark'] {
+  --scrollbar-thumb: rgba(255, 255, 255, 0.15);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.25);
+}
+
+/* 选中文本样式 */
+::selection {
+  background: var(--selection-bg, rgba(59, 130, 246, 0.2));
+  color: inherit;
+}
+
+[data-theme='dark'] ::selection {
+  --selection-bg: rgba(96, 165, 250, 0.3);
 }

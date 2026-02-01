@@ -1,0 +1,269 @@
+.panel {
+  width: 320px;
+  height: 100%;
+  background: var(--panel-bg, #fafafa);
+  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collapsed {
+  width: 48px;
+  height: 100%;
+  background: var(--panel-bg, #fafafa);
+  border-left: 1px solid var(--border-color, rgba(0, 0, 0, 0.06));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 16px;
+}
+
+.collapsedIcon {
+  color: var(--text-secondary, #6b7280);
+}
+
+.collapsedIcon:hover {
+  color: var(--text-primary, #1f2937);
+  background: var(--hover-bg, rgba(0, 0, 0, 0.04));
+}
+
+.header {
+  padding: 16px 16px 8px;
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.04));
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0;
+  letter-spacing: 0.5px;
+  font-family: 'Source Han Sans CN', 'Noto Sans SC', -apple-system, sans-serif;
+}
+
+.tabs {
+  display: flex;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color, rgba(0, 0, 0, 0.04));
+  gap: 4px;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 12px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #6b7280);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  font-family: inherit;
+}
+
+.tab:hover {
+  color: var(--text-primary, #1f2937);
+  background: var(--hover-bg, rgba(0, 0, 0, 0.03));
+}
+
+.tab.active {
+  color: var(--accent, #3b82f6);
+  border-bottom-color: var(--accent, #3b82f6);
+  background: transparent;
+}
+
+.scrollArea {
+  flex: 1;
+}
+
+.content {
+  padding: 16px;
+}
+
+.annotationList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted, #9ca3af);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+  padding-left: 4px;
+}
+
+.annotationItem {
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border-light, rgba(0, 0, 0, 0.04));
+  background: var(--card-bg, white);
+}
+
+.annotationItem:hover {
+  border-color: var(--border-color, rgba(0, 0, 0, 0.08));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.annotationItem.active {
+  border-color: var(--accent, #3b82f6);
+  box-shadow: 0 0 0 1px var(--accent, #3b82f6);
+}
+
+.annotationHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.annotationIcon {
+  flex-shrink: 0;
+}
+
+.annotationType {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+}
+
+.annotationTime {
+  font-size: 11px;
+  color: var(--text-muted, #9ca3af);
+}
+
+.deleteBtn {
+  color: var(--text-muted, #9ca3af);
+  opacity: 0;
+  transition: all 0.2s ease;
+}
+
+.annotationItem:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.annotationText {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary, #1f2937);
+  font-style: italic;
+  margin-bottom: 8px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.annotationNote {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px;
+  background: var(--note-bg, rgba(0, 0, 0, 0.02));
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-secondary, #6b7280);
+  line-height: 1.5;
+}
+
+.noteIcon {
+  flex-shrink: 0;
+  color: var(--accent, #3b82f6);
+  margin-top: 2px;
+}
+
+.addNoteBtn {
+  margin-top: 8px;
+  font-size: 12px;
+  padding: 4px 8px;
+  height: auto;
+}
+
+.noteEditor {
+  margin-top: 8px;
+}
+
+.noteInput textarea {
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.noteActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 16px;
+  text-align: center;
+}
+
+.emptySection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  text-align: center;
+  background: var(--empty-bg, rgba(0, 0, 0, 0.02));
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.emptyIcon {
+  color: var(--text-muted, #9ca3af);
+  margin-bottom: 12px;
+  opacity: 0.5;
+}
+
+.empty p {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary, #6b7280);
+  margin: 0 0 4px;
+}
+
+.emptyHint {
+  font-size: 12px;
+  color: var(--text-muted, #9ca3af);
+}
+
+/* 深色模式 */
+[data-theme='dark'] .panel,
+[data-theme='dark'] .collapsed {
+  --panel-bg: #1a1a1a;
+  --border-color: rgba(255, 255, 255, 0.06);
+  --border-light: rgba(255, 255, 255, 0.04);
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --hover-bg: rgba(255, 255, 255, 0.04);
+  --accent: #60a5fa;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --note-bg: rgba(255, 255, 255, 0.03);
+  --empty-bg: rgba(255, 255, 255, 0.02);
+}
