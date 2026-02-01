@@ -38,11 +38,21 @@ export class DataAccessLayer {
   }
 
   async getBookBlob(uuid: string) {
-    return this.dataSource.getBookBlob(uuid);
+    const result = await this.dataSource.getBookBlob(uuid);
+    return { uuid, data: result };
   }
 
   async saveBookAndRelations(model: BookMetadata, file: Uint8Array, cover: Uint8Array | null) {
     return this.dataSource.saveBookAndRelations(model, file, cover);
+  }
+
+  async removeBook(uuid: string) {
+    console.log('DAL: removeBook called, uuid:', uuid);
+    console.log('DAL: dataSource type:', this.dataSource.constructor.name);
+    console.log('DAL: dataSource.removeBook exists:', typeof this.dataSource.removeBook);
+    const result = await this.dataSource.removeBook(uuid);
+    console.log('DAL: removeBook result:', result);
+    return result;
   }
 
   async removeBookCache(book_uuid: string) {

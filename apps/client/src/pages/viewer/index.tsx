@@ -65,9 +65,33 @@ export const Viewer = () => {
   // 加载书籍
   useEffect(() => {
     (async () => {
+      console.log('=== blob 调试 ===');
+      console.log('blob:', blob);
+      console.log('blob?.data exists:', blob?.data !== null && blob?.data !== undefined);
+      console.log('detail:', detail?.data?.title, detail?.data?.format);
+      console.log('====================');
+      
       if (blob?.data && detail) {
         setIsLoading(true);
         try {
+          // 调试：检查文件魔数
+          const uint8Array = blob.data instanceof Uint8Array ? blob.data : new Uint8Array(blob.data);
+          console.log('=== 文件魔数调试 ===');
+          console.log('Blob 数据类型:', blob.data.constructor.name);
+          console.log('Blob 数据长度:', uint8Array.length);
+          console.log('前10个字节 (Hex):', Array.from(uint8Array.slice(0, 10)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+          if (uint8Array.length > 0) {
+            console.log('第一个字节:', uint8Array[0], '应该是 0x50 (PK) 或 0x25 (%)');
+          }
+          console.log('前10个字节 (ASCII):', String.fromCharCode(...uint8Array.slice(0, 10)).replace(/[\x00-\x1F\x7F]/g, '.'));
+          
+          // 识别格式
+          const isZip = uint8Array[0] === 0x50 && uint8Array[1] === 0x4b && uint8Array[2] === 0x03 && uint8Array[3] === 0x04;
+          const isPdf = uint8Array[0] === 0x25 && uint8Array[1] === 0x50 && uint8Array[2] === 0x44 && uint8Array[3] === 0x46 && uint8Array[4] === 0x2d;
+          console.log('是 ZIP (EPUB):', isZip);
+          console.log('是 PDF:', isPdf);
+          console.log('====================');
+          
           // 从数据库获取格式信息
           const format = (detail.format || 'EPUB').toUpperCase();
           

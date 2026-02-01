@@ -33,7 +33,11 @@ export const blobDataAtom = atomWithQuery((get) => {
   return {
     queryKey: ['blob', uuid],
     queryFn: async (): Promise<{ uuid: string; data: Uint8Array | null }> => {
-      return dal.getBookBlob(uuid);
+      console.log('Fetching blob for uuid:', uuid);
+      const result = await dal.getBookBlob(uuid);
+      console.log('Blob fetch result:', result);
+      console.log('Blob data length:', result?.data?.length);
+      return result;
     },
   };
 });

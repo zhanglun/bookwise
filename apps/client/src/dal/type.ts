@@ -38,6 +38,7 @@ export interface DataSource {
     file: Uint8Array,
     cover: Uint8Array | null
   ) => Promise<BookResItem>;
+  removeBook: (uuid: string) => Promise<void>;
   removeBookCache: (uuid: string) => Promise<void>;
   getAuthors: () => Promise<AuthorResItem[]>;
   getPublishers: () => Promise<PublisherResItem[]>;

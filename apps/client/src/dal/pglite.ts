@@ -7,6 +7,7 @@ import {
   bookBlobs,
   bookCaches,
   bookCovers,
+  bookLanguages,
   bookPublishers,
   books,
   covers,
@@ -107,18 +108,60 @@ export class PGLiteDataSource implements DataSource {
   }
 
   async getBookBlob(uuid: string): Promise<ArrayBuffer | null> {
+    console.log('PGLite: getBookBlob called with uuid:', uuid);
+    
     const record = await drizzleDB.select().from(bookBlobs).where(eq(bookBlobs.book_uuid, uuid));
+    console.log('PGLite: bookBlobs record:', record);
+    console.log('PGLite: bookBlobs record length:', record.length);
 
     if (record.length === 0) {
+      console.log('PGLite: No bookBlobs record found');
       return null;
     }
+
+    const blobUuid = record[0].blob_uuid as string;
+    console.log('PGLite: Looking for blob with uuid:', blobUuid);
 
     const file = await drizzleDB
       .select()
       .from(blobs)
-      .where(eq(blobs.uuid, record[0].blob_uuid as string));
+      .where(eq(blobs.uuid, blobUuid));
+    
+    console.log('PGLite: blobs record:', file);
+    console.log('PGLite: blobs record length:', file.length);
 
-    return file[0] as unknown as ArrayBuffer;
+    if (file.length === 0) {
+      console.log('PGLite: No blob data found');
+      return null;
+    }
+
+    // PGLite 返回的数据结构可能不同，直接返回 data 属性
+    const blobRow = file[0] as any;
+    console.log('PGLite: blobRow structure:', Object.keys(blobRow));
+    console.log('PGLite: blobRow.data:', blobRow.data);
+    console.log('PGLite: blobRow.data type:', blobRow.data?.constructor?.name);
+    
+    if (!blobRow.data || blobRow.data.length === 0) {
+      console.log('PGLite: blob data is empty or null');
+      return null;
+    }
+
+    // 如果已经是 ArrayBuffer，直接返回
+    if (blobRow.data instanceof ArrayBuffer) {
+      console.log('PGLite: Returning ArrayBuffer, byteLength:', blobRow.data.byteLength);
+      return blobRow.data;
+    }
+
+    // 如果是 Uint8Array，转换为 ArrayBuffer
+    if (blobRow.data instanceof Uint8Array) {
+      const buffer = blobRow.data.buffer;
+      console.log('PGLite: Converted Uint8Array to ArrayBuffer, byteLength:', buffer.byteLength);
+      return buffer;
+    }
+
+    // 其他情况，尝试转换
+    console.log('PGLite: Unknown data type, trying to convert');
+    return blobRow.data as ArrayBuffer;
   }
 
   async saveBookAndRelations(
@@ -129,6 +172,9 @@ export class PGLiteDataSource implements DataSource {
     if (!file) {
       throw new Error('文件不存在');
     }
+
+    console.log('PGLite: saveBookAndRelations - file type:', file.constructor.name, 'length:', file.length);
+    console.log('PGLite: saveBookAndRelations - cover type:', cover?.constructor?.name, 'length:', cover?.length);
 
     try {
       const [newBook] = await drizzleDB
@@ -155,7 +201,9 @@ export class PGLiteDataSource implements DataSource {
         })
         .returning();
 
+      console.log('PGLite: Inserting blob with data length:', file.length);
       const blobRecord = await drizzleDB.insert(blobs).values({ data: file }).returning();
+      console.log('PGLite: Blob record created:', blobRecord);
 
       await drizzleDB
         .insert(bookBlobs)
@@ -307,5 +355,57 @@ export class PGLiteDataSource implements DataSource {
 
     console.log('🚀 ~ PGLiteDataSource ~ model:', model);
     return drizzleDB.update(books).set(model).where(eq(books.uuid, model.uuid));
+  }
+
+  async removeBook(uuid: string) {
+    console.log('PGLite: removeBook called with uuid:', uuid);
+
+    try {
+      // Delete junction tables first
+      console.log('Deleting bookCaches...');
+      await drizzleDB.delete(bookCaches).where(eq(bookCaches.book_uuid, uuid));
+      console.log('Deleting bookAuthors...');
+      await drizzleDB.delete(bookAuthors).where(eq(bookAuthors.book_uuid, uuid));
+      console.log('Deleting bookPublishers...');
+      await drizzleDB.delete(bookPublishers).where(eq(bookPublishers.book_uuid, uuid));
+      console.log('Deleting bookLanguages...');
+      await drizzleDB.delete(bookLanguages).where(eq(bookLanguages.book_uuid, uuid));
+
+      // Get and delete cover
+      console.log('Finding cover...');
+      const coverRecord = await drizzleDB
+        .select()
+        .from(bookCovers)
+        .where(eq(bookCovers.book_uuid, uuid));
+      console.log('Cover record:', coverRecord);
+      if (coverRecord.length > 0) {
+        console.log('Deleting bookCovers and covers...');
+        await drizzleDB.delete(bookCovers).where(eq(bookCovers.book_uuid, uuid));
+        await drizzleDB.delete(covers).where(eq(covers.uuid, coverRecord[0].cover_uuid as string));
+      }
+
+      // Get and delete blob
+      console.log('Finding blob...');
+      const blobRecord = await drizzleDB
+        .select()
+        .from(bookBlobs)
+        .where(eq(bookBlobs.book_uuid, uuid));
+      console.log('Blob record:', blobRecord);
+      if (blobRecord.length > 0) {
+        console.log('Deleting bookBlobs and blobs...');
+        await drizzleDB.delete(bookBlobs).where(eq(bookBlobs.book_uuid, uuid));
+        await drizzleDB.delete(blobs).where(eq(blobs.uuid, blobRecord[0].blob_uuid as string));
+      }
+
+      // Delete the book itself
+      console.log('Deleting book...');
+      const deleteResult = await drizzleDB.delete(books).where(eq(books.uuid, uuid));
+      console.log('Delete result:', deleteResult);
+
+      console.log('PGLite: Book removed successfully:', uuid);
+    } catch (error) {
+      console.error('PGLite: removeBook error:', error);
+      throw error;
+    }
   }
 }
