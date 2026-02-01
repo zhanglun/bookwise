@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DataTable } from '@/components/Table';
+import { BookList } from '@/components/Book';
 import { dal } from '@/dal';
 import { useBook } from '@/hooks/book';
 import { BookResItem } from '@/interface/book';
@@ -41,7 +41,7 @@ export const Library = () => {
       <div className={classes.content}>
         <LibraryToolbar />
         <div className="flex-1 overflow-auto min-h-0">
-          <DataTable
+          <BookList
             data={books}
             onRowClick={handleRowClick}
             onRowDoubleClick={handleRowDoubleClick}
