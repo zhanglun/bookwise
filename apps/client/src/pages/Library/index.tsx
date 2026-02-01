@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { IconLayoutSidebarRight, IconLayoutSidebarRightExpand } from '@tabler/icons-react';
+import { ActionIcon, Tooltip } from '@mantine/core';
 import { BookList } from '@/components/Book';
 import { dal } from '@/dal';
 import { useBook } from '@/hooks/book';
@@ -14,6 +16,7 @@ export const Library = () => {
   const [books, setBooks] = useState<BookResItem[]>([]);
   const [drawerOpened, setDrawerOpened] = useState(false);
   const [editingBook, setEditingBook] = useState<BookResItem | null>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
 
   const getList = async () => {
     const list = await dal.getBooks({});
@@ -22,10 +25,16 @@ export const Library = () => {
 
   function handleRowClick(row: BookResItem) {
     setSelectItem(row);
+    setIsPanelOpen(true);
   }
 
   function handleRowDoubleClick(row: BookResItem) {
     openBook(row.uuid);
+  }
+
+  function handleClosePanel() {
+    setIsPanelOpen(false);
+    setSelectItem(undefined);
   }
 
   useEffect(() => {
@@ -39,12 +48,29 @@ export const Library = () => {
   return (
     <div className={classes.main}>
       <div className={classes.content}>
-        <LibraryToolbar onUploadComplete={getList} />
-        <div className="flex-1 overflow-auto min-h-0">
+        <LibraryToolbar onUploadComplete={getList}>
+          <Tooltip label={isPanelOpen ? '关闭详情面板' : '打开详情面板'}>
+            <ActionIcon
+              variant="subtle"
+              color="gray"
+              onClick={() => setIsPanelOpen(!isPanelOpen)}
+              disabled={!selectItem}
+            >
+              {isPanelOpen ? (
+                <IconLayoutSidebarRight size="1.2rem" />
+              ) : (
+                <IconLayoutSidebarRightExpand size="1.2rem" />
+              )}
+            </ActionIcon>
+          </Tooltip>
+        </LibraryToolbar>
+        <div className={classes.bookListContainer}>
           <BookList
             data={books}
+            selectedBook={selectItem}
             onRowClick={handleRowClick}
             onRowDoubleClick={handleRowDoubleClick}
+            onRead={openBook}
             onEdit={(book) => {
               setEditingBook(book);
               setDrawerOpened(true);
@@ -52,8 +78,15 @@ export const Library = () => {
           />
         </div>
       </div>
-      <div className={classes.rightSide}>
-        <InfoPanel data={selectItem} />
+      <div
+        className={`${classes.rightSide} ${isPanelOpen ? classes.rightSideOpen : classes.rightSideClosed}`}
+      >
+        <InfoPanel
+          data={selectItem}
+          isOpen={isPanelOpen}
+          onClose={handleClosePanel}
+          onRead={openBook}
+        />
       </div>
       <MetaModal
         isOpen={drawerOpened}

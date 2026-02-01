@@ -1,6 +1,13 @@
-import { useState } from 'react';
-import { IconDownload, IconEdit } from '@tabler/icons-react';
-import { ActionIcon, Card, Group, Text, Tooltip } from '@mantine/core';
+import { IconBook, IconDownload, IconEdit, IconEye } from '@tabler/icons-react';
+import {
+  ActionIcon,
+  Badge,
+  Button,
+  Group,
+  Text,
+  Tooltip,
+  Transition,
+} from '@mantine/core';
 import { format } from 'date-fns';
 import { AuthorResItem, BookResItem } from '@/interface/book';
 import { Cover } from './Cover';
@@ -8,35 +15,65 @@ import classes from './list.module.css';
 
 export interface BookListProps {
   data: BookResItem[];
+  selectedBook?: BookResItem;
   onRowClick?: (row: BookResItem) => void;
   onRowDoubleClick?: (row: BookResItem) => void;
+  onRead?: (uuid: string) => void;
   onEdit?: (row: BookResItem) => void;
   onDownload?: (row: BookResItem) => void;
 }
 
 export const BookList = (props: BookListProps) => {
-  const { data, onRowClick, onRowDoubleClick, onEdit, onDownload } = props;
-  const [selectedBook, setSelectedBook] = useState<BookResItem | null>(null);
+  const {
+    data,
+    selectedBook,
+    onRowClick,
+    onRowDoubleClick,
+    onRead,
+    onEdit,
+    onDownload,
+  } = props;
 
   return (
     <div className={classes.grid}>
       {data.map((book) => (
-        <Card
+        <div
           key={book.uuid}
-          shadow="sm"
-          padding="md"
-          radius="md"
-          withBorder
           className={`${classes.card} ${selectedBook?.uuid === book.uuid ? classes.selected : ''}`}
-          onClick={() => {
-            setSelectedBook(book);
-            onRowClick?.(book);
-          }}
+          onClick={() => onRowClick?.(book)}
           onDoubleClick={() => onRowDoubleClick?.(book)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              onRowClick?.(book);
+            }
+          }}
         >
           <div className={classes.cardContent}>
             <div className={classes.coverWrapper}>
-              <Cover book={book} cover={book.cover} />
+              <Cover book={book} cover={book.cover} className={classes.coverImage} />
+              <Badge className={classes.formatBadge} variant="filled" size="xs">
+                {book.format?.toUpperCase()}
+              </Badge>
+
+              <Transition mounted={selectedBook?.uuid === book.uuid} transition="fade">
+                {(styles) => (
+                  <div className={classes.readOverlay} style={styles}>
+                    <Button
+                      variant="filled"
+                      size="sm"
+                      leftSection={<IconBook size="1rem" />}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRead?.(book.uuid);
+                      }}
+                    >
+                      阅读
+                    </Button>
+                  </div>
+                )}
+              </Transition>
             </div>
 
             <div className={classes.info}>
@@ -45,23 +82,42 @@ export const BookList = (props: BookListProps) => {
               </Text>
 
               <Text size="xs" c="dimmed" lineClamp={1} className={classes.authors}>
-                {book.authors.map((author: AuthorResItem) => author.name).join(', ')}
+                {book.authors.map((author: AuthorResItem) => author.name).join(', ') || '未知作者'}
               </Text>
 
               <Text size="xs" c="dimmed" lineClamp={1} className={classes.publisher}>
-                {book.publishers.map((p) => p.name).join(', ')}
+                {book.publishers.map((p) => p.name).join(', ') || ''}
               </Text>
 
-              <Text size="xs" c="dimmed" className={classes.date}>
-                {book.publish_at ? format(new Date(book.publish_at), 'yyyy-MM-dd') : '-'}
-              </Text>
+              <Group gap="xs" className={classes.metaRow}>
+                <Text size="xs" c="dimmed">
+                  {book.publish_at ? format(new Date(book.publish_at), 'yyyy-MM-dd') : ''}
+                </Text>
+                {book.page_size && (
+                  <Text size="xs" c="dimmed">
+                    {book.page_size} 页
+                  </Text>
+                )}
+              </Group>
             </div>
 
             <Group gap="xs" className={classes.actions}>
-              <Tooltip label="编辑">
+              <Tooltip label="阅读" position="bottom">
+                <ActionIcon
+                  variant="light"
+                  color="blue"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRead?.(book.uuid);
+                  }}
+                >
+                  <IconEye size="1rem" />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label="编辑" position="bottom">
                 <ActionIcon
                   variant="subtle"
-                  color="blue"
+                  color="gray"
                   onClick={(e) => {
                     e.stopPropagation();
                     onEdit?.(book);
@@ -70,10 +126,10 @@ export const BookList = (props: BookListProps) => {
                   <IconEdit size="1rem" />
                 </ActionIcon>
               </Tooltip>
-              <Tooltip label="下载">
+              <Tooltip label="下载" position="bottom">
                 <ActionIcon
                   variant="subtle"
-                  color="blue"
+                  color="gray"
                   onClick={(e) => {
                     e.stopPropagation();
                     onDownload?.(book);
@@ -84,7 +140,7 @@ export const BookList = (props: BookListProps) => {
               </Tooltip>
             </Group>
           </div>
-        </Card>
+        </div>
       ))}
     </div>
   );

@@ -1,0 +1,101 @@
+.coverContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: rem(8px);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.06),
+    0 12px 24px -8px rgba(0, 0, 0, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.coverContainer::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    360deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.2) 100%
+  );
+  pointer-events: none;
+}
+
+.coverContainer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 12px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(0, 0, 0, 0.1) 35%,
+    rgba(255, 255, 255, 0.3) 55%,
+    rgba(255, 255, 255, 0) 85%
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.coverContainer:hover .coverImage {
+  transform: scale(1.03);
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    145deg,
+    var(--mantine-color-gray-1) 0%,
+    var(--mantine-color-gray-2) 50%,
+    var(--mantine-color-gray-3) 100%
+  );
+  border-radius: rem(8px);
+  border: 2px dashed var(--mantine-color-gray-4);
+  gap: rem(12px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.placeholder:hover {
+  background: linear-gradient(
+    145deg,
+    var(--mantine-color-gray-2) 0%,
+    var(--mantine-color-gray-3) 50%,
+    var(--mantine-color-gray-4) 100%
+  );
+  border-color: var(--mantine-color-gray-5);
+  box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.placeholderIcon {
+  color: var(--mantine-color-gray-4);
+  opacity: 0.8;
+}
+
+.placeholderText {
+  font-size: rem(11px);
+  font-weight: 700;
+  color: var(--mantine-color-gray-5);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}

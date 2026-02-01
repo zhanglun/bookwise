@@ -1,33 +1,115 @@
 .main {
   height: 100%;
-  display: grid;
-  grid-template-columns: minmax(400px, 1fr) minmax(280px, 320px);
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  background: var(--mantine-color-gray-0);
+}
+
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: flex 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-direction: row;
-
-  padding: rem(8px);
-  gap: rem(2px);
-  border-bottom: 1px solid var(--mantine-color-default-border);
+  padding: rem(16px) rem(24px);
+  gap: rem(16px);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
-.leftSide {
-  border-right: 1px solid var(--mantine-color-default-border);
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: rem(12px);
+}
+
+.toolbarRight {
+  display: flex;
+  align-items: center;
+  gap: rem(12px);
+}
+
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: rem(8px);
+  padding-left: rem(12px);
+  border-left: 1px solid var(--mantine-color-gray-3);
+}
+
+.searchInput {
+  width: rem(280px);
+  transition: all 0.2s ease;
+}
+
+.searchInput:focus-within {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.clearIcon {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--mantine-color-gray-5);
+}
+
+.clearIcon:hover {
+  color: var(--mantine-color-gray-8);
+  transform: scale(1.1);
+}
+
+.bookListContainer {
+  flex: 1;
   overflow: auto;
+  min-height: 0;
+  padding: rem(32px) rem(24px);
+  background: var(--mantine-color-gray-0);
 }
 
 .rightSide {
-  border-left: 1px solid var(--mantine-color-default-border);
   display: flex;
   flex-direction: column;
   min-height: 0;
+  border-left: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+  backdrop-filter: blur(20px);
+  transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+  overflow: hidden;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.04);
 }
 
-.content {
-  display: grid;
-  grid-template-rows: auto 1fr;
+.rightSideOpen {
+  width: 360px;
+  opacity: 1;
+}
+
+.rightSideClosed {
+  width: 0;
+  opacity: 0;
+  border-left: none;
+}
+
+.emptyState {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: var(--mantine-color-gray-5);
+}
+
+.simpleList {
+  height: 100%;
+  padding-right: rem(8px);
 }

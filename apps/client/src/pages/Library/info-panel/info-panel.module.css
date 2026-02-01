@@ -1,13 +1,155 @@
 .infoPanel {
-  padding: rem(12px);
-}
-
-.infoPanelCover {
-  margin-bottom: 14px;
-}
-
-.infoPanelContent {
   display: flex;
   flex-direction: column;
-  gap: rem(10px);
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+.header {
+  display: flex;
+  justify-content: flex-end;
+  padding: rem(16px) rem(20px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+}
+
+.scrollArea {
+  flex: 1;
+  min-height: 0;
+}
+
+.content {
+  padding: rem(24px) rem(28px);
+}
+
+.coverWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 220px;
+  margin: 0 auto rem(28px);
+  aspect-ratio: 2/3;
+  border-radius: rem(10px);
+  overflow: hidden;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.coverWrapper:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow:
+    0 30px 60px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.formatBadge {
+  position: absolute;
+  top: rem(12px);
+  right: rem(12px);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bookInfo {
+  display: flex;
+  flex-direction: column;
+  gap: rem(12px);
+}
+
+.title {
+  text-align: center;
+  margin-bottom: rem(20px);
+  font-weight: 700;
+  font-size: rem(20px);
+  line-height: 1.4;
+  color: var(--mantine-color-gray-9);
+  letter-spacing: -0.3px;
+}
+
+.metaRow {
+  align-items: flex-start;
+  gap: rem(12px);
+  padding: rem(10px) rem(12px);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: rem(8px);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.metaRow:hover {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.metaIcon {
+  color: var(--mantine-color-blue-5);
+  flex-shrink: 0;
+  margin-top: rem(2px);
+}
+
+.metaValue {
+  color: var(--mantine-color-gray-7);
+  line-height: 1.5;
+}
+
+.sectionTitle {
+  font-size: rem(13px);
+  font-weight: 600;
+  color: var(--mantine-color-gray-8);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: rem(12px);
+  padding-bottom: rem(8px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.description {
+  color: var(--mantine-color-gray-6);
+  line-height: 1.8;
+  font-size: rem(14px);
+  text-align: justify;
+}
+
+.footer {
+  padding: rem(20px) rem(28px);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: rem(40px);
+  text-align: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%);
+}
+
+.emptyIcon {
+  color: var(--mantine-color-gray-4);
+  margin-bottom: rem(16px);
+  opacity: 0.5;
+}
+
+.divider {
+  margin: rem(24px) 0;
+  border-color: rgba(0, 0, 0, 0.06);
 }

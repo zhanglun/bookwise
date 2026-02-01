@@ -25,7 +25,7 @@ type Locked = (typeof Locked)[keyof typeof Locked];
 export const MainLayout = () => {
   const [sidebarCollapse, _updateSidebarCollapse] = useState(false);
 
-  const [width, setWidth] = useState(40);
+  const [width, setWidth] = useState(240);
   const originalWidth = useRef(width);
   const originalClientX = useRef(width);
   const [isDragging, setDragging] = useState(false);
@@ -79,7 +79,7 @@ export const MainLayout = () => {
     >
       <MotionConfig>
         <motion.div
-          className="flex-shrink-0"
+          className={classes.spacer}
           initial={false}
           animate={{
             width: locked === Locked.Locked && open === Open.Open ? width : 0,
@@ -93,9 +93,9 @@ export const MainLayout = () => {
           layout
           data-show-unlocked-sidebar
           className={clsx(
-            'overflow-hidden fixed top-0 right-0 bottom-0 left-0 z-10 rounded-lg bg-white pt-2 pl-2',
-            { 'bg-white/0': open === Open.Open && locked === Locked.Locked },
-            { 'shadow-lg bg-slate-400 px-2': open === Open.Open && locked !== Locked.Locked }
+            classes.sidebarContainer,
+            { [classes.sidebarLocked]: open === Open.Open && locked === Locked.Locked },
+            { [classes.sidebarUnlocked]: open === Open.Open && locked !== Locked.Locked }
           )}
           initial={false}
           animate={{
@@ -116,8 +116,8 @@ export const MainLayout = () => {
             },
           }}
         >
-          <div className="bg-white/0 h-full flex flex-col">
-            <div className="flex gap-1">
+          <div className={classes.sidebarInner}>
+            <div className={classes.sidebarHeader}>
               {!sidebarCollapse && (
                 <ActionIcon data-show-unlocked-sidebar variant="default" onClick={toggleSidebar}>
                   <IconSquareRoundedArrowLeft size={18} />
@@ -132,7 +132,7 @@ export const MainLayout = () => {
 
             <FloatSidebar />
 
-            <div className="absolute z-10 right-0 w-0 flex-grow-0 top-0 bottom-0">
+            <div className={classes.resizeHandleContainer}>
               <div
                 onPointerDown={(e: ReactPointerEvent) => {
                   // this prevents dragging from selecting
@@ -178,7 +178,7 @@ export const MainLayout = () => {
                     once: true,
                   });
                 }}
-                className={clsx('w-3 h-full cursor-col-resize shrink-0')}
+                className={classes.resizeHandle}
               />
             </div>
           </div>

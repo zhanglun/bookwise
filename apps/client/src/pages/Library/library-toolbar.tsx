@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, ReactNode } from 'react';
 import { IconSearch, IconX } from '@tabler/icons-react';
 import { debounce } from 'lodash-es';
 import { Input } from '@mantine/core';
@@ -7,9 +7,10 @@ import classes from './library.module.css';
 
 interface LibraryToolbarProps {
   onUploadComplete?: () => void;
+  children?: ReactNode;
 }
 
-export const LibraryToolbar = ({ onUploadComplete }: LibraryToolbarProps) => {
+export const LibraryToolbar = ({ onUploadComplete, children }: LibraryToolbarProps) => {
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
 
@@ -35,33 +36,35 @@ export const LibraryToolbar = ({ onUploadComplete }: LibraryToolbarProps) => {
 
   return (
     <div className={classes.toolbar}>
-      <div className="flex items-center gap-3">
+      <div className={classes.toolbarLeft}>
         <Uploader onUploadComplete={onUploadComplete} />
       </div>
-      <div className="flex items-center gap-3">
+      <div className={classes.toolbarRight}>
         <Input
-          size="xs"
-          placeholder="Search for books..."
+          size="sm"
+          placeholder="搜索书籍..."
           value={query}
           onChange={handleQueryChange}
           onKeyUp={handleStartQuery}
-          leftSection={<IconSearch height="16" width="16" />}
+          leftSection={<IconSearch height="18" width="18" />}
           rightSection={
             query && !searching ? (
               <IconX
-                height="16"
-                width="16"
+                height="18"
+                width="18"
                 onClick={() => {
                   setQuery('');
                   debouncedQuery('');
                 }}
-                className="cursor-pointer hover:text-[var(--gray-12)]"
+                className={classes.clearIcon}
               />
             ) : searching ? (
               <IconSearch size="1" />
             ) : null
           }
+          className={classes.searchInput}
         />
+        <div className={classes.toolbarActions}>{children}</div>
       </div>
     </div>
   );

@@ -1,10 +1,10 @@
-
-import { BookList } from "@/components/Book";
+import { useState, useEffect } from 'react';
+import { BookList } from '@/components/Book';
 import { dal } from '@/dal';
 import { useBook } from '@/hooks/book';
 import { BookResItem } from '@/interface/book';
 import { MetaModal } from './meta-modal/meta-modal';
-import { useState, useEffect } from "react";
+import classes from './library.module.css';
 
 export const List = () => {
   const { openBook } = useBook();
@@ -31,11 +31,13 @@ export const List = () => {
   }, []);
 
   return (
-    <div className="h-full -mr-2">
+    <div className={classes.simpleList}>
       <BookList
         data={books}
+        selectedBook={selectItem}
         onRowClick={handleRowClick}
         onRowDoubleClick={handleRowDoubleClick}
+        onRead={openBook}
         onEdit={(book) => {
           setEditingBook(book);
           setDrawerOpened(true);
